@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	 xmlns:tx="http://www.springframework.org/schema/tx"
+	 xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+    http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd">
+
+	<context:annotation-config />
+	<context:component-scan base-package="com.zx.sms" />
+
+	<context:property-placeholder location="classpath:jdbc.properties"/> 
+ 
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">  
+		<property name="name" value="smscore"/>
+	    <property name="driverClassName" value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="filters" value="stat" />  
+		<property name="maxActive" value="20" />   
+		<property name="initialSize" value="1" />  
+		<property name="maxWait" value="60000" />  
+		<property name="minIdle" value="1" />  
+		<property name="timeBetweenEvictionRunsMillis" value="3000" />  
+		<property name="minEvictableIdleTimeMillis" value="300000" />  
+		<property name="validationQuery" value="SELECT 'x'" />  
+		<property name="testWhileIdle" value="true" />  
+		<property name="testOnBorrow" value="false" />  
+		<property name="testOnReturn" value="false" />  
+		<property name="poolPreparedStatements" value="true" />  
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />  
+	</bean>
+
+	<!-- SqlSession的工厂类 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="configLocation" value="classpath:Mapping.xml"></property>
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	<!-- SqlSession -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+	
+    <aop:aspectj-autoproxy proxy-target-class="true" />
+	<!-- transactionManager不是必需 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	<!-- 基于注释的事务，当注释中发现@Transactional时，使用id为“transactionManager”的事务管理器 -->
+	<!-- 如果没有设置transaction-manager的值，则spring以缺省默认的事务管理器来处理事务，默认事务管理器为第一个加载的事务管理器 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+	<!--用于非spring管理的对象获取bean-->
+	<bean id="springContextUtil" class="com.zx.sms.common.util.SpringContextUtil" />
+</beans>  
+

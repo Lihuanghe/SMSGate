@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.zx.sms.connect.manager.cmpp.CMPPServerEndpointEntity">
+
+     <select id="findById" parameterType="int" resultType="int">
+       select s_id,s_no.s_desc.s_isvalid,s_host,s_port from Servers where s_id=?; 
+    </select>
+    
+   <select id="deleteAll" >
+       delete from aatest;
+    </select>
+</mapper>

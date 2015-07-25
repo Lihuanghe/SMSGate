@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+<!-- 	<typeAliases> -->
+<!-- 		<typeAlias type="" alias="" /> -->
+<!-- 	</typeAliases> -->
+
+	<!-- 配置映射文件 -->
+    <mappers>
+         <mapper resource="mapper/EndPointEntity.xml"/>
+    </mappers>
+    <mappers>
+         <mapper resource="mapper/ServerEndEntity.xml"/>
+    </mappers>
+</configuration>

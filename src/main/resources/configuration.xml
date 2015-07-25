@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Test configuration definition file that demonstrates complex initialization -->
+<configuration>
+	<header>
+		<result forceReloadCheck="true">
+			<expressionEngine
+				config-class="org.apache.commons.configuration.tree.xpath.XPathExpressionEngine" />
+		</result>
+	</header>
+
+	<xml fileName='server.xml' config-name="serverEndPoint">
+		<reloadingStrategy refreshDelay="10000"
+			config-class="org.apache.commons.configuration.reloading.FileChangedReloadingStrategy" />
+	</xml>
+
+	<xml fileName='client.xml' config-name="clientEndPoint">
+		<reloadingStrategy refreshDelay="10000"
+			config-class="org.apache.commons.configuration.reloading.FileChangedReloadingStrategy" />
+	</xml>
+
+	<properties fileName="global.properties"
+		throwExceptionOnMissing="true" config-name="global" config-optional="true">
+		<reloadingStrategy refreshDelay="10000"
+			config-class="org.apache.commons.configuration.reloading.FileChangedReloadingStrategy" />
+	</properties>
+	
+	<properties fileName="je.properties"
+		throwExceptionOnMissing="true" config-name="BDBproperties" config-optional="true">
+		<reloadingStrategy refreshDelay="10000"
+			config-class="org.apache.commons.configuration.reloading.FileChangedReloadingStrategy" />
+	</properties>
+
+</configuration>
