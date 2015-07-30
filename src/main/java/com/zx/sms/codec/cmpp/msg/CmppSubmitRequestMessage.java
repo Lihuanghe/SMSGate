@@ -18,25 +18,25 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 	private MsgId msgid = new MsgId();
 	private short pktotal = 1;
 	private short pknumber = 1;
-	private short registeredDelivery = 1;
-	private short msglevel = 1;
-	private String serviceId = GlobalConstance.emptyString;
-	private short feeUserType = 3;
+	private short registeredDelivery = 0;
+	private short msglevel = 9;
+	private String serviceId = "cmcczx_sms";
+	private short feeUserType = 2;
 	private String feeterminalId = GlobalConstance.emptyString;
 	private short feeterminaltype = 0;
 	private short tppId = 0;
 	private short tpudhi = 0;
-	private short msgFmt = 15;
+	private short msgFmt = 8;
 	private String msgsrc = GlobalConstance.emptyString;
 	private String feeType = "01";
-	private String feeCode = GlobalConstance.emptyString;
+	private String feeCode = "000000";
 	private String valIdTime = GlobalConstance.emptyString;
 	private String atTime =GlobalConstance.emptyString;
 	private String srcId = GlobalConstance.emptyString;
 	private short destUsrtl = 1;
 	private String destterminalId = GlobalConstance.emptyString;
 	private short destterminaltype = 0;
-	private short msgLength = 120;
+	private short msgLength ;
 	private String msgContent = GlobalConstance.emptyString;
 	private String linkID = GlobalConstance.emptyString;
 
@@ -447,5 +447,12 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 	}
 
 
+	public static CmppSubmitRequestMessage create(String phone ,String spid,String text){
+		CmppSubmitRequestMessage ret = new CmppSubmitRequestMessage();
+		ret.setDestterminalId(phone);
+		ret.setSrcId(spid);
+		ret.setMsgContent(text);
+		return ret;
+	}
 
 }
