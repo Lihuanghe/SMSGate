@@ -56,7 +56,6 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 	private long msgReadCount = 0;
 	private long msgWriteCount = 0;
 	private CMPPEndpointEntity entity;
-	private Channel channel;
 
 	/**
 	 * 消息窗口，默认16
@@ -87,13 +86,13 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 		// 取消重试队列里的任务
 		for (Map.Entry<Long, Entry> entry : msgRetryMap.entrySet()) {
 			final Long key = entry.getKey();
-			Entry en = cancelRetry(key);
+			Entry en = cancelRetry(key,ctx.channel());
 			
 			EndpointConnector conn = CMPPEndpointManager.INS.getEndpointConnector(entity);
 			Channel ch  = conn.fetch();
 			if(ch!=null){
 				ch.write(en.request);
-				logger.debug("current channel {} is closed.send requestMsg from other channel {} which is active.",channel,ch);
+				logger.debug("current channel {} is closed.send requestMsg from other channel {} which is active.",ctx.channel(),ch);
 			}
 		}
 		// 释放发送窗口
@@ -122,7 +121,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 				// 要先删除成功的消息，然后再开一个发送窗口。
 
 				storeMap.remove(message.getHeader().getSequenceId());
-				cancelRetry(message.getHeader().getSequenceId());
+				cancelRetry(message.getHeader().getSequenceId(),ctx.channel());
 			}
 		}
 		ctx.fireChannelRead(msg);
@@ -147,7 +146,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 	}
 
 	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-		channel = ctx.channel();
+	
 		if (evt == SessionState.Connect) {
 			preSendMsg(ctx);
 		}
@@ -201,7 +200,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 						if (times > entity.getMaxRetryCnt()) {
 							// TODO 发送失败要记录失败记录
 
-							cancelRetry(message.getHeader().getSequenceId());
+							cancelRetry(message.getHeader().getSequenceId(),ctx.channel());
 
 							// 删除发送成功的消息
 							storeMap.remove(message.getHeader().getSequenceId());
@@ -232,7 +231,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 
 	}
 
-	private Entry cancelRetry(Long seq) {
+	private Entry cancelRetry(Long seq ,Channel channel) {
 		Entry entry = msgRetryMap.remove(seq);
 
 		if (entry != null && entry.future != null) {
@@ -240,7 +239,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 		}
 		if (windows != null) {
 			// 如果等窗口的队列里有任务，先发送等待的消息
-			if (channel.isActive() && !waitWindowQueue.isEmpty()) {
+			if (channel!=null && channel.isActive() && !waitWindowQueue.isEmpty()) {
 
 				Runnable task = waitWindowQueue.poll();
 				if (task != null) {

@@ -20,6 +20,7 @@ import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.storedMap.BDBStoredMapFactoryImpl;
 import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPServerChildEndpointEntity;
+import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 import com.zx.sms.session.cmpp.SessionState;
 import com.zx.sms.session.cmpp.SessionStateManager;
@@ -156,8 +157,25 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		List<BusinessHandlerInterface> handlers = entity.getBusinessHandlerSet();
 		if (handlers != null && handlers.size() > 0) {
 			for (BusinessHandlerInterface handler : handlers) {
-				handler.setEndpointEntity(entity);
-				pipe.addLast(handler.name(), handler);
+				if (handler instanceof AbstractBusinessHandler) {
+					AbstractBusinessHandler buziHandler = (AbstractBusinessHandler) handler;
+					buziHandler.setEndpointEntity(entity);
+					if (buziHandler.isSharable()) {
+						pipe.addLast(buziHandler.name(), buziHandler);
+					} else {
+						AbstractBusinessHandler cloned = null;
+						try {
+							cloned = buziHandler.clone();
+						} catch (CloneNotSupportedException e) {
+							logger.error("handlers is not shareable and not implements Cloneable", e);
+						}
+						if (cloned != null) {
+							pipe.addLast(buziHandler.name(), cloned);
+							logger.info("handlers is not shareable . clone it success.");
+						}
+					}
+
+				}
 			}
 		}
 		// 黑洞处理，丢弃所有消息
