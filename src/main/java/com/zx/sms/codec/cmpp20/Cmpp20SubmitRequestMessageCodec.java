@@ -15,6 +15,7 @@ import java.util.List;
 import com.google.common.primitives.Bytes;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.Message;
+import com.zx.sms.codec.cmpp.packet.CmppSubmitRequest;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20PacketType;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20SubmitRequest;
@@ -81,9 +82,11 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 		requestMessage.setSrcId(bodyBuffer.readBytes(Cmpp20SubmitRequest.SRCID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 
 		requestMessage.setDestUsrtl(bodyBuffer.readUnsignedByte());
-
-		requestMessage.setDestterminalId(bodyBuffer.readBytes(Cmpp20SubmitRequest.DESTTERMINALID.getLength()).toString(GlobalConstance.defaultTransportCharset)
-				.trim());
+		String[] destTermId = new String[requestMessage.getDestUsrtl()];
+		for (int i = 0; i < requestMessage.getDestUsrtl(); i++) {
+			destTermId[i] = bodyBuffer.readBytes(Cmpp20SubmitRequest.DESTTERMINALID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim();
+		}
+		requestMessage.setDestterminalId(destTermId);
 
 		// requestMessage.setDestterminaltype(bodyBuffer.readUnsignedByte());//CMPP2.0
 		// 无该字段 不进行编解码
@@ -100,7 +103,7 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppSubmitRequestMessage requestMessage, List<Object> out) throws Exception {
-		ByteBuf bodyBuffer = ctx.alloc().buffer(Cmpp20SubmitRequest.ATTIME.getBodyLength() + requestMessage.getMsgLength());
+		ByteBuf bodyBuffer = ctx.alloc().buffer(Cmpp20SubmitRequest.ATTIME.getBodyLength() + requestMessage.getMsgLength()+ requestMessage.getDestUsrtl()*Cmpp20SubmitRequest.DESTTERMINALID.getLength());
 
 		bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(requestMessage.getMsgid()));
 		bodyBuffer.writeByte(requestMessage.getPknumber());
@@ -108,12 +111,12 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 		bodyBuffer.writeByte(requestMessage.getRegisteredDelivery());
 		bodyBuffer.writeByte(requestMessage.getMsglevel());
 
-		bodyBuffer.writeBytes(Bytes.ensureCapacity(requestMessage.getServiceId().getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getServiceId().getBytes(GlobalConstance.defaultTransportCharset),
 				Cmpp20SubmitRequest.SERVICEID.getLength(), 0));
 
 		bodyBuffer.writeByte(requestMessage.getFeeUserType());
 
-		bodyBuffer.writeBytes(Bytes.ensureCapacity(requestMessage.getFeeterminalId().getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getFeeterminalId().getBytes(GlobalConstance.defaultTransportCharset),
 				Cmpp20SubmitRequest.FEETERMINALID.getLength(), 0));
 
 		// bodyBuffer.writeByte(requestMessage.getFeeterminaltype());//CMPP2.0
@@ -122,28 +125,30 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 		bodyBuffer.writeByte(requestMessage.getTpudhi());
 		bodyBuffer.writeByte(requestMessage.getMsgFmt());
 
-		bodyBuffer.writeBytes(Bytes.ensureCapacity(requestMessage.getMsgsrc().getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getMsgsrc().getBytes(GlobalConstance.defaultTransportCharset),
 				Cmpp20SubmitRequest.MSGSRC.getLength(), 0));
 
-		bodyBuffer.writeBytes(Bytes.ensureCapacity(requestMessage.getFeeType().getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getFeeType().getBytes(GlobalConstance.defaultTransportCharset),
 				Cmpp20SubmitRequest.FEETYPE.getLength(), 0));
 
-		bodyBuffer.writeBytes(Bytes.ensureCapacity(requestMessage.getFeeCode().getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getFeeCode().getBytes(GlobalConstance.defaultTransportCharset),
 				Cmpp20SubmitRequest.FEECODE.getLength(), 0));
 
-		bodyBuffer.writeBytes(Bytes.ensureCapacity(requestMessage.getValIdTime().getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getValIdTime().getBytes(GlobalConstance.defaultTransportCharset),
 				Cmpp20SubmitRequest.VALIDTIME.getLength(), 0));
 
-		bodyBuffer.writeBytes(Bytes.ensureCapacity(requestMessage.getAtTime().getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getAtTime().getBytes(GlobalConstance.defaultTransportCharset),
 				Cmpp20SubmitRequest.ATTIME.getLength(), 0));
 
-		bodyBuffer.writeBytes(Bytes.ensureCapacity(requestMessage.getSrcId().getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getSrcId().getBytes(GlobalConstance.defaultTransportCharset),
 				Cmpp20SubmitRequest.SRCID.getLength(), 0));
 
 		bodyBuffer.writeByte(requestMessage.getDestUsrtl());
 
-		bodyBuffer.writeBytes(Bytes.ensureCapacity(requestMessage.getDestterminalId().getBytes(GlobalConstance.defaultTransportCharset),
-				Cmpp20SubmitRequest.DESTTERMINALID.getLength(), 0));
+		for (int i = 0; i < requestMessage.getDestUsrtl(); i++) {
+			String[] destTermId = requestMessage.getDestterminalId();
+			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(destTermId[i].getBytes(GlobalConstance.defaultTransportCharset),	Cmpp20SubmitRequest.DESTTERMINALID.getLength(), 0));
+		}
 
 		// bodyBuffer.writeByte(requestMessage.getDestterminaltype());//CMPP2.0
 		// 无该字段 不进行编解码
@@ -152,7 +157,7 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 
 		bodyBuffer.writeBytes(requestMessage.getMsgContentBytes());
 
-		bodyBuffer.writeBytes(Bytes.ensureCapacity(requestMessage.getReserve().getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getReserve().getBytes(GlobalConstance.defaultTransportCharset),
 				Cmpp20SubmitRequest.RESERVE.getLength(), 0));
 
 		requestMessage.setBodyBuffer(bodyBuffer);

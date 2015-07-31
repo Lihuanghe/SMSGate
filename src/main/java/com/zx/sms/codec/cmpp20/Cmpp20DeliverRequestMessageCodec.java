@@ -107,14 +107,14 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 		ByteBuf bodyBuffer = ctx.alloc().buffer(Cmpp20DeliverRequest.DESTID.getBodyLength() + requestMessage.getMsgLength());
 
 		bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(requestMessage.getMsgId()));
-		bodyBuffer.writeBytes(Bytes.ensureCapacity(requestMessage.getDestId().getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getDestId().getBytes(GlobalConstance.defaultTransportCharset),
 				Cmpp20DeliverRequest.DESTID.getLength(), 0));
-		bodyBuffer.writeBytes(Bytes.ensureCapacity(requestMessage.getServiceid().getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getServiceid().getBytes(GlobalConstance.defaultTransportCharset),
 				Cmpp20DeliverRequest.SERVICEID.getLength(), 0));
 		bodyBuffer.writeByte(requestMessage.getTppid());
 		bodyBuffer.writeByte(requestMessage.getTpudhi());
 		bodyBuffer.writeByte(requestMessage.getMsgfmt());
-		bodyBuffer.writeBytes(Bytes.ensureCapacity(requestMessage.getSrcterminalId().getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getSrcterminalId().getBytes(GlobalConstance.defaultTransportCharset),
 				Cmpp20DeliverRequest.SRCTERMINALID.getLength(), 0));
 
 		// bodyBuffer.writeByte(requestMessage.getSrcterminalType());//CMPP2.0不编解码
@@ -125,15 +125,15 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 			bodyBuffer.writeBytes(requestMessage.getMsgContentBytes());
 		} else {
 			bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(requestMessage.getReportRequestMessage().getMsgId()));
-			bodyBuffer.writeBytes(Bytes.ensureCapacity(requestMessage.getReportRequestMessage().getStat().getBytes(GlobalConstance.defaultTransportCharset),
+			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getReportRequestMessage().getStat().getBytes(GlobalConstance.defaultTransportCharset),
 					Cmpp20ReportRequest.STAT.getLength(), 0));
-			bodyBuffer.writeBytes(Bytes.ensureCapacity(
+			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(
 					requestMessage.getReportRequestMessage().getSubmitTime().getBytes(GlobalConstance.defaultTransportCharset),
 					Cmpp20ReportRequest.SUBMITTIME.getLength(), 0));
-			bodyBuffer.writeBytes(Bytes.ensureCapacity(
+			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(
 					requestMessage.getReportRequestMessage().getDoneTime().getBytes(GlobalConstance.defaultTransportCharset),
 					Cmpp20ReportRequest.DONETIME.getLength(), 0));
-			bodyBuffer.writeBytes(Bytes.ensureCapacity(
+			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(
 					requestMessage.getReportRequestMessage().getDestterminalId().getBytes(GlobalConstance.defaultTransportCharset),
 					Cmpp20ReportRequest.DESTTERMINALID.getLength(), 0));
 
@@ -141,11 +141,11 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 		}
 
 		/** CMPP2.0 LINKID字段不进行编解码 */
-		// bodyBuffer.writeBytes(Bytes.ensureCapacity(requestMessage.getLinkid()
+		// bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getLinkid()
 		// .getBytes(GlobalConstance.defaultTransportCharset),
 		// Cmpp20DeliverRequest.LINKID.getLength(), 0));
 
-		bodyBuffer.writeBytes(Bytes.ensureCapacity(requestMessage.getReserved().getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getReserved().getBytes(GlobalConstance.defaultTransportCharset),
 				Cmpp20DeliverRequest.RESERVED.getLength(), 0));
 
 		requestMessage.setBodyBuffer(bodyBuffer);

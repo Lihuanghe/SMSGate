@@ -20,7 +20,7 @@ public class TestCmppSubmitRequestMessageCodec  extends AbstractTestMessageCodec
 	public void testCodec()
 	{
 		CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
-		msg.setDestterminalId("13800138000");
+		msg.setDestterminalId(new String[]{"1380013800013800138000","1380013800013800138000"});
 		msg.setLinkID("0000");
 		msg.setMsgContent("");
 		msg.setMsgid(new MsgId());
@@ -30,7 +30,7 @@ public class TestCmppSubmitRequestMessageCodec  extends AbstractTestMessageCodec
 		ByteBuf copybuf = buf.copy();
 		
 		int length = buf.readableBytes();
-		int expectLength = CmppSubmitRequest.ATTIME.getBodyLength() + msg.getMsgLength() + CmppHead.COMMANDID.getHeadLength();
+		int expectLength = CmppSubmitRequest.ATTIME.getBodyLength() + msg.getMsgLength() + msg.getDestUsrtl()*CmppSubmitRequest.DESTTERMINALID.getLength()+ CmppHead.COMMANDID.getHeadLength();
 		
 		Assert.assertEquals(expectLength, length);
 		Assert.assertEquals(expectLength, buf.readUnsignedInt());

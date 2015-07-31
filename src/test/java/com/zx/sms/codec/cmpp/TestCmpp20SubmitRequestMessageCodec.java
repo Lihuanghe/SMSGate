@@ -9,6 +9,7 @@ import com.zx.sms.codec.AbstractTestMessageCodec;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.packet.CmppHead;
+import com.zx.sms.codec.cmpp.packet.CmppSubmitRequest;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20DeliverResponse;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20SubmitRequest;
 import com.zx.sms.common.util.MsgId;
@@ -22,9 +23,9 @@ public class TestCmpp20SubmitRequestMessageCodec extends AbstractTestMessageCode
 	public void testCodec()
 	{
 		CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
-		msg.setDestterminalId("13800138000");
+		msg.setDestterminalId(new String[]{"1380013800013800138000","1380013800013800138000"});
 		msg.setLinkID("0000");
-		msg.setMsgContent("");
+		msg.setMsgContent("erer");
 		msg.setMsgid(new MsgId());
 		msg.setServiceId("10086");
 		msg.setSrcId("10086");
@@ -33,7 +34,8 @@ public class TestCmpp20SubmitRequestMessageCodec extends AbstractTestMessageCode
 		ByteBuf copybuf = buf.copy();
 		
 		int length = buf.readableBytes();
-		int expectLength = Cmpp20SubmitRequest.DESTTERMINALID.getBodyLength() + msg.getMsgLength()+ CmppHead.COMMANDID.getHeadLength();
+
+		int expectLength = Cmpp20SubmitRequest.DESTTERMINALID.getBodyLength() + msg.getMsgLength()+ Cmpp20SubmitRequest.DESTTERMINALID.getLength()*msg.getDestUsrtl() +CmppHead.COMMANDID.getHeadLength();
 		
 		Assert.assertEquals(expectLength, length);
 		Assert.assertEquals(expectLength, buf.readUnsignedInt());

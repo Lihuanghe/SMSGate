@@ -67,7 +67,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 							return msg;
 						} else {
 							CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
-							msg.setDestterminalId("13800138000");
+							msg.setDestterminalId(new String[]{"13800138000"});
 							msg.setLinkID("0000");
 							msg.setMsgContent("ghi");
 							msg.setMsgid(new MsgId());

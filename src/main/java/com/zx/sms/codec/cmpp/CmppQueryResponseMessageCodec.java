@@ -19,6 +19,7 @@ import com.zx.sms.codec.cmpp.packet.CmppQueryRequest;
 import com.zx.sms.codec.cmpp.packet.CmppQueryResponse;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.common.GlobalConstance;
+import com.zx.sms.common.util.CMPPCommonUtil;
 
 /**
  * @author huzorro(huzorro@gmail.com)
@@ -69,11 +70,11 @@ public class CmppQueryResponseMessageCodec extends MessageToMessageCodec<Message
 
 		ByteBuf bodyBuffer = ctx.alloc().buffer(CmppQueryResponse.MOFL.getBodyLength());
 
-		bodyBuffer.writeBytes(Bytes.ensureCapacity(responseMessage.getTime().getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(responseMessage.getTime().getBytes(GlobalConstance.defaultTransportCharset),
 				CmppQueryResponse.TIME.getLength(), 0));
 
 		bodyBuffer.writeByte(responseMessage.getQueryType());
-		bodyBuffer.writeBytes(Bytes.ensureCapacity(responseMessage.getQueryCode().getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(responseMessage.getQueryCode().getBytes(GlobalConstance.defaultTransportCharset),
 				CmppQueryResponse.QUERYCODE.getLength(), 0));
 		bodyBuffer.writeInt((int) responseMessage.getMtTLMsg());
 		bodyBuffer.writeInt((int) responseMessage.getMtTLUsr());

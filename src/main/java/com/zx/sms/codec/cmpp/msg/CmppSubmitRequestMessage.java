@@ -1,9 +1,8 @@
 package com.zx.sms.codec.cmpp.msg;
 
-import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang.StringUtils;
 
 import com.zx.sms.codec.cmpp.packet.CmppPacketType;
-import com.zx.sms.codec.cmpp.packet.CmppSubmitRequest;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.MsgId;
@@ -25,7 +24,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 	private String feeterminalId = GlobalConstance.emptyString;
 	private short feeterminaltype = 0;
 	private short tppId = 0;
-	private short tpudhi = 0;
+	private short tpudhi = 1;
 	private short msgFmt = 8;
 	private String msgsrc = GlobalConstance.emptyString;
 	private String feeType = "01";
@@ -33,8 +32,8 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 	private String valIdTime = GlobalConstance.emptyString;
 	private String atTime =GlobalConstance.emptyString;
 	private String srcId = GlobalConstance.emptyString;
-	private short destUsrtl = 1;
-	private String destterminalId = GlobalConstance.emptyString;
+	private short destUsrtl = 0;
+	private String[] destterminalId = GlobalConstance.emptyStringArray;
 	private short destterminaltype = 0;
 	private short msgLength ;
 	private String msgContent = GlobalConstance.emptyString;
@@ -342,7 +341,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 	/**
 	 * @return the destterminalId
 	 */
-	public String getDestterminalId() {
+	public String[] getDestterminalId() {
 		return destterminalId;
 	}
 
@@ -350,8 +349,9 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 	 * @param destterminalId
 	 *            the destterminalId to set
 	 */
-	public void setDestterminalId(String destterminalId) {
+	public void setDestterminalId(String[] destterminalId) {
 		this.destterminalId = destterminalId;
+		this.destUsrtl = (short)destterminalId.length;
 	}
 
 	/**
@@ -447,9 +447,15 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 	}
 
 
+	@Override
+	public String toString() {
+		return "CmppSubmitRequestMessage [msgid=" + msgid + ", pktotal=" + pktotal + ", pknumber=" + pknumber + ", serviceId=" + serviceId + ", msgFmt="
+				+ msgFmt + ", srcId=" + srcId + ", destUsrtl=" + destUsrtl + ", destterminalId=" + StringUtils.join(destterminalId, "|") + ", msgContent=" + msgContent + "]";
+	}
+
 	public static CmppSubmitRequestMessage create(String phone ,String spid,String text){
 		CmppSubmitRequestMessage ret = new CmppSubmitRequestMessage();
-		ret.setDestterminalId(phone);
+		ret.setDestterminalId(new String[]{phone});
 		ret.setSrcId(spid);
 		ret.setMsgContent(text);
 		return ret;

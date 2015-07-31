@@ -294,6 +294,12 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 		this.isReport = isReport;
 	}
 
+	@Override
+	public String toString() {
+		return "CmppDeliverRequestMessage [msgId=" + msgId + ", destId=" + destId + ", serviceid=" + serviceid + ", msgfmt=" + msgfmt + ", srcterminalId="
+				+ srcterminalId + ", msgLength=" + msgLength + "]";
+	}
+
 
 
 }

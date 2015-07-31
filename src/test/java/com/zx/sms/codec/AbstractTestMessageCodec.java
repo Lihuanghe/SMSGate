@@ -37,6 +37,9 @@ public abstract class AbstractTestMessageCodec<T> {
 		return buf;
 	}
 	
+	protected Channel channel(){
+		return ch;
+	}
 	protected T decode(ByteBuf buf){
 		ch.writeInbound(buf);
 		return  (T) ch.readInbound();
