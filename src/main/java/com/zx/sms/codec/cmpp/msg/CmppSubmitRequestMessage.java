@@ -353,6 +353,11 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 		this.destterminalId = destterminalId;
 		this.destUsrtl = (short)destterminalId.length;
 	}
+	
+	public void setDestterminalId(String destterminalId) {
+		this.destterminalId = new String[]{destterminalId};
+		this.destUsrtl = (short)1;
+	}
 
 	/**
 	 * @return the destterminaltype
