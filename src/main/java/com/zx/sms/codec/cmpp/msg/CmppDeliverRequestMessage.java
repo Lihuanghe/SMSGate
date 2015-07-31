@@ -297,8 +297,10 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 	@Override
 	public String toString() {
 		return "CmppDeliverRequestMessage [msgId=" + msgId + ", destId=" + destId + ", serviceid=" + serviceid + ", msgfmt=" + msgfmt + ", srcterminalId="
-				+ srcterminalId + ", msgLength=" + msgLength + "]";
+				+ srcterminalId + ", registeredDelivery=" + registeredDelivery + ", msgContent=" + msgContent + "]";
 	}
+
+
 
 
 
