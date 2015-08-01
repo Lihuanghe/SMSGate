@@ -2,7 +2,10 @@ package com.zx.sms.connect.manager;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 
 import java.util.ArrayList;
@@ -18,10 +21,12 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.storedMap.BDBStoredMapFactoryImpl;
+import com.zx.sms.connect.manager.cmpp.CMPPCodecChannelInitializer;
 import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPServerChildEndpointEntity;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
+import com.zx.sms.session.cmpp.SessionLoginManager;
 import com.zx.sms.session.cmpp.SessionState;
 import com.zx.sms.session.cmpp.SessionStateManager;
 
@@ -63,7 +68,11 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 	@Override
 	public synchronized void close() throws Exception {
-
+		Channel ch = channels.fetch();
+		while(ch!=null){
+			close(ch);
+			ch = channels.fetch();
+		}
 	}
 
 	@Override
@@ -181,6 +190,31 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		// 黑洞处理，丢弃所有消息
 		pipe.addLast("BlackHole", GlobalConstance.blackhole);
 
+	}
+	
+	
+	protected ChannelInitializer<?> initPipeLine() {
+		return new ChannelInitializer<Channel>() {
+			
+			@Override
+			protected void initChannel(Channel ch) throws Exception {
+				ChannelPipeline pipeline = ch.pipeline();
+				pipeline.addLast("socketLog", new LoggingHandler(LogLevel.TRACE));
+				
+				if(getEndpointEntity() instanceof CMPPEndpointEntity){
+					pipeline.addLast(GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, ((CMPPEndpointEntity)getEndpointEntity()).getIdleTimeSec(), TimeUnit.SECONDS));
+				}
+				else{
+					pipeline.addLast(GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, 30, TimeUnit.SECONDS));
+				}
+				
+				pipeline.addLast("CmppServerIdleStateHandler", GlobalConstance.idleHandler);
+				CMPPCodecChannelInitializer codec = new CMPPCodecChannelInitializer(((CMPPEndpointEntity)getEndpointEntity()).getVersion());
+				pipeline.addLast(codec.pipeName(), codec);
+				
+				pipeline.addLast("sessionLoginManager", new SessionLoginManager((CMPPEndpointEntity)getEndpointEntity()));
+			}
+		};
 	}
 
 	/**

@@ -56,23 +56,4 @@ public class CMPPServerEndpointConnector extends AbstractEndpointConnector {
 		acceptorChannel.close().sync();
 		acceptorChannel = null;
 	}
-
-	@Override
-	public ChannelInitializer<Channel> initPipeLine() {
-
-		return new ChannelInitializer<Channel>() {
-
-			@Override
-			protected void initChannel(Channel ch) throws Exception {
-				ChannelPipeline pipeline = ch.pipeline();
-				CMPPCodecChannelInitializer codec = new CMPPCodecChannelInitializer(0);
-				pipeline.addLast("serverLog", new LoggingHandler(LogLevel.TRACE));
-				pipeline.addLast(GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0,30, TimeUnit.SECONDS));
-				pipeline.addLast("CmppServerIdleStateHandler", GlobalConstance.idleHandler);
-				pipeline.addLast(codec.pipeName(), codec);
-				pipeline.addLast("sessionLoginManager", new SessionLoginManager(getEndpointEntity()));
-			}
-		};
-	}
-
 }

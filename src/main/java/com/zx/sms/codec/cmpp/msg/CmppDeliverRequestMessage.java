@@ -3,13 +3,11 @@
  */
 package com.zx.sms.codec.cmpp.msg;
 
-import org.apache.commons.codec.binary.Hex;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.zx.sms.codec.cmpp.packet.CmppDeliverRequest;
 import com.zx.sms.codec.cmpp.packet.CmppPacketType;
-import com.zx.sms.codec.cmpp.packet.CmppReportRequest;
 import com.zx.sms.common.GlobalConstance;
-import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.MsgId;
 
 /**
@@ -22,21 +20,21 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 	private MsgId msgId = new MsgId();
 	private String destId = GlobalConstance.emptyString;
 	private String serviceid = GlobalConstance.emptyString;
-	private short tppid = 0;
-	private short tpudhi = 0;
-	private short msgfmt = 15;
+
 	private String srcterminalId = GlobalConstance.emptyString;
 	private short srcterminalType = 0;
 	private short registeredDelivery = 0;
-	private short msgLength = 140;
-	private String msgContent = GlobalConstance.emptyString;
+
 	private CmppReportRequestMessage reportRequestMessage = null;
 	private String linkid = GlobalConstance.emptyString;
 
 	private String reserved = GlobalConstance.emptyString;
 
-	private byte[] msgContentBytes = GlobalConstance.emptyBytes;
 	private boolean isReport = false;
+	
+	private String msgContent;
+	
+	private boolean supportLongMsg = false;
 
 	public CmppDeliverRequestMessage(Header header) {
 		super(CmppPacketType.CMPPDELIVERREQUEST, header);
@@ -91,50 +89,6 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 		this.serviceid = serviceid;
 	}
 
-	/**
-	 * @return the tppid
-	 */
-	public short getTppid() {
-		return tppid;
-	}
-
-	/**
-	 * @param tppid
-	 *            the tppid to set
-	 */
-	public void setTppid(short tppid) {
-		this.tppid = tppid;
-	}
-
-	/**
-	 * @return the tpudhi
-	 */
-	public short getTpudhi() {
-		return tpudhi;
-	}
-
-	/**
-	 * @param tpudhi
-	 *            the tpudhi to set
-	 */
-	public void setTpudhi(short tpudhi) {
-		this.tpudhi = tpudhi;
-	}
-
-	/**
-	 * @return the msgfmt
-	 */
-	public short getMsgfmt() {
-		return msgfmt;
-	}
-
-	/**
-	 * @param msgfmt
-	 *            the msgfmt to set
-	 */
-	public void setMsgfmt(short msgfmt) {
-		this.msgfmt = msgfmt;
-	}
 
 	/**
 	 * @return the srcterminalId
@@ -186,38 +140,6 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 	}
 
 	/**
-	 * @return the msgLength
-	 */
-	public short getMsgLength() {
-		return msgLength;
-	}
-
-	/**
-	 * @param msgLength
-	 *            the msgLength to set
-	 */
-	public void setMsgLength(short msgLength) {
-		this.msgLength = msgLength;
-	}
-
-	/**
-	 * @return the msgContent
-	 */
-	public String getMsgContent() {
-		return msgContent;
-	}
-
-	/**
-	 * @return the msgContent
-	 */
-	public void setMsgContent(String msgContent) {
-		if (msgContent == null)
-			msgContent = GlobalConstance.emptyString;
-		this.msgContent = msgContent;
-		setMsgContentBytes(this.msgContent.getBytes(CMPPCommonUtil.switchCharset(msgfmt)));
-	}
-
-	/**
 	 * @return the reserved
 	 */
 	public String getReserved() {
@@ -245,7 +167,6 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 	 */
 	public void setReportRequestMessage(CmppReportRequestMessage reportRequestMessage) {
 		this.reportRequestMessage = reportRequestMessage;
-		setMsgLength((short) CmppReportRequest.values()[0].getBodyLength());
 	}
 
 	/**
@@ -264,22 +185,6 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 	}
 
 	/**
-	 * @return the msgContentBytes
-	 */
-	public byte[] getMsgContentBytes() {
-		return msgContentBytes;
-	}
-
-	/**
-	 * @param msgContentBytes
-	 *            the msgContentBytes to set
-	 */
-	public void setMsgContentBytes(byte[] msgContentBytes) {
-		this.msgContentBytes = msgContentBytes;
-		setMsgLength((short) this.msgContentBytes.length);
-	}
-
-	/**
 	 * @return the isReport
 	 */
 	public boolean isReport() {
@@ -293,15 +198,35 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 	public void setReport(boolean isReport) {
 		this.isReport = isReport;
 	}
+	
+	public String getMsgContent() {
+		return msgContent;
+	}
+
+	public boolean isSupportLongMsg() {
+		return supportLongMsg;
+	}
+
+	public void setSupportLongMsg(boolean supportLongMsg) {
+		this.supportLongMsg = supportLongMsg;
+	}
+
+	/**
+	 * @return the msgContent
+	 */
+	public void setMsgContent(String msgContent) {
+		if (msgContent == null){
+			this.msgContent = GlobalConstance.emptyString;
+		}else{
+			this.msgContent = msgContent;
+		}
+	}
 
 	@Override
 	public String toString() {
-		return "CmppDeliverRequestMessage [msgId=" + msgId + ", destId=" + destId + ", serviceid=" + serviceid + ", msgfmt=" + msgfmt + ", srcterminalId="
-				+ srcterminalId + ", registeredDelivery=" + registeredDelivery + ", msgContent=" + msgContent + "]";
+		return "CmppDeliverRequestMessage [msgId=" + msgId + ", destId=" + destId + ", serviceid=" + serviceid + ", srcterminalId=" + srcterminalId
+				+ ", registeredDelivery=" + registeredDelivery + ", msgContent=" + msgContent + "]";
 	}
-
-
-
-
-
+	
+	
 }

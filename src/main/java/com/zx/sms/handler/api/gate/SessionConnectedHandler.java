@@ -55,14 +55,12 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 							msg.setDestId("13800138000");
 							msg.setLinkid("0000");
 							msg.setMsgContent("abc");
-							msg.setMsgfmt((short) 23);
+						
 							msg.setMsgId(new MsgId());
 							msg.setRegisteredDelivery((short) 0);
 							msg.setServiceid("10086");
 							msg.setSrcterminalId(String.valueOf(System.nanoTime()));
 							msg.setSrcterminalType((short) 1);
-							msg.setTppid((short) 3);
-							msg.setTpudhi((short) 3);
 //							msg.setChannelIds(finalCtx.channel().id().asLongText());
 							return msg;
 						} else {

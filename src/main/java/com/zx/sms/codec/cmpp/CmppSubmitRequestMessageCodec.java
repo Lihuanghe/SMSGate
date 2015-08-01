@@ -4,24 +4,25 @@
 package com.zx.sms.codec.cmpp;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import io.netty.util.ReferenceCountUtil;
 
-import java.nio.charset.Charset;
 import java.util.List;
 
-import com.google.common.primitives.Bytes;
+import org.apache.commons.lang.StringUtils;
+
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
+import com.zx.sms.codec.cmpp.msg.DefaultMessage;
+import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.codec.cmpp.packet.CmppPacketType;
 import com.zx.sms.codec.cmpp.packet.CmppSubmitRequest;
 import com.zx.sms.codec.cmpp.packet.PacketType;
-import com.zx.sms.codec.cmpp20.packet.Cmpp20SubmitRequest;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
+import com.zx.sms.common.util.LongMessageFrameHolder;
 
 /**
  * @author huzorro(huzorro@gmail.com)
@@ -55,8 +56,12 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 		ByteBuf bodyBuffer = msg.getBodyBuffer();
 
 		requestMessage.setMsgid(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer.readBytes(CmppSubmitRequest.MSGID.getLength()).array()));
-		requestMessage.setPktotal(bodyBuffer.readUnsignedByte());
-		requestMessage.setPktotal(bodyBuffer.readUnsignedByte());
+
+		LongMessageFrame frame = new LongMessageFrame();
+
+		frame.setPktotal(bodyBuffer.readUnsignedByte());
+		frame.setPknumber(bodyBuffer.readUnsignedByte());
+
 		requestMessage.setRegisteredDelivery(bodyBuffer.readUnsignedByte());
 		requestMessage.setMsglevel(bodyBuffer.readUnsignedByte());
 		requestMessage.setServiceId(bodyBuffer.readBytes(CmppSubmitRequest.SERVICEID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
@@ -66,9 +71,11 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 				.trim());
 
 		requestMessage.setFeeterminaltype(bodyBuffer.readUnsignedByte());
-		requestMessage.setTppId(bodyBuffer.readUnsignedByte());
-		requestMessage.setTpudhi(bodyBuffer.readUnsignedByte());
-		requestMessage.setMsgFmt(bodyBuffer.readUnsignedByte());
+
+		frame.setTppid(bodyBuffer.readUnsignedByte());
+		frame.setTpudhi(bodyBuffer.readUnsignedByte());
+		frame.setMsgfmt(bodyBuffer.readUnsignedByte());
+
 		requestMessage.setMsgsrc(bodyBuffer.readBytes(CmppSubmitRequest.MSGSRC.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 
 		requestMessage.setFeeType(bodyBuffer.readBytes(CmppSubmitRequest.FEETYPE.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
@@ -89,77 +96,107 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 		requestMessage.setDestterminalId(destTermId);
 
 		requestMessage.setDestterminaltype(bodyBuffer.readUnsignedByte());
-		requestMessage.setMsgLength(bodyBuffer.readUnsignedByte());
-		// 取短信编码
-		Charset charset = CMPPCommonUtil.switchCharset(requestMessage.getMsgFmt());
-		requestMessage.setMsgContent(bodyBuffer.readBytes(requestMessage.getMsgLength()).toString(charset).trim());
+
+		short msgLength = bodyBuffer.readUnsignedByte();
+
+		byte[] contentbytes = new byte[msgLength];
+		bodyBuffer.readBytes(contentbytes);
+		frame.setMsgContentBytes(contentbytes);
 
 		requestMessage.setLinkID(bodyBuffer.readBytes(CmppSubmitRequest.LINKID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 		// requestMessage.setReserve(bodyBuffer.readBytes(CmppSubmitRequest.RESERVE.getLength()).toString(GlobalConstance.defaultTransportCharset)
 		// .trim()); /** CMPP3.0 无该字段 不解码*/
 		ReferenceCountUtil.release(bodyBuffer);
-		out.add(requestMessage);
+
+		String content = LongMessageFrameHolder.INS.putAndget(StringUtils.join(destTermId, "|"), frame);
+
+		if (content != null) {
+			requestMessage.setMsgContent(content);
+			out.add(requestMessage);
+		}
 	}
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppSubmitRequestMessage requestMessage, List<Object> out) throws Exception {
-		ByteBuf bodyBuffer = ctx.alloc().buffer(CmppSubmitRequest.ATTIME.getBodyLength() + requestMessage.getMsgLength() + requestMessage.getDestUsrtl()*CmppSubmitRequest.DESTTERMINALID.getLength());
+		List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(requestMessage.getMsgContent(), requestMessage.isSupportLongMsg());
+		boolean first = true;
+		for (LongMessageFrame frame : frameList) {
 
-		bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(requestMessage.getMsgid()));
-		bodyBuffer.writeByte(requestMessage.getPknumber());
-		bodyBuffer.writeByte(requestMessage.getPktotal());
-		bodyBuffer.writeByte(requestMessage.getRegisteredDelivery());
-		bodyBuffer.writeByte(requestMessage.getMsglevel());
+			ByteBuf bodyBuffer = ctx.alloc().buffer(
+					CmppSubmitRequest.ATTIME.getBodyLength() + frame.getMsgLength() + requestMessage.getDestUsrtl()
+							* CmppSubmitRequest.DESTTERMINALID.getLength());
 
-		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getServiceId().getBytes(GlobalConstance.defaultTransportCharset),
-				CmppSubmitRequest.SERVICEID.getLength(), 0));
+			bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(requestMessage.getMsgid()));
 
-		bodyBuffer.writeByte(requestMessage.getFeeUserType());
+			bodyBuffer.writeByte(frame.getPktotal());
+			bodyBuffer.writeByte(frame.getPknumber());
+			bodyBuffer.writeByte(requestMessage.getRegisteredDelivery());
+			bodyBuffer.writeByte(requestMessage.getMsglevel());
 
-		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getFeeterminalId().getBytes(GlobalConstance.defaultTransportCharset),
-				CmppSubmitRequest.FEETERMINALID.getLength(), 0));
-		bodyBuffer.writeByte(requestMessage.getFeeterminaltype());
-		bodyBuffer.writeByte(requestMessage.getTppId());
-		bodyBuffer.writeByte(requestMessage.getTpudhi());
-		bodyBuffer.writeByte(requestMessage.getMsgFmt());
+			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getServiceId().getBytes(GlobalConstance.defaultTransportCharset),
+					CmppSubmitRequest.SERVICEID.getLength(), 0));
 
-		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getMsgsrc().getBytes(GlobalConstance.defaultTransportCharset),
-				CmppSubmitRequest.MSGSRC.getLength(), 0));
+			bodyBuffer.writeByte(requestMessage.getFeeUserType());
 
-		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getFeeType().getBytes(GlobalConstance.defaultTransportCharset),
-				CmppSubmitRequest.FEETYPE.getLength(), 0));
+			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getFeeterminalId().getBytes(GlobalConstance.defaultTransportCharset),
+					CmppSubmitRequest.FEETERMINALID.getLength(), 0));
+			bodyBuffer.writeByte(requestMessage.getFeeterminaltype());
+			bodyBuffer.writeByte(frame.getTppid());
+			bodyBuffer.writeByte(frame.getTpudhi());
+			bodyBuffer.writeByte(frame.getMsgfmt());
 
-		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getFeeCode().getBytes(GlobalConstance.defaultTransportCharset),
-				CmppSubmitRequest.FEECODE.getLength(), 0));
+			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getMsgsrc().getBytes(GlobalConstance.defaultTransportCharset),
+					CmppSubmitRequest.MSGSRC.getLength(), 0));
 
-		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getValIdTime().getBytes(GlobalConstance.defaultTransportCharset),
-				CmppSubmitRequest.VALIDTIME.getLength(), 0));
+			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getFeeType().getBytes(GlobalConstance.defaultTransportCharset),
+					CmppSubmitRequest.FEETYPE.getLength(), 0));
 
-		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getAtTime().getBytes(GlobalConstance.defaultTransportCharset),
-				CmppSubmitRequest.ATTIME.getLength(), 0));
+			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getFeeCode().getBytes(GlobalConstance.defaultTransportCharset),
+					CmppSubmitRequest.FEECODE.getLength(), 0));
 
-		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getSrcId().getBytes(GlobalConstance.defaultTransportCharset),
-				CmppSubmitRequest.SRCID.getLength(), 0));
+			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getValIdTime().getBytes(GlobalConstance.defaultTransportCharset),
+					CmppSubmitRequest.VALIDTIME.getLength(), 0));
 
-		bodyBuffer.writeByte(requestMessage.getDestUsrtl());
-		for (int i = 0; i < requestMessage.getDestUsrtl(); i++) {
-			String[] destTermId = requestMessage.getDestterminalId();
-			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(destTermId[i].getBytes(GlobalConstance.defaultTransportCharset),	CmppSubmitRequest.DESTTERMINALID.getLength(), 0));
+			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getAtTime().getBytes(GlobalConstance.defaultTransportCharset),
+					CmppSubmitRequest.ATTIME.getLength(), 0));
+
+			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getSrcId().getBytes(GlobalConstance.defaultTransportCharset),
+					CmppSubmitRequest.SRCID.getLength(), 0));
+
+			bodyBuffer.writeByte(requestMessage.getDestUsrtl());
+			for (int i = 0; i < requestMessage.getDestUsrtl(); i++) {
+				String[] destTermId = requestMessage.getDestterminalId();
+				bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(destTermId[i].getBytes(GlobalConstance.defaultTransportCharset),
+						CmppSubmitRequest.DESTTERMINALID.getLength(), 0));
+			}
+			bodyBuffer.writeByte(requestMessage.getDestterminaltype());
+
+			assert (frame.getMsgLength() == frame.getMsgContentBytes().length);
+			assert (frame.getMsgLength() <=  140);
+			bodyBuffer.writeByte(frame.getMsgLength());
+
+			bodyBuffer.writeBytes(frame.getMsgContentBytes());
+
+			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getLinkID().getBytes(GlobalConstance.defaultTransportCharset),
+					CmppSubmitRequest.LINKID.getLength(), 0));
+
+			// bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getReserve().getBytes(GlobalConstance.defaultTransportCharset),
+			// CmppSubmitRequest.RESERVE.getLength(), 0));/**cmpp3.0 无该字段，不进行编解码
+			// */
+
+			if (first) {
+				DefaultMessage defaultMsg = new DefaultMessage();
+				defaultMsg.setHeader(requestMessage.getHeader());
+				defaultMsg.setBodyBuffer(bodyBuffer);
+				out.add(defaultMsg);
+				first = false;
+			} else {
+				DefaultMessage defaultMsg = new DefaultMessage(requestMessage.getPacketType());
+				
+				defaultMsg.setBodyBuffer(bodyBuffer);
+				out.add(defaultMsg);
+			}
 		}
-		bodyBuffer.writeByte(requestMessage.getDestterminaltype());
-		bodyBuffer.writeByte(requestMessage.getMsgLength());
-
-		bodyBuffer.writeBytes(requestMessage.getMsgContentBytes());
-
-		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getLinkID().getBytes(GlobalConstance.defaultTransportCharset),
-				CmppSubmitRequest.LINKID.getLength(), 0));
-
-		// bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getReserve().getBytes(GlobalConstance.defaultTransportCharset),
-		// CmppSubmitRequest.RESERVE.getLength(), 0));/**cmpp3.0 无该字段，不进行编解码 */
-
-		requestMessage.setBodyBuffer(bodyBuffer);
-
-		out.add(requestMessage);
 	}
 
 }

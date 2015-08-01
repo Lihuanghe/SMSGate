@@ -48,25 +48,4 @@ public class CMPPClientEndpointConnector extends AbstractEndpointConnector {
 			logger.error("open Entity {} error. ",getEndpointEntity());
 		}
 	}
-	@Override
-	public ChannelInitializer<?> initPipeLine() {
-		return new ChannelInitializer<Channel>() {
-			
-			@Override
-			protected void initChannel(Channel ch) throws Exception {
-				ChannelPipeline pipeline = ch.pipeline();
-				
-				pipeline.addLast(GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, ((CMPPEndpointEntity)getEndpointEntity()).getIdleTimeSec(), TimeUnit.SECONDS));
-				pipeline.addLast("CmppServerIdleStateHandler", GlobalConstance.idleHandler);
-				pipeline.addLast("clientLog", new LoggingHandler(LogLevel.TRACE));
-				CMPPCodecChannelInitializer codec = new CMPPCodecChannelInitializer(((CMPPEndpointEntity)getEndpointEntity()).getVersion());
-				pipeline.addLast(codec.pipeName(), codec);
-				pipeline.addLast("sessionLoginManager", new SessionLoginManager((CMPPEndpointEntity)getEndpointEntity()));
-			}
-		};
-	}
-
-
-
-
 }

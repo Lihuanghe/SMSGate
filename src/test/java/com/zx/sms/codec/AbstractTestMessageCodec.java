@@ -37,7 +37,7 @@ public abstract class AbstractTestMessageCodec<T> {
 		return buf;
 	}
 	
-	protected Channel channel(){
+	protected EmbeddedChannel channel(){
 		return ch;
 	}
 	protected T decode(ByteBuf buf){
