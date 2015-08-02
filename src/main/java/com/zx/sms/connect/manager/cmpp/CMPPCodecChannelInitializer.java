@@ -30,10 +30,11 @@ public class CMPPCodecChannelInitializer extends ChannelInitializer<Channel> {
 	
 	private final static int defaultVersion = 0x30;
 
-	public CMPPCodecChannelInitializer(int version) {
-		if (version == 0)
+	public CMPPCodecChannelInitializer() {
 			this.version = defaultVersion;
-		else
+	}
+	
+	public CMPPCodecChannelInitializer(int version) {
 			this.version = version;
 	}
 

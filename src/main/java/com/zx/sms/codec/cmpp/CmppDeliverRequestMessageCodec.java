@@ -11,6 +11,7 @@ import io.netty.util.ReferenceCountUtil;
 import java.util.List;
 
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
+import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppReportRequestMessage;
 import com.zx.sms.codec.cmpp.msg.DefaultMessage;
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
@@ -102,6 +103,12 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 		if (content != null) {
 			requestMessage.setMsgContent(content);
 			out.add(requestMessage);
+		}else{
+			//收到一个短信片断立即回复resp,但不通知应用层
+	        CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(msg.getHeader());
+			responseMessage.setMsgId(requestMessage.getMsgId());
+			responseMessage.setResult(0);
+			ctx.channel().writeAndFlush(responseMessage);
 		}
 
 	}

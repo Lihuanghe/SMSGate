@@ -293,7 +293,7 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 	
 	private void notifyChannelConnected(ChannelHandlerContext ctx ){
 		//通知业务handler连接已建立完成
-		ctx.fireUserEventTriggered(SessionState.Connect);
+		ctx.channel().pipeline().fireUserEventTriggered(SessionState.Connect);
 	}
 
 }

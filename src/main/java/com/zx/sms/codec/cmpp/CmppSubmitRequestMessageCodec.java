@@ -13,6 +13,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
+import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.codec.cmpp.msg.DefaultMessage;
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.codec.cmpp.msg.Message;
@@ -113,6 +114,13 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 		if (content != null) {
 			requestMessage.setMsgContent(content);
 			out.add(requestMessage);
+		}else{
+			CmppSubmitResponseMessage responseMessage = new CmppSubmitResponseMessage(msg.getHeader());
+
+
+			responseMessage.setMsgId(requestMessage.getMsgid());
+			responseMessage.setResult(0);
+			ctx.channel().writeAndFlush(responseMessage);
 		}
 	}
 

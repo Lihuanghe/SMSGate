@@ -14,12 +14,14 @@ import java.util.List;
 
 import com.google.common.primitives.Bytes;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
+import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppReportRequestMessage;
 import com.zx.sms.codec.cmpp.msg.DefaultMessage;
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20DeliverRequest;
+import com.zx.sms.codec.cmpp20.packet.Cmpp20DeliverResponse;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20PacketType;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20ReportRequest;
 import com.zx.sms.common.GlobalConstance;
@@ -107,6 +109,11 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 		if (content != null) {
 			requestMessage.setMsgContent(content);
 			out.add(requestMessage);
+		}else{
+	        CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(msg.getHeader());
+			responseMessage.setMsgId(requestMessage.getMsgId());
+			responseMessage.setResult(0);
+			ctx.channel().writeAndFlush(responseMessage);
 		}
 	}
 

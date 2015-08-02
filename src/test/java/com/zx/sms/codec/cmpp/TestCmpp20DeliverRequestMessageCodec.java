@@ -13,9 +13,6 @@ import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppReportRequestMessage;
 import com.zx.sms.codec.cmpp.msg.DefaultHeader;
 import com.zx.sms.codec.cmpp.msg.Header;
-import com.zx.sms.codec.cmpp.packet.CmppHead;
-import com.zx.sms.codec.cmpp20.packet.Cmpp20DeliverRequest;
-import com.zx.sms.codec.cmpp20.packet.Cmpp20ReportRequest;
 import com.zx.sms.common.util.MsgId;
 
 public class TestCmpp20DeliverRequestMessageCodec extends AbstractTestMessageCodec<CmppDeliverRequestMessage>{
@@ -97,15 +94,51 @@ public class TestCmpp20DeliverRequestMessageCodec extends AbstractTestMessageCod
 	@Test
 	public void testchinesecode()
 	{
-		testlongCodec("1234567890123456789中01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890" );
+		String str = "1234567890123456789中01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
+		testlongCodecNoSupport(str);
+		testlongCodec(str);
 	}
 
 	@Test
 	public void testASCIIcode()
 	{
-		testlongCodec("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
+		String str = "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
+		testlongCodecNoSupport(str);
+		testlongCodec(str);
 	}
 	
+	
+	public void testlongCodecNoSupport(String content)
+	{
+		CmppDeliverRequestMessage msg = createTestReq(content);
+		
+		msg.setSupportLongMsg(false);
+		channel().writeOutbound(msg);
+		ByteBuf buf =channel().readOutbound();
+		ByteBuf copybuf = Unpooled.buffer();
+	    while(buf!=null){
+			
+			
+	    	copybuf.writeBytes(buf.copy());
+			int length = buf.readableBytes();
+			
+			Assert.assertEquals(length, buf.readUnsignedInt());
+			Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
+			
+
+			buf =channel().readOutbound();
+	    }
+		ch.writeInbound(copybuf);
+	
+	    CmppDeliverRequestMessage result = ch.readInbound();
+	    StringBuilder sb = new StringBuilder();
+	    while(result!=null){
+	    	System.out.println(result.getMsgContent());
+	    	sb.append(result.getMsgContent().substring(5));
+	    	result = ch.readInbound();
+	    }
+	    Assert.assertEquals(msg.getMsgContent(), sb.toString());
+	}
 	
 	public void testlongCodec(String content)
 	{

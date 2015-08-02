@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.google.common.primitives.Bytes;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
+import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.codec.cmpp.msg.DefaultMessage;
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.codec.cmpp.msg.Message;
@@ -23,6 +24,7 @@ import com.zx.sms.codec.cmpp.packet.CmppSubmitRequest;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20PacketType;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20SubmitRequest;
+import com.zx.sms.codec.cmpp20.packet.Cmpp20SubmitResponse;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
@@ -113,6 +115,14 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 		if (content != null) {
 			requestMessage.setMsgContent(content);
 			out.add(requestMessage);
+		}else{
+			
+			CmppSubmitResponseMessage responseMessage = new CmppSubmitResponseMessage(msg.getHeader());
+
+
+			responseMessage.setMsgId(requestMessage.getMsgid());
+			responseMessage.setResult(0);
+			ctx.channel().writeAndFlush(responseMessage);
 		}
 	}
 

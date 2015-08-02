@@ -164,6 +164,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 			// 防止一个连接死掉，把服务挂死，这里要处理窗口不够用的情况
 			if (acquired) {
 				safewrite(ctx, message, promise);
+				ctx.flush();
 			} else {
 				// 加入等待队列
 				waitWindowQueue.offer(new Runnable() {
@@ -294,6 +295,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 
 			// 注册重试任务
 			scheduleRetryMsg(ctx, message, promise);
+			
 		} else {
 			// 如果连接已关闭，通知上层应用
 			if(promise!=null && (!promise.isDone()))promise.setFailure(new IOException("Connection is closed."));

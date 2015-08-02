@@ -134,7 +134,8 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 				}
 			}
 			CMPPEndpointEntity cmppentity = (CMPPEndpointEntity) getEndpointEntity();
-			ch.pipeline().addLast("sessionStateManager", new SessionStateManager(cmppentity, storedMap, preSendMap));
+			//将SessinManager放在messageHeaderCodec后边。因为要处理Submit 和 deliver消息的长短信分拆
+			ch.pipeline().addBefore(CMPPCodecChannelInitializer.codecName,"sessionStateManager", new SessionStateManager(cmppentity, storedMap, preSendMap));
 			// 加载业务handler
 			bindHandler(ch.pipeline(), cmppentity);
 		}
@@ -195,24 +196,25 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	
 	protected ChannelInitializer<?> initPipeLine() {
 		return new ChannelInitializer<Channel>() {
-			
+
 			@Override
 			protected void initChannel(Channel ch) throws Exception {
 				ChannelPipeline pipeline = ch.pipeline();
 				pipeline.addLast("socketLog", new LoggingHandler(LogLevel.TRACE));
-				
+				CMPPCodecChannelInitializer codec = null;
 				if(getEndpointEntity() instanceof CMPPEndpointEntity){
 					pipeline.addLast(GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, ((CMPPEndpointEntity)getEndpointEntity()).getIdleTimeSec(), TimeUnit.SECONDS));
+					codec = new CMPPCodecChannelInitializer(((CMPPEndpointEntity)getEndpointEntity()).getVersion());
+					
 				}
 				else{
 					pipeline.addLast(GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, 30, TimeUnit.SECONDS));
+					codec = new CMPPCodecChannelInitializer();
 				}
-				
+
 				pipeline.addLast("CmppServerIdleStateHandler", GlobalConstance.idleHandler);
-				CMPPCodecChannelInitializer codec = new CMPPCodecChannelInitializer(((CMPPEndpointEntity)getEndpointEntity()).getVersion());
 				pipeline.addLast(codec.pipeName(), codec);
-				
-				pipeline.addLast("sessionLoginManager", new SessionLoginManager((CMPPEndpointEntity)getEndpointEntity()));
+				pipeline.addLast("sessionLoginManager", new SessionLoginManager(getEndpointEntity()));
 			}
 		};
 	}
