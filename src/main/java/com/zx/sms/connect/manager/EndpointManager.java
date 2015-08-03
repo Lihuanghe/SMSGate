@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Lihuanghe(18852780@qq.com) 系统连接的统一管理器，负责连接服务端，或者开启监听端口，等客户端连接 。
  */
-public enum EndpointManager implements EndpointManagerInterface<EndpointEntity> {
+public enum EndpointManager implements EndpointManagerInterface {
 	INS;
 	private static final Logger logger = LoggerFactory.getLogger(EndpointManager.class);
 
@@ -45,6 +45,7 @@ public enum EndpointManager implements EndpointManagerInterface<EndpointEntity> 
 			return;
 		try {
 			conn.close();
+			//关闭所有连接，并把Connector删掉
 			map.remove(entity.getId());
 
 		} catch (Exception e) {
@@ -80,12 +81,6 @@ public enum EndpointManager implements EndpointManagerInterface<EndpointEntity> 
 
 	public List<EndpointEntity> allEndPointEntity() {
 		return endpoints;
-	}
-
-	@Override
-	public List<EndpointEntity> getEndPointEntityByGroup(String group) {
-
-		throw new NotImplementedException();
 	}
 
 	@Override

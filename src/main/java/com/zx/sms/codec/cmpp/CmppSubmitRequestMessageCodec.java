@@ -25,6 +25,7 @@ import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
 import com.zx.sms.common.util.LongMessageFrameHolder;
+import com.zx.sms.common.util.MsgId;
 
 /**
  * @author huzorro(huzorro@gmail.com)
@@ -117,9 +118,7 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 			out.add(requestMessage);
 		}else{
 			CmppSubmitResponseMessage responseMessage = new CmppSubmitResponseMessage(msg.getHeader());
-
-
-			responseMessage.setMsgId(requestMessage.getMsgid());
+			responseMessage.setMsgId(new MsgId());
 			responseMessage.setResult(0);
 			ctx.channel().writeAndFlush(responseMessage);
 		}
@@ -181,7 +180,7 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 			bodyBuffer.writeByte(requestMessage.getDestterminaltype());
 
 			assert (frame.getMsgLength() == frame.getMsgContentBytes().length);
-			assert (frame.getMsgLength() <=  140);
+			assert (frame.getMsgLength() <=  GlobalConstance.MaxMsgLength);
 			bodyBuffer.writeByte(frame.getMsgLength());
 
 			bodyBuffer.writeBytes(frame.getMsgContentBytes());

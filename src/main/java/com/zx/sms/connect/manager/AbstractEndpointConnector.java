@@ -60,10 +60,12 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		try {
 			if (channel.isOpen())
 				channel.close().sync();
+			
 		} catch (InterruptedException e) {
 			logger.error("close channel Error ", e);
 		}
-
+		//将channel移除
+		removeChannel(channel);
 	}
 
 	@Override

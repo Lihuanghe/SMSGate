@@ -17,6 +17,7 @@ import com.zx.sms.handler.cmpp.CmppTerminateResponseMessageHandler;
 import com.zx.sms.session.cmpp.SessionState;
 
 public interface GlobalConstance {
+	public final static int MaxMsgLength = 140;
 	public final static String emptyString = "";
 	public final static byte[] emptyBytes= new byte[0];
 	public final static String[] emptyStringArray= new String[0];

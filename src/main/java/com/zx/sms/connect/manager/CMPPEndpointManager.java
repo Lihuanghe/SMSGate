@@ -8,19 +8,19 @@ import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPServerChildEndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPServerEndpointEntity;
 
-public enum CMPPEndpointManager implements EndpointManagerInterface<CMPPEndpointEntity> {
+public enum CMPPEndpointManager implements EndpointManagerInterface {
 	INS;
 	private EndpointManager manager = EndpointManager.INS;
 	private ConcurrentHashMap<String, List<CMPPEndpointEntity>> groupMap = new ConcurrentHashMap<String, List<CMPPEndpointEntity>>();
 
 	@Override
-	public void openEndpoint(CMPPEndpointEntity entity) {
+	public void openEndpoint(EndpointEntity entity) {
 		manager.openEndpoint(entity);
 
 	}
 
 	@Override
-	public void close(CMPPEndpointEntity entity) {
+	public void close(EndpointEntity entity) {
 		manager.close(entity);
 
 	}
@@ -64,23 +64,17 @@ public enum CMPPEndpointManager implements EndpointManagerInterface<CMPPEndpoint
 	}
 
 	@Override
-	public List<CMPPEndpointEntity> allEndPointEntity() {
-		List<EndpointEntity> tmp = manager.allEndPointEntity();
-		List<CMPPEndpointEntity> list = new ArrayList<CMPPEndpointEntity>();
-		for (EndpointEntity entity : tmp) {
-			list.add((CMPPEndpointEntity) entity);
-		}
-		return list;
+	public List<EndpointEntity> allEndPointEntity() {
+		return manager.allEndPointEntity();
 	}
 
-	@Override
 	public List<CMPPEndpointEntity> getEndPointEntityByGroup(String group) {
 
 		return groupMap.get(group);
 	}
 
 	@Override
-	public EndpointConnector getEndpointConnector(CMPPEndpointEntity entity) {
+	public EndpointConnector getEndpointConnector(EndpointEntity entity) {
 
 		return manager.getEndpointConnector(entity);
 	}

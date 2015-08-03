@@ -137,6 +137,8 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 			bodyBuffer.writeByte(frame.getMsgLength());
 
 			if (!requestMessage.isReport()) {
+				assert (frame.getMsgLength() == frame.getMsgContentBytes().length);
+				assert (frame.getMsgLength() <=  GlobalConstance.MaxMsgLength);
 				bodyBuffer.writeBytes(frame.getMsgContentBytes());
 			} else {
 				bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(requestMessage.getReportRequestMessage().getMsgId()));

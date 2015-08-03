@@ -97,13 +97,11 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 		if(serverchildentity!=null){
 			logger.warn("connection closed . {}" ,serverchildentity);
 			EndpointConnector conn = CMPPEndpointManager.INS.getEndpointConnector(serverchildentity);
-			conn.removeChannel(ctx.channel());
+			if(conn!=null)conn.removeChannel(ctx.channel());
 		}else if(entity instanceof CMPPEndpointEntity){
 			logger.warn("connection closed . {}" ,entity);
-			
-			
 			EndpointConnector conn = CMPPEndpointManager.INS.getEndpointConnector((CMPPEndpointEntity)entity);
-			conn.removeChannel(ctx.channel());
+			if(conn!=null)conn.removeChannel(ctx.channel());
 		}else{
 			//TODO 如果连接未建立完成。
 			logger.warn("shoud not be here. the entity is {}.channel remote is {}" ,entity ,ctx.channel().remoteAddress());
@@ -224,6 +222,11 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 			CMPPEndpointManager.INS.openEndpoint(childentity);
 			// 端口已打开，获取连接器
 			EndpointConnector conn = CMPPEndpointManager.INS.getEndpointConnector(childentity);
+			
+			if(conn==null){
+				logger.warn("entity may closed. {}" ,childentity);
+				return;
+			}
 			//把连接加入连接管理 器，该方法是同步方法
 			conn.addChannel(ctx.channel());
 			
@@ -271,6 +274,10 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 			state = SessionState.Connect;
 			
 			EndpointConnector conn = CMPPEndpointManager.INS.getEndpointConnector(cliententity);
+			if(conn==null){
+				logger.warn("entity may closed. {}" ,cliententity);
+				return;
+			}
 			conn.addChannel(ctx.channel());
 			notifyChannelConnected(ctx);
 		} else {

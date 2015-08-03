@@ -5,7 +5,7 @@ import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 
-import java.io.IOException;
+import java.nio.channels.ClosedChannelException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -89,6 +89,9 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 			Entry en = cancelRetry(key,ctx.channel());
 			
 			EndpointConnector conn = CMPPEndpointManager.INS.getEndpointConnector(entity);
+			//所有连接都已关闭
+			if(conn == null) break;
+			
 			Channel ch  = conn.fetch();
 			if(ch!=null){
 				ch.write(en.request);
@@ -298,7 +301,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 			
 		} else {
 			// 如果连接已关闭，通知上层应用
-			if(promise!=null && (!promise.isDone()))promise.setFailure(new IOException("Connection is closed."));
+			if(promise!=null && (!promise.isDone()))promise.setFailure(new ClosedChannelException());
 		}
 	}
 

@@ -1,14 +1,17 @@
 package com.zx.sms.common.util;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.zx.sms.codec.cmpp.CmppHeaderCodec;
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.NotSupportedException;
@@ -17,8 +20,9 @@ import com.zx.sms.common.NotSupportedException;
 //可以使用 Redis.Memcached等。
 public enum LongMessageFrameHolder {
 	INS;
+	private final Logger logger = LoggerFactory.getLogger(LongMessageFrameHolder.class);
 	private final static int UDHILENGTH = 6;
-	private final static int MAXLENGTH = 140;
+	private final static int MAXLENGTH = GlobalConstance.MaxMsgLength;
 	private final static String prefix = "(%d/%d)";
 
 	private final static FrameKeyCreator frameKeyCreator = INS.newFrameKeyCreator();
@@ -319,9 +323,11 @@ public enum LongMessageFrameHolder {
 		private int frameKey;
 		// 保存帧的Map,每帧都有一个唯一码。以这个唯一码做key
 		private byte[][] content;
-		private int framecnt = 0;
+		
 		private int totalbyteLength = 0;
 		private int udhiLength = 0;
+		private BitSet idxBitset ;
+		
 
 		public FrameHolder(int frameKey, int totalLength, byte[] content, int frameIndex, int udhiLength) {
 			this.frameKey = frameKey;
@@ -329,18 +335,26 @@ public enum LongMessageFrameHolder {
 
 			this.udhiLength = udhiLength;
 			this.content = new byte[totalLength][];
+			this.idxBitset = new BitSet(totalLength);
 			merge(content, frameIndex);
 		}
 
 		public synchronized void merge(byte[] content, int idx) {
+			
+			if(idxBitset.get(idx)){
+				logger.warn("have received the same index of Message. do not merge this content. ");
+				return;
+			}
+			//设置该短信序号已填冲
+			idxBitset.set(idx);
+			
 			this.content[idx] = new byte[content.length - udhiLength - 1];
 			System.arraycopy(content, udhiLength + 1, this.content[idx], 0, this.content[idx].length);
 			this.totalbyteLength += this.content[idx].length;
-			this.framecnt++;
 		}
 
 		public synchronized boolean isComplete() {
-			return totalLength == framecnt;
+			return totalLength == idxBitset.cardinality();
 		}
 
 		public synchronized byte[] mergeAllcontent() {
