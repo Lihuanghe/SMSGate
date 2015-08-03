@@ -183,7 +183,8 @@ public enum LongMessageFrameHolder {
 	private LongMessageFrame splitByCharset(String content, short msgFmt, boolean isSupportLongMsg, short idxMsgcnt, short totalMsgCnt,byte frameKey) {
 
 		byte[] contentBytes = content.getBytes(switchCharset(msgFmt));
-		if (isSupportLongMsg) {
+		//支持长短信，并且总的短信条数据大于1时，按长短信发
+		if (isSupportLongMsg && totalMsgCnt > 1 ) {
 			LongMessageFrame frame = new LongMessageFrame();
 
 			assert (UDHILENGTH + contentBytes.length <= 140);
