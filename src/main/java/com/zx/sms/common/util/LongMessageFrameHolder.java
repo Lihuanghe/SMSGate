@@ -131,8 +131,8 @@ public enum LongMessageFrameHolder {
 
 		List<LongMessageFrame> result = new ArrayList<LongMessageFrame>();
 
-		// 如果只有一条，按不支持长短信发
-		if (totalMsgCnt == 1) {
+		// 如果只有一条，按不支持长短信发,如果total为0则按一条算
+		if (totalMsgCnt == 1 || totalMsgCnt == 0) {
 			if (!haswidthChar) {
 
 				result.add(splitByCharset(content, (short) 0, isSupportLongMsg, (short) 1, (short) 1,(byte)0));

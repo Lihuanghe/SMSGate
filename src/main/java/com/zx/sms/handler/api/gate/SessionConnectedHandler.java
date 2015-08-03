@@ -7,10 +7,12 @@ import java.nio.channels.ClosedChannelException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
+import com.zx.sms.codec.cmpp.msg.CmppReportRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.common.util.ChannelUtil;
@@ -30,6 +32,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 	private static final Logger logger = LoggerFactory.getLogger(SessionConnectedHandler.class);
 
 	private Future future;
+	private boolean over = false;
 	private static AtomicInteger connCnt = new AtomicInteger();
 	private final static ConcurrentHashMap<String, AtomicInteger> totleMap = new ConcurrentHashMap<String, AtomicInteger>();
 
@@ -48,16 +51,30 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 				
 				future = EventLoopGroupFactory.INS.getBusiWork().submit(new Runnable() {
 					private Message createTestReq() {
+						int contentLength = RandomUtils.nextInt() & 0xff;
+						StringBuilder sb = new StringBuilder();
+						if(contentLength %2 ==0 ){
+							while (contentLength-- >0){
+								sb.append('中');
+							}
+						}else{
+							while (contentLength-- >0){
+								sb.append('a');
+							}
+						}
 
 						if (finalentity instanceof ServerEndpoint) {
 							CmppDeliverRequestMessage msg = new CmppDeliverRequestMessage();
 							// msg.getHeader().setSequenceId(System.nanoTime());
 							msg.setDestId("13800138000");
 							msg.setLinkid("0000");
-							msg.setMsgContent("abc");
+							msg.setMsgContent(sb.toString());
 						
 							msg.setMsgId(new MsgId());
-							msg.setRegisteredDelivery((short) 0);
+							msg.setRegisteredDelivery((short) (RandomUtils.nextBoolean()?1:0));
+							if(msg.getRegisteredDelivery()  == 1){
+								msg.setReportRequestMessage(new CmppReportRequestMessage());
+							}
 							msg.setServiceid("10086");
 							msg.setSrcterminalId(String.valueOf(System.nanoTime()));
 							msg.setSrcterminalType((short) 1);
@@ -67,7 +84,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 							CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
 							msg.setDestterminalId(new String[]{"13800138000"});
 							msg.setLinkID("0000");
-							msg.setMsgContent("ghi");
+							msg.setMsgContent(sb.toString());
 							msg.setMsgid(new MsgId());
 							msg.setServiceId("10086");
 							msg.setSrcId("10086");
@@ -79,20 +96,24 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 					@Override
 					public void run() {
 						// int cnt = RandomUtils.nextInt() & 0xff;
-						while (true) {
+						while (!over) {
 							while (totle.get() < 10000) {
 								try {
 									Future promise = ChannelUtil.syncWriteToEntity(getEndpointEntity(), createTestReq());
-									if (!promise.isSuccess()) {
-										logger.error("发送失败!!", promise.cause());
+									if (promise==null  || !promise.isSuccess()) {
+										logger.error("发送失败!!");
+										over=true;
+										break;
 									} else {
 										totle.incrementAndGet();
 									}
 								} catch (ClosedChannelException ex) {
 									logger.error("连接已关闭，发送失败");
+									over=true;
 									break;
 								} catch (Exception e) {
 									logger.error("发送失败", e);
+									over=true;
 									break;
 								}
 							}

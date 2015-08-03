@@ -48,12 +48,6 @@ public class TCPClientEndpointConnector extends AbstractEndpointConnector  {
 				}
 			}
 		});
-
-		future.channel().closeFuture().addListener(new ChannelFutureListener() {
-			public void operationComplete(ChannelFuture f) throws Exception {
-				removeChannel(f.channel());
-			}
-		});
 		
 		try {
 			future.sync();
