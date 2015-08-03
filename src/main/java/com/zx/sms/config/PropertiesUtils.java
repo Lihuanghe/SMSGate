@@ -15,6 +15,16 @@ public class PropertiesUtils {
 		return global.getProperty("defaultTransportCharset");
 	}
 	
+	public static boolean getisSupportLongMsg()
+	{
+		String val =  global.getProperty("supportLongMsg");
+		if(StringUtils.isBlank(val)){
+			return false;
+		}else{
+			return Boolean.valueOf(val);
+		}
+	}
+	
 	public static String getproperties(String key,String defaultValue)
 	{
 		String ret = global.getProperty(key);

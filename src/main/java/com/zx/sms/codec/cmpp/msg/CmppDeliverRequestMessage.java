@@ -34,7 +34,7 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 	
 	private String msgContent;
 	
-	private boolean supportLongMsg = false;
+	private boolean supportLongMsg = GlobalConstance.isSupportLongMsg;
 
 	public CmppDeliverRequestMessage(Header header) {
 		super(CmppPacketType.CMPPDELIVERREQUEST, header);

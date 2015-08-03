@@ -40,7 +40,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 
 	private String msgContent;
 	
-	private boolean supportLongMsg = false;
+	private boolean supportLongMsg =  GlobalConstance.isSupportLongMsg;
 	
 	public CmppSubmitRequestMessage(Header header) {
 		super(CmppPacketType.CMPPSUBMITREQUEST, header);
