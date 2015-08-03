@@ -243,7 +243,7 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 		logger.error("Connected error status :{}" , status);
 		// 认证失败
 		CmppConnectResponseMessage resp = new CmppConnectResponseMessage(message.getHeader().getSequenceId());
-
+		resp.setAuthenticatorISMG(new byte[16]);
 		resp.setStatus(status);
 		ChannelFuture promise = ctx.writeAndFlush(resp);
 
