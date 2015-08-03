@@ -4,6 +4,7 @@
 package com.zx.sms.codec.cmpp;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import io.netty.util.ReferenceCountUtil;
@@ -44,7 +45,7 @@ public class CmppQueryRequestMessageCodec extends MessageToMessageCodec<Message,
 		}
 		CmppQueryRequestMessage requestMessage = new CmppQueryRequestMessage(msg.getHeader());
 
-		ByteBuf bodyBuffer = msg.getBodyBuffer();
+		ByteBuf bodyBuffer =Unpooled.wrappedBuffer( msg.getBodyBuffer());
 
 		requestMessage.setTime(bodyBuffer.readBytes(CmppQueryRequest.TIME.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 		requestMessage.setQueryType(bodyBuffer.readUnsignedByte());
@@ -56,7 +57,7 @@ public class CmppQueryRequestMessageCodec extends MessageToMessageCodec<Message,
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppQueryRequestMessage msg, List<Object> out) throws Exception {
-		ByteBuf bodyBuffer = ctx.alloc().buffer(CmppQueryRequest.QUERYCODE.getBodyLength());
+		ByteBuf bodyBuffer = Unpooled.buffer(CmppQueryRequest.QUERYCODE.getBodyLength());
 
 		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(msg.getTime().getBytes(GlobalConstance.defaultTransportCharset), CmppQueryRequest.TIME.getLength(), 0));
 		bodyBuffer.writeByte(msg.getQueryType());
@@ -65,7 +66,8 @@ public class CmppQueryRequestMessageCodec extends MessageToMessageCodec<Message,
 		bodyBuffer
 				.writeBytes(CMPPCommonUtil.ensureLength(msg.getReserve().getBytes(GlobalConstance.defaultTransportCharset), CmppQueryRequest.RESERVE.getLength(), 0));
 
-		msg.setBodyBuffer(bodyBuffer);
+		msg.setBodyBuffer(bodyBuffer.array());
+		ReferenceCountUtil.release(bodyBuffer);
 
 		out.add(msg);
 

@@ -18,7 +18,6 @@ import com.zx.sms.session.cmpp.SessionState;
 
 public interface GlobalConstance {
 	public final static String emptyString = "";
-	public final static ByteBuf emptyByte = Unpooled.EMPTY_BUFFER;
 	public final static byte[] emptyBytes= new byte[0];
 	public final static String[] emptyStringArray= new String[0];
     public final static AtomicLong sequenceId = new AtomicLong();

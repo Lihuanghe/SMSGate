@@ -45,7 +45,7 @@ public class CmppConnectResponseMessageCodec extends MessageToMessageCodec<Messa
 		}
 		CmppConnectResponseMessage responseMessage = new CmppConnectResponseMessage(msg.getHeader());
 
-		ByteBuf bodyBuffer = msg.getBodyBuffer();
+		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
 
 		responseMessage.setStatus(bodyBuffer.readUnsignedInt());
 		responseMessage.setAuthenticatorISMG(bodyBuffer.readBytes(CmppConnectResponse.AUTHENTICATORISMG.getLength()).array());
@@ -59,14 +59,14 @@ public class CmppConnectResponseMessageCodec extends MessageToMessageCodec<Messa
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppConnectResponseMessage msg, List<Object> out) throws Exception {
 
-		ByteBuf bodyBuffer = ctx.alloc().buffer(CmppConnectResponse.AUTHENTICATORISMG.getBodyLength());
+		ByteBuf bodyBuffer = Unpooled.buffer(CmppConnectResponse.AUTHENTICATORISMG.getBodyLength());
 
 		bodyBuffer.writeInt((int) msg.getStatus());
 		bodyBuffer.writeBytes(msg.getAuthenticatorISMG());
 		bodyBuffer.writeByte(msg.getVersion());
 
-		msg.setBodyBuffer(bodyBuffer);
-
+		msg.setBodyBuffer(bodyBuffer.array());
+		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);
 
 	}

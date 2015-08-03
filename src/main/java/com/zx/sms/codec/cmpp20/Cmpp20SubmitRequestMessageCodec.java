@@ -58,7 +58,7 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 
 		CmppSubmitRequestMessage requestMessage = new CmppSubmitRequestMessage(msg.getHeader());
 
-		ByteBuf bodyBuffer = msg.getBodyBuffer();
+		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
 
 		requestMessage.setMsgid(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer.readBytes(Cmpp20SubmitRequest.MSGID.getLength()).array()));
 		LongMessageFrame frame = new LongMessageFrame();
@@ -133,7 +133,7 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 		boolean first = true;
 		for (LongMessageFrame frame : frameList) {
 
-			ByteBuf bodyBuffer = ctx.alloc().buffer(
+			ByteBuf bodyBuffer =Unpooled.buffer(
 					Cmpp20SubmitRequest.ATTIME.getBodyLength() + frame.getMsgLength() + requestMessage.getDestUsrtl()
 							* Cmpp20SubmitRequest.DESTTERMINALID.getLength());
 
@@ -197,14 +197,15 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 			if (first) {
 				DefaultMessage defaultMsg = new DefaultMessage();
 				defaultMsg.setHeader(requestMessage.getHeader());
-				defaultMsg.setBodyBuffer(bodyBuffer);
+				defaultMsg.setBodyBuffer(bodyBuffer.array());
 				out.add(defaultMsg);
 				first = false;
 			} else {
 				DefaultMessage defaultMsg = new DefaultMessage(requestMessage.getPacketType());
-				defaultMsg.setBodyBuffer(bodyBuffer);
+				defaultMsg.setBodyBuffer(bodyBuffer.array());
 				out.add(defaultMsg);
 			}
+			ReferenceCountUtil.release(bodyBuffer);
 		}
 	}
 

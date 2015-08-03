@@ -1,6 +1,7 @@
 package com.zx.sms.codec.cmpp;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import io.netty.util.ReferenceCountUtil;
@@ -38,12 +39,10 @@ public class CmppHeaderCodec extends MessageToMessageCodec<ByteBuf, Message> {
 
 		Message message = new DefaultMessage();
 		if (header.getBodyLength() > 0) {
-			ByteBuf bodyBuffer = bytebuf.readSlice((int) header.getBodyLength());
-			message.setBodyBuffer(bodyBuffer);
-			// 增加引用记数，因为MessageToMessageCodec会释放掉bytebuf
-			ReferenceCountUtil.retain(bodyBuffer);
+			message.setBodyBuffer(new byte[(int)header.getBodyLength()]);
+			bytebuf.readBytes(message.getBodyBuffer());
 		} else {
-			message.setBodyBuffer(GlobalConstance.emptyByte);
+			message.setBodyBuffer(GlobalConstance.emptyBytes);
 		}
 		
 		message.setHeader(header);
@@ -52,9 +51,9 @@ public class CmppHeaderCodec extends MessageToMessageCodec<ByteBuf, Message> {
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, Message message, List<Object> list) throws Exception {
-		ByteBuf bodybuf = message.getBodyBuffer();
+
 		int headerLength = CmppHead.COMMANDID.getHeadLength();
-		int packetLength = bodybuf.readableBytes() + headerLength;
+		int packetLength = message.getBodyBuffer().length + headerLength;
 
 		// buf由netty写channel的时候释放
 		ByteBuf buf = ctx.alloc().buffer(packetLength);
@@ -62,11 +61,10 @@ public class CmppHeaderCodec extends MessageToMessageCodec<ByteBuf, Message> {
 		buf.writeInt(((Long) message.getHeader().getCommandId()).intValue());
 		buf.writeInt(((Long) message.getHeader().getSequenceId()).intValue());
 		if (packetLength > headerLength) {
-			buf.writeBytes(bodybuf);
+			buf.writeBytes(message.getBodyBuffer());
 		}
 		list.add(buf);
-		// 手动释放bodybuf
-		ReferenceCountUtil.release(bodybuf);
+
 	}
 
 }

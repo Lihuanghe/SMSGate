@@ -47,7 +47,7 @@ public class CmppQueryResponseMessageCodec extends MessageToMessageCodec<Message
 
 		CmppQueryResponseMessage responseMessage = new CmppQueryResponseMessage(msg.getHeader());
 
-		ByteBuf bodyBuffer = msg.getBodyBuffer();
+		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
 
 		responseMessage.setTime(bodyBuffer.readBytes(CmppQueryResponse.TIME.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 
@@ -68,7 +68,7 @@ public class CmppQueryResponseMessageCodec extends MessageToMessageCodec<Message
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppQueryResponseMessage responseMessage, List<Object> out) throws Exception {
 
-		ByteBuf bodyBuffer = ctx.alloc().buffer(CmppQueryResponse.MOFL.getBodyLength());
+		ByteBuf bodyBuffer =Unpooled.buffer(CmppQueryResponse.MOFL.getBodyLength());
 
 		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(responseMessage.getTime().getBytes(GlobalConstance.defaultTransportCharset),
 				CmppQueryResponse.TIME.getLength(), 0));
@@ -85,8 +85,8 @@ public class CmppQueryResponseMessageCodec extends MessageToMessageCodec<Message
 		bodyBuffer.writeInt((int) responseMessage.getMoWT());
 		bodyBuffer.writeInt((int) responseMessage.getMoFL());
 
-		responseMessage.setBodyBuffer(bodyBuffer);
-
+		responseMessage.setBodyBuffer(bodyBuffer.array());
+		ReferenceCountUtil.release(bodyBuffer);
 		out.add(responseMessage);
 
 	}

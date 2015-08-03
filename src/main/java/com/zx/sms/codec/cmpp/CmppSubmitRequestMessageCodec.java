@@ -4,6 +4,7 @@
 package com.zx.sms.codec.cmpp;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import io.netty.util.ReferenceCountUtil;
@@ -54,7 +55,7 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 
 		CmppSubmitRequestMessage requestMessage = new CmppSubmitRequestMessage(msg.getHeader());
 
-		ByteBuf bodyBuffer = msg.getBodyBuffer();
+		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
 
 		requestMessage.setMsgid(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer.readBytes(CmppSubmitRequest.MSGID.getLength()).array()));
 
@@ -130,7 +131,7 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 		boolean first = true;
 		for (LongMessageFrame frame : frameList) {
 
-			ByteBuf bodyBuffer = ctx.alloc().buffer(
+			ByteBuf bodyBuffer =Unpooled.buffer(
 					CmppSubmitRequest.ATTIME.getBodyLength() + frame.getMsgLength() + requestMessage.getDestUsrtl()
 							* CmppSubmitRequest.DESTTERMINALID.getLength());
 
@@ -195,15 +196,16 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 			if (first) {
 				DefaultMessage defaultMsg = new DefaultMessage();
 				defaultMsg.setHeader(requestMessage.getHeader());
-				defaultMsg.setBodyBuffer(bodyBuffer);
+				defaultMsg.setBodyBuffer(bodyBuffer.array());
 				out.add(defaultMsg);
 				first = false;
 			} else {
 				DefaultMessage defaultMsg = new DefaultMessage(requestMessage.getPacketType());
 				
-				defaultMsg.setBodyBuffer(bodyBuffer);
+				defaultMsg.setBodyBuffer(bodyBuffer.array());
 				out.add(defaultMsg);
 			}
+			ReferenceCountUtil.release(bodyBuffer);
 		}
 	}
 

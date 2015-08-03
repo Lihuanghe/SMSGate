@@ -11,7 +11,6 @@ import io.netty.util.ReferenceCountUtil;
 
 import java.util.List;
 
-import com.zx.sms.codec.cmpp.msg.CmppActiveTestResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppCancelResponseMessage;
 import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.codec.cmpp.packet.CmppCancelResponse;
@@ -44,7 +43,7 @@ public class CmppCancelResponseMessageCodec extends MessageToMessageCodec<Messag
 		}
 
 		CmppCancelResponseMessage responseMessage = new CmppCancelResponseMessage(msg.getHeader());
-		ByteBuf  bodyBuffer = msg.getBodyBuffer();
+		ByteBuf  bodyBuffer = Unpooled.wrappedBuffer( msg.getBodyBuffer());
 		responseMessage.setSuccessId(bodyBuffer.readUnsignedInt());
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(responseMessage);
@@ -53,10 +52,11 @@ public class CmppCancelResponseMessageCodec extends MessageToMessageCodec<Messag
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppCancelResponseMessage msg, List<Object> out) throws Exception {
 
-		ByteBuf bodyBuffer = ctx.alloc().buffer(CmppCancelResponse.SUCCESSID.getLength());
+		ByteBuf bodyBuffer =  Unpooled.buffer(CmppCancelResponse.SUCCESSID.getLength());
         bodyBuffer.writeInt((int) msg.getSuccessId());
 		
-		msg.setBodyBuffer(bodyBuffer);
+		msg.setBodyBuffer(bodyBuffer.array());
+		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);
 	}
 

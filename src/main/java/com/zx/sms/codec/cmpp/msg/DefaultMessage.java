@@ -15,13 +15,13 @@ import com.zx.sms.common.GlobalConstance;
 public class DefaultMessage implements Message {
 	private static final long serialVersionUID = -4245789758843785127L;
 	private PacketType packetType;
-//	private long timestamp = System.currentTimeMillis();
+	private long timestamp = System.currentTimeMillis();
 
 	private AtomicInteger requests = new AtomicInteger();
 //	private Message response;
 //	private Message request;
 	private Header header;
-	private transient ByteBuf buffer;
+	private byte[] buffer;
 //	private Object attachment;
 
 	public DefaultMessage() {
@@ -81,19 +81,26 @@ public class DefaultMessage implements Message {
 	}
 
 	@Override
-	public void setBodyBuffer(ByteBuf buffer) {
+	public void setBodyBuffer(byte[] buffer) {
 		this.buffer = buffer;
 	}
 
 	@Override
-	public ByteBuf getBodyBuffer() {
+	public byte[] getBodyBuffer() {
 		return buffer;
+	}
+
+	
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
 	}
 
 	@Override
 	public String toString() {
 		return "DefaultMessage [packetType=" + packetType + ", header=" + header + ", getClass()=" + getClass() + "]";
 	}
-
-
 }

@@ -14,8 +14,8 @@ import com.zx.sms.codec.cmpp.packet.PacketType;
 public interface Message extends Serializable  {
 	public void setPacketType(PacketType packetType);
 	public PacketType getPacketType();
-//	public void setTimestamp(long milliseconds);
-//	public long getTimestamp();
+	public void setTimestamp(long milliseconds);
+	public long getTimestamp();
 //	public boolean isTerminationLife();
 //	public void setChannelIds(String channelIds);
 //	public String getChannelIds();
@@ -30,8 +30,8 @@ public interface Message extends Serializable  {
 //    public Message getRequest(); 
     public void setHeader(Header head);
     public Header getHeader();  
-    public void setBodyBuffer(ByteBuf buffer);
-    public ByteBuf getBodyBuffer();
+    public void setBodyBuffer(byte[] buffer);
+    public byte[] getBodyBuffer();
 //    public void setAttachment(Object attachment);
 //    public Object getAttachment(); 
 }

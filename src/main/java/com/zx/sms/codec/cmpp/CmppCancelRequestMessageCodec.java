@@ -44,7 +44,7 @@ public class CmppCancelRequestMessageCodec extends MessageToMessageCodec<Message
 
 		CmppCancelRequestMessage requestMessage = new CmppCancelRequestMessage(msg.getHeader());
 
-		ByteBuf bodyBuffer = msg.getBodyBuffer();
+		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
 		requestMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer.readBytes(CmppCancelRequest.MSGID.getLength()).array()));
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(requestMessage);
@@ -53,7 +53,7 @@ public class CmppCancelRequestMessageCodec extends MessageToMessageCodec<Message
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppCancelRequestMessage msg, List<Object> out) throws Exception {
 
-		msg.setBodyBuffer(Unpooled.wrappedBuffer(DefaultMsgIdUtil.msgId2Bytes(msg.getMsgId())));
+		msg.setBodyBuffer(DefaultMsgIdUtil.msgId2Bytes(msg.getMsgId()));
 		out.add(msg);
 	}
 

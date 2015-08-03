@@ -58,7 +58,7 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 
 		CmppDeliverRequestMessage requestMessage = new CmppDeliverRequestMessage(msg.getHeader());
 
-		ByteBuf bodyBuffer = msg.getBodyBuffer();
+		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
 
 		requestMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer.readBytes(Cmpp20DeliverRequest.MSGID.getLength()).array()));
 		requestMessage.setDestId(bodyBuffer.readBytes(Cmpp20DeliverRequest.DESTID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
@@ -123,7 +123,7 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 		boolean first = true;
 		for (LongMessageFrame frame : frameList) {
 			// bodyBuffer 会在CmppHeaderCodec.encode里释放
-			ByteBuf bodyBuffer = ctx.alloc().buffer(Cmpp20DeliverRequest.DESTID.getBodyLength() + frame.getMsgLength());
+			ByteBuf bodyBuffer =Unpooled.buffer(Cmpp20DeliverRequest.DESTID.getBodyLength() + frame.getMsgLength());
 
 			bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(requestMessage.getMsgId()));
 			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getDestId().getBytes(GlobalConstance.defaultTransportCharset),
@@ -171,14 +171,15 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 			if (first) {
 				DefaultMessage defaultMsg = new DefaultMessage();
 				defaultMsg.setHeader(requestMessage.getHeader());
-				defaultMsg.setBodyBuffer(bodyBuffer);
+				defaultMsg.setBodyBuffer(bodyBuffer.array());
 				out.add(defaultMsg);
 				first = false;
 			} else {
 				DefaultMessage defaultMsg = new DefaultMessage(requestMessage.getPacketType());
-				defaultMsg.setBodyBuffer(bodyBuffer);
+				defaultMsg.setBodyBuffer(bodyBuffer.array());
 				out.add(defaultMsg);
 			}
+			ReferenceCountUtil.release(bodyBuffer);
 		}
 	}
 
