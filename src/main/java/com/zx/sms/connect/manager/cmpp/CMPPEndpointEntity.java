@@ -23,7 +23,21 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 	private short windows = 16;
 	private Charset chartset = GlobalConstance.defaultTransportCharset;
 	
+	/**
+	 * 有未发送成功的消息，是否重发，默认不重发，可能引起消息丢失。
+	 * 如果为true，则可能重复发送。
+	 **/
 	private boolean isReSendFailMsg = false; 
+	
+	/**
+	 *该端口是否支持接收长短信发送 
+	 */
+	private boolean supportLongMsg = GlobalConstance.isSupportLongMsg;
+	
+	/**
+	 * 最大消息序列数
+	 */
+	private short maxMsgQueue;
 	
 	public long getLiftTime() {
 		return liftTime;
@@ -112,6 +126,21 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 
 	public void setReSendFailMsg(boolean isReSendFailMsg) {
 		this.isReSendFailMsg = isReSendFailMsg;
+	}
+	
+	public boolean isSupportLongMsg() {
+		return supportLongMsg;
+	}
+
+	public void setSupportLongMsg(boolean supportLongMsg) {
+		this.supportLongMsg = supportLongMsg;
+	}
+	
+    public short getMaxMsgQueue() {
+		return maxMsgQueue;
+	}
+	public void setMaxMsgQueue(short maxMsgQueue) {
+		this.maxMsgQueue = maxMsgQueue;
 	}
 
 	@Override

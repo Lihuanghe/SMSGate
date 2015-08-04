@@ -23,10 +23,7 @@ public abstract class EndpointEntity implements Serializable {
 	private ChannelType channelType;
 	private String host;
 	private Integer port;
-	/**
-	 * 最大消息序列数
-	 */
-	private short maxMsgQueue;
+
 	/**
 	 *最大连接数 
 	 */
@@ -82,12 +79,6 @@ public abstract class EndpointEntity implements Serializable {
      */
     public enum ChannelType {UP,DOWN,DUPLEX};
     
-    public short getMaxMsgQueue() {
-		return maxMsgQueue;
-	}
-	public void setMaxMsgQueue(short maxMsgQueue) {
-		this.maxMsgQueue = maxMsgQueue;
-	}
     
     public short getMaxChannels() {
 		return maxChannels;
@@ -107,7 +98,7 @@ public abstract class EndpointEntity implements Serializable {
 	public String toString() {
 		return "EndpointEntity [Id=" + Id + ", Desc=" + Desc + ", channelType="
 				+ channelType + ", host=" + host + ", port=" + port
-				+ ", maxMsgQueue=" + maxMsgQueue + ", maxChannels="
+				+ ", maxChannels="
 				+ maxChannels + ", valid=" + valid + ", businessHandlerSet="
 				+ businessHandlerSet + "]";
 	}
