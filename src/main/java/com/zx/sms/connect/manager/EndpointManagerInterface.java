@@ -11,5 +11,6 @@ public interface EndpointManagerInterface{
 	public List<EndpointEntity> allEndPointEntity();
 	public EndpointConnector getEndpointConnector(EndpointEntity entity);
 	public EndpointEntity getEndpointEntity(String id);
-	public  void addAllEndpointEntity(List<EndpointEntity> entities);
+	public void addAllEndpointEntity(List<EndpointEntity> entities);
+	public void close();
 }

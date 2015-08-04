@@ -221,12 +221,18 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 			this.msgContent = msgContent;
 		}
 	}
+	
+	public CmppDeliverRequestMessage clone() throws CloneNotSupportedException {
+		return (CmppDeliverRequestMessage) super.clone();
+	}
 
 	@Override
 	public String toString() {
 		return "CmppDeliverRequestMessage [msgId=" + msgId + ", destId=" + destId + ", serviceid=" + serviceid + ", srcterminalId=" + srcterminalId
-				+ ", registeredDelivery=" + registeredDelivery + ", msgContent=" + msgContent + "]";
+				+ ", registeredDelivery=" + registeredDelivery + ", msgContent=" + msgContent + ", getHeader()=" + getHeader() + "]";
 	}
+	
+
 	
 	
 }

@@ -104,16 +104,20 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 		requestMessage.setReserved(bodyBuffer.readBytes(Cmpp20DeliverRequest.RESERVED.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 
 		ReferenceCountUtil.release(bodyBuffer);
-		String content = LongMessageFrameHolder.INS.putAndget(requestMessage.getSrcterminalId(), frame);
+		if (requestMessage.getRegisteredDelivery() == 0) {
+			String content = LongMessageFrameHolder.INS.putAndget(requestMessage.getSrcterminalId(), frame);
 
-		if (content != null) {
-			requestMessage.setMsgContent(content);
+			if (content != null) {
+				requestMessage.setMsgContent(content);
+				out.add(requestMessage);
+			} else {
+				CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(msg.getHeader());
+				responseMessage.setMsgId(requestMessage.getMsgId());
+				responseMessage.setResult(0);
+				ctx.channel().writeAndFlush(responseMessage);
+			}
+		} else {
 			out.add(requestMessage);
-		}else{
-	        CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(msg.getHeader());
-			responseMessage.setMsgId(requestMessage.getMsgId());
-			responseMessage.setResult(0);
-			ctx.channel().writeAndFlush(responseMessage);
 		}
 	}
 
@@ -123,7 +127,7 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 		boolean first = true;
 		for (LongMessageFrame frame : frameList) {
 			// bodyBuffer 会在CmppHeaderCodec.encode里释放
-			ByteBuf bodyBuffer =Unpooled.buffer(Cmpp20DeliverRequest.DESTID.getBodyLength() + frame.getMsgLength());
+			ByteBuf bodyBuffer = Unpooled.buffer(Cmpp20DeliverRequest.DESTID.getBodyLength() + frame.getMsgLength());
 
 			bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(requestMessage.getMsgId()));
 			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getDestId().getBytes(GlobalConstance.defaultTransportCharset),
@@ -138,11 +142,15 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 
 			// bodyBuffer.writeByte(requestMessage.getSrcterminalType());//CMPP2.0不编解码
 			bodyBuffer.writeByte(requestMessage.getRegisteredDelivery());
-			bodyBuffer.writeByte(frame.getMsgLength());
+		
 
 			if (!requestMessage.isReport()) {
+				assert (frame.getMsgLength() == frame.getMsgContentBytes().length);
+				assert (frame.getMsgLength() <= GlobalConstance.MaxMsgLength);
+				bodyBuffer.writeByte(frame.getMsgLength());
 				bodyBuffer.writeBytes(frame.getMsgContentBytes());
 			} else {
+				bodyBuffer.writeByte(Cmpp20ReportRequest.DESTTERMINALID.getBodyLength());
 				bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(requestMessage.getReportRequestMessage().getMsgId()));
 				bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(
 						requestMessage.getReportRequestMessage().getStat().getBytes(GlobalConstance.defaultTransportCharset),
@@ -169,13 +177,13 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 					Cmpp20DeliverRequest.RESERVED.getLength(), 0));
 
 			if (first) {
-				DefaultMessage defaultMsg = new DefaultMessage();
-				defaultMsg.setHeader(requestMessage.getHeader());
-				defaultMsg.setBodyBuffer(bodyBuffer.array());
-				out.add(defaultMsg);
+
+				requestMessage.setBodyBuffer(bodyBuffer.array());
+				out.add(requestMessage);
 				first = false;
 			} else {
-				DefaultMessage defaultMsg = new DefaultMessage(requestMessage.getPacketType());
+
+				CmppDeliverRequestMessage defaultMsg = requestMessage.clone();
 				defaultMsg.setBodyBuffer(bodyBuffer.array());
 				out.add(defaultMsg);
 			}

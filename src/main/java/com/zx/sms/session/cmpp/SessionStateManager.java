@@ -28,7 +28,8 @@ import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
  */
 public class SessionStateManager extends ChannelHandlerAdapter {
 	private static final Logger logger = LoggerFactory.getLogger(SessionStateManager.class);
-
+	//用来记录连接上的错误消息
+	private final Logger errlogger ;
 	/**
 	 *@param entity
 	 *Session关联的端口
@@ -45,7 +46,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 		} else {
 			windows = new Semaphore(windowSize);
 		}
-
+		errlogger = LoggerFactory.getLogger(entity.getId());
 		this.storeMap = storeMap ;
 		this.preSend = preSend;
 	}
@@ -82,7 +83,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 
 
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-
+		logger.warn("Connection closed. channel:{}",ctx.channel());
 		// 取消重试队列里的任务
 		for (Map.Entry<Long, Entry> entry : msgRetryMap.entrySet()) {
 			final Long key = entry.getKey();
@@ -118,6 +119,9 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 		msgReadCount++;
 		if (msg instanceof Message) {
 			final Message message = (Message) msg;
+			//设置消息的生命周期
+			message.setLifeTime(entity.getLiftTime());
+			
 			// 如果是resp，取消息消息重发
 			if (!isRequestMsg(message)) {
 				// 删除发送成功的消息
@@ -134,7 +138,14 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
 
 		if (msg instanceof Message) {
-
+			
+			//发送消息超过生命周期
+			if(((Message) msg).isTerminationLife()){
+				errlogger.error("Msg Life over .{}" ,msg);
+				promise.setFailure(new RuntimeException("Msg Life over"));
+				return ;
+			}
+			
 			if (isRequestMsg((Message) msg)) {
 				// 发送，未收到Response时，60秒后重试,
 				writeWithWindow(ctx, (Message) msg, promise);
@@ -167,14 +178,12 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 			// 防止一个连接死掉，把服务挂死，这里要处理窗口不够用的情况
 			if (acquired) {
 				safewrite(ctx, message, promise);
-				ctx.flush();
 			} else {
 				// 加入等待队列
 				waitWindowQueue.offer(new Runnable() {
 					@Override
 					public void run() {
 						safewrite(ctx, message, promise);
-						ctx.flush();
 					}
 				});
 			}
@@ -193,6 +202,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 
 		//发送次数大于1时要重发
 		if (entry != null && entity.getMaxRetryCnt()>1) {
+			
 
 			Future<?> future = EventLoopGroupFactory.INS.getMsgResend().scheduleWithFixedDelay(new Runnable() {
 
@@ -200,17 +210,18 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 				public void run() {
 					try {
 						int times = message.incrementAndGetRequests();
-
+						logger.debug("retry Send Msg : {}" ,message);
 						if (times > entity.getMaxRetryCnt()) {
-							// TODO 发送失败要记录失败记录
 
 							cancelRetry(message.getHeader().getSequenceId(),ctx.channel());
 
 							// 删除发送成功的消息
 							storeMap.remove(message.getHeader().getSequenceId());
 							// TODO 发送3次都失败的消息要记录
-							logger.error("retry send msg 3 times。cancel retry task");
-
+							logger.error("retry send msg {} times。cancel retry task",times);
+							
+							errlogger.error("RetryFailed: {}",message);
+							
 							if (message instanceof CmppActiveTestRequestMessage) {
 								ctx.close();
 								logger.error("retry send CmppActiveTestRequestMessage 3 times,the connection may die.close it");
@@ -228,6 +239,12 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 			}, entity.getRetryWaitTimeSec(), entity.getRetryWaitTimeSec(), TimeUnit.SECONDS);
 
 			entry.future = future;
+			
+			//这里增加一次判断，是否已收到resp消息,已到resp后，msgRetryMap里的entry会被 remove掉。
+			if(msgRetryMap.get(seq)==null){
+				future.cancel(true);
+			}
+			
 		} else if(entry == null){
 			//当程序执行到这里时，可能已收到resp消息，此时entry为空。
 			logger.warn("receive seq {} not exists in msgRetryMap,maybe response received before create retrytask .", seq);
@@ -268,8 +285,13 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 			for (Map.Entry<Long, Message> entry : preSend.entrySet()) {
 				Long key = entry.getKey();
 				Message msg = entry.getValue();
+				
+				if(msg.isTerminationLife()){
+					errlogger.error("Msg Life is Over. {}" ,msg);
+					continue;
+				}
 				if (msg != null) {
-					logger.debug("Send last failed msg . {}", msg.getHeader().getSequenceId());
+					logger.debug("Send last failed msg . {}", msg);
 					storeMap.remove(key);
 					writeWithWindow(ctx,msg,ctx.newPromise());
 				}
@@ -298,7 +320,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 
 			// 注册重试任务
 			scheduleRetryMsg(ctx, message, promise);
-			
+			ctx.flush();
 		} else {
 			// 如果连接已关闭，通知上层应用
 			if(promise!=null && (!promise.isDone()))promise.setFailure(new ClosedChannelException());

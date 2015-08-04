@@ -24,14 +24,14 @@ public class MsgId implements Serializable {
 
 	
 	public MsgId() {
-		this(System.currentTimeMillis());
+		this(CachedMillisecondClock.INS.now());
 	}
 	/**
 	 * 
 	 * @param gateId
 	 */
 	public MsgId(int gateId) {
-		this(System.currentTimeMillis(), gateId, (int) (atomicLong.compareAndSet(Short.MAX_VALUE, 0)
+		this(CachedMillisecondClock.INS.now(), gateId, (int) (atomicLong.compareAndSet(Short.MAX_VALUE, 0)
 				? atomicLong.getAndIncrement()
 				: atomicLong.getAndIncrement()));
 	}

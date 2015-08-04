@@ -26,6 +26,7 @@ import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPServerChildEndpointEntity;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
+import com.zx.sms.handler.cmpp.CMPPMessageLogHandler;
 import com.zx.sms.session.cmpp.SessionLoginManager;
 import com.zx.sms.session.cmpp.SessionState;
 import com.zx.sms.session.cmpp.SessionStateManager;
@@ -202,7 +203,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			@Override
 			protected void initChannel(Channel ch) throws Exception {
 				ChannelPipeline pipeline = ch.pipeline();
-				pipeline.addLast("socketLog", new LoggingHandler(LogLevel.TRACE));
+				pipeline.addLast("socketLog", new LoggingHandler(getEndpointEntity().getId(),LogLevel.DEBUG));
 				CMPPCodecChannelInitializer codec = null;
 				if(getEndpointEntity() instanceof CMPPEndpointEntity){
 					pipeline.addLast(GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, ((CMPPEndpointEntity)getEndpointEntity()).getIdleTimeSec(), TimeUnit.SECONDS));
@@ -216,6 +217,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 				pipeline.addLast("CmppServerIdleStateHandler", GlobalConstance.idleHandler);
 				pipeline.addLast(codec.pipeName(), codec);
+				pipeline.addLast("msgLog",new CMPPMessageLogHandler(getEndpointEntity()));
 				pipeline.addLast("sessionLoginManager", new SessionLoginManager(getEndpointEntity()));
 			}
 		};

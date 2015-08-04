@@ -361,11 +361,16 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 		ret.setMsgContent(text);
 		return ret;
 	}
+	
+	public CmppSubmitRequestMessage clone() throws CloneNotSupportedException {
+		return   (CmppSubmitRequestMessage) super.clone();
+	}
+	
 
 	@Override
 	public String toString() {
 		return "CmppSubmitRequestMessage [msgid=" + msgid + ", registeredDelivery=" + registeredDelivery + ", serviceId=" + serviceId + ", msgsrc=" + msgsrc
-				+ ", srcId=" + srcId + ", destterminalId=" + Arrays.toString(destterminalId) + ", msgContent=" + msgContent + "]";
+				+ ", srcId=" + srcId + ", destterminalId=" + Arrays.toString(destterminalId) + ", msgContent=" + msgContent +  ", getHeader()=" + getHeader() + "]";
 	}
 	
 	

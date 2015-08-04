@@ -46,6 +46,10 @@ public class CmppSubmitResponseMessage extends DefaultMessage {
 	public void setResult(long result) {
 		this.result = result;
 	}
+	@Override
+	public String toString() {
+		return "CmppSubmitResponseMessage [msgId=" + msgId + ", result=" + result + ", getHeader()=" + getHeader() + "]";
+	}
 
 	
 	

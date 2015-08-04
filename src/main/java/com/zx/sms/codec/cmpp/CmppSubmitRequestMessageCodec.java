@@ -193,14 +193,11 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 			// */
 
 			if (first) {
-				DefaultMessage defaultMsg = new DefaultMessage();
-				defaultMsg.setHeader(requestMessage.getHeader());
-				defaultMsg.setBodyBuffer(bodyBuffer.array());
-				out.add(defaultMsg);
+				requestMessage.setBodyBuffer(bodyBuffer.array());
+				out.add(requestMessage);
 				first = false;
 			} else {
-				DefaultMessage defaultMsg = new DefaultMessage(requestMessage.getPacketType());
-				
+				CmppSubmitRequestMessage defaultMsg = requestMessage.clone();
 				defaultMsg.setBodyBuffer(bodyBuffer.array());
 				out.add(defaultMsg);
 			}

@@ -28,14 +28,13 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 	@Override
 	public void openAll() throws Exception {
 		manager.openAll();
-
 	}
 
 	public void addEndpointEntity(EndpointEntity entity) {
 
 		manager.addEndpointEntity(entity);
-		
-		//端口按group分组，方便按省份转发处理
+
+		// 端口按group分组，方便按省份转发处理
 		if (entity instanceof CMPPEndpointEntity) {
 			CMPPEndpointEntity cmppentity = (CMPPEndpointEntity) entity;
 			synchronized (this) {
@@ -47,10 +46,10 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 				}
 				list.add(cmppentity);
 			}
-		}else if(entity instanceof CMPPServerEndpointEntity){
-			
-			CMPPServerEndpointEntity serverentity = (CMPPServerEndpointEntity)entity;
-			for(CMPPServerChildEndpointEntity child : serverentity.getAllChild()){
+		} else if (entity instanceof CMPPServerEndpointEntity) {
+
+			CMPPServerEndpointEntity serverentity = (CMPPServerEndpointEntity) entity;
+			for (CMPPServerChildEndpointEntity child : serverentity.getAllChild()) {
 				synchronized (this) {
 					List<CMPPEndpointEntity> list = groupMap.get(child.getGroupName());
 					if (list == null) {
@@ -89,13 +88,18 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 	public EndpointEntity getEndpointEntity(String id) {
 		return manager.getEndpointEntity(id);
 	}
-	public  void addAllEndpointEntity(List<EndpointEntity> entities)
-	{
-		if(entities==null||entities.size()==0) return;
-		for(EndpointEntity entity : entities){
-			if(entity.isValid())
+
+	public void addAllEndpointEntity(List<EndpointEntity> entities) {
+		if (entities == null || entities.size() == 0)
+			return;
+		for (EndpointEntity entity : entities) {
+			if (entity.isValid())
 				addEndpointEntity(entity);
 		}
+	}
+
+	public void close() {
+		manager.close();
 	}
 
 }

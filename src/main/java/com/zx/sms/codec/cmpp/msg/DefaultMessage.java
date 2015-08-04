@@ -6,17 +6,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.common.GlobalConstance;
+import com.zx.sms.common.util.CachedMillisecondClock;
+import com.zx.sms.common.util.DefaultSequenceNumberUtil;
+import com.zx.sms.handler.api.AbstractBusinessHandler;
 
 /**
  *
  * @author huzorro(huzorro@gmail.com)
  * @author Lihuanghe(18852780@qq.com)
  */
-public class DefaultMessage implements Message {
+public class DefaultMessage implements Message ,Cloneable {
 	private static final long serialVersionUID = -4245789758843785127L;
 	private PacketType packetType;
-	private long timestamp = System.currentTimeMillis();
-
+	private long timestamp = CachedMillisecondClock.INS.now();
+	//消息的生命周期，单位秒, 0表示永不过期
+	private long lifeTime=0;
 	private AtomicInteger requests = new AtomicInteger();
 //	private Message response;
 //	private Message request;
@@ -32,16 +36,14 @@ public class DefaultMessage implements Message {
 		if (header == null) {
 			header = new DefaultHeader();
 
-			header.setSequenceId((GlobalConstance.sequenceId.compareAndSet(Integer.MAX_VALUE, 0) ? GlobalConstance.sequenceId.getAndIncrement()
-					: GlobalConstance.sequenceId.getAndIncrement()));
+			header.setSequenceId(DefaultSequenceNumberUtil.getSequenceNo());
 		}
 		header.setCommandId(packetType.getCommandId());
 		setHeader(header);
 	};
 
 	public DefaultMessage(PacketType packetType) {
-		this(packetType, (GlobalConstance.sequenceId.compareAndSet(Integer.MAX_VALUE, 0) ? GlobalConstance.sequenceId.getAndIncrement()
-				: GlobalConstance.sequenceId.getAndIncrement()));
+		this(packetType, DefaultSequenceNumberUtil.getSequenceNo());
 	}
 
 	public DefaultMessage(PacketType packetType, long sequenceId) {
@@ -68,6 +70,9 @@ public class DefaultMessage implements Message {
 		return requests.incrementAndGet();
 	}
 
+   public void resetRequests(){
+	   requests = new AtomicInteger();
+   }
 
 
 	@Override
@@ -99,8 +104,34 @@ public class DefaultMessage implements Message {
 		this.timestamp = timestamp;
 	}
 
+	public long getLifeTime() {
+		return lifeTime;
+	}
+
+	public void setLifeTime(long lifeTime) {
+		this.lifeTime = lifeTime;
+	}
+
 	@Override
 	public String toString() {
 		return "DefaultMessage [packetType=" + packetType + ", header=" + header + ", getClass()=" + getClass() + "]";
+	}
+
+	@Override
+	public boolean isTerminationLife() {
+		return lifeTime !=0 && (( timestamp + lifeTime*1000 ) - CachedMillisecondClock.INS.now() < 0L);
+	}
+	
+	protected DefaultMessage clone() throws CloneNotSupportedException {
+		DefaultMessage msg =  (DefaultMessage) super.clone();
+		
+		DefaultHeader newHeader = new DefaultHeader();
+		newHeader.setSequenceId(DefaultSequenceNumberUtil.getSequenceNo());
+		newHeader.setCommandId(packetType.getCommandId());
+		msg.setHeader(newHeader);
+		
+		msg.resetRequests();
+		msg.setTimestamp(CachedMillisecondClock.INS.now());
+		return msg;
 	}
 }

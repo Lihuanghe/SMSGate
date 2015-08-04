@@ -36,15 +36,17 @@ public class TestCMPPEndPoint {
 		server.setId("server");
 		server.setHost("127.0.0.1");
 		server.setPort(7891);
+		
 		CMPPServerChildEndpointEntity child = new CMPPServerChildEndpointEntity();
 		child.setId("child");
 		child.setChartset(Charset.forName("utf-8"));
 		child.setGroupName("test");
 		child.setUserName("123456");
 		child.setPassword("123456");
-		child.setWindows((short)1);
+		child.setWindows((short)16);
 		child.setVersion((short)48);
-		
+		child.setRetryWaitTimeSec((short)10);
+		child.setMaxRetryCnt((short)3);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
 		serverhandlers.add(new SessionConnectedHandler());
 		serverhandlers.add(new MessageReceiveHandler());
@@ -61,8 +63,10 @@ public class TestCMPPEndPoint {
 		client.setGroupName("test");
 		client.setUserName("123456");
 		client.setPassword("123456");
-		client.setWindows((short)1);
+		client.setWindows((short)16);
 		client.setVersion((short)48);
+		client.setRetryWaitTimeSec((short)10);
+		
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new MessageReceiveHandler());
 		clienthandlers.add(new SessionConnectedHandler());
@@ -78,8 +82,9 @@ public class TestCMPPEndPoint {
 		clientErr.setGroupName("test");
 		clientErr.setUserName("123456");
 		clientErr.setPassword("1234456");
-		clientErr.setWindows((short)1);
+		clientErr.setWindows((short)16);
 		clientErr.setVersion((short)48);
+		clientErr.setValid(false);
 		List<BusinessHandlerInterface> clientclientErrhandlers = new ArrayList<BusinessHandlerInterface>();
 		clientclientErrhandlers.add(new MessageReceiveHandler());
 		clientErr.setBusinessHandlerSet(clientclientErrhandlers);
@@ -87,11 +92,7 @@ public class TestCMPPEndPoint {
 		
 		manager.openAll();
 		
-		Thread.sleep(100000);
-		 List<EndpointEntity> entities =  CMPPEndpointManager.INS.allEndPointEntity();
-		 for(EndpointEntity en : entities)
-		 {
-			 CMPPEndpointManager.INS.close(en);
-		 }
+		Thread.sleep(3600000);
+		CMPPEndpointManager.INS.close();
 	}
 }

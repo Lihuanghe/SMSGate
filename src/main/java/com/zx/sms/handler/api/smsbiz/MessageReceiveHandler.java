@@ -53,11 +53,11 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 					@Override
 					public void run() {
 						long nowcnt = cnt.get();
-						logger.info("Totle Receive Msg Num:{},   speed : {}/s", nowcnt, nowcnt - lastNum);
+						logger.info("Totle Receive Msg Num:{},   speed : {}/s", nowcnt, (nowcnt - lastNum)/60);
 						lastNum = nowcnt;
 					}
 
-				}, 0, 1, TimeUnit.SECONDS);
+				}, 0, 60, TimeUnit.SECONDS);
 			}
 		}
 		ctx.fireUserEventTriggered(evt);

@@ -9,7 +9,7 @@ import org.junit.Test;
 import com.zx.sms.codec.AbstractTestMessageCodec;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 
-public class MsgDataSubmitRequestDecoder2 extends AbstractTestMessageCodec<CmppSubmitRequestMessage> {
+public class TestMsgDataSubmitRequestDecoder2 extends AbstractTestMessageCodec<CmppSubmitRequestMessage> {
 	@Override
 	protected int getVersion() {
 		return 0x20;

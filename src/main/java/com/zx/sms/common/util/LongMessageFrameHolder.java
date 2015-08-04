@@ -135,10 +135,10 @@ public enum LongMessageFrameHolder {
 		if (totalMsgCnt == 1 || totalMsgCnt == 0) {
 			if (!haswidthChar) {
 
-				result.add(splitByCharset(content, (short) 0, isSupportLongMsg, (short) 1, (short) 1,(byte)0));
+				result.add(splitByCharset(content, (short) 0, false, (short) 1, (short) 1,(byte)0));
 			} else {
 
-				result.add(splitByCharset(content, (short) 8, isSupportLongMsg, (short) 1, (short) 1,(byte)0));
+				result.add(splitByCharset(content, (short) 8, false, (short) 1, (short) 1,(byte)0));
 			}
 
 		} else {
@@ -184,7 +184,7 @@ public enum LongMessageFrameHolder {
 
 		byte[] contentBytes = content.getBytes(switchCharset(msgFmt));
 		//支持长短信，并且总的短信条数据大于1时，按长短信发
-		if (isSupportLongMsg && totalMsgCnt > 1 ) {
+		if (isSupportLongMsg && totalMsgCnt>1) {
 			LongMessageFrame frame = new LongMessageFrame();
 
 			assert (UDHILENGTH + contentBytes.length <= 140);

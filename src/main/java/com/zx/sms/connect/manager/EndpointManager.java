@@ -22,6 +22,7 @@ public enum EndpointManager implements EndpointManagerInterface {
 
 	public synchronized void openEndpoint(EndpointEntity entity) {
 		
+		
 		EndpointEntity old = idMap.get(entity.getId());
 		if (old == null) {
 			addEndpointEntity(entity);
@@ -90,6 +91,13 @@ public enum EndpointManager implements EndpointManagerInterface {
 			endpoints.remove(entity);
 		}
 		close(entity);
+	}
+	
+	public void close(){
+		 for(EndpointEntity en : endpoints)
+		 {
+			 close(en);
+		 }
 	}
 
 }

@@ -20,6 +20,7 @@ import com.google.common.primitives.Ints;
 import com.zx.sms.codec.cmpp.msg.CmppConnectRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppConnectResponseMessage;
 import com.zx.sms.common.GlobalConstance;
+import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.connect.manager.CMPPEndpointManager;
 import com.zx.sms.connect.manager.ClientEndpoint;
 import com.zx.sms.connect.manager.EndpointConnector;
@@ -108,7 +109,7 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 				// TODO 发送连接请求 ,创建密码
 				CmppConnectRequestMessage req = new CmppConnectRequestMessage();
 				req.setSourceAddr(cliententity.getUserName());
-				String timestamp = DateFormatUtils.format(System.currentTimeMillis(), "MMddHHmmss");
+				String timestamp = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "MMddHHmmss");
 				req.setTimestamp(Long.parseLong(timestamp));
 				byte[] userBytes = cliententity.getUserName().getBytes(GlobalConstance.defaultTransportCharset);
 				byte[] passwdBytes = cliententity.getPassword().getBytes(GlobalConstance.defaultTransportCharset);
