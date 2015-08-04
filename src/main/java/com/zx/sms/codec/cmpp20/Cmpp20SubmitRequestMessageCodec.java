@@ -28,6 +28,7 @@ import com.zx.sms.codec.cmpp20.packet.Cmpp20SubmitResponse;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
+import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 import com.zx.sms.common.util.LongMessageFrameHolder;
 
 /**
@@ -127,8 +128,8 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 	}
 
 	@Override
-	protected void encode(ChannelHandlerContext ctx, CmppSubmitRequestMessage requestMessage, List<Object> out) throws Exception {
-
+	protected void encode(ChannelHandlerContext ctx, CmppSubmitRequestMessage oldMsg, List<Object> out) throws Exception {
+		CmppSubmitRequestMessage requestMessage = oldMsg.clone();
 		List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(requestMessage.getMsgContent(), requestMessage.isSupportLongMsg());
 		boolean first = true;
 		for (LongMessageFrame frame : frameList) {
@@ -190,6 +191,8 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 			bodyBuffer.writeByte(frame.getMsgLength());
 
 			bodyBuffer.writeBytes(frame.getMsgContentBytes());
+			
+			requestMessage.setMsgContent(frame.getContentPart());
 
 			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getReserve().getBytes(GlobalConstance.defaultTransportCharset),
 					Cmpp20SubmitRequest.RESERVE.getLength(), 0));
@@ -200,6 +203,7 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 				first = false;
 			} else {
 				CmppSubmitRequestMessage defaultMsg = requestMessage.clone();
+				defaultMsg.getHeader().setSequenceId(DefaultSequenceNumberUtil.getSequenceNo());
 				defaultMsg.setBodyBuffer(bodyBuffer.array());
 				out.add(defaultMsg);
 			}

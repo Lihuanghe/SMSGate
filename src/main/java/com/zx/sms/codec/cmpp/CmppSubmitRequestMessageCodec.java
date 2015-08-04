@@ -24,6 +24,7 @@ import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
+import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 import com.zx.sms.common.util.LongMessageFrameHolder;
 import com.zx.sms.common.util.MsgId;
 
@@ -125,7 +126,8 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 	}
 
 	@Override
-	protected void encode(ChannelHandlerContext ctx, CmppSubmitRequestMessage requestMessage, List<Object> out) throws Exception {
+	protected void encode(ChannelHandlerContext ctx, CmppSubmitRequestMessage oldMsg, List<Object> out) throws Exception {
+		CmppSubmitRequestMessage requestMessage =  oldMsg.clone();
 		List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(requestMessage.getMsgContent(), requestMessage.isSupportLongMsg());
 		boolean first = true;
 		for (LongMessageFrame frame : frameList) {
@@ -184,6 +186,8 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 			bodyBuffer.writeByte(frame.getMsgLength());
 
 			bodyBuffer.writeBytes(frame.getMsgContentBytes());
+			//修改内容为分片后的内容
+			requestMessage.setMsgContent(frame.getContentPart());
 
 			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getLinkID().getBytes(GlobalConstance.defaultTransportCharset),
 					CmppSubmitRequest.LINKID.getLength(), 0));
@@ -198,6 +202,7 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 				first = false;
 			} else {
 				CmppSubmitRequestMessage defaultMsg = requestMessage.clone();
+				defaultMsg.getHeader().setSequenceId(DefaultSequenceNumberUtil.getSequenceNo());
 				defaultMsg.setBodyBuffer(bodyBuffer.array());
 				out.add(defaultMsg);
 			}

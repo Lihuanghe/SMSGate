@@ -126,7 +126,7 @@ public class DefaultMessage implements Message ,Cloneable {
 		DefaultMessage msg =  (DefaultMessage) super.clone();
 		
 		DefaultHeader newHeader = new DefaultHeader();
-		newHeader.setSequenceId(DefaultSequenceNumberUtil.getSequenceNo());
+		newHeader.setSequenceId(header.getSequenceId());
 		newHeader.setCommandId(packetType.getCommandId());
 		msg.setHeader(newHeader);
 		

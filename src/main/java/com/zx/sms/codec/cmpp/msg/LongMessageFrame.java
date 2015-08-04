@@ -15,6 +15,7 @@ public class LongMessageFrame  {
 	private short msgLength = 140;
 	private byte[] msgContentBytes = GlobalConstance.emptyBytes;
 
+	private String contentPart;
 
 	/**
 	 * @return the pktotal
@@ -112,4 +113,14 @@ public class LongMessageFrame  {
 		this.msgContentBytes = msgContentBytes;
 		msgLength = (short) this.msgContentBytes.length;
 	}
+
+	public String getContentPart() {
+		return contentPart;
+	}
+
+	public void setContentPart(String contentPart) {
+		this.contentPart = contentPart;
+	}
+	
+	
 }

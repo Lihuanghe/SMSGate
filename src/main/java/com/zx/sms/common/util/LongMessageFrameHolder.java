@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.zx.sms.codec.cmpp.CmppHeaderCodec;
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.NotSupportedException;
@@ -183,12 +182,11 @@ public enum LongMessageFrameHolder {
 	private LongMessageFrame splitByCharset(String content, short msgFmt, boolean isSupportLongMsg, short idxMsgcnt, short totalMsgCnt,byte frameKey) {
 
 		byte[] contentBytes = content.getBytes(switchCharset(msgFmt));
+		LongMessageFrame frame = new LongMessageFrame();
+		frame.setContentPart(content);
 		//支持长短信，并且总的短信条数据大于1时，按长短信发
 		if (isSupportLongMsg && totalMsgCnt>1) {
-			LongMessageFrame frame = new LongMessageFrame();
-
 			assert (UDHILENGTH + contentBytes.length <= 140);
-
 			byte[] tmp = new byte[UDHILENGTH + contentBytes.length];
 			tmp[0] = 5;
 			tmp[1] = 0;
@@ -207,7 +205,7 @@ public enum LongMessageFrameHolder {
 			return frame;
 
 		} else {
-			LongMessageFrame frame = new LongMessageFrame();
+			
 			frame.setMsgfmt(msgFmt);
 			frame.setPknumber((short) 1);
 			frame.setPktotal((short) 1);
