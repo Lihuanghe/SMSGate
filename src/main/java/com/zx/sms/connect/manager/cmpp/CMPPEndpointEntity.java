@@ -23,6 +23,8 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 	private short windows = 16;
 	private Charset chartset = GlobalConstance.defaultTransportCharset;
 	
+	private boolean isReSendFailMsg = false; 
+	
 	public long getLiftTime() {
 		return liftTime;
 	}
@@ -102,6 +104,14 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 
 	public void setChartset(Charset chartset) {
 		this.chartset = chartset;
+	}
+	
+	public boolean isReSendFailMsg() {
+		return isReSendFailMsg;
+	}
+
+	public void setReSendFailMsg(boolean isReSendFailMsg) {
+		this.isReSendFailMsg = isReSendFailMsg;
 	}
 
 	@Override
