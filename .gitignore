@@ -11,6 +11,8 @@
 /.idea/
 /bin/
 
+jdbc.properties
+
 *.class
 
 # Mobile Tools for Java (J2ME)

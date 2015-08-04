@@ -118,7 +118,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 								}
 							}
 							
-								logger.info("Send 10000 over.wait next time.");
+//								logger.info("Send 10000 over.wait next time.");
 //								Thread.sleep(30000);
 								totle.set(0);
 

@@ -202,7 +202,6 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 
 		//发送次数大于1时要重发
 		if (entry != null && entity.getMaxRetryCnt()>1) {
-			
 
 			Future<?> future = EventLoopGroupFactory.INS.getMsgResend().scheduleWithFixedDelay(new Runnable() {
 
@@ -218,6 +217,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 							// 删除发送成功的消息
 							storeMap.remove(message.getHeader().getSequenceId());
 							// TODO 发送3次都失败的消息要记录
+
 							logger.error("retry send msg {} times。cancel retry task",times);
 							
 							errlogger.error("RetryFailed: {}",message);
@@ -244,7 +244,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 			if(msgRetryMap.get(seq)==null){
 				future.cancel(true);
 			}
-			
+
 		} else if(entry == null){
 			//当程序执行到这里时，可能已收到resp消息，此时entry为空。
 			logger.warn("receive seq {} not exists in msgRetryMap,maybe response received before create retrytask .", seq);
