@@ -5,11 +5,13 @@
     </encoder>
   </appender>
   
-  <logger name="com.zx.sms">  
-      <level value="DEBUG" />  
+  <logger name="com.zx.sms.dao">  
+      <level value="info" />  
  </logger> 
-
-  <root level="debug">
+  <logger name="com.zx.sms">  
+      <level value="debug" />  
+ </logger> 
+  <root level="info">
     <appender-ref ref="STDOUT" />
   </root>
 </configuration>

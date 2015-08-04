@@ -5,7 +5,7 @@ import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 
-import java.io.IOException;
+import java.nio.channels.ClosedChannelException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -28,7 +28,8 @@ import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
  */
 public class SessionStateManager extends ChannelHandlerAdapter {
 	private static final Logger logger = LoggerFactory.getLogger(SessionStateManager.class);
-
+	//用来记录连接上的错误消息
+	private final Logger errlogger ;
 	/**
 	 *@param entity
 	 *Session关联的端口
@@ -45,7 +46,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 		} else {
 			windows = new Semaphore(windowSize);
 		}
-
+		errlogger = LoggerFactory.getLogger(entity.getId());
 		this.storeMap = storeMap ;
 		this.preSend = preSend;
 	}
@@ -56,7 +57,6 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 	private long msgReadCount = 0;
 	private long msgWriteCount = 0;
 	private CMPPEndpointEntity entity;
-	private Channel channel;
 
 	/**
 	 * 消息窗口，默认16
@@ -83,17 +83,20 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 
 
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-
+		logger.warn("Connection closed. channel:{}",ctx.channel());
 		// 取消重试队列里的任务
 		for (Map.Entry<Long, Entry> entry : msgRetryMap.entrySet()) {
 			final Long key = entry.getKey();
-			Entry en = cancelRetry(key);
+			Entry en = cancelRetry(key,ctx.channel());
 			
 			EndpointConnector conn = CMPPEndpointManager.INS.getEndpointConnector(entity);
+			//所有连接都已关闭
+			if(conn == null) break;
+			
 			Channel ch  = conn.fetch();
 			if(ch!=null){
 				ch.write(en.request);
-				logger.debug("current channel {} is closed.send requestMsg from other channel {} which is active.",channel,ch);
+				logger.debug("current channel {} is closed.send requestMsg from other channel {} which is active.",ctx.channel(),ch);
 			}
 		}
 		// 释放发送窗口
@@ -116,13 +119,16 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 		msgReadCount++;
 		if (msg instanceof Message) {
 			final Message message = (Message) msg;
+			//设置消息的生命周期
+			message.setLifeTime(entity.getLiftTime());
+			
 			// 如果是resp，取消息消息重发
 			if (!isRequestMsg(message)) {
 				// 删除发送成功的消息
 				// 要先删除成功的消息，然后再开一个发送窗口。
 
 				storeMap.remove(message.getHeader().getSequenceId());
-				cancelRetry(message.getHeader().getSequenceId());
+				cancelRetry(message.getHeader().getSequenceId(),ctx.channel());
 			}
 		}
 		ctx.fireChannelRead(msg);
@@ -132,7 +138,14 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
 
 		if (msg instanceof Message) {
-
+			
+			//发送消息超过生命周期
+			if(((Message) msg).isTerminationLife()){
+				errlogger.error("Msg Life over .{}" ,msg);
+				promise.setFailure(new RuntimeException("Msg Life over"));
+				return ;
+			}
+			
 			if (isRequestMsg((Message) msg)) {
 				// 发送，未收到Response时，60秒后重试,
 				writeWithWindow(ctx, (Message) msg, promise);
@@ -147,7 +160,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 	}
 
 	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-		channel = ctx.channel();
+	
 		if (evt == SessionState.Connect) {
 			preSendMsg(ctx);
 		}
@@ -171,7 +184,6 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 					@Override
 					public void run() {
 						safewrite(ctx, message, promise);
-						ctx.flush();
 					}
 				});
 			}
@@ -197,17 +209,18 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 				public void run() {
 					try {
 						int times = message.incrementAndGetRequests();
-
+						logger.debug("retry Send Msg : {}" ,message);
 						if (times > entity.getMaxRetryCnt()) {
-							// TODO 发送失败要记录失败记录
 
-							cancelRetry(message.getHeader().getSequenceId());
+							cancelRetry(message.getHeader().getSequenceId(),ctx.channel());
 
 							// 删除发送成功的消息
 							storeMap.remove(message.getHeader().getSequenceId());
 							// TODO 发送3次都失败的消息要记录
 							logger.error("retry send msg 3 times。cancel retry task");
-
+							
+							errlogger.error("RetryFailed: {}",message);
+							
 							if (message instanceof CmppActiveTestRequestMessage) {
 								ctx.close();
 								logger.error("retry send CmppActiveTestRequestMessage 3 times,the connection may die.close it");
@@ -232,7 +245,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 
 	}
 
-	private Entry cancelRetry(Long seq) {
+	private Entry cancelRetry(Long seq ,Channel channel) {
 		Entry entry = msgRetryMap.remove(seq);
 
 		if (entry != null && entry.future != null) {
@@ -240,7 +253,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 		}
 		if (windows != null) {
 			// 如果等窗口的队列里有任务，先发送等待的消息
-			if (channel.isActive() && !waitWindowQueue.isEmpty()) {
+			if (channel!=null && channel.isActive() && !waitWindowQueue.isEmpty()) {
 
 				Runnable task = waitWindowQueue.poll();
 				if (task != null) {
@@ -265,8 +278,13 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 			for (Map.Entry<Long, Message> entry : preSend.entrySet()) {
 				Long key = entry.getKey();
 				Message msg = entry.getValue();
+				
+				if(msg.isTerminationLife()){
+					errlogger.error("Msg Life is Over. {}" ,msg);
+					continue;
+				}
 				if (msg != null) {
-					logger.debug("Send last failed msg . {}", msg.getHeader().getSequenceId());
+					logger.debug("Send last failed msg . {}", msg);
 					storeMap.remove(key);
 					writeWithWindow(ctx,msg,ctx.newPromise());
 				}
@@ -295,9 +313,10 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 
 			// 注册重试任务
 			scheduleRetryMsg(ctx, message, promise);
+			ctx.flush();
 		} else {
 			// 如果连接已关闭，通知上层应用
-			if(promise!=null && (!promise.isDone()))promise.setFailure(new IOException("Connection is closed."));
+			if(promise!=null && (!promise.isDone()))promise.setFailure(new ClosedChannelException());
 		}
 	}
 

@@ -1,6 +1,7 @@
 package com.zx.sms.codec.cmpp;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import io.netty.util.ReferenceCountUtil;
@@ -25,15 +26,10 @@ import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
  */
 public class CmppHeaderCodec extends MessageToMessageCodec<ByteBuf, Message> {
 	private final Logger logger = LoggerFactory.getLogger(CmppHeaderCodec.class);
-//	private CMPPEndpointEntity entity ;
-	
-	public CmppHeaderCodec()
-	{
-//		entity = e;
-	}
+
 	@Override
 	protected void decode(ChannelHandlerContext ctx, ByteBuf bytebuf, List<Object> list) throws Exception {
-		
+
 		Header header = new DefaultHeader();
 		header.setPacketLength(bytebuf.readUnsignedInt());
 		header.setCommandId(bytebuf.readUnsignedInt());
@@ -41,36 +37,34 @@ public class CmppHeaderCodec extends MessageToMessageCodec<ByteBuf, Message> {
 		header.setHeadLength(CmppHead.COMMANDID.getHeadLength());
 		header.setBodyLength(header.getPacketLength() - header.getHeadLength());
 
-		
 		Message message = new DefaultMessage();
-//		message.setChannelIds(entity.getId());
-		message.setChildChannelIds(ctx.channel().id().toString());
-//		message.setLifeTime(entity.getLiftTime());
-		
-		if(header.getBodyLength() > 0 ){
-			ByteBuf bodyBuffer = bytebuf.readBytes((int) header.getBodyLength());
-			message.setBodyBuffer(bodyBuffer);
-		}else{
-			message.setBodyBuffer(GlobalConstance.emptyByte);
+		if (header.getBodyLength() > 0) {
+			message.setBodyBuffer(new byte[(int)header.getBodyLength()]);
+			bytebuf.readBytes(message.getBodyBuffer());
+		} else {
+			message.setBodyBuffer(GlobalConstance.emptyBytes);
 		}
+		
 		message.setHeader(header);
 		list.add(message);
 	}
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, Message message, List<Object> list) throws Exception {
-		ByteBuf bodybuf = message.getBodyBuffer();
+
 		int headerLength = CmppHead.COMMANDID.getHeadLength();
-		int packetLength = bodybuf.readableBytes() + headerLength;
-		
-		//buf由netty写channel的时候释放
+		int packetLength = message.getBodyBuffer().length + headerLength;
+
+		// buf由netty写channel的时候释放
 		ByteBuf buf = ctx.alloc().buffer(packetLength);
 		buf.writeInt(packetLength);
 		buf.writeInt(((Long) message.getHeader().getCommandId()).intValue());
 		buf.writeInt(((Long) message.getHeader().getSequenceId()).intValue());
-		buf.writeBytes(bodybuf);
+		if (packetLength > headerLength) {
+			buf.writeBytes(message.getBodyBuffer());
+		}
 		list.add(buf);
-		ReferenceCountUtil.release(bodybuf);
+
 	}
 
 }

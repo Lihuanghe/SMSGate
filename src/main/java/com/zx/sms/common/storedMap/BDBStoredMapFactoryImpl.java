@@ -24,8 +24,9 @@ import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.zx.sms.codec.cmpp.msg.Message;
+import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.queue.BdbQueueMap;
-import com.zx.sms.config.ConfigFileUtil;
+import com.zx.sms.config.PropertiesUtils;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 
 public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Long, Message> {
@@ -94,7 +95,7 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Long, Message> {
 
 	private QueueEnvironment buildBDB(String basename) {
 
-		String pathName = ConfigFileUtil.getGlobalBDBBaseHome() + basename;
+		String pathName = GlobalConstance.globalBDBBaseHome + basename;
 		File file = new File(pathName);
 		if (!file.exists()) {
 			boolean succ = file.mkdirs();
@@ -131,8 +132,8 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Long, Message> {
 
 			File home = new File(pathHome);
 			// 获取BDB的配置文件
-			File propertiesFile = ConfigFileUtil.getJeproperties();
-			EnvironmentConfig environmentConfig = new EnvironmentConfig(loadFrompropertiesFile(propertiesFile));
+		
+			EnvironmentConfig environmentConfig = new EnvironmentConfig(PropertiesUtils.getJeProperties());
 			environmentConfig.setAllowCreate(true);
 			environmentConfig.setTransactional(true);
 			environment = new Environment(home, environmentConfig);

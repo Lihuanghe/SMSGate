@@ -7,6 +7,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
+import io.netty.util.ReferenceCountUtil;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ import com.zx.sms.codec.cmpp.packet.CmppQueryRequest;
 import com.zx.sms.codec.cmpp.packet.CmppQueryResponse;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.common.GlobalConstance;
+import com.zx.sms.common.util.CMPPCommonUtil;
 
 /**
  * @author huzorro(huzorro@gmail.com)
@@ -59,19 +61,20 @@ public class CmppQueryResponseMessageCodec extends MessageToMessageCodec<Message
 		responseMessage.setMoScs(bodyBuffer.readUnsignedInt());
 		responseMessage.setMoWT(bodyBuffer.readUnsignedInt());
 		responseMessage.setMoFL(bodyBuffer.readUnsignedInt());
+		ReferenceCountUtil.release(bodyBuffer);
 		out.add(responseMessage);
 	}
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppQueryResponseMessage responseMessage, List<Object> out) throws Exception {
 
-		ByteBuf bodyBuffer = ctx.alloc().buffer(CmppQueryResponse.MOFL.getBodyLength());
+		ByteBuf bodyBuffer =Unpooled.buffer(CmppQueryResponse.MOFL.getBodyLength());
 
-		bodyBuffer.writeBytes(Bytes.ensureCapacity(responseMessage.getTime().getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(responseMessage.getTime().getBytes(GlobalConstance.defaultTransportCharset),
 				CmppQueryResponse.TIME.getLength(), 0));
 
 		bodyBuffer.writeByte(responseMessage.getQueryType());
-		bodyBuffer.writeBytes(Bytes.ensureCapacity(responseMessage.getQueryCode().getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(responseMessage.getQueryCode().getBytes(GlobalConstance.defaultTransportCharset),
 				CmppQueryResponse.QUERYCODE.getLength(), 0));
 		bodyBuffer.writeInt((int) responseMessage.getMtTLMsg());
 		bodyBuffer.writeInt((int) responseMessage.getMtTLUsr());
@@ -82,8 +85,8 @@ public class CmppQueryResponseMessageCodec extends MessageToMessageCodec<Message
 		bodyBuffer.writeInt((int) responseMessage.getMoWT());
 		bodyBuffer.writeInt((int) responseMessage.getMoFL());
 
-		responseMessage.setBodyBuffer(bodyBuffer);
-
+		responseMessage.setBodyBuffer(bodyBuffer.array());
+		ReferenceCountUtil.release(bodyBuffer);
 		out.add(responseMessage);
 
 	}

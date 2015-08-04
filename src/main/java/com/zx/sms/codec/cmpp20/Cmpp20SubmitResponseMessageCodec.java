@@ -7,6 +7,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
+import io.netty.util.ReferenceCountUtil;
 
 import java.util.List;
 
@@ -20,8 +21,7 @@ import com.zx.sms.common.util.DefaultMsgIdUtil;
 /**
  * shifei(shifei@asiainfo.com)
  */
-public class Cmpp20SubmitResponseMessageCodec extends
-		MessageToMessageCodec<Message, CmppSubmitResponseMessage> {
+public class Cmpp20SubmitResponseMessageCodec extends MessageToMessageCodec<Message, CmppSubmitResponseMessage> {
 	private PacketType packetType;
 
 	/**
@@ -36,8 +36,7 @@ public class Cmpp20SubmitResponseMessageCodec extends
 	}
 
 	@Override
-	protected void decode(ChannelHandlerContext ctx, Message msg,
-			List<Object> out) throws Exception {
+	protected void decode(ChannelHandlerContext ctx, Message msg, List<Object> out) throws Exception {
 		long commandId = ((Long) msg.getHeader().getCommandId()).longValue();
 		if (packetType.getCommandId() != commandId) {
 			// 不解析，交给下一个codec
@@ -45,26 +44,24 @@ public class Cmpp20SubmitResponseMessageCodec extends
 			return;
 		}
 
-		CmppSubmitResponseMessage responseMessage = new CmppSubmitResponseMessage(
-				msg.getHeader());
+		CmppSubmitResponseMessage responseMessage = new CmppSubmitResponseMessage(msg.getHeader());
 
-		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
+		ByteBuf bodyBuffer =Unpooled.wrappedBuffer(msg.getBodyBuffer());
 
-		responseMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer
-				.readBytes(Cmpp20SubmitResponse.MSGID.getLength()).array()));
+		responseMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer.readBytes(Cmpp20SubmitResponse.MSGID.getLength()).array()));
 		responseMessage.setResult(bodyBuffer.readUnsignedByte());
+		ReferenceCountUtil.release(bodyBuffer);
 		out.add(responseMessage);
 	}
 
 	@Override
-	protected void encode(ChannelHandlerContext ctx,
-			CmppSubmitResponseMessage msg, List<Object> out) throws Exception {
-		ByteBuf bodyBuffer = ctx.alloc().buffer(
-				Cmpp20SubmitResponse.RESULT.getBodyLength());
+	protected void encode(ChannelHandlerContext ctx, CmppSubmitResponseMessage msg, List<Object> out) throws Exception {
+		ByteBuf bodyBuffer = Unpooled.buffer(Cmpp20SubmitResponse.RESULT.getBodyLength());
 
 		bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(msg.getMsgId()));
 		bodyBuffer.writeByte((int) msg.getResult());
-		msg.setBodyBuffer(bodyBuffer);
+		msg.setBodyBuffer(bodyBuffer.array());
+		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);
 	}
 

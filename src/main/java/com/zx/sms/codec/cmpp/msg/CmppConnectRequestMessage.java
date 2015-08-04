@@ -86,17 +86,5 @@ public class CmppConnectRequestMessage extends DefaultMessage {
 		this.timestamp = timestamp;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return String
-				.format("CmppConnectRequestMessage [sourceAddr=%s, authenticatorSource=%s, version=%s, timestamp=%s, getPacketType()=%s, getChannelIds()=%s, getChildChannelIds()=%s, getResponse()=%s, getHeader()=%s]",
-						sourceAddr, Hex.encodeHexString(authenticatorSource), version, timestamp, getPacketType(), getChannelIds(), getChildChannelIds(),
-						getResponse(), getHeader());
-	}
 
 }

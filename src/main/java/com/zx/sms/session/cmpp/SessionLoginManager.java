@@ -1,19 +1,13 @@
 package com.zx.sms.session.cmpp;
 
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPipeline;
-import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import java.net.InetSocketAddress;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
@@ -25,9 +19,8 @@ import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Ints;
 import com.zx.sms.codec.cmpp.msg.CmppConnectRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppConnectResponseMessage;
-import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.common.GlobalConstance;
-import com.zx.sms.common.storedMap.BDBStoredMapFactoryImpl;
+import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.connect.manager.CMPPEndpointManager;
 import com.zx.sms.connect.manager.ClientEndpoint;
 import com.zx.sms.connect.manager.EndpointConnector;
@@ -36,7 +29,6 @@ import com.zx.sms.connect.manager.cmpp.CMPPCodecChannelInitializer;
 import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPServerChildEndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPServerEndpointEntity;
-import com.zx.sms.handler.api.BusinessHandlerInterface;
 
 /**
  * 处理客户端或者服务端登陆，密码校验。协议协商 建立连接前，不会启动消息重试和消息可靠性保证
@@ -97,13 +89,11 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 		if(serverchildentity!=null){
 			logger.warn("connection closed . {}" ,serverchildentity);
 			EndpointConnector conn = CMPPEndpointManager.INS.getEndpointConnector(serverchildentity);
-			conn.removeChannel(ctx.channel());
+			if(conn!=null)conn.removeChannel(ctx.channel());
 		}else if(entity instanceof CMPPEndpointEntity){
 			logger.warn("connection closed . {}" ,entity);
-			
-			
 			EndpointConnector conn = CMPPEndpointManager.INS.getEndpointConnector((CMPPEndpointEntity)entity);
-			conn.removeChannel(ctx.channel());
+			if(conn!=null)conn.removeChannel(ctx.channel());
 		}else{
 			//TODO 如果连接未建立完成。
 			logger.warn("shoud not be here. the entity is {}.channel remote is {}" ,entity ,ctx.channel().remoteAddress());
@@ -119,7 +109,7 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 				// TODO 发送连接请求 ,创建密码
 				CmppConnectRequestMessage req = new CmppConnectRequestMessage();
 				req.setSourceAddr(cliententity.getUserName());
-				String timestamp = DateFormatUtils.format(System.currentTimeMillis(), "MMddHHmmss");
+				String timestamp = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "MMddHHmmss");
 				req.setTimestamp(Long.parseLong(timestamp));
 				byte[] userBytes = cliententity.getUserName().getBytes(GlobalConstance.defaultTransportCharset);
 				byte[] passwdBytes = cliententity.getPassword().getBytes(GlobalConstance.defaultTransportCharset);
@@ -206,10 +196,15 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 		int status = validClientMsg(message, childentity);
 		// 认证成功
 		if (status == 0) {
-
-			if (version != childentity.getVersion()) {
-				childentity.setVersion(version);
-				changeCodecHandler(ctx, version);
+			//默认的是cmpp30的协议，如果不是cmpp30则要更换解析器版本
+			if ((short)0x30 != childentity.getVersion()) {
+				//发送ConnectRequest里的Version跟配置的不同
+				if(childentity.getVersion() != version){
+					logger.warn("receive version code {} ,expected version is {} .I would use version {}",version ,childentity.getVersion(),childentity.getVersion());
+				}
+				
+				//以配置的协议版本为准
+				changeCodecHandler(ctx, childentity.getVersion());
 			}
 			this.serverchildentity = childentity;
 
@@ -219,6 +214,11 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 			CMPPEndpointManager.INS.openEndpoint(childentity);
 			// 端口已打开，获取连接器
 			EndpointConnector conn = CMPPEndpointManager.INS.getEndpointConnector(childentity);
+			
+			if(conn==null){
+				logger.warn("entity may closed. {}" ,childentity);
+				return;
+			}
 			//把连接加入连接管理 器，该方法是同步方法
 			conn.addChannel(ctx.channel());
 			
@@ -244,7 +244,7 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 		logger.error("Connected error status :{}" , status);
 		// 认证失败
 		CmppConnectResponseMessage resp = new CmppConnectResponseMessage(message.getHeader().getSequenceId());
-
+		resp.setAuthenticatorISMG(new byte[16]);
 		resp.setStatus(status);
 		ChannelFuture promise = ctx.writeAndFlush(resp);
 
@@ -266,6 +266,10 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 			state = SessionState.Connect;
 			
 			EndpointConnector conn = CMPPEndpointManager.INS.getEndpointConnector(cliententity);
+			if(conn==null){
+				logger.warn("entity may closed. {}" ,cliententity);
+				return;
+			}
 			conn.addChannel(ctx.channel());
 			notifyChannelConnected(ctx);
 		} else {
@@ -288,7 +292,7 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 	
 	private void notifyChannelConnected(ChannelHandlerContext ctx ){
 		//通知业务handler连接已建立完成
-		ctx.fireUserEventTriggered(SessionState.Connect);
+		ctx.channel().pipeline().fireUserEventTriggered(SessionState.Connect);
 	}
 
 }

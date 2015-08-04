@@ -7,6 +7,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
+import io.netty.util.ReferenceCountUtil;
 
 import java.util.List;
 
@@ -46,15 +47,17 @@ public class CmppActiveTestResponseMessageCodec extends MessageToMessageCodec<Me
 		CmppActiveTestResponseMessage responseMessage = new CmppActiveTestResponseMessage(msg.getHeader());
 		ByteBuf  bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
 		responseMessage.setReserved(bodyBuffer.readByte());
+		ReferenceCountUtil.release(bodyBuffer);
 		out.add(responseMessage);
 	}
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppActiveTestResponseMessage msg, List<Object> out) throws Exception {
 		
-		ByteBuf bodyBuffer = ctx.alloc().buffer(CmppActiveTestResponse.RESERVED.getLength());
+		ByteBuf bodyBuffer = Unpooled.buffer(CmppActiveTestResponse.RESERVED.getLength());
 		bodyBuffer.writeByte(msg.getReserved());
-		msg.setBodyBuffer(bodyBuffer);
+		msg.setBodyBuffer(bodyBuffer.array());
+		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);
 	}
 

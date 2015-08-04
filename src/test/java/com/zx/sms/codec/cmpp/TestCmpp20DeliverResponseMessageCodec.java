@@ -8,9 +8,7 @@ import org.junit.Test;
 import com.zx.sms.codec.AbstractTestMessageCodec;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.packet.CmppHead;
-import com.zx.sms.codec.cmpp20.packet.Cmpp20DeliverRequest;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20DeliverResponse;
-import com.zx.sms.codec.cmpp20.packet.Cmpp20ReportRequest;
 import com.zx.sms.common.util.MsgId;
 
 public class TestCmpp20DeliverResponseMessageCodec extends AbstractTestMessageCodec<CmppDeliverResponseMessage> {

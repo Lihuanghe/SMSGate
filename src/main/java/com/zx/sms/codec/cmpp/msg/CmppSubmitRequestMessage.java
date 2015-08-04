@@ -1,11 +1,11 @@
 package com.zx.sms.codec.cmpp.msg;
 
-import org.apache.commons.codec.binary.Hex;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import com.zx.sms.codec.cmpp.packet.CmppPacketType;
-import com.zx.sms.codec.cmpp.packet.CmppSubmitRequest;
 import com.zx.sms.common.GlobalConstance;
-import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.MsgId;
 
 /**
@@ -16,34 +16,32 @@ import com.zx.sms.common.util.MsgId;
 public class CmppSubmitRequestMessage extends DefaultMessage {
 	private static final long serialVersionUID = 1369427662600486133L;
 	private MsgId msgid = new MsgId();
-	private short pktotal = 1;
-	private short pknumber = 1;
-	private short registeredDelivery = 1;
-	private short msglevel = 1;
-	private String serviceId = GlobalConstance.emptyString;
-	private short feeUserType = 3;
+
+	private short registeredDelivery = 0;
+	private short msglevel = 9;
+	private String serviceId = "cmcczx_sms";
+	private short feeUserType = 2;
 	private String feeterminalId = GlobalConstance.emptyString;
 	private short feeterminaltype = 0;
-	private short tppId = 0;
-	private short tpudhi = 0;
-	private short msgFmt = 15;
+
 	private String msgsrc = GlobalConstance.emptyString;
 	private String feeType = "01";
-	private String feeCode = GlobalConstance.emptyString;
+	private String feeCode = "000000";
 	private String valIdTime = GlobalConstance.emptyString;
 	private String atTime =GlobalConstance.emptyString;
 	private String srcId = GlobalConstance.emptyString;
-	private short destUsrtl = 1;
-	private String destterminalId = GlobalConstance.emptyString;
+	private short destUsrtl = 0;
+	private String[] destterminalId = GlobalConstance.emptyStringArray;
 	private short destterminaltype = 0;
-	private short msgLength = 120;
-	private String msgContent = GlobalConstance.emptyString;
+
 	private String linkID = GlobalConstance.emptyString;
 
 	private String reserve = GlobalConstance.emptyString;
 
-	private byte[] msgContentBytes = GlobalConstance.emptyBytes;
-
+	private String msgContent;
+	
+	private boolean supportLongMsg =  GlobalConstance.isSupportLongMsg;
+	
 	public CmppSubmitRequestMessage(Header header) {
 		super(CmppPacketType.CMPPSUBMITREQUEST, header);
 	}
@@ -67,35 +65,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 		this.msgid = msgid;
 	}
 
-	/**
-	 * @return the pktotal
-	 */
-	public short getPktotal() {
-		return pktotal;
-	}
 
-	/**
-	 * @param pktotal
-	 *            the pktotal to set
-	 */
-	public void setPktotal(short pktotal) {
-		this.pktotal = pktotal;
-	}
-
-	/**
-	 * @return the pknumber
-	 */
-	public short getPknumber() {
-		return pknumber;
-	}
-
-	/**
-	 * @param pknumber
-	 *            the pknumber to set
-	 */
-	public void setPknumber(short pknumber) {
-		this.pknumber = pknumber;
-	}
 
 	/**
 	 * @return the registeredDelivery
@@ -185,53 +155,6 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 	 */
 	public void setFeeterminaltype(short feeterminaltype) {
 		this.feeterminaltype = feeterminaltype;
-	}
-
-	/**
-	 * @return the tppId
-	 */
-	public short getTppId() {
-		return tppId;
-	}
-
-	/**
-	 * @param tppId
-	 *            the tppId to set
-	 */
-	public void setTppId(short tppId) {
-		this.tppId = tppId;
-	}
-
-	/**
-	 * @return the tpudhi
-	 */
-	public short getTpudhi() {
-		return tpudhi;
-	}
-
-	/**
-	 * @param tpudhi
-	 *            the tpudhi to set
-	 */
-	public void setTpudhi(short tpudhi) {
-		this.tpudhi = tpudhi;
-	}
-
-	/**
-	 * @return the msgFmt
-	 */
-	public short getMsgFmt() {
-		return msgFmt;
-	}
-
-	/**
-	 * @param msgFmt
-	 *            the msgFmt to set
-	 */
-	public void setMsgFmt(short msgFmt) {
-		this.msgFmt = msgFmt;
-		if (((0 | 4 | 8) & this.msgFmt) == this.msgFmt)
-			setTpudhi((short) 1);
 	}
 
 	/**
@@ -342,7 +265,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 	/**
 	 * @return the destterminalId
 	 */
-	public String getDestterminalId() {
+	public String[] getDestterminalId() {
 		return destterminalId;
 	}
 
@@ -350,8 +273,14 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 	 * @param destterminalId
 	 *            the destterminalId to set
 	 */
-	public void setDestterminalId(String destterminalId) {
+	public void setDestterminalId(String[] destterminalId) {
 		this.destterminalId = destterminalId;
+		this.destUsrtl = (short)destterminalId.length;
+	}
+	
+	public void setDestterminalId(String destterminalId) {
+		this.destterminalId = new String[]{destterminalId};
+		this.destUsrtl = (short)1;
 	}
 
 	/**
@@ -367,37 +296,6 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 	 */
 	public void setDestterminaltype(short destterminaltype) {
 		this.destterminaltype = destterminaltype;
-	}
-
-	/**
-	 * @return the msgLength
-	 */
-	public short getMsgLength() {
-		return msgLength;
-	}
-
-	/**
-	 * @param msgLength
-	 *            the msgLength to set
-	 */
-	public void setMsgLength(short msgLength) {
-		this.msgLength = msgLength;
-	}
-
-	/**
-	 * @return the msgContent
-	 */
-	public String getMsgContent() {
-		return msgContent;
-	}
-
-	/**
-	 * @param msgContent
-	 *            the msgContent to set
-	 */
-	public void setMsgContent(String msgContent) {
-		this.msgContent = msgContent;
-		setMsgContentBytes(this.msgContent.getBytes(CMPPCommonUtil.switchCharset(msgFmt)));
 	}
 
 	/**
@@ -430,35 +328,51 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 		this.reserve = reserve;
 	}
 
-	/**
-	 * @return the msgContentBytes
-	 */
-	public byte[] getMsgContentBytes() {
-		return msgContentBytes;
+	
+	public String getMsgContent() {
+		return msgContent;
 	}
 
 	/**
-	 * @param msgContentBytes
-	 *            the msgContentBytes to set
+	 * @return the msgContent
 	 */
-	public void setMsgContentBytes(byte[] msgContentBytes) {
-		this.msgContentBytes = msgContentBytes;
-		setMsgLength((short) msgContentBytes.length);
+	public void setMsgContent(String msgContent) {
+		if (msgContent == null){
+			this.msgContent = GlobalConstance.emptyString;
+		}else{
+			this.msgContent = msgContent;
+		}
+	}
+	
+
+
+	public boolean isSupportLongMsg() {
+		return supportLongMsg;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
+	public void setSupportLongMsg(boolean supportLongMsg) {
+		this.supportLongMsg = supportLongMsg;
+	}
+
+	public static CmppSubmitRequestMessage create(String phone ,String spid,String text){
+		CmppSubmitRequestMessage ret = new CmppSubmitRequestMessage();
+		ret.setDestterminalId(new String[]{phone});
+		ret.setSrcId(spid);
+		ret.setMsgContent(text);
+		return ret;
+	}
+	
+	public CmppSubmitRequestMessage clone() throws CloneNotSupportedException {
+		return   (CmppSubmitRequestMessage) super.clone();
+	}
+	
+
 	@Override
 	public String toString() {
-		return String
-				.format("CmppSubmitRequestMessage [msgid=%s, pktotal=%s, pknumber=%s, registeredDelivery=%s, msglevel=%s, serviceId=%s, feeUserType=%s, feeterminalId=%s, feeterminaltype=%s, tppId=%s, tpudhi=%s, msgFmt=%s, msgsrc=%s, feeType=%s, feeCode=%s, valIdTime=%s, atTime=%s, srcId=%s, destUsrtl=%s, destterminalId=%s, destterminaltype=%s, msgLength=%s, msgContent=%s, linkID=%s, msgContentBytes=%s, getPacketType()=%s, getTimestamp()=%s, getChannelIds()=%s, getChildChannelIds()=%s, getLifeTime()=%s, isTerminationLife()=%s, getResponse()=%s,  getHeader()=%s]",
-						msgid, pktotal, pknumber, registeredDelivery, msglevel, serviceId, feeUserType, feeterminalId, feeterminaltype, tppId, tpudhi, msgFmt,
-						msgsrc, feeType, feeCode, valIdTime, atTime, srcId, destUsrtl, destterminalId, destterminaltype, msgLength, msgContent, linkID,
-						reserve, Hex.encodeHexString(msgContentBytes), getPacketType(), getTimestamp(), getChannelIds(), getChildChannelIds(), getLifeTime(),
-						isTerminationLife(), getResponse(), getHeader());
+		return "CmppSubmitRequestMessage [msgid=" + msgid + ", registeredDelivery=" + registeredDelivery + ", serviceId=" + serviceId + ", msgsrc=" + msgsrc
+				+ ", srcId=" + srcId + ", destterminalId=" + Arrays.toString(destterminalId) + ", msgContent=" + msgContent +  ", getHeader()=" + getHeader() + "]";
 	}
+	
+	
 
 }

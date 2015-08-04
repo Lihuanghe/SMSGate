@@ -36,7 +36,7 @@ public abstract class EndpointEntity implements Serializable {
 	/**
 	 *该端口业务处理的handler集合， 
 	 **/
-	private List<Class<BusinessHandlerInterface>> businessHandlerSet;
+	private List<BusinessHandlerInterface> businessHandlerSet;
     
     public boolean isValid() {
 		return valid;
@@ -86,10 +86,10 @@ public abstract class EndpointEntity implements Serializable {
 		this.maxChannels = maxChannels;
 	}
 	
-	public List<Class<BusinessHandlerInterface>> getBusinessHandlerSet() {
+	public List<BusinessHandlerInterface> getBusinessHandlerSet() {
 		return businessHandlerSet;
 	}
-	public void setBusinessHandlerSet(List<Class<BusinessHandlerInterface>> businessHandlerSet) {
+	public void setBusinessHandlerSet(List<BusinessHandlerInterface> businessHandlerSet) {
 		this.businessHandlerSet = businessHandlerSet;
 	}
 	abstract public  <T extends EndpointConnector<EndpointEntity>> T buildConnector();
@@ -102,7 +102,4 @@ public abstract class EndpointEntity implements Serializable {
 				+ channelType + ", host=" + host + ", port=" + port
 				+ ", valid=" + valid + "]";
 	}
-    
-	
-    
 }

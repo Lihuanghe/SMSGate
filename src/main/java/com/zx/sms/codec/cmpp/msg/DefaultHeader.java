@@ -67,11 +67,7 @@ public class DefaultHeader implements Header {
 
 	@Override
 	public String toString() {
-		return String
-				.format("DefaultHead [headLength=%s, packetLength=%s, bodyLength=%s, commandId=%s, sequenceId=%s]",
-						headLength, packetLength, bodyLength, String.format("%1$#010x", commandId),
-						sequenceId);
+		return "DefaultHeader [commandId=" + commandId + ", sequenceId=" + sequenceId + "]";
 	}
 
-    
 }

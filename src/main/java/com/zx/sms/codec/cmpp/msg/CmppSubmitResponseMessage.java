@@ -46,17 +46,11 @@ public class CmppSubmitResponseMessage extends DefaultMessage {
 	public void setResult(long result) {
 		this.result = result;
 	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
-		return String
-				.format("CmppSubmitResponseMessage [msgId=%s, result=%s, getPacketType()=%s, getTimestamp()=%s, getChannelIds()=%s, getChildChannelIds()=%s, getHeader()=%s]",
-						msgId, result, getPacketType(), getTimestamp(),
-						getChannelIds(), getChildChannelIds(), getHeader());
+		return "CmppSubmitResponseMessage [msgId=" + msgId + ", result=" + result + ", getHeader()=" + getHeader() + "]";
 	}
+
 	
 	
 }

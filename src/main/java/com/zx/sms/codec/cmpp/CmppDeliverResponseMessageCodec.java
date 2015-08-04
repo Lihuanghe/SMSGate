@@ -7,6 +7,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
+import io.netty.util.ReferenceCountUtil;
 
 import java.util.List;
 
@@ -47,10 +48,11 @@ public class CmppDeliverResponseMessageCodec extends MessageToMessageCodec<Messa
 
 		CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(msg.getHeader());
 
-		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
+		ByteBuf bodyBuffer =Unpooled.wrappedBuffer(msg.getBodyBuffer());
 
 		responseMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer.readBytes(CmppDeliverResponse.MSGID.getLength()).array()));
 		responseMessage.setResult(bodyBuffer.readUnsignedInt());
+		ReferenceCountUtil.release(bodyBuffer);
 		out.add(responseMessage);
 
 	}
@@ -58,11 +60,12 @@ public class CmppDeliverResponseMessageCodec extends MessageToMessageCodec<Messa
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppDeliverResponseMessage msg, List<Object> out) throws Exception {
 
-		ByteBuf bodyBuffer = ctx.alloc().buffer(CmppDeliverResponse.MSGID.getBodyLength());
+		ByteBuf bodyBuffer = Unpooled.buffer(CmppDeliverResponse.MSGID.getBodyLength());
 		bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(msg.getMsgId()));
 		bodyBuffer.writeInt((int) msg.getResult());
 
-		msg.setBodyBuffer(bodyBuffer);
+		msg.setBodyBuffer(bodyBuffer.array());
+		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);
 
 	}

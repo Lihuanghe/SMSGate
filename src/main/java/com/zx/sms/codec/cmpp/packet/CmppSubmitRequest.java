@@ -56,6 +56,6 @@ public enum CmppSubmitRequest implements PacketStructure {
     }
     public int getBodyLength() {
        
-        return 183;
+        return 151;
     }
 }

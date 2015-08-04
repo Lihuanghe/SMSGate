@@ -64,16 +64,6 @@ public class CmppConnectResponseMessage extends DefaultMessage{
     public void setVersion(short version) {
         this.version = version;
     }
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return String
-				.format("CmppConnectResponseMessage [status=%s, authenticatorISMG=%s, version=%s, getPacketType()=%s, getTimestamp()=%s, getChannelIds()=%s, getChildChannelIds()=%s, getHeader()=%s]",
-						status, Hex.encodeHexString(authenticatorISMG), version,
-						getPacketType(), getTimestamp(), getChannelIds(),
-						getChildChannelIds(), getHeader());
-	}
+
  
 }

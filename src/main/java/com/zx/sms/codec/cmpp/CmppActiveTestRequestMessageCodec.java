@@ -45,7 +45,7 @@ public class CmppActiveTestRequestMessageCodec extends MessageToMessageCodec<Mes
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppActiveTestRequestMessage msg, List<Object> out) throws Exception {
-		msg.setBodyBuffer(GlobalConstance.emptyByte);
+		msg.setBodyBuffer(GlobalConstance.emptyBytes);
 		out.add(msg);
 	}
 

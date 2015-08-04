@@ -6,6 +6,7 @@ package com.zx.sms.codec.cmpp.msg;
 import com.zx.sms.codec.cmpp.packet.CmppPacketType;
 import com.zx.sms.codec.cmpp.packet.CmppQueryResponse;
 import com.zx.sms.common.GlobalConstance;
+import com.zx.sms.common.util.CachedMillisecondClock;
 
 /**
  * @author huzorro(huzorro@gmail.com)
@@ -14,7 +15,7 @@ import com.zx.sms.common.GlobalConstance;
  */
 public class CmppQueryResponseMessage extends DefaultMessage {
 	private static final long serialVersionUID = 5920218512034934853L;
-	private String time = String.format("%tY%<tm%<td", System.currentTimeMillis());
+	private String time = String.format("%tY%<tm%<td", CachedMillisecondClock.INS.now());
 	private short queryType = 0;
 	private String queryCode = GlobalConstance.emptyString;
 	private long mtTLMsg = 0;

@@ -13,7 +13,7 @@ public class SimpleEndpointFetcher implements EndpointFetcher<CMPPEndpointEntity
 
 	@Override
 	public void fetch(TransParamater parameter, List<CMPPEndpointEntity> out) {
-		List<EndpointEntity> allEntity = EndpointManager.INS.allAllEndPointEntity();
+		List<EndpointEntity> allEntity = EndpointManager.INS.allEndPointEntity();
 		for(EndpointEntity entity : allEntity){
 			
 			if(parameter.getMsgType().equals("MO"))

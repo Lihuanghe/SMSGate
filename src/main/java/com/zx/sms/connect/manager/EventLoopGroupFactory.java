@@ -1,9 +1,6 @@
 package com.zx.sms.connect.manager;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import com.zx.sms.config.ConfigFileUtil;
+import com.zx.sms.config.PropertiesUtils;
 
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -15,9 +12,9 @@ public enum EventLoopGroupFactory {
 	
 	private  final static EventLoopGroup bossGroup = new NioEventLoopGroup(1);
 	private  final static EventLoopGroup workgroup = new NioEventLoopGroup();
-	private  final static EventLoopGroup msgResend = new NioEventLoopGroup(4);
-	private  final static EventLoopGroup waitWindow = new NioEventLoopGroup(4);
-	private  final static EventLoopGroup busiWork = new NioEventLoopGroup();
+	private  final static EventLoopGroup msgResend = new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalMsgResendThreadCount","4")));
+	private  final static EventLoopGroup waitWindow = new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalWaitWindowThreadCount","4")));
+	private  final static EventLoopGroup busiWork = new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalBusiWorkThreadCount","4")));
 	
 	public EventLoopGroup getBoss(){return bossGroup;};
 	public EventLoopGroup getWorker(){return workgroup;};

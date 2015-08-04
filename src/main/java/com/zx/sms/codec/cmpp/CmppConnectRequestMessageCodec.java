@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
+import io.netty.util.ReferenceCountUtil;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import com.zx.sms.codec.cmpp.packet.CmppConnectRequest;
 import com.zx.sms.codec.cmpp.packet.CmppPacketType;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.common.GlobalConstance;
+import com.zx.sms.common.util.CMPPCommonUtil;
 
 /**
  *
@@ -49,21 +51,24 @@ public class CmppConnectRequestMessageCodec extends MessageToMessageCodec<Messag
 
 		requestMessage.setVersion(bodyBuffer.readUnsignedByte());
 		requestMessage.setTimestamp(bodyBuffer.readUnsignedInt());
+		
+		ReferenceCountUtil.release(bodyBuffer);
 		out.add(requestMessage);
 	}
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppConnectRequestMessage msg, List<Object> out) throws Exception {
 
-		ByteBuf bodyBuffer = ctx.alloc().buffer(CmppConnectRequest.AUTHENTICATORSOURCE.getBodyLength());
+		ByteBuf bodyBuffer =  Unpooled.buffer(CmppConnectRequest.AUTHENTICATORSOURCE.getBodyLength());
 
-		bodyBuffer.writeBytes(Bytes.ensureCapacity(msg.getSourceAddr().getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(msg.getSourceAddr().getBytes(GlobalConstance.defaultTransportCharset),
 				CmppConnectRequest.SOURCEADDR.getLength(), 0));
-		bodyBuffer.writeBytes(Bytes.ensureCapacity(msg.getAuthenticatorSource(),CmppConnectRequest.AUTHENTICATORSOURCE.getLength(),0));
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(msg.getAuthenticatorSource(),CmppConnectRequest.AUTHENTICATORSOURCE.getLength(),0));
 		bodyBuffer.writeByte(msg.getVersion());
 		bodyBuffer.writeInt((int) msg.getTimestamp());
 
-		msg.setBodyBuffer(bodyBuffer);
+		msg.setBodyBuffer(bodyBuffer.array());
+		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);
 	}
 

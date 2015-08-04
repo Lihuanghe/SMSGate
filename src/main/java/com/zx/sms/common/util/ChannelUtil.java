@@ -1,17 +1,20 @@
 package com.zx.sms.common.util;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelPromise;
+import io.netty.util.concurrent.Future;
+
 import java.nio.channels.ClosedChannelException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EndpointManager;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelPromise;
-import io.netty.util.concurrent.Future;
-
 public class ChannelUtil {
-
+	private static final Logger logger = LoggerFactory.getLogger(ChannelUtil.class);
 	/**
 	 * 同步发送消息，发送完成才返回。
 	 * 方法会阻塞线程，直到消息发送完成
@@ -44,11 +47,11 @@ public class ChannelUtil {
 			}
 			
 			if (ch.isActive()) {
-				
 				promise = syncWriteToChannel(ch, msg);
 				if (promise.isSuccess()) {
 					break;
 				}
+				logger.warn("shoud never here. {}" ,msg);
 			}
 		}
 		return promise;

@@ -45,18 +45,7 @@ public interface EndpointConnector<T extends EndpointEntity> {
 	 *获取端口当前连接数
 	 */
 	int getConnectionNum();
-	/**
-	 *设置channelHandler
-	 */
-	ChannelInitializer<?>  initPipeLine();
-	
-	/**
-	 * 获取端口连接器上已建立的连接
-	 **/
-//	public Queue<Channel> getChannels();
-//	
-//	public int incrementConn();
-//	public int decrementConn();
+
 	/**
 	 *连接创建成功后，将channel加入连接器，并发送用户事件 
 	 */

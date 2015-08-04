@@ -21,7 +21,7 @@ public class SequenceNumber implements Serializable{
 	private long sequenceId;
 	private final static AtomicLong atomicLong = new AtomicLong();
 	public SequenceNumber() {
-		this(System.currentTimeMillis());
+		this(CachedMillisecondClock.INS.now());
 	}
 	
 	/**

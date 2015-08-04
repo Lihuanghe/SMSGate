@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
+import io.netty.util.ReferenceCountUtil;
 
 import java.util.List;
 
@@ -49,6 +50,8 @@ public class CmppConnectResponseMessageCodec extends MessageToMessageCodec<Messa
 		responseMessage.setStatus(bodyBuffer.readUnsignedInt());
 		responseMessage.setAuthenticatorISMG(bodyBuffer.readBytes(CmppConnectResponse.AUTHENTICATORISMG.getLength()).array());
 		responseMessage.setVersion(bodyBuffer.readUnsignedByte());
+		
+		ReferenceCountUtil.release(bodyBuffer);
 		out.add(responseMessage);
 
 	}
@@ -56,14 +59,14 @@ public class CmppConnectResponseMessageCodec extends MessageToMessageCodec<Messa
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppConnectResponseMessage msg, List<Object> out) throws Exception {
 
-		ByteBuf bodyBuffer = ctx.alloc().buffer(CmppConnectResponse.AUTHENTICATORISMG.getBodyLength());
+		ByteBuf bodyBuffer = Unpooled.buffer(CmppConnectResponse.AUTHENTICATORISMG.getBodyLength());
 
 		bodyBuffer.writeInt((int) msg.getStatus());
 		bodyBuffer.writeBytes(msg.getAuthenticatorISMG());
 		bodyBuffer.writeByte(msg.getVersion());
 
-		msg.setBodyBuffer(bodyBuffer);
-
+		msg.setBodyBuffer(bodyBuffer.array());
+		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);
 
 	}

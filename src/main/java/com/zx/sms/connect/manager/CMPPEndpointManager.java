@@ -4,24 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.zx.sms.connect.manager.cmpp.CMPPClientEndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPServerChildEndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPServerEndpointEntity;
 
-public enum CMPPEndpointManager implements EndpointManagerInterface<CMPPEndpointEntity> {
+public enum CMPPEndpointManager implements EndpointManagerInterface {
 	INS;
 	private EndpointManager manager = EndpointManager.INS;
 	private ConcurrentHashMap<String, List<CMPPEndpointEntity>> groupMap = new ConcurrentHashMap<String, List<CMPPEndpointEntity>>();
 
 	@Override
-	public void openEndpoint(CMPPEndpointEntity entity) {
+	public void openEndpoint(EndpointEntity entity) {
 		manager.openEndpoint(entity);
 
 	}
 
 	@Override
-	public void close(CMPPEndpointEntity entity) {
+	public void close(EndpointEntity entity) {
 		manager.close(entity);
 
 	}
@@ -29,14 +28,13 @@ public enum CMPPEndpointManager implements EndpointManagerInterface<CMPPEndpoint
 	@Override
 	public void openAll() throws Exception {
 		manager.openAll();
-
 	}
 
 	public void addEndpointEntity(EndpointEntity entity) {
 
 		manager.addEndpointEntity(entity);
-		
-		//端口按group分组，方便按省份转发处理
+
+		// 端口按group分组，方便按省份转发处理
 		if (entity instanceof CMPPEndpointEntity) {
 			CMPPEndpointEntity cmppentity = (CMPPEndpointEntity) entity;
 			synchronized (this) {
@@ -48,10 +46,10 @@ public enum CMPPEndpointManager implements EndpointManagerInterface<CMPPEndpoint
 				}
 				list.add(cmppentity);
 			}
-		}else if(entity instanceof CMPPServerEndpointEntity){
-			
-			CMPPServerEndpointEntity serverentity = (CMPPServerEndpointEntity)entity;
-			for(CMPPServerChildEndpointEntity child : serverentity.getAllChild()){
+		} else if (entity instanceof CMPPServerEndpointEntity) {
+
+			CMPPServerEndpointEntity serverentity = (CMPPServerEndpointEntity) entity;
+			for (CMPPServerChildEndpointEntity child : serverentity.getAllChild()) {
 				synchronized (this) {
 					List<CMPPEndpointEntity> list = groupMap.get(child.getGroupName());
 					if (list == null) {
@@ -65,23 +63,17 @@ public enum CMPPEndpointManager implements EndpointManagerInterface<CMPPEndpoint
 	}
 
 	@Override
-	public List<CMPPEndpointEntity> allAllEndPointEntity() {
-		List<EndpointEntity> tmp = manager.allAllEndPointEntity();
-		List<CMPPEndpointEntity> list = new ArrayList<CMPPEndpointEntity>();
-		for (EndpointEntity entity : tmp) {
-			list.add((CMPPEndpointEntity) entity);
-		}
-		return list;
+	public List<EndpointEntity> allEndPointEntity() {
+		return manager.allEndPointEntity();
 	}
 
-	@Override
 	public List<CMPPEndpointEntity> getEndPointEntityByGroup(String group) {
 
 		return groupMap.get(group);
 	}
 
 	@Override
-	public EndpointConnector getEndpointConnector(CMPPEndpointEntity entity) {
+	public EndpointConnector getEndpointConnector(EndpointEntity entity) {
 
 		return manager.getEndpointConnector(entity);
 	}
@@ -96,13 +88,18 @@ public enum CMPPEndpointManager implements EndpointManagerInterface<CMPPEndpoint
 	public EndpointEntity getEndpointEntity(String id) {
 		return manager.getEndpointEntity(id);
 	}
-	public  void addAllEndpointEntity(List<EndpointEntity> entities)
-	{
-		if(entities==null||entities.size()==0) return;
-		for(EndpointEntity entity : entities){
-			if(entity.isValid())
+
+	public void addAllEndpointEntity(List<EndpointEntity> entities) {
+		if (entities == null || entities.size() == 0)
+			return;
+		for (EndpointEntity entity : entities) {
+			if (entity.isValid())
 				addEndpointEntity(entity);
 		}
+	}
+
+	public void close() {
+		manager.close();
 	}
 
 }

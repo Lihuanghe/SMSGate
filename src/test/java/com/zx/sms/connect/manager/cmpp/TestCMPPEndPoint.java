@@ -1,17 +1,19 @@
 package com.zx.sms.connect.manager.cmpp;
 
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.LockSupport;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
-import com.zx.sms.config.ConfigFileUtil;
 import com.zx.sms.connect.manager.CMPPEndpointManager;
-import com.zx.sms.connect.manager.EndpointManager;
+import com.zx.sms.connect.manager.EndpointEntity;
+import com.zx.sms.handler.api.BusinessHandlerInterface;
+import com.zx.sms.handler.api.gate.SessionConnectedHandler;
+import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
 /**
  *经测试，35个连接，每个连接每200/s条消息
  *lenovoX250能承担7000/s消息编码解析无压力。
@@ -21,8 +23,8 @@ import com.zx.sms.connect.manager.EndpointManager;
  *
  */
 
-@ContextConfiguration(locations="classpath:applicationContext.xml")
-public class TestCMPPEndPoint extends AbstractJUnit4SpringContextTests{
+
+public class TestCMPPEndPoint {
 	private static final Logger logger = LoggerFactory.getLogger(TestCMPPEndPoint.class);
 
 	@Test
@@ -30,13 +32,67 @@ public class TestCMPPEndPoint extends AbstractJUnit4SpringContextTests{
 	
 		final CMPPEndpointManager manager = CMPPEndpointManager.INS;
 
-		List list = ConfigFileUtil.loadServerEndpointEntity();
-		manager.addAllEndpointEntity(list);
-		list.clear();
-		List listclient = ConfigFileUtil.loadClientEndpointEntity();
-		manager.addAllEndpointEntity(listclient);
+		CMPPServerEndpointEntity server = new CMPPServerEndpointEntity();
+		server.setId("server");
+		server.setHost("127.0.0.1");
+		server.setPort(7891);
+		
+		CMPPServerChildEndpointEntity child = new CMPPServerChildEndpointEntity();
+		child.setId("child");
+		child.setChartset(Charset.forName("utf-8"));
+		child.setGroupName("test");
+		child.setUserName("123456");
+		child.setPassword("123456");
+		child.setWindows((short)16);
+		child.setVersion((short)48);
+		child.setRetryWaitTimeSec((short)10);
+		child.setMaxRetryCnt((short)3);
+		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
+		serverhandlers.add(new SessionConnectedHandler());
+		serverhandlers.add(new MessageReceiveHandler());
+		child.setBusinessHandlerSet(serverhandlers);
+		server.addchild(child);
+		
+		
+		manager.addEndpointEntity(server);
+		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
+		client.setId("client");
+		client.setHost("127.0.0.1");
+		client.setPort(7891);
+		client.setChartset(Charset.forName("utf-8"));
+		client.setGroupName("test");
+		client.setUserName("123456");
+		client.setPassword("123456");
+		client.setWindows((short)16);
+		client.setVersion((short)48);
+		client.setRetryWaitTimeSec((short)10);
+		
+		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
+		clienthandlers.add(new MessageReceiveHandler());
+		clienthandlers.add(new SessionConnectedHandler());
+		client.setBusinessHandlerSet(clienthandlers);
+		manager.addEndpointEntity(client);
 
+		
+		CMPPClientEndpointEntity clientErr = new CMPPClientEndpointEntity();
+		clientErr.setId("clienterr");
+		clientErr.setHost("127.0.0.1");
+		clientErr.setPort(7891);
+		clientErr.setChartset(Charset.forName("utf-8"));
+		clientErr.setGroupName("test");
+		clientErr.setUserName("123456");
+		clientErr.setPassword("1234456");
+		clientErr.setWindows((short)16);
+		clientErr.setVersion((short)48);
+		clientErr.setValid(false);
+		List<BusinessHandlerInterface> clientclientErrhandlers = new ArrayList<BusinessHandlerInterface>();
+		clientclientErrhandlers.add(new MessageReceiveHandler());
+		clientErr.setBusinessHandlerSet(clientclientErrhandlers);
+		manager.addEndpointEntity(clientErr);
+		
 		manager.openAll();
-		LockSupport.park();
+		
+		Thread.sleep(3600000);
+		CMPPEndpointManager.INS.close();
 	}
 }

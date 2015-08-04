@@ -10,6 +10,8 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 
 import com.zx.sms.codec.cmpp.msg.CmppActiveTestRequestMessage;
+import com.zx.sms.common.GlobalConstance;
+import com.zx.sms.session.cmpp.SessionState;
 
 /**
  * 
@@ -25,7 +27,13 @@ public class CmppServerIdleStateHandler extends ChannelHandlerAdapter {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent e = (IdleStateEvent) evt;
             if (e.state() == IdleState.ALL_IDLE) {
-                ctx.channel().writeAndFlush(new CmppActiveTestRequestMessage());
+            	//如果是CMPP连接未建立，直接关闭
+            	if(ctx.channel().attr(GlobalConstance.attributeKey).get() != SessionState.Connect){
+            		logger.warn("connectting time out. ");
+            		ctx.close();
+            	}else{
+            		ctx.channel().writeAndFlush(new CmppActiveTestRequestMessage());
+            	}
             } 
         }else{
         	ctx.fireUserEventTriggered(evt);

@@ -10,7 +10,7 @@ import org.junit.Test;
 import com.zx.sms.connect.manager.CMPPEndpointManager;
 import com.zx.sms.connect.manager.cmpp.CMPPClientEndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
-import com.zx.sms.connect.manager.cmpp.CMPPServerEndpointEntity;
+import com.zx.sms.connect.manager.cmpp.CMPPServerChildEndpointEntity;
 
 public class TestJsEngineEndpointFetcher {
 	private JsEngineEndpointFetcher fetcher = new JsEngineEndpointFetcher();
@@ -35,9 +35,10 @@ public class TestJsEngineEndpointFetcher {
 	@Before
 	public void init()
 	{
-		CMPPServerEndpointEntity server = new CMPPServerEndpointEntity();
+		CMPPServerChildEndpointEntity server = new CMPPServerChildEndpointEntity();
 		server.setPort(1234);
 		server.setId("1234");
+		server.setGroupName("23");
 		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
 		client.setPort(1234);
 		client.setGroupName("Test");

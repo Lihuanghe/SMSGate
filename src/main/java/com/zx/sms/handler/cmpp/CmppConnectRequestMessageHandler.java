@@ -41,8 +41,6 @@ public class CmppConnectRequestMessageHandler extends SimpleChannelInboundHandle
 		CmppConnectRequestMessage connectRequestMessage = (CmppConnectRequestMessage) message;
 		CmppConnectResponseMessage connectResponseMessage = new CmppConnectResponseMessage(message.getHeader().getSequenceId());
 
-		connectResponseMessage.setRequest(connectRequestMessage);
-
 		byte[] timestampBytes = String.format("%010d", connectRequestMessage.getTimestamp()).getBytes(GlobalConstance.defaultTransportCharset);
 		byte[] authBytes = DigestUtils.md5(Bytes.concat(new byte[0], new byte[9], new byte[0], timestampBytes));
 
