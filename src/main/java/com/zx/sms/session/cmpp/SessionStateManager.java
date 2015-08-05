@@ -298,6 +298,8 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 						storeMap.remove(key);
 						writeWithWindow(ctx, msg, ctx.newPromise());
 					} else {
+						//删除消息不重发
+						storeMap.remove(key);
 						errlogger.warn("msg send may not success. {}", msg);
 					}
 				}
