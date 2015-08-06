@@ -46,6 +46,7 @@ public class CmppTerminateRequestMessageCodec extends MessageToMessageCodec<Mess
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppTerminateRequestMessage msg, List<Object> out) throws Exception {
 		msg.setBodyBuffer(GlobalConstance.emptyBytes);
+		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		out.add(msg);
 	}
 

@@ -86,6 +86,7 @@ public class CmppQueryResponseMessageCodec extends MessageToMessageCodec<Message
 		bodyBuffer.writeInt((int) responseMessage.getMoFL());
 
 		responseMessage.setBodyBuffer(bodyBuffer.array());
+		responseMessage.getHeader().setBodyLength(responseMessage.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(responseMessage);
 

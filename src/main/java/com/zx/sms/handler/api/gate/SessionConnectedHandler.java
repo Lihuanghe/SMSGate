@@ -133,19 +133,9 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 	}
 
 	private AtomicInteger getOne(String key) {
-		AtomicInteger totnum = totleMap.get(key);
-		if (totnum == null) {
-			synchronized (totleMap) {
-				totnum = totleMap.get(key);
-				if (totnum == null) {
-					totnum = new AtomicInteger();
-					totleMap.put(key, totnum);
-					return totnum;
-				}
-
-			}
-		}
-		return totnum;
+		AtomicInteger totnum = new AtomicInteger();
+		AtomicInteger older = totleMap.putIfAbsent(key,totnum);
+		return older==null?totnum:older;
 	}
 
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {

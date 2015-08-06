@@ -129,6 +129,12 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppSubmitRequestMessage oldMsg, List<Object> out) throws Exception {
+		if(oldMsg.getBodyBuffer()!=null && oldMsg.getBodyBuffer().length == oldMsg.getHeader().getBodyLength()){
+			//bodybuffer不为空，说明该消息是已经编码过的。可能其它连接断了，消息通过这个连接再次发送，不需要再次编码
+			out.add(oldMsg);
+			return;
+		}
+		
 		CmppSubmitRequestMessage requestMessage = oldMsg.clone();
 		List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(requestMessage.getMsgContent(), requestMessage.isSupportLongMsg());
 		boolean first = true;
@@ -199,12 +205,14 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 
 			if (first) {
 				requestMessage.setBodyBuffer(bodyBuffer.array());
+				requestMessage.getHeader().setBodyLength(requestMessage.getBodyBuffer().length);
 				out.add(requestMessage);
 				first = false;
 			} else {
 				CmppSubmitRequestMessage defaultMsg = requestMessage.clone();
 				defaultMsg.getHeader().setSequenceId(DefaultSequenceNumberUtil.getSequenceNo());
 				defaultMsg.setBodyBuffer(bodyBuffer.array());
+				defaultMsg.getHeader().setBodyLength(defaultMsg.getBodyBuffer().length);
 				out.add(defaultMsg);
 			}
 			ReferenceCountUtil.release(bodyBuffer);

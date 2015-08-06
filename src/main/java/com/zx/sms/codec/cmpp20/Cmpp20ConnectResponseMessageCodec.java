@@ -65,6 +65,7 @@ public class Cmpp20ConnectResponseMessageCodec extends MessageToMessageCodec<Mes
 		bodyBuffer.writeByte(msg.getVersion());
 
 		msg.setBodyBuffer(bodyBuffer.array());
+		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);
 

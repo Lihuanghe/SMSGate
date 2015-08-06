@@ -55,26 +55,19 @@ public enum LongMessageFrameHolder {
 			// 超过一帧的，进行长短信合并
 			String mapKey = new StringBuilder().append(serviceNum).append(".").append(fh.frameKey).toString();
 
-			FrameHolder oldframeHolder = map.get(mapKey);
-			if (oldframeHolder == null) {
-				// 同步锁双重判断
-				synchronized (map) {
-					oldframeHolder = map.get(mapKey);
-					if (oldframeHolder == null) {
-						map.put(mapKey, fh);
-						oldframeHolder = fh;
-					} else {
-						mergeFrameHolder(oldframeHolder, frame);
-					}
-				}
-			} else {
+			FrameHolder oldframeHolder = map.putIfAbsent(mapKey, fh);
+			
+			if (oldframeHolder != null) {
+
 				mergeFrameHolder(oldframeHolder, frame);
+			}else{
+				oldframeHolder = fh;
 			}
 
 			if (oldframeHolder.isComplete()) {
-				synchronized (map) {
-					map.remove(mapKey);
-				}
+				
+				map.remove(mapKey);
+				
 				return new String(oldframeHolder.mergeAllcontent(), switchCharset(frame.getMsgfmt()));
 			}
 

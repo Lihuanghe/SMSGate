@@ -26,6 +26,7 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 	private static AtomicLong cnt = new AtomicLong();
 	private static Future future = null;
 	private static AtomicInteger connCnt = new AtomicInteger();
+	private int rate = 6;
 
 	@Override
 	public String name() {
@@ -53,11 +54,10 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 					@Override
 					public void run() {
 						long nowcnt = cnt.get();
-						logger.info("Totle Receive Msg Num:{},   speed : {}/s", nowcnt, (nowcnt - lastNum)/60);
+						logger.info("Totle Receive Msg Num:{},   speed : {}/s", nowcnt, (nowcnt - lastNum)/rate);
 						lastNum = nowcnt;
 					}
-
-				}, 0, 60, TimeUnit.SECONDS);
+				}, 0, rate, TimeUnit.SECONDS);
 			}
 		}
 		ctx.fireUserEventTriggered(evt);

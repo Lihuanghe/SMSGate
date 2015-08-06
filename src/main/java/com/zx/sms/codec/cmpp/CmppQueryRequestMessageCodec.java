@@ -67,6 +67,7 @@ public class CmppQueryRequestMessageCodec extends MessageToMessageCodec<Message,
 				.writeBytes(CMPPCommonUtil.ensureLength(msg.getReserve().getBytes(GlobalConstance.defaultTransportCharset), CmppQueryRequest.RESERVE.getLength(), 0));
 
 		msg.setBodyBuffer(bodyBuffer.array());
+		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 
 		out.add(msg);

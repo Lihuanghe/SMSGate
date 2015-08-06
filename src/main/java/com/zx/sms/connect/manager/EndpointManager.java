@@ -1,6 +1,7 @@
 package com.zx.sms.connect.manager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -15,7 +16,8 @@ public enum EndpointManager implements EndpointManagerInterface {
 	INS;
 	private static final Logger logger = LoggerFactory.getLogger(EndpointManager.class);
 
-	private List<EndpointEntity> endpoints = new ArrayList<EndpointEntity>();
+	private List<EndpointEntity> endpoints = Collections.synchronizedList(new ArrayList<EndpointEntity>());
+	
 	private ConcurrentHashMap<String, EndpointEntity> idMap = new ConcurrentHashMap<String, EndpointEntity>();
 
 	private ConcurrentHashMap<String, EndpointConnector> map = new ConcurrentHashMap<String, EndpointConnector>();

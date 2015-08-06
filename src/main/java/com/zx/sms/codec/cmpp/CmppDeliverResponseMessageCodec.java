@@ -65,6 +65,7 @@ public class CmppDeliverResponseMessageCodec extends MessageToMessageCodec<Messa
 		bodyBuffer.writeInt((int) msg.getResult());
 
 		msg.setBodyBuffer(bodyBuffer.array());
+		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);
 

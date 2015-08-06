@@ -17,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.codec.cmpp.msg.CmppActiveTestRequestMessage;
+import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
+import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.connect.manager.CMPPEndpointManager;
 import com.zx.sms.connect.manager.EndpointConnector;
@@ -86,8 +88,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 		logger.warn("Connection closed. channel:{}", ctx.channel());
 		// 取消重试队列里的任务
 		for (Map.Entry<Long, Entry> entry : msgRetryMap.entrySet()) {
-			final Long key = entry.getKey();
-			Entry en = cancelRetry(key, ctx.channel());
+			Message requestmsg = entry.getValue().request;
 
 			EndpointConnector conn = CMPPEndpointManager.INS.getEndpointConnector(entity);
 			// 所有连接都已关闭
@@ -95,10 +96,20 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 				break;
 
 			Channel ch = conn.fetch();
-			if (ch != null) {
-				ch.write(en.request);
-				logger.debug("current channel {} is closed.send requestMsg from other channel {} which is active.", ctx.channel(), ch);
+
+			if (ch != null && ch.isActive()) {
+				
+				if (entity.isReSendFailMsg()) {
+					// 连接断连，但是未收到Resp的消息，通过其它连接再发送一次
+					ch.writeAndFlush(requestmsg);
+
+					logger.debug("current channel {} is closed.send requestMsg from other channel {} which is active.", ctx.channel(), ch);
+				} else {
+					
+					errlogger.error("Channel closed . Msg may not send Success. {}" ,requestmsg);
+				}
 			}
+			cancelRetry(requestmsg, ctx.channel());
 		}
 		// 释放发送窗口
 		if (windowSize != 0) {
@@ -129,7 +140,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 				// 要先删除成功的消息，然后再开一个发送窗口。
 
 				storeMap.remove(message.getHeader().getSequenceId());
-				cancelRetry(message.getHeader().getSequenceId(), ctx.channel());
+				cancelRetry(message, ctx.channel());
 			}
 		}
 		ctx.fireChannelRead(msg);
@@ -213,7 +224,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 						logger.debug("retry Send Msg : {}", message);
 						if (times > entity.getMaxRetryCnt()) {
 
-							cancelRetry(message.getHeader().getSequenceId(), ctx.channel());
+							cancelRetry(message, ctx.channel());
 
 							// 删除发送成功的消息
 							storeMap.remove(message.getHeader().getSequenceId());
@@ -253,8 +264,8 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 
 	}
 
-	private Entry cancelRetry(Long seq, Channel channel) {
-		Entry entry = msgRetryMap.remove(seq);
+	private Entry cancelRetry(Message msg, Channel channel) {
+		Entry entry = msgRetryMap.remove(msg.getHeader().getSequenceId());
 
 		if (entry != null && entry.future != null) {
 			entry.future.cancel(true);
@@ -269,6 +280,20 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 				}
 			} else {
 				windows.release();
+			}
+		}
+
+		if (msg instanceof CmppSubmitResponseMessage) {
+			CmppSubmitResponseMessage submitResp = (CmppSubmitResponseMessage) msg;
+			if (submitResp.getResult() != 0) {
+
+				errlogger.error("Send SubmitMsg ERR . Msg: {} ,Resp:{}", entry.request, msg);
+			}
+		} else if (msg instanceof CmppDeliverResponseMessage) {
+			CmppDeliverResponseMessage deliverResp = (CmppDeliverResponseMessage) msg;
+			if (deliverResp.getResult() != 0) {
+
+				errlogger.error("Send DeliverMsg ERR . Msg: {} ,Resp:{}", entry.request, msg);
 			}
 		}
 
@@ -298,7 +323,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 						storeMap.remove(key);
 						writeWithWindow(ctx, msg, ctx.newPromise());
 					} else {
-						//删除消息不重发
+						// 删除消息不重发
 						storeMap.remove(key);
 						errlogger.warn("msg send may not success. {}", msg);
 					}

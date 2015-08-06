@@ -63,6 +63,7 @@ public class CmppSubmitResponseMessageCodec extends MessageToMessageCodec<Messag
 		bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(msg.getMsgId()));
 		bodyBuffer.writeInt((int) msg.getResult());
 		msg.setBodyBuffer(bodyBuffer.array());
+		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);
 	}

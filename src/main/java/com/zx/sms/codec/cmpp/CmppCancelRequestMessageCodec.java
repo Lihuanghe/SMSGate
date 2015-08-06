@@ -54,6 +54,7 @@ public class CmppCancelRequestMessageCodec extends MessageToMessageCodec<Message
 	protected void encode(ChannelHandlerContext ctx, CmppCancelRequestMessage msg, List<Object> out) throws Exception {
 
 		msg.setBodyBuffer(DefaultMsgIdUtil.msgId2Bytes(msg.getMsgId()));
+		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		out.add(msg);
 	}
 

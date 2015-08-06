@@ -3,14 +3,12 @@ package com.zx.sms.connect.manager.cmpp;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.LockSupport;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.connect.manager.CMPPEndpointManager;
-import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 import com.zx.sms.handler.api.gate.SessionConnectedHandler;
 import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
@@ -92,7 +90,7 @@ public class TestCMPPEndPoint {
 		
 		manager.openAll();
 		
-		Thread.sleep(3600000);
+		Thread.sleep(30000);
 		CMPPEndpointManager.INS.close();
 	}
 }

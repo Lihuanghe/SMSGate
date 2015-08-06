@@ -68,6 +68,7 @@ public class CmppConnectRequestMessageCodec extends MessageToMessageCodec<Messag
 		bodyBuffer.writeInt((int) msg.getTimestamp());
 
 		msg.setBodyBuffer(bodyBuffer.array());
+		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);
 	}
