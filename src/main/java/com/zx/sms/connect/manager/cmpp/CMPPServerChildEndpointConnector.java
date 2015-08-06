@@ -17,9 +17,4 @@ public class CMPPServerChildEndpointConnector extends AbstractEndpointConnector 
 		//TODO 子端口打开，说明有客户连接上来
 	}
 
-	@Override
-	public ChannelInitializer<?> initPipeLine() {
-		return null;
-	}
-
 }
