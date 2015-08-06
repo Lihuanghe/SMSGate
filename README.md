@@ -10,9 +10,6 @@
 ## Build
 执行mvn package . 建设使用jdk1.7.
 
-## 启动
-打包后，执行 java -jar ${JAR-NAME} -conf ${CONFIG-FILE-NAME}
-
 ## 增加了业务处理API
 业务层实现接口：BusinessHandlerInterface，或者继承AbstractBusinessHandler抽象类实现业务即可。 连接保活，消息重发，消息持久化，连接鉴权都已封装，不须要业务层再实现。
 
@@ -34,16 +31,16 @@
 
 ## 端口连接器接口
 `com.zx.sms.connect.manager.EndpointConnector`
-负责一个端口找打开，关闭，查看当前连接数，新增连接，移除连接。每个端口的实体类都对应一个EndpointConnector.当CMPP连接建立完成，将连接加入连接器管理，并给pipeLine上挂载业务处理的ChannelHandler.
+负责一个端口的打开，关闭，查看当前连接数，新增连接，移除连接。每个端口的实体类都对应一个EndpointConnector.当CMPP连接建立完成，将连接加入连接器管理，并给pipeLine上挂载业务处理的ChannelHandler.
 
 1. com.zx.sms.connect.manager.cmpp.CMPPServerEndpointConnector
-这个类调用netty的ServerBootstrap.bind()开一个服务监听
+这个类的open()调用netty的ServerBootstrap.bind()开一个服务监听
 
 2. com.zx.sms.connect.manager.cmpp.CMPPServerChildEndpointConnector
 用来收集CMPPServerChildEndpointEntity端口下的所有连接。它的open()方法为空.
 
 3. com.zx.sms.connect.manager.cmpp.CMPPClientEndpointConnector
-这个类调用netty的Bootstrap.connect()开始一个TCP连接
+这个类open()调用netty的Bootstrap.connect()开始一个TCP连接
 
 ## 端口管理器
 `com.zx.sms.connect.manager.EndpointManager`
@@ -51,7 +48,7 @@
 
 ## CMPP协议的连接登陆管理
 `com.zx.sms.session.cmpp.SessionLoginManager`
-这是一个netty的ChannelHandler实现，主要负责CMPP连接的建立。当连接建立完成后，会调用EndpointConnector.addChannel(channel)方法，把连接加入连接器管理，连接器负责给channel的pipeline上挂载业务处理的Handler,最后触发
+这是一个netty的ChannelHandler实现，主要负责CMPP连接的建立。当CMPP连接建立完成后，会调用EndpointConnector.addChannel(channel)方法，把连接加入连接器管理，连接器负责给channel的pipeline上挂载业务处理的Handler,最后触发
 SessionState.Connect事件，通知业务处理Handler连接已建立成功。
 
 ## CMPP的连接状态管理器
@@ -63,7 +60,7 @@ CMPP20MessageCodecAggregator [2.0协议]
 CMPPMessageCodecAggregator [这是3.0协议]
 聚合了CMPP主要消息协议的解析，编码，长短信拆分，合并处理。
 
-## 短信临时持久化存储实现 StoredMapFactory 
+## 短信持久化存储实现 StoredMapFactory 
 使用BDB的StoreMap实现消息持久化，防止系统意外丢失短信。
 
 ## 程序启动处理流程
