@@ -7,8 +7,6 @@
 ##性能测试
 在48core，128G内存的物理服务器上测试协议解析效率：35K条/s, cpu使用率25%. 
 
-程序启动：`java -jar sms-0.0.1-SNAPSHOT.jar -conf configuration.xml`
-
 ## Build
 执行mvn package . 建设使用jdk1.7.
 
@@ -18,10 +16,11 @@
 ## 增加了业务处理API
 业务层实现接口：BusinessHandlerInterface，或者继承AbstractBusinessHandler抽象类实现业务即可。 连接保活，消息重发，消息持久化，连接鉴权都已封装，不须要业务层再实现。
 
-## 实体类说明
+# 实体类说明
 
-# CMPP的连接端口
-·com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity·
+## CMPP的连接端口
+
+`com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity`
 表示一个Tcp连接的发起端，或者接收端。用来记录连接的IP.port,以及CMPP协议的用户名，密码，业务处理的ChannelHandler集合等其它端口参数。包含三个字类：
 
 1. com.zx.sms.connect.manager.cmpp.CMPPServerEndpointEntity
@@ -33,8 +32,8 @@
 3. com.zx.sms.connect.manager.cmpp.CMPPClientEndpointEntity
 客户端端口，包含CMPP连接用户名，密码，以及协议版本，以及服务端IP.port. 用于连接服务端
 
-# 端口连接器接口
-·com.zx.sms.connect.manager.EndpointConnector·
+## 端口连接器接口
+`com.zx.sms.connect.manager.EndpointConnector`
 负责一个端口找打开，关闭，查看当前连接数，新增连接，移除连接。每个端口的实体类都对应一个EndpointConnector.当CMPP连接建立完成，将连接加入连接器管理，并给pipeLine上挂载业务处理的ChannelHandler.
 
 1. com.zx.sms.connect.manager.cmpp.CMPPServerEndpointConnector
@@ -46,25 +45,25 @@
 3. com.zx.sms.connect.manager.cmpp.CMPPClientEndpointConnector
 这个类调用netty的Bootstrap.connect()开始一个TCP连接
 
-# 端口管理器
-·com.zx.sms.connect.manager.EndpointManager·
+## 端口管理器
+`com.zx.sms.connect.manager.EndpointManager`
 该类是单例模式，管理所有端口，并负责所有端口的打开，关闭，以及端口信息保存，以及连接断线重连。
 
-# CMPP协议的连接登陆管理
-·com.zx.sms.session.cmpp.SessionLoginManager·
+## CMPP协议的连接登陆管理
+`com.zx.sms.session.cmpp.SessionLoginManager`
 这是一个netty的ChannelHandler实现，主要负责CMPP连接的建立。当连接建立完成后，会调用EndpointConnector.addChannel(channel)方法，把连接加入连接器管理，连接器负责给channel的pipeline上挂载业务处理的Handler,最后触发
 SessionState.Connect事件，通知业务处理Handler连接已建立成功。
 
-# CMPP的连接状态管理器
-·com.zx.sms.session.cmpp.SessionStateManager·
+## CMPP的连接状态管理器
+`com.zx.sms.session.cmpp.SessionStateManager`
 这是一个netty的ChannelHandler实现。集中负责每个连接上CMPP消息的存储，短信重发，流量窗口控制，过期短信的处理
 
-# CMPP协议解析器
+## CMPP协议解析器
 CMPP20MessageCodecAggregator [2.0协议]
 CMPPMessageCodecAggregator [这是3.0协议]
 聚合了CMPP主要消息协议的解析，编码，长短信拆分，合并处理。
 
-# 短信临时持久化存储实现 StoredMapFactory 
+## 短信临时持久化存储实现 StoredMapFactory 
 使用BDB的StoreMap实现消息持久化，防止系统意外丢失短信。
 
 ## 程序启动处理流程
