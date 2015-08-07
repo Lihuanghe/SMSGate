@@ -94,8 +94,15 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Long, Message> {
 	}
 
 	private QueueEnvironment buildBDB(String basename) {
-
-		String pathName = GlobalConstance.globalBDBBaseHome + basename;
+		String pathName;
+		basename = basename==null?"":basename;
+		
+		if(GlobalConstance.globalBDBBaseHome.endsWith("/")){
+			 pathName = GlobalConstance.globalBDBBaseHome + basename;
+		}else{
+			 pathName = GlobalConstance.globalBDBBaseHome +"/"+ basename;
+		}
+		
 		File file = new File(pathName);
 		if (!file.exists()) {
 			boolean succ = file.mkdirs();
