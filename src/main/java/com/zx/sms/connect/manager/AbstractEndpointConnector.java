@@ -112,7 +112,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		int maxChannels = getEndpointEntity().getMaxChannels();
 
 		if (maxChannels != 0 && maxChannels <= getConnectionNum()) {
-			logger.info("MaxChannels config is {}. no more channel will be created . ", maxChannels);
+			logger.warn("MaxChannels config is {}. no more channel will be created . ", maxChannels);
 			ch.close();
 			return;
 		}
@@ -184,7 +184,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 						}
 						if (cloned != null) {
 							pipe.addLast(buziHandler.name(), cloned);
-							logger.info("handlers is not shareable . clone it success.");
+							logger.info("handlers is not shareable . clone it success. {}",cloned);
 						}
 					}
 

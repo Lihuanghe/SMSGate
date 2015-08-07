@@ -23,7 +23,7 @@ public enum EndpointManager implements EndpointManagerInterface {
 	private ConcurrentHashMap<String, EndpointConnector> map = new ConcurrentHashMap<String, EndpointConnector>();
 
 	public synchronized void openEndpoint(EndpointEntity entity) {
-		
+		if(!entity.isValid())  return ;
 		
 		EndpointEntity old = idMap.get(entity.getId());
 		if (old == null) {
