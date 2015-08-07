@@ -96,11 +96,10 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Long, Message> {
 	private QueueEnvironment buildBDB(String basename) {
 		String pathName;
 		basename = basename==null?"":basename;
-		
-		if(GlobalConstance.globalBDBBaseHome.endsWith("/")){
-			 pathName = GlobalConstance.globalBDBBaseHome + basename;
+		if(PropertiesUtils.globalBDBBaseHome.endsWith("/")){
+			 pathName = PropertiesUtils.globalBDBBaseHome + basename;
 		}else{
-			 pathName = GlobalConstance.globalBDBBaseHome +"/"+ basename;
+			 pathName = PropertiesUtils.globalBDBBaseHome +"/"+ basename;
 		}
 		
 		File file = new File(pathName);

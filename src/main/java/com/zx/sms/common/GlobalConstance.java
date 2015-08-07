@@ -22,8 +22,8 @@ public interface GlobalConstance {
 	public final static byte[] emptyBytes= new byte[0];
 	public final static String[] emptyStringArray= new String[0];
   
-    public static Charset defaultTransportCharset = Charset.forName(PropertiesUtils.getdefaultTransportCharset());
-    public static String globalBDBBaseHome = PropertiesUtils.getproperties("BDBBaseHome","");
+    public static final Charset defaultTransportCharset = Charset.forName(PropertiesUtils.getdefaultTransportCharset());
+
     public final static  CmppActiveTestRequestMessageHandler activeTestHandler =  new CmppActiveTestRequestMessageHandler();
     public final static  CmppActiveTestResponseMessageHandler activeTestRespHandler =  new CmppActiveTestResponseMessageHandler();
     public final static  CmppTerminateRequestMessageHandler terminateHandler =  new CmppTerminateRequestMessageHandler();
