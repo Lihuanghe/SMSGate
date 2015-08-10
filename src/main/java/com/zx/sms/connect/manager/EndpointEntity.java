@@ -31,7 +31,7 @@ public abstract class EndpointEntity implements Serializable {
 	/**
 	 *端口是否可用
 	 */
-	private boolean valid;
+	private boolean valid = true;
 	
 	/**
 	 *该端口业务处理的handler集合， 

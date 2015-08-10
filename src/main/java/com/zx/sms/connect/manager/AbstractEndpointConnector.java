@@ -203,7 +203,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			@Override
 			protected void initChannel(Channel ch) throws Exception {
 				ChannelPipeline pipeline = ch.pipeline();
-				pipeline.addLast("socketLog", new LoggingHandler(getEndpointEntity().getId(),LogLevel.DEBUG));
+				pipeline.addLast("socketLog", new LoggingHandler(getEndpointEntity().getId(),LogLevel.TRACE));
 				CMPPCodecChannelInitializer codec = null;
 				if(getEndpointEntity() instanceof CMPPEndpointEntity){
 					pipeline.addLast(GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, ((CMPPEndpointEntity)getEndpointEntity()).getIdleTimeSec(), TimeUnit.SECONDS));
