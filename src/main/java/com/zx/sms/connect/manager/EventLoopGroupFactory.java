@@ -21,4 +21,12 @@ public enum EventLoopGroupFactory {
 	public EventLoopGroup getMsgResend(){return msgResend;};
 	public EventLoopGroup getWaitWindow(){return waitWindow;};
 	public EventLoopGroup getBusiWork(){return busiWork;};
+	
+	public void closeAll(){
+		 getBoss().shutdownGracefully();
+		 getWorker().shutdownGracefully();
+		 getMsgResend().shutdownGracefully();
+		 getWaitWindow().shutdownGracefully();
+		 getBusiWork().shutdownGracefully();
+	}
 }
