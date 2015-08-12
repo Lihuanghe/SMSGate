@@ -26,10 +26,12 @@ import com.zx.sms.codec.cmpp20.packet.Cmpp20PacketType;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20SubmitRequest;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20SubmitResponse;
 import com.zx.sms.common.GlobalConstance;
+import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 import com.zx.sms.common.util.LongMessageFrameHolder;
+import com.zx.sms.common.util.MsgId;
 
 /**
  * shifei(shifei@asiainfo.com)
@@ -110,39 +112,41 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 
 		requestMessage.setReserve(bodyBuffer.readBytes(Cmpp20SubmitRequest.RESERVE.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 		ReferenceCountUtil.release(bodyBuffer);
+		try {
+			String content = LongMessageFrameHolder.INS.putAndget(StringUtils.join(destTermId, "|"), frame);
 
-		String content = LongMessageFrameHolder.INS.putAndget(StringUtils.join(destTermId, "|"), frame);
+			if (content != null) {
+				requestMessage.setMsgContent(content);
+				out.add(requestMessage);
+			} else {
 
-		if (content != null) {
-			requestMessage.setMsgContent(content);
-			out.add(requestMessage);
-		}else{
-			
-			CmppSubmitResponseMessage responseMessage = new CmppSubmitResponseMessage(msg.getHeader());
+				CmppSubmitResponseMessage responseMessage = new CmppSubmitResponseMessage(msg.getHeader());
 
+				responseMessage.setMsgId(requestMessage.getMsgid());
+				responseMessage.setResult(0);
+				ctx.channel().writeAndFlush(responseMessage);
+			}
+		} catch (NotSupportedException ex) {
+			// 不支持的短信格式，直接丢弃
 
-			responseMessage.setMsgId(requestMessage.getMsgid());
-			responseMessage.setResult(0);
-			ctx.channel().writeAndFlush(responseMessage);
 		}
 	}
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppSubmitRequestMessage oldMsg, List<Object> out) throws Exception {
-		if(oldMsg.getBodyBuffer()!=null && oldMsg.getBodyBuffer().length == oldMsg.getHeader().getBodyLength()){
-			//bodybuffer不为空，说明该消息是已经编码过的。可能其它连接断了，消息通过这个连接再次发送，不需要再次编码
+		if (oldMsg.getBodyBuffer() != null && oldMsg.getBodyBuffer().length == oldMsg.getHeader().getBodyLength()) {
+			// bodybuffer不为空，说明该消息是已经编码过的。可能其它连接断了，消息通过这个连接再次发送，不需要再次编码
 			out.add(oldMsg);
 			return;
 		}
-		
+
 		CmppSubmitRequestMessage requestMessage = oldMsg.clone();
 		List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(requestMessage.getMsgContent(), requestMessage.isSupportLongMsg());
 		boolean first = true;
 		for (LongMessageFrame frame : frameList) {
 
-			ByteBuf bodyBuffer =Unpooled.buffer(
-					Cmpp20SubmitRequest.ATTIME.getBodyLength() + frame.getMsgLength() + requestMessage.getDestUsrtl()
-							* Cmpp20SubmitRequest.DESTTERMINALID.getLength());
+			ByteBuf bodyBuffer = Unpooled.buffer(Cmpp20SubmitRequest.ATTIME.getBodyLength() + frame.getMsgLength() + requestMessage.getDestUsrtl()
+					* Cmpp20SubmitRequest.DESTTERMINALID.getLength());
 
 			bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(requestMessage.getMsgid()));
 			bodyBuffer.writeByte(frame.getPktotal());
@@ -197,7 +201,7 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 			bodyBuffer.writeByte(frame.getMsgLength());
 
 			bodyBuffer.writeBytes(frame.getMsgContentBytes());
-			
+
 			requestMessage.setMsgContent(frame.getContentPart());
 
 			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getReserve().getBytes(GlobalConstance.defaultTransportCharset),

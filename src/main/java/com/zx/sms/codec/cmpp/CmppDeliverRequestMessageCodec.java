@@ -22,6 +22,7 @@ import com.zx.sms.codec.cmpp.packet.CmppPacketType;
 import com.zx.sms.codec.cmpp.packet.CmppReportRequest;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.common.GlobalConstance;
+import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
@@ -99,16 +100,22 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 
 		ReferenceCountUtil.release(bodyBuffer);
 		if (requestMessage.getRegisteredDelivery() == 0) {
-			String content = LongMessageFrameHolder.INS.putAndget(requestMessage.getSrcterminalId(), frame);
-			if (content != null) {
-				requestMessage.setMsgContent(content);
-				out.add(requestMessage);
-			} else {
-				// 收到一个短信片断立即回复resp,但不通知应用层
-				CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(msg.getHeader());
-				responseMessage.setMsgId(requestMessage.getMsgId());
-				responseMessage.setResult(0);
-				ctx.channel().writeAndFlush(responseMessage);
+			try {
+				String content = LongMessageFrameHolder.INS.putAndget(requestMessage.getSrcterminalId(), frame);
+
+				if (content != null) {
+					requestMessage.setMsgContent(content);
+					out.add(requestMessage);
+				} else {
+					//短信片断未接收完全，直接给网关回复resp，等待其它片断
+					CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(msg.getHeader());
+					responseMessage.setMsgId(requestMessage.getMsgId());
+					responseMessage.setResult(0);
+					ctx.channel().writeAndFlush(responseMessage);
+				}
+			} catch (NotSupportedException ex) {
+				//如果用户发送的是语音或者图片,则无法解析，直接给网关加复resp
+				
 			}
 		} else {
 			out.add(requestMessage);

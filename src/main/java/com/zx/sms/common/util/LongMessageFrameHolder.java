@@ -262,6 +262,7 @@ public enum LongMessageFrameHolder {
 			int idx = msgcontent[6] - 1;
 			fh.merge(msgcontent, idx);
 		} else {
+			logger.warn("Not Support LongMsg.UDHI" );
 			throw new NotSupportedException("Not Support LongMsg.UDHI");
 		}
 
@@ -279,6 +280,7 @@ public enum LongMessageFrameHolder {
 			int frameKey = ((int) msgcontent[3] << 8) | (int) msgcontent[4];
 			return new FrameHolder(frameKey, msgcontent[5], msgcontent, msgcontent[6] - 1, msgcontent[0]);
 		} else {
+			logger.warn("Not Support LongMsg.UDHI" );
 			throw new NotSupportedException("Not Support LongMsg.UDHI");
 		}
 	}

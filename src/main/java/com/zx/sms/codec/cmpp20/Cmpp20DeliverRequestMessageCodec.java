@@ -9,22 +9,19 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import io.netty.util.ReferenceCountUtil;
 
-import java.nio.charset.Charset;
 import java.util.List;
 
-import com.google.common.primitives.Bytes;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppReportRequestMessage;
-import com.zx.sms.codec.cmpp.msg.DefaultMessage;
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20DeliverRequest;
-import com.zx.sms.codec.cmpp20.packet.Cmpp20DeliverResponse;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20PacketType;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20ReportRequest;
 import com.zx.sms.common.GlobalConstance;
+import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
@@ -106,16 +103,22 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 
 		ReferenceCountUtil.release(bodyBuffer);
 		if (requestMessage.getRegisteredDelivery() == 0) {
-			String content = LongMessageFrameHolder.INS.putAndget(requestMessage.getSrcterminalId(), frame);
+			try {
+				String content = LongMessageFrameHolder.INS.putAndget(requestMessage.getSrcterminalId(), frame);
 
-			if (content != null) {
-				requestMessage.setMsgContent(content);
-				out.add(requestMessage);
-			} else {
-				CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(msg.getHeader());
-				responseMessage.setMsgId(requestMessage.getMsgId());
-				responseMessage.setResult(0);
-				ctx.channel().writeAndFlush(responseMessage);
+				if (content != null) {
+					requestMessage.setMsgContent(content);
+					out.add(requestMessage);
+				} else {
+					//短信片断未接收完全，直接给网关回复resp，等待其它片断
+					CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(msg.getHeader());
+					responseMessage.setMsgId(requestMessage.getMsgId());
+					responseMessage.setResult(0);
+					ctx.channel().writeAndFlush(responseMessage);
+				}
+			} catch (NotSupportedException ex) {
+				//如果用户发送的是语音或者图片,则无法解析，直接给网关加复resp
+
 			}
 		} else {
 			out.add(requestMessage);
@@ -124,12 +127,12 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppDeliverRequestMessage oldMsg, List<Object> out) throws Exception {
-		if(oldMsg.getBodyBuffer()!=null && oldMsg.getBodyBuffer().length == oldMsg.getHeader().getBodyLength()){
-			//bodybuffer不为空，说明该消息是已经编码过的。可能其它连接断了，消息通过这个连接再次发送，不需要再次编码
+		if (oldMsg.getBodyBuffer() != null && oldMsg.getBodyBuffer().length == oldMsg.getHeader().getBodyLength()) {
+			// bodybuffer不为空，说明该消息是已经编码过的。可能其它连接断了，消息通过这个连接再次发送，不需要再次编码
 			out.add(oldMsg);
 			return;
 		}
-		
+
 		CmppDeliverRequestMessage requestMessage = oldMsg.clone();
 		List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(requestMessage.getMsgContent(), requestMessage.isSupportLongMsg());
 		boolean first = true;
@@ -150,7 +153,6 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 
 			// bodyBuffer.writeByte(requestMessage.getSrcterminalType());//CMPP2.0不编解码
 			bodyBuffer.writeByte(requestMessage.getRegisteredDelivery());
-		
 
 			if (!requestMessage.isReport()) {
 				assert (frame.getMsgLength() == frame.getMsgContentBytes().length);
