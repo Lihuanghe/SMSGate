@@ -50,6 +50,9 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 
 			CMPPServerEndpointEntity serverentity = (CMPPServerEndpointEntity) entity;
 			for (CMPPServerChildEndpointEntity child : serverentity.getAllChild()) {
+				
+				manager.addEndpointEntity(child);
+				
 				synchronized (this) {
 					List<CMPPEndpointEntity> list = groupMap.get(child.getGroupName());
 					if (list == null) {
@@ -88,6 +91,7 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 	public EndpointEntity getEndpointEntity(String id) {
 		return manager.getEndpointEntity(id);
 	}
+	
 
 	public void addAllEndpointEntity(List<EndpointEntity> entities) {
 		if (entities == null || entities.size() == 0)
