@@ -217,6 +217,7 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 			
 			if(conn==null){
 				logger.warn("entity may closed. {}" ,childentity);
+				failedLogin(ctx, message, 5);
 				return;
 			}
 			//把连接加入连接管理 器，该方法是同步方法
