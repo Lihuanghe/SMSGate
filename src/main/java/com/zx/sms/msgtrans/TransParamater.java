@@ -76,6 +76,11 @@ public class TransParamater {
 	public void setSpCode(String spCode) {
 		SpCode = spCode;
 	}
+	@Override
+	public String toString() {
+		return "TransParamater [Ip=" + Ip + ", Port=" + Port + ", User=" + User + ", Group=" + Group + ", GateID=" + GateID + ", MsgType=" + MsgType
+				+ ", Command=" + Command + ", CommandLength=" + CommandLength + ", MSID=" + MSID + ", SpCode=" + SpCode + "]";
+	}
 	
 
 }
