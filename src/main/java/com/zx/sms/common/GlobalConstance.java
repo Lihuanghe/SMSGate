@@ -1,11 +1,8 @@
 package com.zx.sms.common;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.util.AttributeKey;
 
 import java.nio.charset.Charset;
-import java.util.concurrent.atomic.AtomicLong;
 
 import com.zx.sms.config.PropertiesUtils;
 import com.zx.sms.handler.cmpp.BlackHoleHandler;
@@ -33,4 +30,6 @@ public interface GlobalConstance {
     public final static BlackHoleHandler blackhole = new BlackHoleHandler();
     public final static String IdleCheckerHandlerName = "IdleStateHandler";
     public final static boolean isSupportLongMsg = PropertiesUtils.getisSupportLongMsg();
+    
+    public final static String loggerNamePrefix = "entity.%s";
 }

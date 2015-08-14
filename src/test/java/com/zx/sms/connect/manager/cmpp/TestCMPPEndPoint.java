@@ -3,6 +3,7 @@ package com.zx.sms.connect.manager.cmpp;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.LockSupport;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -34,15 +35,18 @@ public class TestCMPPEndPoint {
 		server.setId("server");
 		server.setHost("127.0.0.1");
 		server.setPort(7891);
+		server.setValid(true);
 		
 		CMPPServerChildEndpointEntity child = new CMPPServerChildEndpointEntity();
 		child.setId("child");
 		child.setChartset(Charset.forName("utf-8"));
 		child.setGroupName("test");
-		child.setUserName("123456");
-		child.setPassword("123456");
+		child.setUserName("901782");
+		child.setPassword("ICP");
+		child.setValid(true);
 		child.setWindows((short)16);
 		child.setVersion((short)48);
+		child.setMaxChannels((short)20);
 		child.setRetryWaitTimeSec((short)10);
 		child.setMaxRetryCnt((short)3);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
@@ -53,14 +57,15 @@ public class TestCMPPEndPoint {
 		
 		
 		manager.addEndpointEntity(server);
+	
 		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
 		client.setId("client");
 		client.setHost("127.0.0.1");
 		client.setPort(7891);
 		client.setChartset(Charset.forName("utf-8"));
 		client.setGroupName("test");
-		client.setUserName("123456");
-		client.setPassword("123456");
+		client.setUserName("901782");
+		client.setPassword("ICP");
 		client.setWindows((short)16);
 		client.setVersion((short)48);
 		client.setRetryWaitTimeSec((short)10);
@@ -89,8 +94,8 @@ public class TestCMPPEndPoint {
 		manager.addEndpointEntity(clientErr);
 		
 		manager.openAll();
-		
-		Thread.sleep(30000);
+		LockSupport.park();
+//		Thread.sleep(300000);
 		CMPPEndpointManager.INS.close();
 	}
 }

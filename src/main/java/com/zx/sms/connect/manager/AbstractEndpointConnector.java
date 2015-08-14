@@ -161,7 +161,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 				pipe.replace(handler, GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, entity.getIdleTimeSec(), TimeUnit.SECONDS));
 			}
 		}
-		pipe.addFirst("socketLog", new LoggingHandler(entity.getId(),LogLevel.TRACE));
+		pipe.addFirst("socketLog", new LoggingHandler(String.format(GlobalConstance.loggerNamePrefix, entity.getId()),LogLevel.TRACE));
 		pipe.addLast("msgLog",new CMPPMessageLogHandler(entity));
 		
 		pipe.addLast("CmppActiveTestRequestMessageHandler", GlobalConstance.activeTestHandler);
