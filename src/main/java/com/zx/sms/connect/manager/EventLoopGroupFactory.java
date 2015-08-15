@@ -22,11 +22,16 @@ public enum EventLoopGroupFactory {
 	public EventLoopGroup getWaitWindow(){return waitWindow;};
 	public EventLoopGroup getBusiWork(){return busiWork;};
 	
+	/**
+	 *close方法会阻塞，
+	 *如果有死循环任务，线程池会关闭不掉。
+	 *
+	 */
 	public void closeAll(){
-		 getBoss().shutdownGracefully();
-		 getWorker().shutdownGracefully();
-		 getMsgResend().shutdownGracefully();
-		 getWaitWindow().shutdownGracefully();
-		 getBusiWork().shutdownGracefully();
+		 getBoss().shutdownGracefully().syncUninterruptibly();
+		 getWorker().shutdownGracefully().syncUninterruptibly();
+		 getMsgResend().shutdownGracefully().syncUninterruptibly();
+		 getWaitWindow().shutdownGracefully().syncUninterruptibly();
+		 getBusiWork().shutdownGracefully().syncUninterruptibly();
 	}
 }

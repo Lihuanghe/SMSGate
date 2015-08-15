@@ -1,5 +1,5 @@
 <configuration debug="true" scan="true">
-	<property scope="context" name="baseLogPath" value="./" />
+	<property scope="context" name="baseLogPath" value="." />
 
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
