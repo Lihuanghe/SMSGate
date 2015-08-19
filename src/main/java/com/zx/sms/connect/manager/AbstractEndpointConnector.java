@@ -181,10 +181,12 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 						AbstractBusinessHandler cloned = null;
 						try {
 							cloned = buziHandler.clone();
+							
 						} catch (CloneNotSupportedException e) {
 							logger.error("handlers is not shareable and not implements Cloneable", e);
 						}
 						if (cloned != null) {
+							cloned.setEndpointEntity(entity);
 							pipe.addLast(buziHandler.name(), cloned);
 							logger.info("handlers is not shareable . clone it success. {}",cloned);
 						}
