@@ -28,10 +28,14 @@ public enum EventLoopGroupFactory {
 	 *
 	 */
 	public void closeAll(){
-		 getBoss().shutdownGracefully().syncUninterruptibly();
-		 getWorker().shutdownGracefully().syncUninterruptibly();
+		//先停业务线程池
+		 getBusiWork().shutdownGracefully().syncUninterruptibly();
+
 		 getMsgResend().shutdownGracefully().syncUninterruptibly();
 		 getWaitWindow().shutdownGracefully().syncUninterruptibly();
-		 getBusiWork().shutdownGracefully().syncUninterruptibly();
+		 getBoss().shutdownGracefully().syncUninterruptibly();
+		 
+		 //最后停worker
+		 getWorker().shutdownGracefully().syncUninterruptibly();
 	}
 }

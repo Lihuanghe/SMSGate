@@ -53,7 +53,7 @@ public class CMPPServerEndpointConnector extends AbstractEndpointConnector {
 	public void close() throws Exception {
 
 		super.close();
-		acceptorChannel.close().sync();
+		acceptorChannel.close();
 		acceptorChannel = null;
 	}
 }

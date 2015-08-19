@@ -19,6 +19,7 @@ public class ChannelUtil {
 	 * 同步发送消息，发送完成才返回。
 	 * 方法会阻塞线程，直到消息发送完成
 	 */
+	@Deprecated
 	public static Future syncWriteToChannel(Channel ch, Object msg) throws ClosedChannelException,InterruptedException {
 
 		// 通过其它连接发送
@@ -35,6 +36,7 @@ public class ChannelUtil {
 	 * 
 	 * 方法会阻塞线程，直到消息发送完成
 	 */
+	@Deprecated
 	public static Future syncWriteToEntity(EndpointEntity entity, Object msg) throws ClosedChannelException,InterruptedException {
 		Future promise = null;
 		int i =  5;

@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -201,6 +202,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 			}
 
 		} catch (InterruptedException e) {
+			promise.setFailure(e);
 			logger.error("windows acquire interrupted: ", e.getCause() != null ? e.getCause() : e);
 		}
 		return acquired;
@@ -215,7 +217,14 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 		// 发送次数大于1时要重发
 		if (entry != null && entity.getMaxRetryCnt() > 1) {
 
-			Future<?> future = EventLoopGroupFactory.INS.getMsgResend().scheduleWithFixedDelay(new Runnable() {
+			/*
+			 *TODO bugfix:
+			 *不知道什么原因，会导致 下面的future任务没有cancel掉。
+			 *这里增加一个引用，当会试任务超过次数限制后，cancel掉自己。
+			 **/
+			final AtomicReference<Future> ref = new AtomicReference<Future>();
+			
+			 Future<?> future = EventLoopGroupFactory.INS.getMsgResend().scheduleWithFixedDelay(new Runnable() {
 
 				@Override
 				public void run() {
@@ -223,7 +232,12 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 						int times = message.incrementAndGetRequests();
 						logger.debug("retry Send Msg : {}", message);
 						if (times > entity.getMaxRetryCnt()) {
-
+							
+							//会有future泄漏的情况发生，这里cancel掉自己，来规避泄漏
+							Future future = ref.get();
+							if(future!=null)
+								future.cancel(true);
+							
 							cancelRetry(message, ctx.channel());
 
 							// 删除发送成功的消息
@@ -249,7 +263,9 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 					}
 				}
 			}, entity.getRetryWaitTimeSec(), entity.getRetryWaitTimeSec(), TimeUnit.SECONDS);
-
+			
+			ref.set(future);
+			
 			entry.future = future;
 
 			// 这里增加一次判断，是否已收到resp消息,已到resp后，msgRetryMap里的entry会被 remove掉。
@@ -346,7 +362,8 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 			message.incrementAndGetRequests();
 			msgWriteCount++;
 			// 记录已发送的请求,在发送msg前生记录到map里。防止生成retryTask前就收到resp的情况发生
-			msgRetryMap.put(seq, new Entry(message));
+			Entry tmpentry = new Entry(message);
+			msgRetryMap.put(seq, tmpentry);
 			// 持久化到队列
 			storeMap.put(seq, message);
 

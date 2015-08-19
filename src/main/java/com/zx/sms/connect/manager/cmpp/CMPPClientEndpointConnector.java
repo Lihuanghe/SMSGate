@@ -40,12 +40,6 @@ public class CMPPClientEndpointConnector extends AbstractEndpointConnector {
 	}
 	@Override
 	public void open() throws Exception {
-		ChannelFuture future = bootstrap.connect(getEndpointEntity().getHost(), getEndpointEntity().getPort());
-		
-		try {
-			future.sync();
-		} catch (InterruptedException e) {
-			logger.error("open Entity {} error. ",getEndpointEntity());
-		}
+		bootstrap.connect(getEndpointEntity().getHost(), getEndpointEntity().getPort());
 	}
 }
