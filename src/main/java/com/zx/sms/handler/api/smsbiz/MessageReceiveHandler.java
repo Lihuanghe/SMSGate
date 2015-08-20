@@ -1,11 +1,10 @@
 package com.zx.sms.handler.api.smsbiz;
 
-import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
@@ -16,49 +15,40 @@ import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
+import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.session.cmpp.SessionState;
 
-
-@Sharable
 public class MessageReceiveHandler extends AbstractBusinessHandler {
 	private static final Logger logger = LoggerFactory.getLogger(MessageReceiveHandler.class);
-	private static AtomicLong cnt = new AtomicLong();
-	private static Future future = null;
-	private static AtomicInteger connCnt = new AtomicInteger();
 	private int rate = 6;
 
+	private AtomicLong cnt = new AtomicLong();
+	private long lastNum = 0;
 	@Override
 	public String name() {
 		return "MessageReceiveHandler-smsBiz";
 	}
 
-	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-		connCnt.decrementAndGet();
-		if (future != null && connCnt.get() == 0) {
-			logger.info("cancel future,{}", ctx.channel().id());
-			future.cancel(true);
-			future = null;
-		}
-		logger.info("channelID,{},total receive {}", ctx.channel().id(), cnt.get());
-		ctx.fireChannelInactive();
-	}
-
 	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
 		if (evt == SessionState.Connect) {
-			connCnt.incrementAndGet();
-			if (future == null) {
-				future = EventLoopGroupFactory.INS.getBusiWork().scheduleAtFixedRate(new Runnable() {
-					private long lastNum = 0;
-
-					@Override
-					public void run() {
-						long nowcnt = cnt.get();
-						logger.info("Totle Receive Msg Num:{},   speed : {}/s", nowcnt, (nowcnt - lastNum)/rate);
-						lastNum = nowcnt;
-					}
-				}, 0, rate, TimeUnit.SECONDS);
-			}
+			final Channel ch = ctx.channel();
+			EventLoopGroupFactory.INS.submitUnlimitCircleTask(EventLoopGroupFactory.INS.getBusiWork(),new Callable<Boolean>(){
+				
+				@Override
+				public Boolean call() throws Exception {
+					Thread.sleep(rate*1000);
+					long nowcnt = cnt.get();
+					logger.info("Totle Receive Msg Num:{},   speed : {}/s", nowcnt, (nowcnt - lastNum)/rate);
+					lastNum = nowcnt;
+					return null;
+				}
+			},new ExitUnlimitCirclePolicy() {
+				@Override
+				public boolean isOver(Future future) {
+					return ch.isActive();
+				}
+			});
 		}
 		ctx.fireUserEventTriggered(evt);
 	}
@@ -89,6 +79,13 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 		} else {
 			ctx.fireChannelRead(msg);
 		}
+	}
+	
+	public MessageReceiveHandler clone() throws CloneNotSupportedException {
+		MessageReceiveHandler ret = (MessageReceiveHandler) super.clone();
+		ret.cnt = new AtomicLong();
+		ret.lastNum = 0;
+		return ret;
 	}
 
 }

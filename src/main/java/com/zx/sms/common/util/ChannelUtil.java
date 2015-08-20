@@ -1,8 +1,10 @@
 package com.zx.sms.common.util;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelPromise;
 import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 import java.nio.channels.ClosedChannelException;
 
@@ -14,48 +16,40 @@ import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EndpointManager;
 
 public class ChannelUtil {
-	private static final Logger logger = LoggerFactory.getLogger(ChannelUtil.class);
-	/**
-	 * 同步发送消息，发送完成才返回。
-	 * 方法会阻塞线程，直到消息发送完成
-	 */
-	@Deprecated
-	public static Future syncWriteToChannel(Channel ch, Object msg) throws ClosedChannelException,InterruptedException {
-
-		// 通过其它连接发送
-		ChannelPromise promise = ch.newPromise();
-		ch.writeAndFlush(msg, promise);
-		// 阻塞，等 netty发送完成
-		
-		promise.sync();
-		return promise;
-	}
 
 	/**
 	 * 同步发送消息到端口，发送完成才返回。
 	 * 
 	 * 方法会阻塞线程，直到消息发送完成
 	 */
-	@Deprecated
-	public static Future syncWriteToEntity(EndpointEntity entity, Object msg) throws ClosedChannelException,InterruptedException {
-		Future promise = null;
-		int i =  5;
+	public static ChannelFuture asyncWriteToEntity(final EndpointEntity entity, final Object msg) {
+		int i = 5;
 		EndpointConnector connector = EndpointManager.INS.getEndpointConnector(entity);
-		while (connector !=null && i-- > 0) {
+		while (connector != null && i-- > 0) {
 			Channel ch = connector.fetch();
-			//端口上还没有可用连接
-			if(ch == null){
+			// 端口上还没有可用连接
+			if (ch == null)
 				break;
-			}
-			
+
 			if (ch.isActive()) {
-				promise = syncWriteToChannel(ch, msg);
-				if (promise.isSuccess()) {
-					break;
-				}
-				logger.warn("shoud never here. {}" ,msg);
+
+				ChannelFuture future = ch.writeAndFlush(msg);
+
+				future.addListener(new GenericFutureListener<ChannelFuture>() {
+					@Override
+					public void operationComplete(ChannelFuture future) throws Exception {
+						// 如果发送消息失败，记录失败日志
+						if (!future.isSuccess()) {
+							StringBuilder sb = new StringBuilder();
+							sb.append("SendMessage ").append(msg.toString()).append(" Requet Failed from ").append(entity.toString());
+							Logger logger = LoggerFactory.getLogger(entity.getId());
+							logger.error(sb.toString(), future.cause());
+						}
+					}
+				});
+				return future;
 			}
 		}
-		return promise;
+		return null;
 	}
 }

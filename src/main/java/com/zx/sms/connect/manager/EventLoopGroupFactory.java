@@ -1,9 +1,13 @@
 package com.zx.sms.connect.manager;
 
-import com.zx.sms.config.PropertiesUtils;
-
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
+
+import java.util.concurrent.Callable;
+
+import com.zx.sms.config.PropertiesUtils;
 /**
  *@author Lihuanghe(18852780@qq.com)
  */
@@ -21,6 +25,25 @@ public enum EventLoopGroupFactory {
 	public EventLoopGroup getMsgResend(){return msgResend;};
 	public EventLoopGroup getWaitWindow(){return waitWindow;};
 	public EventLoopGroup getBusiWork(){return busiWork;};
+	
+	public void submitUnlimitCircleTask(EventLoopGroup executor ,  Callable<?> task,ExitUnlimitCirclePolicy exitCondition){
+		addtask(executor,task,exitCondition);
+	}
+	
+	private void addtask(final EventLoopGroup executor ,final Callable<?> task ,final ExitUnlimitCirclePolicy exitCondition) {
+		
+		Future<?> future = executor.submit(task);
+		//
+		future.addListener(new GenericFutureListener<Future<Object>>() {
+		
+			public void operationComplete(Future<Object> future) throws Exception {
+				if(future.isSuccess()){
+					if(exitCondition.isOver(future))			
+						addtask(executor,task ,exitCondition);
+				}
+			}
+		});
+	}
 	
 	/**
 	 *close方法会阻塞，
