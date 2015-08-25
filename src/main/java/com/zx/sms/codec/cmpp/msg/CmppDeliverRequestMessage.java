@@ -228,11 +228,12 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 
 	@Override
 	public String toString() {
+		if(isReport()){
+			return "CmppDeliverRequestMessage [msgId=" + msgId + ", destId=" + destId + ", serviceid=" + serviceid + ", srcterminalId=" + srcterminalId
+					+ ", registeredDelivery=" + registeredDelivery + ", msgContent=" + msgContent + ", getHeader()=" + getHeader() + ", ReportRequest="+ getReportRequestMessage()+ "]";
+					
+		}
 		return "CmppDeliverRequestMessage [msgId=" + msgId + ", destId=" + destId + ", serviceid=" + serviceid + ", srcterminalId=" + srcterminalId
 				+ ", registeredDelivery=" + registeredDelivery + ", msgContent=" + msgContent + ", getHeader()=" + getHeader() + "]";
 	}
-	
-
-	
-	
 }
