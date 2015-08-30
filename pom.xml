@@ -5,7 +5,7 @@
 
 	<groupId>com.zx.sms</groupId>
 	<artifactId>cmpp-core</artifactId>
-	<version>1.15</version>
+	<version>1.16</version>
 	<packaging>jar</packaging>
 	<name>cmpp-core</name>
 

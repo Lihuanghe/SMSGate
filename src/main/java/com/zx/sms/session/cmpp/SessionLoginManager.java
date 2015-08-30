@@ -220,24 +220,38 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 				failedLogin(ctx, message, 5);
 				return;
 			}
-			//把连接加入连接管理 器，该方法是同步方法
-			conn.addChannel(ctx.channel());
-			
-			//channelHandler已绑定完成，给客户端发resp.
-			CmppConnectResponseMessage resp = new CmppConnectResponseMessage(message.getHeader().getSequenceId());
-			resp.setStatus(status);
-			resp.setAuthenticatorISMG(DigestUtils.md5(Bytes.concat(Ints.toByteArray((int)resp.getStatus()), message.getAuthenticatorSource(), childentity
-					.getPassword().getBytes(childentity.getChartset()))));
-			ctx.writeAndFlush(resp);
-			
-			//通知业务handler连接已建立完成
-			notifyChannelConnected(ctx);
-			
+			//检查是否超过最大连接数
+			if(validMaxChannel(childentity,conn)){
+				//把连接加入连接管理 器，该方法是同步方法
+				conn.addChannel(ctx.channel());
+				
+				//channelHandler已绑定完成，给客户端发resp.
+				CmppConnectResponseMessage resp = new CmppConnectResponseMessage(message.getHeader().getSequenceId());
+				resp.setStatus(status);
+				resp.setAuthenticatorISMG(DigestUtils.md5(Bytes.concat(Ints.toByteArray((int)resp.getStatus()), message.getAuthenticatorSource(), childentity
+						.getPassword().getBytes(childentity.getChartset()))));
+				ctx.writeAndFlush(resp);
+				
+				//通知业务handler连接已建立完成
+				notifyChannelConnected(ctx);
+				
+			}else{
+				//超过最大连接数了
+				failedLogin(ctx, message, 5);
+			}
 		} else {
 			failedLogin(ctx, message, status);
 		}
 	}
 
+	private CmppConnectResponseMessage buildCmppConnectResponseMessage(long seq,long status,byte[] ismg)
+	{
+		CmppConnectResponseMessage resp = new CmppConnectResponseMessage(seq);
+		resp.setStatus(status);
+		resp.setAuthenticatorISMG(ismg);
+		return resp;
+	}
+	
 	/**
 	 * 状态 0：正确 1：消息结构错 2：非法源地址 3：认证错 4：版本太高 5~ ：其他错误
 	 */
@@ -263,14 +277,14 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 		final short version = message.getVersion();
 		int status = validServermsg(message);
 		if (status == 0) {
-		
 			state = SessionState.Connect;
-			
 			EndpointConnector conn = CMPPEndpointManager.INS.getEndpointConnector(cliententity);
-			if(conn==null){
+			if(conn==null || (!validMaxChannel(cliententity,conn))){
 				logger.warn("entity may closed. {}" ,cliententity);
+				ctx.close();
 				return;
 			}
+			//如果没有超过最大连接数配置，建立连接
 			conn.addChannel(ctx.channel());
 			notifyChannelConnected(ctx);
 		} else {
@@ -289,6 +303,18 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 
 		}
 
+	}
+	
+	private boolean validMaxChannel(CMPPEndpointEntity entity,EndpointConnector conn)
+	{
+		int maxChannels = entity.getMaxChannels();
+
+		if (maxChannels != 0 && maxChannels <= conn.getConnectionNum()) {
+			logger.warn("MaxChannels config is {}. no more channel will be created . ", maxChannels);
+			
+			return false;
+		}
+		return true;
 	}
 	
 	private void notifyChannelConnected(ChannelHandlerContext ctx ){

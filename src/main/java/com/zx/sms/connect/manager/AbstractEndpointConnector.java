@@ -109,13 +109,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	}
 
 	public synchronized void addChannel(Channel ch) {
-		int maxChannels = getEndpointEntity().getMaxChannels();
 
-		if (maxChannels != 0 && maxChannels <= getConnectionNum()) {
-			logger.warn("MaxChannels config is {}. no more channel will be created . ", maxChannels);
-			ch.close();
-			return;
-		}
 		// 标识连接已建立
 		ch.attr(GlobalConstance.attributeKey).set(SessionState.Connect);
 		getChannels().add(ch);
@@ -146,8 +140,8 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 	public synchronized void removeChannel(Channel ch) {
 		ch.attr(GlobalConstance.attributeKey).set(SessionState.DisConnect);
-		getChannels().remove(ch);
-		decrementConn();
+		if(getChannels().remove(ch))
+			decrementConn();
 	}
 
 	/**
