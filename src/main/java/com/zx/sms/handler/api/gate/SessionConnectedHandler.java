@@ -99,14 +99,15 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						cnt = totleCnt + cnt;
 					}
 					
-					logger.info("last msg cnt : {}" ,totleCnt<0?cnt:totleCnt);
+					logger.info("last msg cnt : {}" ,totleCnt<0?0:totleCnt);
 					while(cnt-->0) ChannelUtil.asyncWriteToEntity(getEndpointEntity(), createTestReq());
 					return true;
 				}
 			}, new ExitUnlimitCirclePolicy() {
 				@Override
 				public boolean isOver(Future future) {
-					return ch.isActive() && totleCnt > 0;
+					boolean ret = ch.isActive() && totleCnt > 0;
+					return ret;
 				}
 			});
 		}
