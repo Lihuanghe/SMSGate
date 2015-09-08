@@ -49,7 +49,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 			
 			final CMPPEndpointEntity finalentity = (CMPPEndpointEntity) getEndpointEntity();
 			final Channel ch = ctx.channel();
-			EventLoopGroupFactory.INS.submitUnlimitCircleTask(EventLoopGroupFactory.INS.getBusiWork(), new Callable<Boolean>() {
+			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>() {
 				private Message createTestReq() {
 					int contentLength = RandomUtils.nextInt() & 0x0f;
 					StringBuilder sb = new StringBuilder();
@@ -111,7 +111,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 					boolean ret = ch.isActive() && totleCnt > 0;
 					return ret;
 				}
-			});
+			},1);
 		}
 		ctx.fireUserEventTriggered(evt);
 

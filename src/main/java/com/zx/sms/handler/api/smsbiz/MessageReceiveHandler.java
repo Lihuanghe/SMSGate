@@ -33,11 +33,11 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
 		if (evt == SessionState.Connect) {
 			final Channel ch = ctx.channel();
-			EventLoopGroupFactory.INS.submitUnlimitCircleTask(EventLoopGroupFactory.INS.getBusiWork(),new Callable<Boolean>(){
+			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>(){
 				
 				@Override
 				public Boolean call() throws Exception {
-					Thread.sleep(rate*1000);
+				
 					long nowcnt = cnt.get();
 					logger.info("Totle Receive Msg Num:{},   speed : {}/s", nowcnt, (nowcnt - lastNum)/rate);
 					lastNum = nowcnt;
@@ -48,7 +48,7 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 				public boolean notOver(Future future) {
 					return ch.isActive();
 				}
-			});
+			},rate*1000);
 		}
 		ctx.fireUserEventTriggered(evt);
 	}

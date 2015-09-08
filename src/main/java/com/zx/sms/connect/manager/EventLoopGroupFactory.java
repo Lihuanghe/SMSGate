@@ -6,6 +6,7 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import com.zx.sms.config.PropertiesUtils;
 /**
@@ -26,20 +27,30 @@ public enum EventLoopGroupFactory {
 	public EventLoopGroup getWaitWindow(){return waitWindow;};
 	public EventLoopGroup getBusiWork(){return busiWork;};
 	
-	public void submitUnlimitCircleTask(EventLoopGroup executor ,  Callable<?> task,ExitUnlimitCirclePolicy exitCondition){
-		addtask(executor,task,exitCondition);
+	
+	/**
+	 *使用netty线程池实现一个无限循环任务，
+	 *@param task
+	 *需要执行的任务
+	 *@param exitCondition
+	 *任务的关闭条件
+	 *@param delay
+	 *任务的执行间隔
+	 */
+	public void submitUnlimitCircleTask(Callable<?> task,ExitUnlimitCirclePolicy exitCondition,long delay){
+		addtask(busiWork,task,exitCondition,delay);
 	}
 	
-	private void addtask(final EventLoopGroup executor ,final Callable<?> task ,final ExitUnlimitCirclePolicy exitCondition) {
-		
-		Future<?> future = executor.submit(task);
+	private void addtask(final EventLoopGroup executor ,final Callable<?> task ,final ExitUnlimitCirclePolicy exitCondition,final long delay) {
+	
+		Future<?> future = executor.schedule(task, delay, TimeUnit.MILLISECONDS);
 		//
 		future.addListener(new GenericFutureListener<Future<Object>>() {
 		
 			public void operationComplete(Future<Object> future) throws Exception {
 				if(future.isSuccess()){
 					if(exitCondition.notOver(future))			
-						addtask(executor,task ,exitCondition);
+						addtask(executor,task ,exitCondition,delay);
 				}
 			}
 		});

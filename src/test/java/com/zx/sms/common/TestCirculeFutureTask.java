@@ -16,7 +16,7 @@ public class TestCirculeFutureTask {
 	@Test
 	public void test() {
 		final Thread th = Thread.currentThread();
-		EventLoopGroupFactory.INS.submitUnlimitCircleTask(EventLoopGroupFactory.INS.getBusiWork(), new Callable<Integer>() {
+		EventLoopGroupFactory.INS.submitUnlimitCircleTask( new Callable<Integer>() {
 
 			@Override
 			public Integer call() throws Exception {
@@ -44,7 +44,7 @@ public class TestCirculeFutureTask {
 				LockSupport.unpark(th);
 				return false;
 			}
-		});
+		},1);
 		System.out.println("==========");
 		LockSupport.park();
 
