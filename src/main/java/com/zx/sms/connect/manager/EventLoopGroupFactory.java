@@ -38,7 +38,7 @@ public enum EventLoopGroupFactory {
 		
 			public void operationComplete(Future<Object> future) throws Exception {
 				if(future.isSuccess()){
-					if(exitCondition.isOver(future))			
+					if(exitCondition.notOver(future))			
 						addtask(executor,task ,exitCondition);
 				}
 			}

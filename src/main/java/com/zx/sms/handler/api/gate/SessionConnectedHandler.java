@@ -100,12 +100,14 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 					}
 					
 					logger.info("last msg cnt : {}" ,totleCnt<0?0:totleCnt);
-					while(cnt-->0) ChannelUtil.asyncWriteToEntity(getEndpointEntity(), createTestReq());
+					while(cnt-->0) {
+						ChannelUtil.asyncWriteToEntity(getEndpointEntity(), createTestReq()).await(3000);
+					}
 					return true;
 				}
 			}, new ExitUnlimitCirclePolicy() {
 				@Override
-				public boolean isOver(Future future) {
+				public boolean notOver(Future future) {
 					boolean ret = ch.isActive() && totleCnt > 0;
 					return ret;
 				}

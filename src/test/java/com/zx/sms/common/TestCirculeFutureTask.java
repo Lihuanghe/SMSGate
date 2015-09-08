@@ -27,7 +27,7 @@ public class TestCirculeFutureTask {
 		}, new ExitUnlimitCirclePolicy() {
 
 			@Override
-			public boolean isOver(Future future) {
+			public boolean notOver(Future future) {
 				try {
 					boolean ret =  (Integer)future.get() < 100;
 					if(!ret){

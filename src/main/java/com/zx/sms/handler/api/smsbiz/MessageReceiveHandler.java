@@ -45,7 +45,7 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 				}
 			},new ExitUnlimitCirclePolicy() {
 				@Override
-				public boolean isOver(Future future) {
+				public boolean notOver(Future future) {
 					return ch.isActive();
 				}
 			});
