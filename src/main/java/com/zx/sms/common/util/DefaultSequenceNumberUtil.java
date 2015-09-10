@@ -7,6 +7,8 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.lang.math.RandomUtils;
+
 /**
  * @author huzorro(huzorro@gmail.com)
  *
@@ -65,5 +67,5 @@ public class DefaultSequenceNumberUtil {
 	}
 
 	private final static long Limited = 0x7fffffffffff0000L;
-	private final static AtomicLong sequenceId = new AtomicLong();
+	private final static AtomicLong sequenceId = new AtomicLong(Math.abs(RandomUtils.nextInt()));
 }

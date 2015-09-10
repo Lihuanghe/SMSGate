@@ -355,23 +355,46 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 	/**
 	 * 发送msg,首先做消息持久化
 	 */
-	private void safewrite(ChannelHandlerContext ctx, final Message message, ChannelPromise promise) {
+	private void safewrite(final ChannelHandlerContext ctx, final Message message, final ChannelPromise promise) {
 		if (ctx.channel().isActive()) {
 			final Long seq = message.getHeader().getSequenceId();
 
 			message.incrementAndGetRequests();
-			msgWriteCount++;
+			
 			// 记录已发送的请求,在发送msg前生记录到map里。防止生成retryTask前就收到resp的情况发生
 			Entry tmpentry = new Entry(message);
-			msgRetryMap.put(seq, tmpentry);
-			// 持久化到队列
-			storeMap.put(seq, message);
+			
+			Entry old = msgRetryMap.putIfAbsent(seq, tmpentry);
+			
+			if(old !=null) {
+				// bugfix: 集群环境下可能产生相同的seq. 如果已经存在一个相同的seq.
+				//此消息延迟250ms再发
+				logger.error("has repeat Sequense {}",seq);
+				EventLoopGroupFactory.INS.getMsgResend().schedule(new Runnable(){
+					@Override
+					public void run() {
+						try {
+							write(ctx,message,promise);
+						} catch (Exception e) {
+							logger.error("has repeat Sequense ,and write Msg err {}",message);
+						}
+					}
+					
+				}, 250, TimeUnit.MILLISECONDS);
+				
+			}else{
+				msgWriteCount++;
+				// 持久化到队列
+				storeMap.put(seq, message);
 
-			ctx.write(message, promise);
+				ctx.write(message, promise);
 
-			// 注册重试任务
-			scheduleRetryMsg(ctx, message, promise);
-			ctx.flush();
+				// 注册重试任务
+				scheduleRetryMsg(ctx, message, promise);
+				ctx.flush();
+			}
+			
+
 		} else {
 			// 如果连接已关闭，通知上层应用
 			if (promise != null && (!promise.isDone()))

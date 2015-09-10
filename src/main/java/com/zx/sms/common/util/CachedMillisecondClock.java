@@ -1,30 +1,33 @@
 package com.zx.sms.common.util;
 
 /**
- *由于System.currentTimeMillis()性能问题，缓存当前时间，每1s更新一次 
+ * 由于System.currentTimeMillis()性能问题，缓存当前时间，每1s更新一次
  */
 public enum CachedMillisecondClock {
 	INS;
 	private volatile long now = 0;// 当前时间
+
 	private CachedMillisecondClock() {
 		this.now = System.currentTimeMillis();
 		start();
 	}
-	
+
 	private void start() {
-		new Thread(new Runnable() {
+		new Thread(null,new Runnable() {
 			@Override
 			public void run() {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					
+				while (true) {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					now = System.currentTimeMillis();
 				}
-				now = System.currentTimeMillis();
 			}
-		}).start();
+		},"CachedMillisecondClockUpdater").start();
 	}
-	
+
 	public long now() {
 		return now;
 	}
