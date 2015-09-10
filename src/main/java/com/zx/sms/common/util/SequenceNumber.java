@@ -19,7 +19,6 @@ public class SequenceNumber implements Serializable{
 	private int minutes;
 	private int seconds;
 	private long sequenceId;
-	private final static AtomicLong atomicLong = new AtomicLong();
 	public SequenceNumber() {
 		this(CachedMillisecondClock.INS.now());
 	}
@@ -30,18 +29,14 @@ public class SequenceNumber implements Serializable{
 	 * @param timeMillis
 	 */
 	public SequenceNumber(long nodeIds, long timeMillis) {
-		this(timeMillis, nodeIds, (atomicLong.compareAndSet(Integer.MAX_VALUE, 0)
-				? atomicLong.getAndIncrement()
-				: atomicLong.getAndIncrement()));
+		this(timeMillis, nodeIds, DefaultSequenceNumberUtil.getSequenceNo());
 	}
 	/**
 	 * 
 	 * @param timeMillis
 	 */
 	public SequenceNumber(long timeMillis) {
-		this(timeMillis, 1010, (atomicLong.compareAndSet(Short.MAX_VALUE, 0)
-				? atomicLong.getAndIncrement()
-				: atomicLong.getAndIncrement()));
+		this(timeMillis, 1010,  DefaultSequenceNumberUtil.getSequenceNo());
 	}
 	/**
 	 * 

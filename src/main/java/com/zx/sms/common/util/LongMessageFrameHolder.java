@@ -368,11 +368,8 @@ public enum LongMessageFrameHolder {
 	}
 
 	private class FrameKeyCreator {
-		private final AtomicInteger frameKeyCreator = new AtomicInteger((int) (System.currentTimeMillis() & 0xFF));
-
 		public byte getOne() {
-			frameKeyCreator.compareAndSet(0xff, 0);
-			return (byte) (frameKeyCreator.incrementAndGet() & 0xff);
+			return (byte) ( DefaultSequenceNumberUtil.getSequenceNo() & 0xff);
 		}
 	}
 

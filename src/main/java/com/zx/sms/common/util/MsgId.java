@@ -4,7 +4,6 @@
 package com.zx.sms.common.util;
 
 import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 
@@ -20,8 +19,6 @@ public class MsgId implements Serializable {
 	private int seconds;
 	private int gateId;
 	private int sequenceId;
-	private final static AtomicLong atomicLong = new AtomicLong();
-
 	
 	public MsgId() {
 		this(CachedMillisecondClock.INS.now());
@@ -31,18 +28,14 @@ public class MsgId implements Serializable {
 	 * @param gateId
 	 */
 	public MsgId(int gateId) {
-		this(CachedMillisecondClock.INS.now(), gateId, (int) (atomicLong.compareAndSet(Short.MAX_VALUE, 0)
-				? atomicLong.getAndIncrement()
-				: atomicLong.getAndIncrement()));
+		this(CachedMillisecondClock.INS.now(), gateId, (int)DefaultSequenceNumberUtil.getSequenceNo());
 	}
 	/**
 	 * 
 	 * @param timeMillis
 	 */
 	public MsgId(long timeMillis) {
-		this(timeMillis, 1010, (int) (atomicLong.compareAndSet(Short.MAX_VALUE, 0)
-				? atomicLong.getAndIncrement()
-				: atomicLong.getAndIncrement()));
+		this(timeMillis, 1010, (int)DefaultSequenceNumberUtil.getSequenceNo());
 	}
 	/**
 	 * 

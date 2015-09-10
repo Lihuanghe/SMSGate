@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.storedMap.BDBStoredMapFactoryImpl;
+import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 import com.zx.sms.connect.manager.cmpp.CMPPCodecChannelInitializer;
 import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPServerChildEndpointEntity;
@@ -225,7 +227,6 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	 * 循环列表，用于实现轮循算法
 	 */
 	private class CircularList<T> {
-		private AtomicInteger index = new AtomicInteger();
 		private List<T> collection = new ArrayList<T>();
 
 		public synchronized T fetch() {
@@ -234,10 +235,9 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			if (size == 0)
 				return null;
 
-			int idx = index.getAndIncrement();
+			int idx =  (int)DefaultSequenceNumberUtil.getNextAtomicValue(indexSeq,Limited);
 			T ret = collection.get(idx % size);
 			// 超过65535归0
-			index.compareAndSet(0xffff, 0);
 			return ret;
 		}
 
@@ -250,6 +250,9 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 			return collection.remove(ele);
 		}
+
+		private final static long Limited = 65535L;
+		private AtomicLong indexSeq = new AtomicLong();
 	}
 
 }

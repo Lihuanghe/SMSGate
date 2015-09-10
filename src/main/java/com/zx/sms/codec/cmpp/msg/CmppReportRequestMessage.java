@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import com.zx.sms.codec.cmpp.packet.CmppReportRequest;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CachedMillisecondClock;
+import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 import com.zx.sms.common.util.MsgId;
 
 /**
@@ -17,13 +18,13 @@ import com.zx.sms.common.util.MsgId;
  */
 public class CmppReportRequestMessage extends DefaultMessage {
 	private static final long serialVersionUID = -4631945859346437882L;
+	
 	private MsgId msgId = new MsgId();
 	private String stat = GlobalConstance.emptyString;
 	private String submitTime = String.format("%ty%<tm%<td%<tH%<tM", CachedMillisecondClock.INS.now());
 	private String doneTime = String.format("%ty%<tm%<td%<tH%<tM", CachedMillisecondClock.INS.now());
 	private String destterminalId = GlobalConstance.emptyString;
-	private final static AtomicLong atomicLong = new AtomicLong();
-	private long smscSequence = (atomicLong.compareAndSet(Integer.MAX_VALUE, 0) ? atomicLong.getAndIncrement() : atomicLong.getAndIncrement());
+	private long smscSequence = DefaultSequenceNumberUtil.getSequenceNo();
 
 	/**
 	 * @return the msgId

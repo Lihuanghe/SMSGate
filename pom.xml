@@ -5,7 +5,7 @@
 
 	<groupId>com.zx.sms</groupId>
 	<artifactId>cmpp-core</artifactId>
-	<version>1.18</version>
+	<version>1.19</version>
 	<packaging>jar</packaging>
 	<name>cmpp-core</name>
 
@@ -63,6 +63,12 @@
 			<artifactId>je</artifactId>
 			<version>5.0.73</version>
 		</dependency>
+<dependency>
+	<groupId>org.iq80.leveldb</groupId>
+	<artifactId>leveldb</artifactId>
+	<version>0.7</version>
+</dependency>
+
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
