@@ -32,16 +32,18 @@
 	</appender>
 	
 	
-	<logger name="entity">
+	<logger name="entity" additivity="false">
 		<level value="debug" />
 		<appender-ref ref="SIFT" />
 	</logger>
 
-	<logger name="com.zx.sms.dao">
+	<logger name="com.zx.sms.dao" additivity="false">
 		<level value="info" />
+		<appender-ref ref="STDOUT" />
 	</logger>
-	<logger name="com.zx.sms">
+	<logger name="com.zx.sms" additivity="false">
 		<level value="debug" />
+		<appender-ref ref="STDOUT" />
 	</logger>
 
 	

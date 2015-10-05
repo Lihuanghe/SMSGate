@@ -2,6 +2,7 @@ package com.zx.sms.connect.manager;
 
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.util.concurrent.DefaultExecutorServiceFactory;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
@@ -15,11 +16,11 @@ import com.zx.sms.config.PropertiesUtils;
 public enum EventLoopGroupFactory {
 	INS;
 	
-	private  final static EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-	private  final static EventLoopGroup workgroup = new NioEventLoopGroup();
-	private  final static EventLoopGroup msgResend = new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalMsgResendThreadCount","4")));
-	private  final static EventLoopGroup waitWindow = new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalWaitWindowThreadCount","4")));
-	private  final static EventLoopGroup busiWork = new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalBusiWorkThreadCount","4")));
+	private  final static EventLoopGroup bossGroup = new NioEventLoopGroup(1,new DefaultExecutorServiceFactory("bossGroup-"));
+	private  final static EventLoopGroup workgroup = new NioEventLoopGroup(0,new DefaultExecutorServiceFactory("workGroup-"));
+	private  final static EventLoopGroup msgResend = new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalMsgResendThreadCount","4")),new DefaultExecutorServiceFactory("msgResend-"));
+	private  final static EventLoopGroup waitWindow = new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalWaitWindowThreadCount","4")),new DefaultExecutorServiceFactory("waitWindow-"));
+	private  final static EventLoopGroup busiWork = new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalBusiWorkThreadCount","4")),new DefaultExecutorServiceFactory("busiWork-"));
 	
 	public EventLoopGroup getBoss(){return bossGroup;};
 	public EventLoopGroup getWorker(){return workgroup;};

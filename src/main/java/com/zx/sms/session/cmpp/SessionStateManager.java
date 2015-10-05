@@ -123,6 +123,14 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 				}
 			}
 		}
+		
+		//如果等待窗口的队列里有未发送的消息，取消发送，并设置发送失败
+		Runnable   task =  waitWindowQueue.poll();
+		while(task!=null){
+			//直接执行task，会判断如果连接关闭则设置发送失败。
+			EventLoopGroupFactory.INS.getWaitWindow().submit(task);
+			task  = waitWindowQueue.poll();
+		}
 		ctx.fireChannelInactive();
 	}
 

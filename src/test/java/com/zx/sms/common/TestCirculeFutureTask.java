@@ -17,11 +17,13 @@ public class TestCirculeFutureTask {
 	public void test() {
 		final Thread th = Thread.currentThread();
 		EventLoopGroupFactory.INS.submitUnlimitCircleTask( new Callable<Integer>() {
-
+			private long lastime = 0;
 			@Override
 			public Integer call() throws Exception {
 				cnt++;
-				System.out.println(cnt);
+				long now = System.nanoTime();
+				System.out.println(now - lastime);
+				lastime = now;
 				return cnt;
 			}
 		}, new ExitUnlimitCirclePolicy() {
@@ -44,7 +46,7 @@ public class TestCirculeFutureTask {
 				LockSupport.unpark(th);
 				return false;
 			}
-		},1);
+		},0);
 		System.out.println("==========");
 		LockSupport.park();
 

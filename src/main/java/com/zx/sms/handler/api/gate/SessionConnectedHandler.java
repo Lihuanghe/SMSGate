@@ -1,11 +1,11 @@
 package com.zx.sms.handler.api.gate;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.math.RandomUtils;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ import com.zx.sms.session.cmpp.SessionState;
  */
 public class SessionConnectedHandler extends AbstractBusinessHandler {
 	private static final Logger logger = LoggerFactory.getLogger(SessionConnectedHandler.class);
-	private int totleCnt = 10000;
+	private int totleCnt = 20;
 
 	
 	
@@ -70,7 +70,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						msg.setMsgContent(sb.toString());
 
 						msg.setMsgId(new MsgId());
-						msg.setRegisteredDelivery((short) (RandomUtils.nextBoolean() ? 1 : 0));
+						msg.setRegisteredDelivery((short) 0);
 						if (msg.getRegisteredDelivery() == 1) {
 							msg.setReportRequestMessage(new CmppReportRequestMessage());
 						}
@@ -101,7 +101,8 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 					
 					logger.info("last msg cnt : {}" ,totleCnt<0?0:totleCnt);
 					while(cnt-->0) {
-						ChannelUtil.asyncWriteToEntity(getEndpointEntity(), createTestReq()).await(3000);
+						ChannelFuture future =ChannelUtil.asyncWriteToEntity(getEndpointEntity(), createTestReq());
+						future.sync();
 					}
 					return true;
 				}

@@ -339,6 +339,10 @@ public enum LongMessageFrameHolder {
 				logger.warn("have received the same index of Message. do not merge this content. ");
 				return;
 			}
+			if(content.length<=idx){
+				logger.warn("have received error index:{} of Message content length:{}. do not merge this content. ",idx,content.length);
+				return;
+			}
 			//设置该短信序号已填冲
 			idxBitset.set(idx);
 			
