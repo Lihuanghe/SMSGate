@@ -2,6 +2,7 @@ package com.zx.sms.common;
 
 import io.netty.util.concurrent.Future;
 
+import java.lang.management.ManagementFactory;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.LockSupport;
@@ -47,8 +48,9 @@ public class TestCirculeFutureTask {
 				return false;
 			}
 		},0);
-		System.out.println("==========");
+		System.out.println(ManagementFactory.getRuntimeMXBean().getName());
 		LockSupport.park();
+		
 
 	}
 

@@ -4,6 +4,7 @@
 package com.zx.sms.common.util;
 
 import java.io.Serializable;
+import java.lang.management.ManagementFactory;
 
 /**
  * 
@@ -12,6 +13,7 @@ import java.io.Serializable;
  */
 public class MsgId implements Serializable {
 	private static final long serialVersionUID = 945466149547731811L;
+	private static int ProcessID = 1010;
 	private int month;
 	private int day;
 	private int hour;
@@ -19,6 +21,17 @@ public class MsgId implements Serializable {
 	private int seconds;
 	private int gateId;
 	private int sequenceId;
+	
+	static{
+		String vmName = ManagementFactory.getRuntimeMXBean().getName();
+		if(vmName.contains("@")){
+			try{
+				ProcessID = Integer.valueOf(vmName.split("@")[0]);
+			}catch(Exception e){
+				
+			}
+		}
+	}
 	
 	public MsgId() {
 		this(CachedMillisecondClock.INS.now());
@@ -35,7 +48,8 @@ public class MsgId implements Serializable {
 	 * @param timeMillis
 	 */
 	public MsgId(long timeMillis) {
-		this(timeMillis, 1010, (int)DefaultSequenceNumberUtil.getSequenceNo());
+		
+		this(timeMillis, ProcessID, (int)DefaultSequenceNumberUtil.getSequenceNo());
 	}
 	/**
 	 * 
