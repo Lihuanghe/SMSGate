@@ -31,7 +31,7 @@ import com.zx.sms.session.cmpp.SessionState;
  */
 public class SessionConnectedHandler extends AbstractBusinessHandler {
 	private static final Logger logger = LoggerFactory.getLogger(SessionConnectedHandler.class);
-	private int totleCnt = 20;
+	private int totleCnt = 100000;
 
 	
 	
@@ -93,13 +93,13 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 
 				@Override
 				public Boolean call() throws Exception{
-					int cnt = RandomUtils.nextInt() & 0xff;
+					int cnt = RandomUtils.nextInt() & 0x1ff;
 					totleCnt -= cnt;					
 					if(totleCnt<0){
 						cnt = totleCnt + cnt;
 					}
 					
-					logger.info("last msg cnt : {}" ,totleCnt<0?0:totleCnt);
+				//	logger.info("last msg cnt : {}" ,totleCnt<0?0:totleCnt);
 					while(cnt-->0) {
 						ChannelFuture future =ChannelUtil.asyncWriteToEntity(getEndpointEntity(), createTestReq());
 						future.sync();
@@ -110,9 +110,12 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 				@Override
 				public boolean notOver(Future future) {
 					boolean ret = ch.isActive() && totleCnt > 0;
+					if(!ret){
+						ch.close();
+					}
 					return ret;
 				}
-			},1);
+			},0);
 		}
 		ctx.fireUserEventTriggered(evt);
 

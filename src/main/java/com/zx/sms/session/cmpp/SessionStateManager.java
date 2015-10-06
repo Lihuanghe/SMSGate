@@ -5,7 +5,7 @@ import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 
-import java.nio.channels.ClosedChannelException;
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -405,8 +405,11 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 
 		} else {
 			// 如果连接已关闭，通知上层应用
-			if (promise != null && (!promise.isDone()))
-				promise.setFailure(new ClosedChannelException());
+			if (promise != null && (!promise.isDone())){
+				StringBuilder sb = new StringBuilder();
+				sb.append("Connection ").append(ctx.channel()).append(" has closed");
+				promise.setFailure(new IOException(sb.toString()));
+			}
 		}
 	}
 
