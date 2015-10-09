@@ -1,5 +1,7 @@
 package com.zx.sms.connect.manager;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufHolder;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
@@ -7,6 +9,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -133,6 +136,10 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 				}
 			}
 			CMPPEndpointEntity cmppentity = (CMPPEndpointEntity) getEndpointEntity();
+			
+			//增加流量整形 ，每个连接每秒发送，接收消息数不超过配置的值
+			ch.pipeline().addBefore(CMPPCodecChannelInitializer.codecName,"CMPPChannelTraffic",new CMPPChannelTrafficShapingHandler(cmppentity.getWriteLimit(),cmppentity.getReadLimit(), 250));
+			
 			//将SessinManager放在messageHeaderCodec后边。因为要处理Submit 和 deliver消息的长短信分拆
 			ch.pipeline().addBefore(CMPPCodecChannelInitializer.codecName,"sessionStateManager", new SessionStateManager(cmppentity, storedMap, preSendMap));
 			// 加载业务handler
@@ -157,6 +164,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 				pipe.replace(handler, GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, entity.getIdleTimeSec(), TimeUnit.SECONDS));
 			}
 		}
+		
 		pipe.addFirst("socketLog", new LoggingHandler(String.format(GlobalConstance.loggerNamePrefix, entity.getId()),LogLevel.TRACE));
 		pipe.addLast("msgLog",new CMPPMessageLogHandler(entity));
 		
@@ -253,6 +261,39 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 		private final static long Limited = 65535L;
 		private AtomicLong indexSeq = new AtomicLong();
+	}
+	/**
+	 *重写了calculateSize方法，按消息条数计算流量
+	 *
+	 **/
+	
+	private class CMPPChannelTrafficShapingHandler extends ChannelTrafficShapingHandler{
+	    public CMPPChannelTrafficShapingHandler(long writeLimit, long readLimit, long checkInterval) {
+	        super(writeLimit, readLimit, checkInterval);
+	    }
+	    
+
+		private boolean isRequestMsg(Message msg) {
+			long commandId = msg.getHeader().getCommandId();
+			return (commandId & 0x80000000L) == 0L;
+		}
+	    
+	    @Override
+	    protected long calculateSize(Object msg) {
+	        if (msg instanceof ByteBuf) {
+	            return ((ByteBuf) msg).readableBytes();
+	        }
+	        if (msg instanceof ByteBufHolder) {
+	            return ((ByteBufHolder) msg).content().readableBytes();
+	        }
+	        if(msg instanceof Message){
+	        	//只计算Request信息
+	        	if(isRequestMsg((Message)msg)){
+	        		return 1;
+	        	}
+	        }
+	        return -1;
+	    }
 	}
 
 }

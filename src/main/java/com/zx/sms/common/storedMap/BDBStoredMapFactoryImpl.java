@@ -210,7 +210,7 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Long, Message> {
 		 * 
 		 */
 		private void cleanLogSchedule() {
-			EventLoopGroupFactory.INS.getMsgResend().scheduleWithFixedDelay(new Runnable() {
+			EventLoopGroupFactory.INS.getBusiWork().scheduleWithFixedDelay(new Runnable() {
 
 				@Override
 				public void run() {
