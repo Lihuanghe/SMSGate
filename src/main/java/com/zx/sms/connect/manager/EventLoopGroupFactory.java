@@ -27,6 +27,17 @@ public enum EventLoopGroupFactory {
 	private  final static EventLoopGroup workgroup = new NioEventLoopGroup(0,new DefaultExecutorServiceFactory("workGroup"));
 	private  final static EventLoopGroup msgResend = new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalMsgResendThreadCount","4")),new DefaultExecutorServiceFactory("msgResend"));
 	private  final static EventLoopGroup waitWindow = new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalWaitWindowThreadCount","4")),new DefaultExecutorServiceFactory("waitWindow"));
+	
+	/**
+解决Netty-EventLoopGroup无法submit阻塞任务的问题。
+netty的特性：
+EventLoopGroup.submit(callable)方法不能提交阻塞任务。
+如果callable阻塞，即使EventLoopGroup中有其它空闲的线程，也无法执行部分提交的任务。
+
+原因：EventLoopGroup的任务队列不是共享的， 每个EventLoop都有独立的任务队列，
+如果队列中一个任务阻塞，其余的任务也无法执行。 
+	 */
+	
 	private final static ListeningScheduledExecutorService busiWork = MoreExecutors.listeningDecorator(new ScheduledThreadPoolExecutor(Integer.valueOf(PropertiesUtils.getproperties("GlobalBusiWorkThreadCount","4")),new DefaultThreadFactory("busiWork-")));
 	//private  final static EventLoopGroup busiWork = new ShareTaskQueueDefaultEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalBusiWorkThreadCount","4")),new DefaultExecutorServiceFactory("busiWork"));
 	
@@ -74,16 +85,6 @@ public enum EventLoopGroupFactory {
 			}
 			
 		}, executor);
-		//
-//		future.addListener(new GenericFutureListener<Future<Object>>() {
-//		
-//			public void operationComplete(Future<Object> future) throws Exception {
-//				if(future.isSuccess()){
-//					if(exitCondition.notOver(future))			
-//						addtask(executor,task ,exitCondition,delay);
-//				}
-//			}
-//		});
 	}
 	
 	/**
