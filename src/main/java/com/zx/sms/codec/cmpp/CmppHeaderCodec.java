@@ -29,7 +29,7 @@ public class CmppHeaderCodec extends MessageToMessageCodec<ByteBuf, Message> {
 
 	@Override
 	protected void decode(ChannelHandlerContext ctx, ByteBuf bytebuf, List<Object> list) throws Exception {
-
+		//此时已处理过粘包和断包了，bytebuf里是完整的一帧
 		Header header = new DefaultHeader();
 		header.setPacketLength(bytebuf.readUnsignedInt());
 		header.setCommandId(bytebuf.readUnsignedInt());
@@ -40,6 +40,9 @@ public class CmppHeaderCodec extends MessageToMessageCodec<ByteBuf, Message> {
 		Message message = new DefaultMessage();
 		if (header.getBodyLength() > 0) {
 			message.setBodyBuffer(new byte[(int)header.getBodyLength()]);
+			
+			assert(header.getBodyLength() == bytebuf.readableBytes());
+			
 			bytebuf.readBytes(message.getBodyBuffer());
 		} else {
 			message.setBodyBuffer(GlobalConstance.emptyBytes);

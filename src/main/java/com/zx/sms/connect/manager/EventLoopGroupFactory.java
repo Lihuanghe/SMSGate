@@ -3,12 +3,19 @@ package com.zx.sms.connect.manager;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.concurrent.DefaultExecutorServiceFactory;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
+import io.netty.util.concurrent.DefaultPromise;
+import io.netty.util.concurrent.GlobalEventExecutor;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.common.util.concurrent.ListenableScheduledFuture;
+import com.google.common.util.concurrent.ListeningScheduledExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.zx.sms.config.PropertiesUtils;
 /**
  *@author Lihuanghe(18852780@qq.com)
@@ -20,13 +27,14 @@ public enum EventLoopGroupFactory {
 	private  final static EventLoopGroup workgroup = new NioEventLoopGroup(0,new DefaultExecutorServiceFactory("workGroup"));
 	private  final static EventLoopGroup msgResend = new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalMsgResendThreadCount","4")),new DefaultExecutorServiceFactory("msgResend"));
 	private  final static EventLoopGroup waitWindow = new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalWaitWindowThreadCount","4")),new DefaultExecutorServiceFactory("waitWindow"));
-	private  final static EventLoopGroup busiWork = new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalBusiWorkThreadCount","4")),new DefaultExecutorServiceFactory("busiWork"));
+	private final static ListeningScheduledExecutorService busiWork = MoreExecutors.listeningDecorator(new ScheduledThreadPoolExecutor(Integer.valueOf(PropertiesUtils.getproperties("GlobalBusiWorkThreadCount","4")),new DefaultThreadFactory("busiWork-")));
+	//private  final static EventLoopGroup busiWork = new ShareTaskQueueDefaultEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalBusiWorkThreadCount","4")),new DefaultExecutorServiceFactory("busiWork"));
 	
 	public EventLoopGroup getBoss(){return bossGroup;};
 	public EventLoopGroup getWorker(){return workgroup;};
 	public EventLoopGroup getMsgResend(){return msgResend;};
 	public EventLoopGroup getWaitWindow(){return waitWindow;};
-	public EventLoopGroup getBusiWork(){return busiWork;};
+	public ListeningScheduledExecutorService getBusiWork(){return busiWork;};
 	
 	
 	/**
@@ -42,19 +50,40 @@ public enum EventLoopGroupFactory {
 		addtask(busiWork,task,exitCondition,delay);
 	}
 	
-	private void addtask(final EventLoopGroup executor ,final Callable<?> task ,final ExitUnlimitCirclePolicy exitCondition,final long delay) {
+	private void addtask(final ListeningScheduledExecutorService executor ,final Callable<?> task ,final ExitUnlimitCirclePolicy exitCondition,final long delay) {
 	
-		Future<?> future = executor.schedule(task, delay, TimeUnit.MILLISECONDS);
-		//
-		future.addListener(new GenericFutureListener<Future<Object>>() {
-		
-			public void operationComplete(Future<Object> future) throws Exception {
-				if(future.isSuccess()){
-					if(exitCondition.notOver(future))			
-						addtask(executor,task ,exitCondition,delay);
+	
+		final ListenableScheduledFuture<?> future = executor.schedule(task, delay, TimeUnit.MILLISECONDS);
+		future.addListener(new Runnable(){
+
+			@Override
+			public void run() {
+				
+				DefaultPromise nettyfuture = new DefaultPromise(GlobalEventExecutor.INSTANCE);
+				
+				try {
+					nettyfuture.setSuccess(future.get());
+				} catch (InterruptedException e) {
+					nettyfuture.setFailure(e);
+				} catch (ExecutionException e) {
+					nettyfuture.setFailure(e);
 				}
+				
+				if(exitCondition.notOver(nettyfuture))			
+					addtask(executor,task ,exitCondition,delay);
 			}
-		});
+			
+		}, executor);
+		//
+//		future.addListener(new GenericFutureListener<Future<Object>>() {
+//		
+//			public void operationComplete(Future<Object> future) throws Exception {
+//				if(future.isSuccess()){
+//					if(exitCondition.notOver(future))			
+//						addtask(executor,task ,exitCondition,delay);
+//				}
+//			}
+//		});
 	}
 	
 	/**
@@ -64,8 +93,8 @@ public enum EventLoopGroupFactory {
 	 */
 	public void closeAll(){
 		//先停业务线程池
-		 getBusiWork().shutdownGracefully().syncUninterruptibly();
-
+		 //getBusiWork().shutdownGracefully().syncUninterruptibly();
+		 getBusiWork().shutdown();
 		 getMsgResend().shutdownGracefully().syncUninterruptibly();
 		 getWaitWindow().shutdownGracefully().syncUninterruptibly();
 		 getBoss().shutdownGracefully().syncUninterruptibly();
@@ -73,4 +102,26 @@ public enum EventLoopGroupFactory {
 		 //最后停worker
 		 getWorker().shutdownGracefully().syncUninterruptibly();
 	}
+	
+    static class DefaultThreadFactory implements ThreadFactory {
+      
+        private final AtomicInteger threadNumber = new AtomicInteger(1);
+        private final String namePrefix;
+
+        DefaultThreadFactory(String namePrefix) {
+           
+         
+            this.namePrefix = namePrefix;
+        }
+
+        public Thread newThread(Runnable r) {
+            Thread t = new Thread( r,
+                                  namePrefix + threadNumber.getAndIncrement());
+            if (t.isDaemon())
+                t.setDaemon(false);
+            if (t.getPriority() != Thread.NORM_PRIORITY)
+                t.setPriority(Thread.NORM_PRIORITY);
+            return t;
+        }
+    }
 }

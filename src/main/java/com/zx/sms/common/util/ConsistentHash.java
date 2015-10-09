@@ -1,5 +1,6 @@
 package com.zx.sms.common.util;
 
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -49,7 +50,7 @@ public class ConsistentHash<T> {
      */
     public void add(T node) {
         for (int i = 0; i < numberOfReplicas; i++) {
-            circle.put(hashFunction.hashString(node.toString() + i).asLong(),
+            circle.put(hashFunction.hashString(node.toString() + i,Charset.defaultCharset()).asLong(),
                     node);
         }
     }
@@ -59,7 +60,7 @@ public class ConsistentHash<T> {
      */
     public void delete(T node) {
         for (int i = 0; i < numberOfReplicas; i++) {
-            circle.remove(hashFunction.hashString(node.toString() + i).asLong());
+            circle.remove(hashFunction.hashString(node.toString() + i,Charset.defaultCharset()).asLong());
         }
     }
     /**
@@ -71,7 +72,7 @@ public class ConsistentHash<T> {
         if (circle.isEmpty()) {
             return null;
         }
-        Long hash = hashFunction.hashString(key.toString()).asLong();
+        Long hash = hashFunction.hashString(key.toString(),Charset.defaultCharset()).asLong();
         if (!circle.containsKey(hash)) {
             SortedMap<Long, T> tailMap = circle.tailMap(hash);
             hash = tailMap.isEmpty() ? circle.firstKey() : tailMap.firstKey();

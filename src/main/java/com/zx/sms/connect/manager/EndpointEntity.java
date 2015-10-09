@@ -37,8 +37,26 @@ public abstract class EndpointEntity implements Serializable {
 	 *该端口业务处理的handler集合， 
 	 **/
 	private List<BusinessHandlerInterface> businessHandlerSet;
+	
+	/**
+	 *流量整形 
+	 */
+	private int readLimit = 0;
+	private int writeLimit = 0;
     
-    public boolean isValid() {
+    public int getReadLimit() {
+		return readLimit;
+	}
+	public void setReadLimit(int readLimit) {
+		this.readLimit = readLimit;
+	}
+	public int getWriteLimit() {
+		return writeLimit;
+	}
+	public void setWriteLimit(int writeLimit) {
+		this.writeLimit = writeLimit;
+	}
+	public boolean isValid() {
 		return valid;
 	}
 	public void setValid(boolean valid) {

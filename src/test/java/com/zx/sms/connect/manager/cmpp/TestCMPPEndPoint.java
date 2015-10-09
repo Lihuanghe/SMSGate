@@ -44,14 +44,16 @@ public class TestCMPPEndPoint {
 		child.setUserName("901782");
 		child.setPassword("ICP");
 		child.setValid(true);
-		child.setWindows((short)160);
+		//child.setReadLimit(12);
+		//child.setWriteLimit(1000);
+		child.setWindows((short)16);
 		child.setVersion((short)48);
 		child.setMaxChannels((short)20);
 		child.setRetryWaitTimeSec((short)100);
 		child.setMaxRetryCnt((short)3);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
 		serverhandlers.add(new SessionConnectedHandler());
-		serverhandlers.add(new MessageReceiveHandler());
+	//	serverhandlers.add(new MessageReceiveHandler());
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
@@ -72,7 +74,7 @@ public class TestCMPPEndPoint {
 		
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new MessageReceiveHandler());
-		clienthandlers.add(new SessionConnectedHandler());
+		//clienthandlers.add(new SessionConnectedHandler());
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 
