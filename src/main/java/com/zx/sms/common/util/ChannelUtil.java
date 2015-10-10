@@ -17,6 +17,7 @@ import com.zx.sms.connect.manager.EndpointManager;
 
 public class ChannelUtil {
 
+	private static final Logger logger = LoggerFactory.getLogger(ChannelUtil.class);
 	/**
 	 * 同步发送消息到端口，发送完成才返回。
 	 * 
@@ -41,8 +42,7 @@ public class ChannelUtil {
 						// 如果发送消息失败，记录失败日志
 						if (!future.isSuccess()) {
 							StringBuilder sb = new StringBuilder();
-							sb.append("SendMessage ").append(msg.toString()).append(" Requet Failed from ").append(entity.toString());
-							Logger logger = LoggerFactory.getLogger(entity.getId());
+							sb.append("SendMessage ").append(msg.toString()).append(" Requet Failed To ").append(entity.toString());
 							logger.error(sb.toString(), future.cause());
 						}
 					}
