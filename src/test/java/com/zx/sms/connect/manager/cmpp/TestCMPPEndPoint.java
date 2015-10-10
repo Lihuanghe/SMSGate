@@ -67,7 +67,7 @@ public class TestCMPPEndPoint {
 		client.setGroupName("test");
 		client.setUserName("901782");
 		client.setPassword("ICP");
-		client.setReadLimit(10);
+		client.setReadLimit(0);
 		//child.setWriteLimit(100);
 		client.setWindows((short)16);
 		client.setVersion((short)48);

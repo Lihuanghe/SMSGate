@@ -8,6 +8,8 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -25,8 +27,11 @@ public enum EventLoopGroupFactory {
 	
 	private  final static EventLoopGroup bossGroup = new NioEventLoopGroup(1,new DefaultExecutorServiceFactory("bossGroup"));
 	private  final static EventLoopGroup workgroup = new NioEventLoopGroup(0,new DefaultExecutorServiceFactory("workGroup"));
-	private  final static EventLoopGroup msgResend = new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalMsgResendThreadCount","4")),new DefaultExecutorServiceFactory("msgResend"));
-	private  final static EventLoopGroup waitWindow = new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalWaitWindowThreadCount","4")),new DefaultExecutorServiceFactory("waitWindow"));
+	
+	private  final static ScheduledExecutorService msgResend = Executors.newScheduledThreadPool(Integer.valueOf(PropertiesUtils.getproperties("GlobalMsgResendThreadCount","4")),newThreadFactory("msgResend-"));
+			//new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalMsgResendThreadCount","4")),new DefaultExecutorServiceFactory("msgResend"));
+	private  final static ScheduledExecutorService waitWindow = Executors.newScheduledThreadPool(Integer.valueOf(PropertiesUtils.getproperties("GlobalWaitWindowThreadCount","4")),newThreadFactory("waitWindow-"));
+			//new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalWaitWindowThreadCount","4")),new DefaultExecutorServiceFactory("waitWindow"));
 	
 	/**
 解决Netty-EventLoopGroup无法submit阻塞任务的问题。
@@ -38,13 +43,13 @@ EventLoopGroup.submit(callable)方法不能提交阻塞任务。
 如果队列中一个任务阻塞，其余的任务也无法执行。 
 	 */
 	
-	private final static ListeningScheduledExecutorService busiWork = MoreExecutors.listeningDecorator(new ScheduledThreadPoolExecutor(Integer.valueOf(PropertiesUtils.getproperties("GlobalBusiWorkThreadCount","4")),new DefaultThreadFactory("busiWork-")));
+	private final static ListeningScheduledExecutorService busiWork = MoreExecutors.listeningDecorator(new ScheduledThreadPoolExecutor(Integer.valueOf(PropertiesUtils.getproperties("GlobalBusiWorkThreadCount","4")),newThreadFactory("busiWork-")));
 	//private  final static EventLoopGroup busiWork = new ShareTaskQueueDefaultEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalBusiWorkThreadCount","4")),new DefaultExecutorServiceFactory("busiWork"));
 	
 	public EventLoopGroup getBoss(){return bossGroup;};
 	public EventLoopGroup getWorker(){return workgroup;};
-	public EventLoopGroup getMsgResend(){return msgResend;};
-	public EventLoopGroup getWaitWindow(){return waitWindow;};
+	public ScheduledExecutorService getMsgResend(){return msgResend;};
+	public ScheduledExecutorService getWaitWindow(){return waitWindow;};
 	public ListeningScheduledExecutorService getBusiWork(){return busiWork;};
 	
 	
@@ -96,33 +101,32 @@ EventLoopGroup.submit(callable)方法不能提交阻塞任务。
 		//先停业务线程池
 		 //getBusiWork().shutdownGracefully().syncUninterruptibly();
 		 getBusiWork().shutdown();
-		 getMsgResend().shutdownGracefully().syncUninterruptibly();
-		 getWaitWindow().shutdownGracefully().syncUninterruptibly();
+		 getMsgResend().shutdown();
+		 getWaitWindow().shutdown();
 		 getBoss().shutdownGracefully().syncUninterruptibly();
 		 
 		 //最后停worker
 		 getWorker().shutdownGracefully().syncUninterruptibly();
 	}
+
+
+    private static ThreadFactory  newThreadFactory(final String name){
+    	
+    	return new ThreadFactory() {
+    	      
+            private final AtomicInteger threadNumber = new AtomicInteger(1);
+          
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread( r,name + threadNumber.getAndIncrement());
+                
+                t.setDaemon(true);
+                if (t.getPriority() != Thread.NORM_PRIORITY)
+                    t.setPriority(Thread.NORM_PRIORITY);
+                return t;
+            }
+        };
+
+    }  
 	
-    static class DefaultThreadFactory implements ThreadFactory {
-      
-        private final AtomicInteger threadNumber = new AtomicInteger(1);
-        private final String namePrefix;
 
-        DefaultThreadFactory(String namePrefix) {
-           
-         
-            this.namePrefix = namePrefix;
-        }
-
-        public Thread newThread(Runnable r) {
-            Thread t = new Thread( r,
-                                  namePrefix + threadNumber.getAndIncrement());
-            if (t.isDaemon())
-                t.setDaemon(false);
-            if (t.getPriority() != Thread.NORM_PRIORITY)
-                t.setPriority(Thread.NORM_PRIORITY);
-            return t;
-        }
-    }
 }
