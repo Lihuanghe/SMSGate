@@ -117,6 +117,7 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Long, Message> {
 			logger.error("file  {} is not a Directory ", pathName);
 			return null;
 		}
+		logger.info("init BDBPath : {}" ,pathName);
 		QueueEnvironment env = envMap.get(pathName);
 
 		if (env == null) {
