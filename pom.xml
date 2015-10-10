@@ -67,6 +67,7 @@
 	<groupId>org.iq80.leveldb</groupId>
 	<artifactId>leveldb</artifactId>
 	<version>0.7</version>
+	<scope>test</scope>
 </dependency>
 
 		<dependency>

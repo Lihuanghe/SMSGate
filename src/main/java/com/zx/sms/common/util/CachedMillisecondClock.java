@@ -13,7 +13,7 @@ public enum CachedMillisecondClock {
 	}
 
 	private void start() {
-		new Thread(null,new Runnable() {
+		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				while (true) {
@@ -25,7 +25,9 @@ public enum CachedMillisecondClock {
 					now = System.currentTimeMillis();
 				}
 			}
-		},"CachedMillisecondClockUpdater").start();
+		},"CachedMillisecondClockUpdater");
+		t.setDaemon(true);
+		t.start();
 	}
 
 	public long now() {
