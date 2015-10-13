@@ -229,6 +229,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 			 *TODO bugfix:
 			 *不知道什么原因，会导致 下面的future任务没有cancel掉。
 			 *这里增加一个引用，当会试任务超过次数限制后，cancel掉自己。
+			 *些任务不能被中断interupted.如果storeMap.remove()被中断会破坏BDB的内部状态，使用BDB无法继续工作
 			 **/
 			final AtomicReference<Future> ref = new AtomicReference<Future>();
 			
@@ -244,7 +245,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 							//会有future泄漏的情况发生，这里cancel掉自己，来规避泄漏
 							Future future = ref.get();
 							if(future!=null)
-								future.cancel(true);
+								future.cancel(false);
 							
 							cancelRetry(message, ctx.channel());
 
@@ -267,6 +268,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 							ctx.writeAndFlush(message, ctx.newPromise());
 						}
 					} catch (Throwable e) {
+						logger.error("retry Send Msg Error: {}", message);
 						logger.error("retry send Msg Error.", e);
 					}
 				}
@@ -278,7 +280,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 
 			// 这里增加一次判断，是否已收到resp消息,已到resp后，msgRetryMap里的entry会被 remove掉。
 			if (msgRetryMap.get(seq) == null) {
-				future.cancel(true);
+				future.cancel(false);
 			}
 
 		} else if (entry == null) {
@@ -292,7 +294,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 		Entry entry = msgRetryMap.remove(msg.getHeader().getSequenceId());
 
 		if (entry != null && entry.future != null) {
-			entry.future.cancel(true);
+			entry.future.cancel(false);
 		}
 		if (windows != null) {
 			// 如果等窗口的队列里有任务，先发送等待的消息
