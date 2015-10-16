@@ -2,6 +2,7 @@ package com.zx.sms.codec.cmpp.msg;
 
 import io.netty.buffer.ByteBuf;
 
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.zx.sms.codec.cmpp.packet.PacketType;
@@ -26,8 +27,13 @@ public class DefaultMessage implements Message ,Cloneable {
 //	private Message request;
 	private Header header;
 	private byte[] buffer;
-//	private Object attachment;
 
+	/**
+	 * CMPP的消息字段太少,增加一个附加字段,方便业务处理,
+	 * 比如给attach设置一个Map
+	 **/
+	private Serializable attachment;
+	
 	public DefaultMessage() {
 	};
 
@@ -122,6 +128,16 @@ public class DefaultMessage implements Message ,Cloneable {
 		return lifeTime !=0 && (( timestamp + lifeTime*1000 ) - CachedMillisecondClock.INS.now() < 0L);
 	}
 	
+
+
+	public Serializable getAttachment() {
+		return attachment;
+	}
+
+	public void setAttachment(Serializable attachment) {
+		this.attachment = attachment;
+	}
+
 	protected DefaultMessage clone() throws CloneNotSupportedException {
 		DefaultMessage msg =  (DefaultMessage) super.clone();
 		

@@ -33,6 +33,6 @@ public interface Message extends Serializable  {
     public Header getHeader();  
     public void setBodyBuffer(byte[] buffer);
     public byte[] getBodyBuffer();
-//    public void setAttachment(Object attachment);
-//    public Object getAttachment(); 
+    public Serializable getAttachment();
+    public void setAttachment(Serializable attachment);
 }

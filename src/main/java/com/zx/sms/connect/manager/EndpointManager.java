@@ -59,7 +59,9 @@ public enum EndpointManager implements EndpointManagerInterface {
 	public EndpointConnector getEndpointConnector(EndpointEntity entity) {
 		return map.get(entity.getId());
 	}
-
+	public EndpointConnector getEndpointConnector(String entityId) {
+		return map.get(entityId);
+	}
 	public EndpointEntity getEndpointEntity(String id) {
 		return idMap.get(id);
 	}

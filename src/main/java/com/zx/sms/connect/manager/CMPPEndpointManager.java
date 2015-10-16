@@ -80,7 +80,9 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 
 		return manager.getEndpointConnector(entity);
 	}
-
+	public EndpointConnector getEndpointConnector(String entityId) {
+		return manager.getEndpointConnector(entityId);
+	}
 	@Override
 	public void remove(String id) {
 		manager.remove(id);

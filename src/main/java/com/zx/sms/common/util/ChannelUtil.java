@@ -2,11 +2,7 @@ package com.zx.sms.common.util;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelPromise;
-import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-
-import java.nio.channels.ClosedChannelException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +20,19 @@ public class ChannelUtil {
 	 * 方法会阻塞线程，直到消息发送完成
 	 */
 	public static ChannelFuture asyncWriteToEntity(final EndpointEntity entity, final Object msg) {
-		int i = 5;
+		
 		EndpointConnector connector = EndpointManager.INS.getEndpointConnector(entity);
+		return asyncWriteToEntity(connector,msg);
+	}
+	
+	public static ChannelFuture asyncWriteToEntity(final String entity, final Object msg) {
+		
+		EndpointConnector connector = EndpointManager.INS.getEndpointConnector(entity);
+		return asyncWriteToEntity(connector,msg);
+	}
+	
+	private static ChannelFuture asyncWriteToEntity(EndpointConnector connector,final Object msg){
+		int i = 5;
 		while (connector != null && i-- > 0) {
 			Channel ch = connector.fetch();
 			// 端口上还没有可用连接
@@ -42,7 +49,7 @@ public class ChannelUtil {
 						// 如果发送消息失败，记录失败日志
 						if (!future.isSuccess()) {
 							StringBuilder sb = new StringBuilder();
-							sb.append("SendMessage ").append(msg.toString()).append(" Requet Failed To ").append(entity.toString());
+							sb.append("SendMessage ").append(msg.toString()).append(" Failed. ");
 							logger.error(sb.toString(), future.cause());
 						}
 					}
@@ -52,4 +59,6 @@ public class ChannelUtil {
 		}
 		return null;
 	}
+	
+
 }

@@ -10,6 +10,7 @@ public interface EndpointManagerInterface{
 	public void remove(String id);
 	public List<EndpointEntity> allEndPointEntity();
 	public EndpointConnector getEndpointConnector(EndpointEntity entity);
+	public EndpointConnector getEndpointConnector(String entity);
 	public EndpointEntity getEndpointEntity(String id);
 	public void addAllEndpointEntity(List<EndpointEntity> entities);
 	public void close();
