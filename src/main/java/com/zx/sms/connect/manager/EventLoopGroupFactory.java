@@ -9,9 +9,11 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -25,12 +27,17 @@ import com.zx.sms.config.PropertiesUtils;
 public enum EventLoopGroupFactory {
 	INS;
 	
+	private final static RejectedExecutionHandler rejected = new RejectedExecutionHandler(){
+		public void rejectedExecution(Runnable r, ThreadPoolExecutor executor){
+			
+		}
+	};
 	private  final static EventLoopGroup bossGroup = new NioEventLoopGroup(1,new DefaultExecutorServiceFactory("bossGroup"));
 	private  final static EventLoopGroup workgroup = new NioEventLoopGroup(0,new DefaultExecutorServiceFactory("workGroup"));
 	
-	private  final static ScheduledExecutorService msgResend = Executors.newScheduledThreadPool(Integer.valueOf(PropertiesUtils.getproperties("GlobalMsgResendThreadCount","4")),newThreadFactory("msgResend-"));
+	private  final static ScheduledExecutorService msgResend = new ScheduledThreadPoolExecutor(Integer.valueOf(PropertiesUtils.getproperties("GlobalMsgResendThreadCount","4")),newThreadFactory("msgResend-"),rejected);
 			//new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalMsgResendThreadCount","4")),new DefaultExecutorServiceFactory("msgResend"));
-	private  final static ScheduledExecutorService waitWindow = Executors.newScheduledThreadPool(Integer.valueOf(PropertiesUtils.getproperties("GlobalWaitWindowThreadCount","4")),newThreadFactory("waitWindow-"));
+	private  final static ScheduledExecutorService waitWindow = new ScheduledThreadPoolExecutor(Integer.valueOf(PropertiesUtils.getproperties("GlobalWaitWindowThreadCount","4")),newThreadFactory("waitWindow-"),rejected);
 			//new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalWaitWindowThreadCount","4")),new DefaultExecutorServiceFactory("waitWindow"));
 	
 	/**
@@ -43,7 +50,7 @@ EventLoopGroup.submit(callable)方法不能提交阻塞任务。
 如果队列中一个任务阻塞，其余的任务也无法执行。 
 	 */
 	
-	private final static ListeningScheduledExecutorService busiWork = MoreExecutors.listeningDecorator(new ScheduledThreadPoolExecutor(Integer.valueOf(PropertiesUtils.getproperties("GlobalBusiWorkThreadCount","4")),newThreadFactory("busiWork-")));
+	private final static ListeningScheduledExecutorService busiWork = MoreExecutors.listeningDecorator(new ScheduledThreadPoolExecutor(Integer.valueOf(PropertiesUtils.getproperties("GlobalBusiWorkThreadCount","4")),newThreadFactory("busiWork-"),rejected));
 	//private  final static EventLoopGroup busiWork = new ShareTaskQueueDefaultEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalBusiWorkThreadCount","4")),new DefaultExecutorServiceFactory("busiWork"));
 	
 	public EventLoopGroup getBoss(){return bossGroup;};
@@ -68,7 +75,7 @@ EventLoopGroup.submit(callable)方法不能提交阻塞任务。
 	
 	private void addtask(final ListeningScheduledExecutorService executor ,final Callable<?> task ,final ExitUnlimitCirclePolicy exitCondition,final long delay) {
 	
-	
+		if(executor.isShutdown()) return ;
 		final ListenableScheduledFuture<?> future = executor.schedule(task, delay, TimeUnit.MILLISECONDS);
 		future.addListener(new Runnable(){
 
@@ -82,6 +89,8 @@ EventLoopGroup.submit(callable)方法不能提交阻塞任务。
 				} catch (InterruptedException e) {
 					nettyfuture.setFailure(e);
 				} catch (ExecutionException e) {
+					nettyfuture.setFailure(e);
+				}catch(Exception e){
 					nettyfuture.setFailure(e);
 				}
 				
