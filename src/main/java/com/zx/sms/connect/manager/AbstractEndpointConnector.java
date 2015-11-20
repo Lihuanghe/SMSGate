@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,18 +68,18 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		try {
 			if (channel.isOpen())
 				channel.close().sync();
-			
+
 		} catch (InterruptedException e) {
 			logger.error("close channel Error ", e);
 		}
-		//将channel移除
+		// 将channel移除
 		removeChannel(channel);
 	}
 
 	@Override
 	public synchronized void close() throws Exception {
 		Channel ch = channels.fetch();
-		while(ch!=null){
+		while (ch != null) {
 			close(ch);
 			ch = channels.fetch();
 		}
@@ -136,12 +138,14 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 				}
 			}
 			CMPPEndpointEntity cmppentity = (CMPPEndpointEntity) getEndpointEntity();
-			
-			//增加流量整形 ，每个连接每秒发送，接收消息数不超过配置的值
-			ch.pipeline().addBefore(CMPPCodecChannelInitializer.codecName,"CMPPChannelTraffic",new CMPPChannelTrafficShapingHandler(cmppentity.getWriteLimit(),cmppentity.getReadLimit(), 250));
-			
-			//将SessinManager放在messageHeaderCodec后边。因为要处理Submit 和 deliver消息的长短信分拆
-			ch.pipeline().addBefore(CMPPCodecChannelInitializer.codecName,"sessionStateManager", new SessionStateManager(cmppentity, storedMap, preSendMap));
+
+			// 增加流量整形 ，每个连接每秒发送，接收消息数不超过配置的值
+			ch.pipeline().addBefore(CMPPCodecChannelInitializer.codecName, "CMPPChannelTraffic",
+					new CMPPChannelTrafficShapingHandler(cmppentity.getWriteLimit(), cmppentity.getReadLimit(), 250));
+
+			// 将SessinManager放在messageHeaderCodec后边。因为要处理Submit 和
+			// deliver消息的长短信分拆
+			ch.pipeline().addBefore(CMPPCodecChannelInitializer.codecName, "sessionStateManager", new SessionStateManager(cmppentity, storedMap, preSendMap));
 			// 加载业务handler
 			bindHandler(ch.pipeline(), cmppentity);
 		}
@@ -149,7 +153,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 	public synchronized void removeChannel(Channel ch) {
 		ch.attr(GlobalConstance.attributeKey).set(SessionState.DisConnect);
-		if(getChannels().remove(ch))
+		if (getChannels().remove(ch))
 			decrementConn();
 	}
 
@@ -164,10 +168,10 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 				pipe.replace(handler, GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, entity.getIdleTimeSec(), TimeUnit.SECONDS));
 			}
 		}
-		
-		pipe.addFirst("socketLog", new LoggingHandler(String.format(GlobalConstance.loggerNamePrefix, entity.getId()),LogLevel.TRACE));
-		pipe.addLast("msgLog",new CMPPMessageLogHandler(entity));
-		
+
+		pipe.addFirst("socketLog", new LoggingHandler(String.format(GlobalConstance.loggerNamePrefix, entity.getId()), LogLevel.TRACE));
+		pipe.addLast("msgLog", new CMPPMessageLogHandler(entity));
+
 		pipe.addLast("CmppActiveTestRequestMessageHandler", GlobalConstance.activeTestHandler);
 		pipe.addLast("CmppActiveTestResponseMessageHandler", GlobalConstance.activeTestRespHandler);
 		pipe.addLast("CmppTerminateRequestMessageHandler", GlobalConstance.terminateHandler);
@@ -185,14 +189,14 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 						AbstractBusinessHandler cloned = null;
 						try {
 							cloned = buziHandler.clone();
-							
+
 						} catch (CloneNotSupportedException e) {
 							logger.error("handlers is not shareable and not implements Cloneable", e);
 						}
 						if (cloned != null) {
 							cloned.setEndpointEntity(entity);
 							pipe.addLast(buziHandler.name(), cloned);
-							logger.info("handlers is not shareable . clone it success. {}",cloned);
+							logger.info("handlers is not shareable . clone it success. {}", cloned);
 						}
 					}
 
@@ -203,29 +207,28 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		pipe.addLast("BlackHole", GlobalConstance.blackhole);
 
 	}
-	
-	
+
 	protected ChannelInitializer<?> initPipeLine() {
 		return new ChannelInitializer<Channel>() {
 
 			@Override
 			protected void initChannel(Channel ch) throws Exception {
 				ChannelPipeline pipeline = ch.pipeline();
-			
+
 				CMPPCodecChannelInitializer codec = null;
-				if(getEndpointEntity() instanceof CMPPEndpointEntity){
-					pipeline.addLast(GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, ((CMPPEndpointEntity)getEndpointEntity()).getIdleTimeSec(), TimeUnit.SECONDS));
-					codec = new CMPPCodecChannelInitializer(((CMPPEndpointEntity)getEndpointEntity()).getVersion());
-					
-				}
-				else{
+				if (getEndpointEntity() instanceof CMPPEndpointEntity) {
+					pipeline.addLast(GlobalConstance.IdleCheckerHandlerName,
+							new IdleStateHandler(0, 0, ((CMPPEndpointEntity) getEndpointEntity()).getIdleTimeSec(), TimeUnit.SECONDS));
+					codec = new CMPPCodecChannelInitializer(((CMPPEndpointEntity) getEndpointEntity()).getVersion());
+
+				} else {
 					pipeline.addLast(GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, 30, TimeUnit.SECONDS));
 					codec = new CMPPCodecChannelInitializer();
 				}
 
 				pipeline.addLast("CmppServerIdleStateHandler", GlobalConstance.idleHandler);
 				pipeline.addLast(codec.pipeName(), codec);
-			
+
 				pipeline.addLast("sessionLoginManager", new SessionLoginManager(getEndpointEntity()));
 			}
 		};
@@ -235,65 +238,85 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	 * 循环列表，用于实现轮循算法
 	 */
 	private class CircularList<T> {
+		private ReadWriteLock lock = new ReentrantReadWriteLock();
 		private List<T> collection = new ArrayList<T>();
 
-		public synchronized T fetch() {
+		public T fetch() {
 
-			int size = collection.size();
-			if (size == 0)
-				return null;
+			try {
+				lock.readLock().lock();
+				int size = collection.size();
+				if (size == 0)
+					return null;
 
-			int idx =  (int)DefaultSequenceNumberUtil.getNextAtomicValue(indexSeq,Limited);
-			T ret = collection.get(idx % size);
-			// 超过65535归0
-			return ret;
+				int idx = (int) DefaultSequenceNumberUtil.getNextAtomicValue(indexSeq, Limited);
+				T ret = collection.get(idx % size);
+				// 超过65535归0
+				return ret;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
-		public synchronized boolean add(T ele) {
-
-			return collection.add(ele);
+		public boolean add(T ele) {
+			
+			boolean r = false;
+			try {
+				lock.writeLock().lock();
+				r = collection.add(ele);
+			} finally {
+				lock.writeLock().unlock();
+			}
+			return r;
 		}
 
-		public synchronized boolean remove(T ele) {
-
-			return collection.remove(ele);
+		public boolean remove(T ele) {
+			
+			boolean r = false;
+			try {
+				lock.writeLock().lock();
+				r = collection.remove(ele);
+			} finally {
+				lock.writeLock().unlock();
+			}
+			return r;
 		}
 
 		private final static long Limited = 65535L;
 		private AtomicLong indexSeq = new AtomicLong();
 	}
+
 	/**
-	 *重写了calculateSize方法，按消息条数计算流量
+	 * 重写了calculateSize方法，按消息条数计算流量
 	 *
 	 **/
-	
-	private class CMPPChannelTrafficShapingHandler extends ChannelTrafficShapingHandler{
-	    public CMPPChannelTrafficShapingHandler(long writeLimit, long readLimit, long checkInterval) {
-	        super(writeLimit, readLimit, checkInterval);
-	    }
-	    
+
+	private class CMPPChannelTrafficShapingHandler extends ChannelTrafficShapingHandler {
+		public CMPPChannelTrafficShapingHandler(long writeLimit, long readLimit, long checkInterval) {
+			super(writeLimit, readLimit, checkInterval);
+		}
 
 		private boolean isRequestMsg(Message msg) {
 			long commandId = msg.getHeader().getCommandId();
 			return (commandId & 0x80000000L) == 0L;
 		}
-	    
-	    @Override
-	    protected long calculateSize(Object msg) {
-	        if (msg instanceof ByteBuf) {
-	            return ((ByteBuf) msg).readableBytes();
-	        }
-	        if (msg instanceof ByteBufHolder) {
-	            return ((ByteBufHolder) msg).content().readableBytes();
-	        }
-	        if(msg instanceof Message){
-	        	//只计算Request信息
-	        	if(isRequestMsg((Message)msg)){
-	        		return 1;
-	        	}
-	        }
-	        return -1;
-	    }
+
+		@Override
+		protected long calculateSize(Object msg) {
+			if (msg instanceof ByteBuf) {
+				return ((ByteBuf) msg).readableBytes();
+			}
+			if (msg instanceof ByteBufHolder) {
+				return ((ByteBufHolder) msg).content().readableBytes();
+			}
+			if (msg instanceof Message) {
+				// 只计算Request信息
+				if (isRequestMsg((Message) msg)) {
+					return 1;
+				}
+			}
+			return -1;
+		}
 	}
 
 }

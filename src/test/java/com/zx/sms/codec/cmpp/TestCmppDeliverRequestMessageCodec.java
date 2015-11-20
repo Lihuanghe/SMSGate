@@ -21,7 +21,27 @@ import com.zx.sms.common.util.MsgId;
 public class TestCmppDeliverRequestMessageCodec extends AbstractTestMessageCodec<CmppDeliverRequestMessage>{
 	private static final Logger logger = LoggerFactory.getLogger(TestCmppDeliverRequestMessageCodec.class);
 
-	
+	@Test
+	public void testperformance() {
+		int i = 0;
+		int l = 100000;
+		CmppDeliverRequestMessage msg = createTestReq("ad3 中");
+		//先预热
+		for(;i< 1000;i++){
+			decode(encode(msg));
+		}
+		//开始计时
+		
+		long start = System.currentTimeMillis();
+		
+		for(i =0 ;i< l;i++){
+			decode(encode(msg));
+		}
+		long end = System.currentTimeMillis();
+		System.out.print((end - start)*1000000/l);
+		System.out.println("ns");
+		//assert(msg.getMsgContent().equals(result.getMsgContent()));
+	}
 
 	@Test
 	public void testCodec() {
