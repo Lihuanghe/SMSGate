@@ -39,7 +39,7 @@ public class ChannelUtil {
 			if (ch == null)
 				break;
 
-			if (ch.isActive()) {
+			if (ch.isActive() && ch.isWritable()) {
 
 				ChannelFuture future = ch.writeAndFlush(msg);
 
