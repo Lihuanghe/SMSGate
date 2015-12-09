@@ -28,11 +28,13 @@ public class TestCmpp20SubmitRequestMessageCodec extends AbstractTestMessageCode
 		CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
 		msg.setDestterminalId(new String[]{"13800138000"});
 		msg.setLinkID("0000");
-		msg.setMsgContent("123");
+		msg.setMsgContent("根据国家法律法规，对于未实名号码将实施业务办理限制直至暂停通信服务。为了更好地维护您的个人权益，请您尽快办理实名补登记。即日起至2015年12月31日期间成功办理还能在次月获得1GB北京本地通用流量。为您提供多种自助办理方式，您只需下载北京移动客户端http://mobilebj.cn/?c=144/，即可通过“首页-热点推荐-实名登记”进行办理；或关注“中国移动北京公司”微信公众号，点击“我要办理-实名补登记”进行办理。");
+		System.out.println(msg.getMsgContent().length());
 		msg.setMsgid(new MsgId());
 		msg.setServiceId("10086");
 		msg.setSrcId("10086");
 		ByteBuf buf = encode(msg);
+		
 		ByteBuf copybuf = buf.copy();
 		
 		int length = buf.readableBytes();
@@ -44,7 +46,7 @@ public class TestCmpp20SubmitRequestMessageCodec extends AbstractTestMessageCode
 	
 		
 		CmppSubmitRequestMessage result = decode(copybuf);
-		
+		System.out.println(result);
 		Assert.assertEquals(msg.getHeader().getSequenceId(), result.getHeader().getSequenceId());
 
 		Assert.assertEquals(msg.getMsgContent(), result.getMsgContent());

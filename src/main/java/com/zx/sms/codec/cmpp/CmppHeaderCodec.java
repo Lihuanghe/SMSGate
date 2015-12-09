@@ -47,7 +47,6 @@ public class CmppHeaderCodec extends MessageToMessageCodec<ByteBuf, Message> {
 		} else {
 			message.setBodyBuffer(GlobalConstance.emptyBytes);
 		}
-		
 		message.setHeader(header);
 		list.add(message);
 	}

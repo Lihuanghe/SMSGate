@@ -44,17 +44,19 @@ public class CmppDeliverResponseMessageCodec extends MessageToMessageCodec<Messa
 			out.add(msg);
 			return;
 		}
-		;
-
+		CmppDeliverResponseMessage responseMessage = decode(msg);
+		out.add(responseMessage);
+	}
+	
+	public static CmppDeliverResponseMessage decode(Message msg){
 		CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(msg.getHeader());
 
-		ByteBuf bodyBuffer =Unpooled.wrappedBuffer(msg.getBodyBuffer());
+		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
 
 		responseMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer.readBytes(CmppDeliverResponse.MSGID.getLength()).array()));
 		responseMessage.setResult(bodyBuffer.readUnsignedInt());
 		ReferenceCountUtil.release(bodyBuffer);
-		out.add(responseMessage);
-
+		return responseMessage;
 	}
 
 	@Override

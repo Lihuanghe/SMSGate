@@ -17,10 +17,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.zx.sms.codec.cmpp.msg.CmppActiveTestRequestMessage;
+import com.zx.sms.codec.cmpp.CmppDeliverResponseMessageCodec;
+import com.zx.sms.codec.cmpp.CmppSubmitResponseMessageCodec;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.codec.cmpp.msg.Message;
+import com.zx.sms.codec.cmpp.packet.CmppPacketType;
 import com.zx.sms.connect.manager.CMPPEndpointManager;
 import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
@@ -50,7 +52,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 		} else {
 			windows = new Semaphore(windowSize);
 		}
-		errlogger = LoggerFactory.getLogger(entity.getId());
+		errlogger = LoggerFactory.getLogger("error."+entity.getId());
 		this.storeMap = storeMap;
 		this.preSend = preSend;
 	}
@@ -99,15 +101,15 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 			Channel ch = conn.fetch();
 
 			if (ch != null && ch.isActive()) {
-				
+
 				if (entity.isReSendFailMsg()) {
 					// 连接断连，但是未收到Resp的消息，通过其它连接再发送一次
 					ch.writeAndFlush(requestmsg);
 
 					logger.debug("current channel {} is closed.send requestMsg from other channel {} which is active.", ctx.channel(), ch);
 				} else {
-					
-					errlogger.error("Channel closed . Msg may not send Success. {}" ,requestmsg);
+
+					errlogger.error("Channel closed . Msg may not send Success. {}", requestmsg);
 				}
 			}
 			cancelRetry(requestmsg, ctx.channel());
@@ -123,13 +125,13 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 				}
 			}
 		}
-		
-		//如果等待窗口的队列里有未发送的消息，取消发送，并设置发送失败
-		Runnable   task =  waitWindowQueue.poll();
-		while(task!=null){
-			//直接执行task，会判断如果连接关闭则设置发送失败。
+
+		// 如果等待窗口的队列里有未发送的消息，取消发送，并设置发送失败
+		Runnable task = waitWindowQueue.poll();
+		while (task != null) {
+			// 直接执行task，会判断如果连接关闭则设置发送失败。
 			EventLoopGroupFactory.INS.getWaitWindow().submit(task);
-			task  = waitWindowQueue.poll();
+			task = waitWindowQueue.poll();
 		}
 		ctx.fireChannelInactive();
 	}
@@ -148,8 +150,37 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 				// 删除发送成功的消息
 				// 要先删除成功的消息，然后再开一个发送窗口。
 
-				storeMap.remove(message.getHeader().getSequenceId());
-				cancelRetry(message, ctx.channel());
+				Message request = storeMap.remove(message.getHeader().getSequenceId());
+				if (request != null) {
+
+					cancelRetry(request, ctx.channel());
+					
+					// SessionStateManager
+					// 是在协议解析的CodecHandler前面的，这里还无法获取消息的具体java类型。所以使用commandId做比较
+					if (message.getHeader().getCommandId() == CmppPacketType.CMPPSUBMITRESPONSE.getCommandId()) {
+						CmppSubmitResponseMessage submitResp = CmppSubmitResponseMessageCodec.decode(message);
+						if (submitResp.getResult() != 0) {
+							errlogger.error("Send SubmitMsg ERR . Msg: {} ,Resp:{}", request, submitResp);
+						}
+						// 对于超速错误的消息，延迟再发
+						// 8是超速错
+						if (submitResp.getResult() == 8) {
+							reWriteLater(ctx, request, ctx.newPromise(), 400);
+						}
+					} else if (message.getHeader().getCommandId() == CmppPacketType.CMPPDELIVERRESPONSE.getCommandId()) {
+						CmppDeliverResponseMessage deliverResp = CmppDeliverResponseMessageCodec.decode(message);
+						if (deliverResp.getResult() != 0) {
+							errlogger.error("Send DeliverMsg ERR . Msg: {} ,Resp:{}", request, deliverResp);
+						}
+						// 8是超速错
+						if (deliverResp.getResult() == 8) {
+							reWriteLater(ctx, request, ctx.newPromise(), 400);
+						}
+					}
+				}
+				else{
+					errlogger.warn("receive ResponseMessage ,but not found related Request Msg. {}",message);
+				}
 			}
 		}
 		ctx.fireChannelRead(msg);
@@ -226,14 +257,13 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 		if (entry != null && entity.getMaxRetryCnt() > 1) {
 
 			/*
-			 *TODO bugfix:
-			 *不知道什么原因，会导致 下面的future任务没有cancel掉。
-			 *这里增加一个引用，当会试任务超过次数限制后，cancel掉自己。
-			 *些任务不能被中断interupted.如果storeMap.remove()被中断会破坏BDB的内部状态，使用BDB无法继续工作
-			 **/
+			 * TODO bugfix:不知道什么原因，会导致 下面的future任务没有cancel掉。
+			 * 这里增加一个引用，当会试任务超过次数限制后，cancel掉自己。
+			 * 些任务不能被中断interupted.如果storeMap.remove()被中断会破坏BDB的内部状态，使用BDB无法继续工作
+			 */
 			final AtomicReference<Future> ref = new AtomicReference<Future>();
-			
-			 Future<?> future = EventLoopGroupFactory.INS.getMsgResend().scheduleWithFixedDelay(new Runnable() {
+
+			Future<?> future = EventLoopGroupFactory.INS.getMsgResend().scheduleWithFixedDelay(new Runnable() {
 
 				@Override
 				public void run() {
@@ -241,12 +271,12 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 						int times = message.incrementAndGetRequests();
 						logger.debug("retry Send Msg : {}", message);
 						if (times > entity.getMaxRetryCnt()) {
-							
-							//会有future泄漏的情况发生，这里cancel掉自己，来规避泄漏
+
+							// 会有future泄漏的情况发生，这里cancel掉自己，来规避泄漏
 							Future future = ref.get();
-							if(future!=null)
+							if (future != null)
 								future.cancel(false);
-							
+
 							cancelRetry(message, ctx.channel());
 
 							// 删除发送成功的消息
@@ -257,7 +287,11 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 
 							errlogger.error("RetryFailed: {}", message);
 
-							if (message instanceof CmppActiveTestRequestMessage) {
+							// SessionStateManager
+							// 是在协议解析的CodecHandler前面的，这里还无法获取消息的具体java类型。所以使用commandId做比较
+							if (message.getHeader().getCommandId() == CmppPacketType.CMPPACTIVETESTREQUEST.getCommandId()) {
+								// if (message instanceof
+								// CmppActiveTestRequestMessage) {
 								ctx.close();
 								logger.error("retry send CmppActiveTestRequestMessage 3 times,the connection may die.close it");
 							}
@@ -273,9 +307,9 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 					}
 				}
 			}, entity.getRetryWaitTimeSec(), entity.getRetryWaitTimeSec(), TimeUnit.SECONDS);
-			
+
 			ref.set(future);
-			
+
 			entry.future = future;
 
 			// 这里增加一次判断，是否已收到resp消息,已到resp后，msgRetryMap里的entry会被 remove掉。
@@ -290,8 +324,8 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 
 	}
 
-	private Entry cancelRetry(Message msg, Channel channel) {
-		Entry entry = msgRetryMap.remove(msg.getHeader().getSequenceId());
+	private Entry cancelRetry(Message requestMsg, Channel channel) {
+		Entry entry = msgRetryMap.remove(requestMsg.getHeader().getSequenceId());
 
 		if (entry != null && entry.future != null) {
 			entry.future.cancel(false);
@@ -306,20 +340,6 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 				}
 			} else {
 				windows.release();
-			}
-		}
-
-		if (msg instanceof CmppSubmitResponseMessage) {
-			CmppSubmitResponseMessage submitResp = (CmppSubmitResponseMessage) msg;
-			if (submitResp.getResult() != 0) {
-
-				errlogger.error("Send SubmitMsg ERR . Msg: {} ,Resp:{}", entry.request, msg);
-			}
-		} else if (msg instanceof CmppDeliverResponseMessage) {
-			CmppDeliverResponseMessage deliverResp = (CmppDeliverResponseMessage) msg;
-			if (deliverResp.getResult() != 0) {
-
-				errlogger.error("Send DeliverMsg ERR . Msg: {} ,Resp:{}", entry.request, msg);
 			}
 		}
 
@@ -370,29 +390,20 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 			final Long seq = message.getHeader().getSequenceId();
 
 			message.incrementAndGetRequests();
-			
+
 			// 记录已发送的请求,在发送msg前生记录到map里。防止生成retryTask前就收到resp的情况发生
 			Entry tmpentry = new Entry(message);
-			
+
 			Entry old = msgRetryMap.putIfAbsent(seq, tmpentry);
-			
-			if(old !=null) {
+
+			if (old != null) {
 				// bugfix: 集群环境下可能产生相同的seq. 如果已经存在一个相同的seq.
-				//此消息延迟250ms再发
-				logger.error("has repeat Sequense {}",seq);
-				EventLoopGroupFactory.INS.getMsgResend().schedule(new Runnable(){
-					@Override
-					public void run() {
-						try {
-							write(ctx,message,promise);
-						} catch (Exception e) {
-							logger.error("has repeat Sequense ,and write Msg err {}",message);
-						}
-					}
-					
-				}, 250, TimeUnit.MILLISECONDS);
-				
-			}else{
+				// 此消息延迟250ms再发
+				logger.error("has repeat Sequense {}", seq);
+
+				reWriteLater(ctx, message, promise, 250);
+
+			} else {
 				msgWriteCount++;
 				// 持久化到队列
 				storeMap.put(seq, message);
@@ -403,16 +414,29 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 				scheduleRetryMsg(ctx, message, promise);
 				ctx.flush();
 			}
-			
 
 		} else {
 			// 如果连接已关闭，通知上层应用
-			if (promise != null && (!promise.isDone())){
+			if (promise != null && (!promise.isDone())) {
 				StringBuilder sb = new StringBuilder();
 				sb.append("Connection ").append(ctx.channel()).append(" has closed");
 				promise.setFailure(new IOException(sb.toString()));
 			}
 		}
+	}
+
+	private void reWriteLater(final ChannelHandlerContext ctx, final Message message, final ChannelPromise promise, final int delay) {
+		EventLoopGroupFactory.INS.getMsgResend().schedule(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					write(ctx, message, promise);
+				} catch (Exception e) {
+					logger.error("has repeat Sequense ,and write Msg err {}", message);
+				}
+			}
+
+		}, delay, TimeUnit.MILLISECONDS);
 	}
 
 	private class Entry {
