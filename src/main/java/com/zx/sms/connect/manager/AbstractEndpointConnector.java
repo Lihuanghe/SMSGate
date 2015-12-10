@@ -139,13 +139,13 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			}
 			CMPPEndpointEntity cmppentity = (CMPPEndpointEntity) getEndpointEntity();
 
-			// 将SessinManager放在messageHeaderCodec后边。因为要处理Submit 和
-			// deliver消息的长短信分拆
-			ch.pipeline().addBefore(CMPPCodecChannelInitializer.codecName, "sessionStateManager", new SessionStateManager(cmppentity, storedMap, preSendMap));
-			
 			// 增加流量整形 ，每个连接每秒发送，接收消息数不超过配置的值
 			ch.pipeline().addBefore(CMPPCodecChannelInitializer.codecName, "CMPPChannelTraffic",
 					new CMPPChannelTrafficShapingHandler(cmppentity.getWriteLimit(), cmppentity.getReadLimit(), 250));
+			
+			// 将SessinManager放在messageHeaderCodec后边。因为要处理Submit 和
+			// deliver消息的长短信分拆
+			ch.pipeline().addBefore(CMPPCodecChannelInitializer.codecName, "sessionStateManager", new SessionStateManager(cmppentity, storedMap, preSendMap));
 
 			// 加载业务handler
 			bindHandler(ch.pipeline(), cmppentity);
