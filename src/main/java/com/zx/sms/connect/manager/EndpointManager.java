@@ -93,8 +93,8 @@ public enum EndpointManager implements EndpointManagerInterface {
 		EndpointEntity entity = idMap.remove(id);
 		if (entity != null) {
 			endpoints.remove(entity);
+			close(entity);
 		}
-		close(entity);
 	}
 	
 	public void close(){

@@ -277,7 +277,7 @@ public enum LongMessageFrameHolder {
 			int frameKey = (int) msgcontent[3];
 			return new FrameHolder(frameKey, msgcontent[4], msgcontent, msgcontent[5] - 1, msgcontent[0]);
 		} else if (msgcontent[0] == 6 && msgcontent[1] == 8 && msgcontent[2] == 4) {
-			int frameKey = ((int) msgcontent[3] << 8) | (int) msgcontent[4];
+			int frameKey = (((int) msgcontent[3] << 8) | (int) msgcontent[4] & 0xff);
 			return new FrameHolder(frameKey, msgcontent[5], msgcontent, msgcontent[6] - 1, msgcontent[0]);
 		} else {
 			logger.warn("Not Support LongMsg.UDHI" );

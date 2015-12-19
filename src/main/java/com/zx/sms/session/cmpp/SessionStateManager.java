@@ -357,7 +357,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 				Long key = entry.getKey();
 				Message msg = entry.getValue();
 
-				if (msg.isTerminationLife()) {
+				if (msg ==null || msg.isTerminationLife()) {
 					errlogger.error("Msg Life is Over. {}", msg);
 					continue;
 				}

@@ -5,7 +5,7 @@
 
 	<groupId>com.zx.sms</groupId>
 	<artifactId>cmpp-core</artifactId>
-	<version>1.28</version>
+	<version>1.29</version>
 	<packaging>jar</packaging>
 	<name>cmpp-core</name>
 
@@ -66,7 +66,7 @@
 <dependency>
 	<groupId>org.iq80.leveldb</groupId>
 	<artifactId>leveldb</artifactId>
-	<version>0.7</version>
+	<version>0.6</version>
 	<scope>test</scope>
 </dependency>
 

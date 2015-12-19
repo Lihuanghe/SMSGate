@@ -37,15 +37,16 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 		// 端口按group分组，方便按省份转发处理
 		if (entity instanceof CMPPEndpointEntity) {
 			CMPPEndpointEntity cmppentity = (CMPPEndpointEntity) entity;
-			synchronized (this) {
+			
 
-				List<CMPPEndpointEntity> list = groupMap.get(cmppentity.getGroupName());
-				if (list == null) {
-					list = new ArrayList<CMPPEndpointEntity>();
-					groupMap.put(cmppentity.getGroupName(), list);
-				}
-				list.add(cmppentity);
+			List<CMPPEndpointEntity> list = groupMap.get(cmppentity.getGroupName());
+			if (list == null) {
+				list = new ArrayList<CMPPEndpointEntity>();
+				List<CMPPEndpointEntity> old = groupMap.putIfAbsent(cmppentity.getGroupName(), list);
+				list = old == null ? list : old;
 			}
+			list.add(cmppentity);
+			
 		} else if (entity instanceof CMPPServerEndpointEntity) {
 
 			CMPPServerEndpointEntity serverentity = (CMPPServerEndpointEntity) entity;
@@ -53,14 +54,13 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 				
 				manager.addEndpointEntity(child);
 				
-				synchronized (this) {
-					List<CMPPEndpointEntity> list = groupMap.get(child.getGroupName());
-					if (list == null) {
-						list = new ArrayList<CMPPEndpointEntity>();
-						groupMap.put(child.getGroupName(), list);
-					}
-					list.add(child);
+				List<CMPPEndpointEntity> list = groupMap.get(child.getGroupName());
+				if (list == null) {
+					list = new ArrayList<CMPPEndpointEntity>();
+					List<CMPPEndpointEntity> old = groupMap.putIfAbsent(child.getGroupName(), list);
+					list = old == null ? list : old;
 				}
+				list.add(child);
 			}
 		}
 	}

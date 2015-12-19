@@ -49,8 +49,8 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Long, Message> {
 		StoredMap<Long, Message> map = storedMaps.get(keyName);
 		if (map == null) {
 			StoredMap<Long, Message> tmpMap = new StoredMap<Long, Message>(db, messageKeyBinding, messageValueBinding, true);
-			storedMaps.put(keyName, tmpMap);
-			return tmpMap;
+			StoredMap<Long, Message> old = storedMaps.putIfAbsent(keyName, tmpMap);
+			return old ==null ? tmpMap:old;
 		}
 		return map;
 	}
@@ -61,15 +61,10 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Long, Message> {
 		String keyName = new StringBuilder().append(storedpath).append(name).toString();
 		BlockingQueue<Message> queue = queueMap.get(keyName);
 		if (queue == null) {
-			synchronized (queueMap) {
-				queue = queueMap.get(keyName);
-				if (queue == null) {
-					StoredSortedMap<Long, Message> sortedStoredmap = buildStoredSortedMap(storedpath, "Trans_" + name);
-					BlockingQueue<Message> newqueue = new BdbQueueMap<Message>(sortedStoredmap);
-					queueMap.put(keyName, newqueue);
-					return newqueue;
-				}
-			}
+			StoredSortedMap<Long, Message> sortedStoredmap = buildStoredSortedMap(storedpath, "Trans_" + name);
+			BlockingQueue<Message> newqueue = new BdbQueueMap<Message>(sortedStoredmap);
+			BlockingQueue<Message> oldqueue = queueMap.putIfAbsent(keyName, newqueue);
+			return oldqueue==null?newqueue:oldqueue;
 		}
 		return queue;
 	}
@@ -86,8 +81,8 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Long, Message> {
 		if (soredMap == null) {
 			soredMap = new StoredSortedMap<Long, Message>(db, (EntryBinding<Long>) messageKeyBinding, (EntryBinding<Message>) messageValueBinding, true);
 
-			sortedstoredMap.put(keyName, soredMap);
-			return soredMap;
+			StoredSortedMap<Long, Message> old = sortedstoredMap.putIfAbsent(keyName, soredMap);
+			return old == null ? soredMap : old;
 		}
 
 		return soredMap;
@@ -122,8 +117,8 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Long, Message> {
 
 		if (env == null) {
 			env = new QueueEnvironment().buildEnvironment(pathName).buildStoredClassCatalog();
-			envMap.put(pathName, env);
-			return env;
+			QueueEnvironment oldenv = envMap.putIfAbsent(pathName, env);
+			return oldenv == null ? env : oldenv;
 		}
 		return env;
 	}
@@ -166,7 +161,8 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Long, Message> {
 			Database queueDB = dbMap.get(queueName);
 			if (queueDB == null) {
 				queueDB = environment.openDatabase(null, queueName, dbConfig);
-				dbMap.put(queueName, queueDB);
+				Database olddb = dbMap.putIfAbsent(queueName, queueDB);
+				return olddb == null?queueDB : olddb;
 			}
 			return queueDB;
 		}

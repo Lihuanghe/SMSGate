@@ -41,7 +41,7 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 					long nowcnt = cnt.get();
 					logger.info("Totle Receive Msg Num:{},   speed : {}/s", nowcnt, (nowcnt - lastNum)/rate);
 					lastNum = nowcnt;
-					return null;
+					return true;
 				}
 			},new ExitUnlimitCirclePolicy() {
 				@Override
