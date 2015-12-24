@@ -83,7 +83,7 @@ CMPPMessageCodecAggregator [这是3.0协议]
 
 ## Api使用举例
 
-```
+```java
 
 public class TestCMPPEndPoint {
 	private static final Logger logger = LoggerFactory.getLogger(TestCMPPEndPoint.class);
