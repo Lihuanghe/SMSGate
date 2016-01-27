@@ -8,6 +8,8 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 
@@ -46,6 +48,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 	private volatile AtomicInteger conCnt = new AtomicInteger();
 
+	private SslContext sslCtx = null;
 	/**
 	 * 端口
 	 */
@@ -55,7 +58,12 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 	public AbstractEndpointConnector(EndpointEntity endpoint) {
 		this.endpoint = endpoint;
+		this.sslCtx = createSslCtx();
 	}
+
+	
+	
+	protected abstract SslContext createSslCtx() ;
 
 	@Override
 	public EndpointEntity getEndpointEntity() {
@@ -95,6 +103,12 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			}
 		}
 		return null;
+	}
+	
+	
+
+	public SslContext getSslCtx() {
+		return sslCtx;
 	}
 
 	@Override
@@ -214,12 +228,18 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 	}
 
+	protected abstract void initSslCtx(Channel ch,EndpointEntity entity );
+	
 	protected ChannelInitializer<?> initPipeLine() {
 		return new ChannelInitializer<Channel>() {
 
 			@Override
 			protected void initChannel(Channel ch) throws Exception {
 				ChannelPipeline pipeline = ch.pipeline();
+				
+				if(getSslCtx()!=null && getEndpointEntity().isUseSSL()){
+					initSslCtx(ch,getEndpointEntity());
+				}
 
 				CMPPCodecChannelInitializer codec = null;
 				if (getEndpointEntity() instanceof CMPPEndpointEntity) {

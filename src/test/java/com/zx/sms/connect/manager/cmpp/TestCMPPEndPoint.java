@@ -36,6 +36,8 @@ public class TestCMPPEndPoint {
 		server.setHost("127.0.0.1");
 		server.setPort(7891);
 		server.setValid(true);
+		//使用ssl加密数据流
+		server.setUseSSL(true);
 		
 		CMPPServerChildEndpointEntity child = new CMPPServerChildEndpointEntity();
 		child.setId("child");
@@ -44,7 +46,7 @@ public class TestCMPPEndPoint {
 		child.setUserName("901782");
 		child.setPassword("ICP");
 		child.setValid(true);
-
+		
 		child.setWindows((short)16);
 		child.setVersion((short)48);
 		child.setMaxChannels((short)20);
@@ -52,7 +54,6 @@ public class TestCMPPEndPoint {
 		child.setMaxRetryCnt((short)3);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
 		serverhandlers.add(new SessionConnectedHandler());
-	//	serverhandlers.add(new MessageReceiveHandler());
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
@@ -61,44 +62,25 @@ public class TestCMPPEndPoint {
 	
 		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
 		client.setId("client");
-		client.setHost("127.0.0.1");
+		client.setHost("gitlab.cmcczx.com");
 		client.setPort(7891);
 		client.setChartset(Charset.forName("utf-8"));
 		client.setGroupName("test");
 		client.setUserName("901782");
 		client.setPassword("ICP");
-		client.setReadLimit(0);
-		child.setWriteLimit(100);
 		client.setWindows((short)16);
 		client.setVersion((short)48);
 		client.setRetryWaitTimeSec((short)100);
+		client.setUseSSL(true);
 		
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new MessageReceiveHandler());
-		//clienthandlers.add(new SessionConnectedHandler());
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
-
-		
-		CMPPClientEndpointEntity clientErr = new CMPPClientEndpointEntity();
-		clientErr.setId("clienterr");
-		clientErr.setHost("127.0.0.1");
-		clientErr.setPort(7891);
-		clientErr.setChartset(Charset.forName("utf-8"));
-		clientErr.setGroupName("test");
-		clientErr.setUserName("123456");
-		clientErr.setPassword("1234456");
-		clientErr.setWindows((short)16);
-		clientErr.setVersion((short)48);
-		clientErr.setValid(false);
-		List<BusinessHandlerInterface> clientclientErrhandlers = new ArrayList<BusinessHandlerInterface>();
-		clientclientErrhandlers.add(new MessageReceiveHandler());
-		clientErr.setBusinessHandlerSet(clientclientErrhandlers);
-	//	manager.addEndpointEntity(clientErr);
 		
 		manager.openAll();
-		LockSupport.park();
-//		Thread.sleep(300000);
+		//LockSupport.park();
+		Thread.sleep(300000);
 		CMPPEndpointManager.INS.close();
 	}
 }

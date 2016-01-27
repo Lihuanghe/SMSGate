@@ -1,10 +1,8 @@
 package com.zx.sms.connect.manager.tcp;
 
-import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.LockSupport;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -13,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.connect.manager.CMPPEndpointManager;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EndpointManager;
-import com.zx.sms.connect.manager.EventLoopGroupFactory;
 
 public class TestTcpEndPoint {
 	private static final Logger logger = LoggerFactory.getLogger(TestTcpEndPoint.class);
@@ -44,6 +41,9 @@ public class TestTcpEndPoint {
 //				logger.info("connections: {}",manager.getEndpointConnector(server).getConnectionNum());
 //			}
 //		}, 10, 10, TimeUnit.SECONDS);
+		
+		Thread.sleep(5000);
+		manager.getEndpointConnector(client).fetch().writeAndFlush(Unpooled.wrappedBuffer(new byte[]{1}));
 		Thread.sleep(10000);
 		 List<EndpointEntity> entities =  CMPPEndpointManager.INS.allEndPointEntity();
 		 for(EndpointEntity en : entities)

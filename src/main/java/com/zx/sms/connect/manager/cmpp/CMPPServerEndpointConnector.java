@@ -9,6 +9,9 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.handler.timeout.IdleStateHandler;
 
 import java.util.concurrent.TimeUnit;
@@ -18,7 +21,9 @@ import org.slf4j.LoggerFactory;
 
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.AbstractEndpointConnector;
+import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
+import com.zx.sms.connect.manager.ServerEndpoint;
 import com.zx.sms.session.cmpp.SessionLoginManager;
 /**
  *@author Lihuanghe(18852780@qq.com)
@@ -56,4 +61,25 @@ public class CMPPServerEndpointConnector extends AbstractEndpointConnector {
 		acceptorChannel.close();
 		acceptorChannel = null;
 	}
+
+	@Override
+	protected SslContext createSslCtx() {
+		try{
+			 SelfSignedCertificate ssc = new SelfSignedCertificate();
+			 return SslContext.newServerContext(ssc.certificate(), ssc.privateKey());
+		}catch(Exception ex){
+			ex.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	protected void initSslCtx(Channel ch, EndpointEntity entity) {
+		ChannelPipeline pipeline = ch.pipeline();
+		if(entity instanceof ServerEndpoint){
+			logger.info("EndpointEntity {} Use SSL.",entity);
+			pipeline.addLast(getSslCtx().newHandler(ch.alloc()));
+		}
+	}
+
 }

@@ -13,33 +13,24 @@ import org.slf4j.LoggerFactory;
 
 import com.zx.sms.connect.manager.EndpointConnector;
 
-@Sharable
 public class TCPServerEchoHandler extends ChannelHandlerAdapter {
 	private static final Logger logger = LoggerFactory.getLogger(TCPServerEchoHandler.class);
 
-	private EndpointConnector conn;
 
 	private volatile long totalread = 0;
 	private volatile long release = 0;
 	private volatile long trans = 0;
 
-	public TCPServerEchoHandler(EndpointConnector conn) {
-		this.conn = conn;
+	public TCPServerEchoHandler() {
 	}
 
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		int cnt = ((ByteBuf) msg).readableBytes();
 		totalread += cnt;
-		Channel ch = conn.fetch();
-		if (!ch.id().equals(ctx.channel().id())) {
-			trans += cnt;
-			ch.writeAndFlush(msg);
-		} else {
-			release += cnt;
-			ReferenceCountUtil.release(msg);
-		}
+		Channel ch = ctx.channel();
+		ch.writeAndFlush(msg);
 
-		//logger.info("channelID :{} ,read : {}, totalread:{},trans  : {} release {}",ctx.channel(), cnt, totalread, trans, release);
+		logger.info("channelID :{} ,read : {}, totalread:{},trans  : {} release {}",ctx.channel(), cnt, totalread, trans, release);
 	}
 	
     @Override

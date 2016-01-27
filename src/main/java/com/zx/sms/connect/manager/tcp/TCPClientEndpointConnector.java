@@ -3,6 +3,7 @@ package com.zx.sms.connect.manager.tcp;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerAdapter;
@@ -14,6 +15,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.util.ReferenceCountUtil;
 
 import java.util.concurrent.TimeUnit;
@@ -22,7 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.connect.manager.AbstractEndpointConnector;
+import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
+import com.zx.sms.connect.manager.ServerEndpoint;
 
 public class TCPClientEndpointConnector extends AbstractEndpointConnector  {
 	private static final Logger logger = LoggerFactory.getLogger(TCPClientEndpointConnector.class);
@@ -67,9 +72,28 @@ public class TCPClientEndpointConnector extends AbstractEndpointConnector  {
 			@Override
 			protected void initChannel(SocketChannel ch) throws Exception {
 				ChannelPipeline pipeline = ch.pipeline();
-				 pipeline.addLast("clientLog", new LoggingHandler(LogLevel.INFO));
+				 pipeline.addLast("clientLog", new LoggingHandler(LogLevel.DEBUG));
+				 pipeline.addLast("Echo",  new TCPServerEchoHandler());
 			}
 		};
 	}
 
+	@Override
+	protected SslContext createSslCtx() {
+		try{
+			return SslContext.newClientContext(InsecureTrustManagerFactory.INSTANCE);
+		}catch(Exception ex){
+			return null;
+		}
+	}
+	
+	@Override
+	protected void initSslCtx(Channel ch, EndpointEntity entity) {
+		ChannelPipeline pipeline = ch.pipeline();
+		if(entity.isUseSSL()){
+			if(entity instanceof ServerEndpoint){
+				pipeline.addLast(getSslCtx().newHandler(ch.alloc()));
+			}
+		}
+	}
 }

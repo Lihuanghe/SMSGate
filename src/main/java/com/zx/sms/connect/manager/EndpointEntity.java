@@ -43,6 +43,8 @@ public abstract class EndpointEntity implements Serializable {
 	 */
 	private int readLimit = 0;
 	private int writeLimit = 0;
+	
+	private boolean useSSL = false;
     
     public int getReadLimit() {
 		return readLimit;
@@ -92,7 +94,13 @@ public abstract class EndpointEntity implements Serializable {
 	public void setPort(Integer port) {
 		this.port = port;
 	}
-    /**
+	public boolean isUseSSL() {
+		return useSSL;
+	}
+	public void setUseSSL(boolean useSSL) {
+		this.useSSL = useSSL;
+	}
+	/**
      *表示TCP连接是单工，或者又工
      */
     public enum ChannelType {UP,DOWN,DUPLEX};

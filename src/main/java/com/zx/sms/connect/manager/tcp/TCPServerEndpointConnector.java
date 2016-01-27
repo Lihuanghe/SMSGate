@@ -14,6 +14,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
 import org.slf4j.Logger;
@@ -22,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.connect.manager.AbstractEndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
+import com.zx.sms.connect.manager.ServerEndpoint;
 
 public class TCPServerEndpointConnector extends AbstractEndpointConnector {
 	private static final Logger logger = LoggerFactory.getLogger(TCPServerEndpointConnector.class);
@@ -79,7 +82,7 @@ public class TCPServerEndpointConnector extends AbstractEndpointConnector {
 	}
 
 	public ChannelInitializer<SocketChannel> initPipeLine() {
-		final TCPServerEchoHandler h = new TCPServerEchoHandler(getConnector());
+		final TCPServerEchoHandler h = new TCPServerEchoHandler();
 		return new ChannelInitializer<SocketChannel>() {
 
 			@Override
@@ -96,5 +99,25 @@ public class TCPServerEndpointConnector extends AbstractEndpointConnector {
 
 	private TCPServerEndpointConnector getConnector() {
 		return this;
+	}
+
+	@Override
+	protected SslContext createSslCtx() {
+		try{
+			 SelfSignedCertificate ssc = new SelfSignedCertificate();
+			 return SslContext.newServerContext(ssc.certificate(), ssc.privateKey());
+		}catch(Exception ex){
+			return null;
+		}
+	}
+	
+	@Override
+	protected void initSslCtx(Channel ch, EndpointEntity entity) {
+		ChannelPipeline pipeline = ch.pipeline();
+		if(entity.isUseSSL()){
+			if(entity instanceof ServerEndpoint){
+				pipeline.addLast(getSslCtx().newHandler(ch.alloc()));
+			}
+		}
 	}
 }
