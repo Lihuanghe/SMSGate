@@ -100,6 +100,7 @@ public class TestCMPPEndPoint {
 		server.setHost("127.0.0.1");
 		server.setPort(7891);
 		server.setValid(true);
+		server.setUseSSL(false);  //不使用SSL加密流量
 		
 		//给这个网关增加一个允许接入的账号
 		CMPPServerChildEndpointEntity child = new CMPPServerChildEndpointEntity();
@@ -139,6 +140,7 @@ public class TestCMPPEndPoint {
 		client.setWindows((short)16);
 		client.setVersion((short)48);
 		client.setRetryWaitTimeSec((short)100);
+		client.setUseSSL(false); //不使用SSL加密流量
 		
 		//这里是给Client增加一个处理业务:MessageReceiveHandler ，统计接收到的短信条数和速度，并打印到控制台。
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();

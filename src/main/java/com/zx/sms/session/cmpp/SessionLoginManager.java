@@ -96,7 +96,7 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 			if(conn!=null)conn.removeChannel(ctx.channel());
 		}else{
 			//TODO 如果连接未建立完成。
-			logger.warn("shoud not be here. the entity is {}.channel remote is {}" ,entity ,ctx.channel().remoteAddress());
+			logger.debug("shoud not be here. the entity is {}.channel remote is {}" ,entity ,ctx.channel().remoteAddress());
 		}
 		ctx.fireChannelInactive();
 	}

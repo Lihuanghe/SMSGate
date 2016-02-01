@@ -37,7 +37,7 @@ public class CMPPServerEndpointConnector extends AbstractEndpointConnector {
 		super(e);
 		bootstrap.group(EventLoopGroupFactory.INS.getBoss(), EventLoopGroupFactory.INS.getWorker()).channel(NioServerSocketChannel.class)
 				.option(ChannelOption.SO_BACKLOG, 100).option(ChannelOption.SO_RCVBUF, 2048).option(ChannelOption.SO_SNDBUF, 2048)
-				.childOption(ChannelOption.TCP_NODELAY, true).handler(new LoggingHandler(LogLevel.INFO)).childHandler(initPipeLine());
+				.childOption(ChannelOption.TCP_NODELAY, true).handler(new LoggingHandler(LogLevel.DEBUG)).childHandler(initPipeLine());
 	}
 
 	@Override
