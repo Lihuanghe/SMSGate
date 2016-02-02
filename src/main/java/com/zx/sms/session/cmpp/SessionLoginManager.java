@@ -49,6 +49,15 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 	public SessionLoginManager(EndpointEntity entity) {
 		this.entity = entity;
 	}
+	
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    	if(state == SessionState.DisConnect){
+    		logger.error("connection error until login.",cause);
+    		ctx.close();
+    	}else{
+    		ctx.fireExceptionCaught(cause);
+    	}
+    }
 
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		// 如果是服务端，收到的第一个消息必须是Connect消息
