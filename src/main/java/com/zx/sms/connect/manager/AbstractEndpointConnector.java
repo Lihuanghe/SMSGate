@@ -9,7 +9,6 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 
@@ -36,6 +35,7 @@ import com.zx.sms.connect.manager.cmpp.CMPPServerChildEndpointEntity;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 import com.zx.sms.handler.cmpp.CMPPMessageLogHandler;
+import com.zx.sms.handler.cmpp.ReWriteSubmitMsgSrcHandler;
 import com.zx.sms.session.cmpp.SessionLoginManager;
 import com.zx.sms.session.cmpp.SessionState;
 import com.zx.sms.session.cmpp.SessionStateManager;
@@ -191,7 +191,11 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 		pipe.addFirst("socketLog", new LoggingHandler(String.format(GlobalConstance.loggerNamePrefix, entity.getId()), LogLevel.TRACE));
 		pipe.addLast("msgLog", new CMPPMessageLogHandler(entity));
-
+		
+		if(entity instanceof ClientEndpoint){
+			pipe.addLast("reWriteSubmitMsgSrcHandler",new ReWriteSubmitMsgSrcHandler(entity));
+		}
+		
 		pipe.addLast("CmppActiveTestRequestMessageHandler", GlobalConstance.activeTestHandler);
 		pipe.addLast("CmppActiveTestResponseMessageHandler", GlobalConstance.activeTestRespHandler);
 		pipe.addLast("CmppTerminateRequestMessageHandler", GlobalConstance.terminateHandler);

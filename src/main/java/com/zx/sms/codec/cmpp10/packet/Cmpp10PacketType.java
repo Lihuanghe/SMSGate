@@ -86,7 +86,10 @@ public enum Cmpp10PacketType implements PacketType {
 		
 		try {
 			return codec.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (InstantiationException e) {
+			return null;
+		}
+		catch(  IllegalAccessException e){
 			return null;
 		}
 	}

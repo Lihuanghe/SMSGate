@@ -16,14 +16,17 @@ public final class DefaultMsgIdUtil {
 	
 	public static byte[] msgId2Bytes(MsgId msgId) {
         byte[] bytes = new byte[CmppCancelRequest.MSGID.getLength()];
+        
         long result = 0;
-        result |= (long)msgId.getMonth() << 60L;
-        result |= (long)msgId.getDay() << 55L;
-        result |= (long)msgId.getHour() << 50L;
-        result |= (long)msgId.getMinutes() << 44L;
-        result |= (long)msgId.getSeconds() << 38L;
-        result |= (long)msgId.getGateId() << 16L;
-        result |= (long)msgId.getSequenceId() & 0xffffL;
+        if(msgId != null) {
+	        result |= (long)msgId.getMonth() << 60L;
+	        result |= (long)msgId.getDay() << 55L;
+	        result |= (long)msgId.getHour() << 50L;
+	        result |= (long)msgId.getMinutes() << 44L;
+	        result |= (long)msgId.getSeconds() << 38L;
+	        result |= (long)msgId.getGateId() << 16L;
+	        result |= (long)msgId.getSequenceId() & 0xffffL;
+        }
         ByteBuffer.wrap(bytes).putLong(result);           
         return bytes;
         
