@@ -4,6 +4,7 @@
 package com.zx.sms.codec.cmpp;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
@@ -12,7 +13,10 @@ import io.netty.util.ReferenceCountUtil;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
@@ -33,6 +37,7 @@ import com.zx.sms.common.util.MsgId;
  * @author Lihuanghe(18852780@qq.com)
  */
 public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message, CmppSubmitRequestMessage> {
+	private final Logger logger = LoggerFactory.getLogger(CmppSubmitRequestMessageCodec.class);
 	private PacketType packetType;
 
 	/**
@@ -108,8 +113,7 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 		frame.setMsgContentBytes(contentbytes);
 
 		requestMessage.setLinkID(bodyBuffer.readBytes(CmppSubmitRequest.LINKID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
-		// requestMessage.setReserve(bodyBuffer.readBytes(CmppSubmitRequest.RESERVE.getLength()).toString(GlobalConstance.defaultTransportCharset)
-		// .trim()); /** CMPP3.0 无该字段 不解码*/
+
 		ReferenceCountUtil.release(bodyBuffer);
 
 		try {
@@ -124,9 +128,13 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 				responseMessage.setResult(0);
 				ctx.channel().writeAndFlush(responseMessage);
 			}
-		} catch (NotSupportedException ex) {
-			// 不支持的短信格式，直接丢弃
-			
+		} catch (Exception ex){
+			//长短信解析失败，直接给网关回复 resp . 并丢弃这个短信
+			logger.error("Decode CmppSubmitRequestMessage Error ,msg dump :{}" , ByteBufUtil.hexDump(bodyBuffer));
+			CmppSubmitResponseMessage responseMessage = new CmppSubmitResponseMessage(msg.getHeader());
+			responseMessage.setMsgId(new MsgId());
+			responseMessage.setResult(0);
+			ctx.channel().writeAndFlush(responseMessage);
 		}
 
 	}

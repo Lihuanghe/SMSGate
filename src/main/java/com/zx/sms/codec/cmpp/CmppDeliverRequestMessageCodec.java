@@ -4,6 +4,7 @@
 package com.zx.sms.codec.cmpp;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
@@ -11,10 +12,12 @@ import io.netty.util.ReferenceCountUtil;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppReportRequestMessage;
-import com.zx.sms.codec.cmpp.msg.DefaultMessage;
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.codec.cmpp.packet.CmppDeliverRequest;
@@ -33,6 +36,7 @@ import com.zx.sms.common.util.LongMessageFrameHolder;
  * @author Lihuanghe(18852780@qq.com)
  */
 public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Message, CmppDeliverRequestMessage> {
+	private final Logger logger = LoggerFactory.getLogger(CmppDeliverRequestMessageCodec.class);
 	private PacketType packetType;
 
 	/**
@@ -113,9 +117,13 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 					responseMessage.setResult(0);
 					ctx.channel().writeAndFlush(responseMessage);
 				}
-			} catch (NotSupportedException ex) {
-				//如果用户发送的是语音或者图片,则无法解析，直接给网关加复resp
-				
+			} catch (Exception ex){
+				//长短信解析失败，直接给网关回复 resp . 并丢弃这个短信
+				logger.error("Decode CmppDeliverRequestMessage Error ,msg dump :{}" , ByteBufUtil.hexDump(bodyBuffer));
+				CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(msg.getHeader());
+				responseMessage.setMsgId(requestMessage.getMsgId());
+				responseMessage.setResult(0);
+				ctx.channel().writeAndFlush(responseMessage);
 			}
 		} else {
 			out.add(requestMessage);
