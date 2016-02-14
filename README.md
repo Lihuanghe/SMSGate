@@ -1,7 +1,7 @@
 # CMPPGate
 中移短信cmpp协议netty实现编解码
 
-这是一个在netty5框架下实现的cmpp3.0短信协议解析及网关端口管理。
+这是一个在netty5框架下实现的cmpp3.0/cmpp2.0短信协议解析及网关端口管理。
 代码copy了 `huzorro@gmail.com` 基于netty3.7的cmpp协议解析 [huzorro@gmail.com 的代码 ](https://github.com/huzorro/netty3ext)
 
 ##性能测试
@@ -129,7 +129,7 @@ public class TestCMPPEndPoint {
 		//模拟创建一个Client,要去连接上面的网关，使用上面账号密码
 		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
 		client.setId("client");
-		client.setHost("127.0.0.1");
+		client.setHost("127.0.0.2,127.0.0.3,127.0.0.1");
 		client.setPort(7891);
 		client.setChartset(Charset.forName("utf-8"));
 		client.setGroupName("test");

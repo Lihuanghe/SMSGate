@@ -3,28 +3,22 @@ package com.zx.sms.connect.manager.cmpp;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
-import java.util.concurrent.TimeUnit;
-
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.AbstractEndpointConnector;
 import com.zx.sms.connect.manager.ClientEndpoint;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
-import com.zx.sms.connect.manager.ServerEndpoint;
-import com.zx.sms.session.cmpp.SessionLoginManager;
 
 /**
  *@author Lihuanghe(18852780@qq.com)
@@ -43,10 +37,40 @@ public class CMPPClientEndpointConnector extends AbstractEndpointConnector {
 		.option(ChannelOption.SO_RCVBUF, 2048).option(ChannelOption.SO_SNDBUF, 2048)
 		.handler(initPipeLine());
 	}
+	
 	@Override
 	public void open() throws Exception {
-		bootstrap.connect(getEndpointEntity().getHost(), getEndpointEntity().getPort());
+		String host = getEndpointEntity().getHost();
+		if(StringUtils.isBlank(host)){
+			logger.error("host is blank");
+			return;
+		}
+		doConnect(host.split(","),0,getEndpointEntity().getPort());
 	}
+	
+	private void doConnect(final String[] hosts,final int idx ,final int port){
+		if(idx>=hosts.length){
+			logger.error("hosts.length is {} ,but idx is {}.",hosts.length,idx);
+			return;
+		}
+		ChannelFuture future = bootstrap.connect(hosts[idx],port);
+		
+		future.addListener(new GenericFutureListener<ChannelFuture>(){
+
+			@Override
+			public void operationComplete(ChannelFuture f) throws Exception {
+				if(!f.isSuccess()){
+					if(idx+1 < hosts.length){
+						logger.info("retry next host {}",hosts[idx+1]);
+						doConnect(hosts,idx+1, port);
+					}else{
+						logger.error("Connect to {} failed.",getEndpointEntity().getHost());
+					}
+			}
+		}});
+	}
+
+	
 	@Override
 	protected SslContext createSslCtx() {
 	
