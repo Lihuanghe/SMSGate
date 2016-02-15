@@ -101,8 +101,7 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 		// requestMessage.setReserved(bodyBuffer
 		// .readBytes(CmppDeliverRequest.RESERVED.getLength())
 		// .toString(GlobalConstance.defaultTransportCharset).trim());
-
-		ReferenceCountUtil.release(bodyBuffer);
+		
 		if (requestMessage.getRegisteredDelivery() == 0) {
 			try {
 				String content = LongMessageFrameHolder.INS.putAndget(requestMessage.getSrcterminalId(), frame);
@@ -128,7 +127,7 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 		} else {
 			out.add(requestMessage);
 		}
-
+		ReferenceCountUtil.release(bodyBuffer);
 	}
 
 	@Override

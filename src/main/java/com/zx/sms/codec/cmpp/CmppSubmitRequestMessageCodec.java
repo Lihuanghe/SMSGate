@@ -114,7 +114,7 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 
 		requestMessage.setLinkID(bodyBuffer.readBytes(CmppSubmitRequest.LINKID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 
-		ReferenceCountUtil.release(bodyBuffer);
+		
 
 		try {
 			String content = LongMessageFrameHolder.INS.putAndget(StringUtils.join(destTermId, "|"), frame);
@@ -136,7 +136,7 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 			responseMessage.setResult(0);
 			ctx.channel().writeAndFlush(responseMessage);
 		}
-
+		ReferenceCountUtil.release(bodyBuffer);
 	}
 
 	@Override

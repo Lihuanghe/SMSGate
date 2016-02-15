@@ -66,7 +66,7 @@ public class CMPPClientEndpointConnector extends AbstractEndpointConnector {
 					}else{
 						logger.error("Connect to {} failed.",getEndpointEntity().getHost());
 					}
-			}
+				}
 		}});
 	}
 

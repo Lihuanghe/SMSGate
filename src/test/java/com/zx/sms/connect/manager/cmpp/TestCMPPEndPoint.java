@@ -62,7 +62,7 @@ public class TestCMPPEndPoint {
 	
 		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
 		client.setId("client");
-		client.setHost("127.0.0.3,www.baidu.com,127.0.0.1");
+		client.setHost("127.0.0.1");
 		client.setPort(7891);
 		client.setChartset(Charset.forName("utf-8"));
 		client.setGroupName("test");
