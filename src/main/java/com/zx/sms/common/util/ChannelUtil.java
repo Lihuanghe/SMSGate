@@ -22,16 +22,28 @@ public class ChannelUtil {
 	public static ChannelFuture asyncWriteToEntity(final EndpointEntity entity, final Object msg) {
 		
 		EndpointConnector connector = EndpointManager.INS.getEndpointConnector(entity);
-		return asyncWriteToEntity(connector,msg);
+		return asyncWriteToEntity(connector,msg,null);
 	}
 	
 	public static ChannelFuture asyncWriteToEntity(final String entity, final Object msg) {
 		
 		EndpointConnector connector = EndpointManager.INS.getEndpointConnector(entity);
-		return asyncWriteToEntity(connector,msg);
+		return asyncWriteToEntity(connector,msg,null);
 	}
 	
-	private static ChannelFuture asyncWriteToEntity(EndpointConnector connector,final Object msg){
+	public static ChannelFuture asyncWriteToEntity(final EndpointEntity entity, final Object msg,GenericFutureListener listner) {
+		
+		EndpointConnector connector = EndpointManager.INS.getEndpointConnector(entity);
+		return asyncWriteToEntity(connector,msg,listner);
+	}
+	
+	public static ChannelFuture asyncWriteToEntity(final String entity, final Object msg,GenericFutureListener listner) {
+		
+		EndpointConnector connector = EndpointManager.INS.getEndpointConnector(entity);
+		return asyncWriteToEntity(connector,msg,listner);
+	}
+	
+	private static ChannelFuture asyncWriteToEntity(EndpointConnector connector,final Object msg ,GenericFutureListener listner ){
 		int i = 5;
 		while (connector != null && i-- > 0) {
 			Channel ch = connector.fetch();
@@ -42,18 +54,22 @@ public class ChannelUtil {
 			if (ch.isActive() && ch.isWritable()) {
 
 				ChannelFuture future = ch.writeAndFlush(msg);
-
-				future.addListener(new GenericFutureListener<ChannelFuture>() {
-					@Override
-					public void operationComplete(ChannelFuture future) throws Exception {
-						// 如果发送消息失败，记录失败日志
-						if (!future.isSuccess()) {
-							StringBuilder sb = new StringBuilder();
-							sb.append("SendMessage ").append(msg.toString()).append(" Failed. ");
-							logger.error(sb.toString(), future.cause());
+				if(listner==null){
+					future.addListener(new GenericFutureListener<ChannelFuture>() {
+						@Override
+						public void operationComplete(ChannelFuture future) throws Exception {
+							// 如果发送消息失败，记录失败日志
+							if (!future.isSuccess()) {
+								StringBuilder sb = new StringBuilder();
+								sb.append("SendMessage ").append(msg.toString()).append(" Failed. ");
+								logger.error(sb.toString(), future.cause());
+							}
 						}
-					}
-				});
+					});
+				}else{
+					future.addListener(listner);
+				}
+
 				return future;
 			}
 		}

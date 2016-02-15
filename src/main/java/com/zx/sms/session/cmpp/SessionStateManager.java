@@ -3,6 +3,7 @@ package com.zx.sms.session.cmpp;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelOutboundBuffer;
 import io.netty.channel.ChannelPromise;
 
 import java.io.IOException;
@@ -35,6 +36,9 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 	private static final Logger logger = LoggerFactory.getLogger(SessionStateManager.class);
 	// 用来记录连接上的错误消息
 	private final Logger errlogger;
+	
+	//cmpp自定义的可写标致位，1-3已被 AbstractTrafficShapingHandler 使用。
+	final int userDefinedWritabilityIndex = 4;
 
 	/**
 	 * @param entity
@@ -133,6 +137,8 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 			EventLoopGroupFactory.INS.getWaitWindow().submit(task);
 			task = waitWindowQueue.poll();
 		}
+		//设置连接为可写
+		setUserDefinedWritability(ctx.channel(), true);
 		ctx.fireChannelInactive();
 	}
 
@@ -159,12 +165,13 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 					// 是在协议解析的CodecHandler前面的，这里还无法获取消息的具体java类型。所以使用commandId做比较
 					if (message.getHeader().getCommandId() == CmppPacketType.CMPPSUBMITRESPONSE.getCommandId()) {
 						CmppSubmitResponseMessage submitResp = CmppSubmitResponseMessageCodec.decode(message);
-						if (submitResp.getResult() != 0) {
+						if (submitResp.getResult() != 0 && submitResp.getResult() != 8) {
 							errlogger.error("Send SubmitMsg ERR . Msg: {} ,Resp:{}", request, submitResp);
 						}
 						// 对于超速错误的消息，延迟再发
 						// 8是超速错
 						if (submitResp.getResult() == 8) {
+							errlogger.error("Send SubmitMsg Over speed . Msg: {}", request);
 							reWriteLater(ctx, request, ctx.newPromise(), 400);
 						}
 					} else if (message.getHeader().getCommandId() == CmppPacketType.CMPPDELIVERRESPONSE.getCommandId()) {
@@ -219,6 +226,13 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 		ctx.fireUserEventTriggered(evt);
 	}
 
+    void setUserDefinedWritability(Channel ch, boolean writable) {
+        ChannelOutboundBuffer cob = ch.unsafe().outboundBuffer();
+        if (cob != null ) {
+            cob.setUserDefinedWritability(userDefinedWritabilityIndex, writable);
+        }
+    }
+    
 	/**
 	 * 获取发送窗口，并且注册重试任务
 	 **/
@@ -238,6 +252,8 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 						safewrite(ctx, message, promise);
 					}
 				});
+				//设置channel为不可写
+				setUserDefinedWritability(ctx.channel(),false);
 			}
 
 		} catch (InterruptedException e) {
@@ -272,7 +288,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 						logger.debug("retry Send Msg : {}", message);
 						if (times > entity.getMaxRetryCnt()) {
 
-							// 会有future泄漏的情况发生，这里cancel掉自己，来规避泄漏
+							//会有future泄漏的情况发生，这里cancel掉自己，来规避泄漏
 							Future future = ref.get();
 							if (future != null)
 								future.cancel(false);
@@ -281,20 +297,15 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 
 							// 删除发送成功的消息
 							storeMap.remove(message.getHeader().getSequenceId());
-							// TODO 发送3次都失败的消息要记录
+							// 发送3次都失败的消息要记录
 
 							logger.error("retry send msg {} times。cancel retry task", times);
 
 							errlogger.error("RetryFailed: {}", message);
-
-							// SessionStateManager
-							// 是在协议解析的CodecHandler前面的，这里还无法获取消息的具体java类型。所以使用commandId做比较
-							if (message.getHeader().getCommandId() == CmppPacketType.CMPPACTIVETESTREQUEST.getCommandId()) {
-								// if (message instanceof
-								// CmppActiveTestRequestMessage) {
-								ctx.close();
-								logger.error("retry send CmppActiveTestRequestMessage 3 times,the connection may die.close it");
-							}
+							
+							logger.error("retry send Message {} 3 times,the connection may die.close it",message);
+							ctx.close();
+							
 						} else {
 
 							msgWriteCount++;
@@ -337,6 +348,10 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 				Runnable task = waitWindowQueue.poll();
 				if (task != null) {
 					EventLoopGroupFactory.INS.getWaitWindow().submit(task);
+				}
+				//设置连接为可写状态
+				if(waitWindowQueue.isEmpty()){
+					setUserDefinedWritability(channel, true);
 				}
 			} else {
 				windows.release();
