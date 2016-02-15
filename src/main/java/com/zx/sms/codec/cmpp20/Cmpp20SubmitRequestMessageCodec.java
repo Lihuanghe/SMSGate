@@ -4,6 +4,7 @@
 package com.zx.sms.codec.cmpp20;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
@@ -13,8 +14,11 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.primitives.Bytes;
+import com.zx.sms.codec.cmpp.CmppSubmitRequestMessageCodec;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.codec.cmpp.msg.DefaultMessage;
@@ -37,6 +41,7 @@ import com.zx.sms.common.util.MsgId;
  * shifei(shifei@asiainfo.com)
  */
 public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Message, CmppSubmitRequestMessage> {
+	private final Logger logger = LoggerFactory.getLogger(Cmpp20SubmitRequestMessageCodec.class);
 	private PacketType packetType;
 
 	/**
@@ -126,8 +131,13 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 				responseMessage.setResult(0);
 				ctx.channel().writeAndFlush(responseMessage);
 			}
-		} catch (NotSupportedException ex) {
-			// 不支持的短信格式，直接丢弃
+		} catch (Exception ex) {
+			//长短信解析失败，直接给网关回复 resp . 并丢弃这个短信
+			logger.error("Decode CmppSubmitRequestMessage Error ,msg dump :{}" , ByteBufUtil.hexDump(msg.getBodyBuffer()));
+			CmppSubmitResponseMessage responseMessage = new CmppSubmitResponseMessage(msg.getHeader());
+			responseMessage.setMsgId(new MsgId());
+			responseMessage.setResult(0);
+			ctx.channel().writeAndFlush(responseMessage);
 
 		}
 	}

@@ -130,7 +130,7 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 			}
 		} catch (Exception ex){
 			//长短信解析失败，直接给网关回复 resp . 并丢弃这个短信
-			logger.error("Decode CmppSubmitRequestMessage Error ,msg dump :{}" , ByteBufUtil.hexDump(bodyBuffer));
+			logger.error("Decode CmppSubmitRequestMessage Error ,msg dump :{}" , ByteBufUtil.hexDump(msg.getBodyBuffer()));
 			CmppSubmitResponseMessage responseMessage = new CmppSubmitResponseMessage(msg.getHeader());
 			responseMessage.setMsgId(new MsgId());
 			responseMessage.setResult(0);
