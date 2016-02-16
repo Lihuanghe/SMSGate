@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
@@ -54,7 +55,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 		if (windowSize == 0) {
 			windows = null;
 		} else {
-			windows = new Semaphore(windowSize);
+			windows = new AtomicInteger();
 		}
 		errlogger = LoggerFactory.getLogger("error."+entity.getId());
 		this.storeMap = storeMap;
@@ -72,7 +73,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 	 * 消息窗口，默认16
 	 **/
 	private final int windowSize;
-	private Semaphore windows;
+	private volatile AtomicInteger windows ;
 	/**
 	 * 重发队列
 	 **/
@@ -117,17 +118,6 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 				}
 			}
 			cancelRetry(requestmsg, ctx.channel());
-		}
-		// 释放发送窗口
-		if (windowSize != 0) {
-			int avab = windows.availablePermits();
-			if (avab < windowSize) {
-				try {
-					windows.release(windowSize - avab);
-				} catch (Exception ex) {
-					logger.warn("window release failed .", ex);
-				}
-			}
 		}
 
 		// 如果等待窗口的队列里有未发送的消息，取消发送，并设置发送失败
@@ -237,12 +227,12 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 	 * 获取发送窗口，并且注册重试任务
 	 **/
 	private boolean writeWithWindow(final ChannelHandlerContext ctx, final Message message, final ChannelPromise promise) {
-		boolean acquired = false;
+		int acquired = 0;
 		try {
 			// 获取发送窗口
-			acquired = (windows == null ? true : windows.tryAcquire(0, TimeUnit.SECONDS));
+			acquired = (windows == null ? 0 : windows.getAndIncrement());
 			// 防止一个连接死掉，把服务挂死，这里要处理窗口不够用的情况
-			if (acquired) {
+			if (acquired < windowSize) {
 				//设置channel为可写
 				setUserDefinedWritability(ctx.channel(),true);
 				
@@ -259,11 +249,11 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 				setUserDefinedWritability(ctx.channel(),false);
 			}
 
-		} catch (InterruptedException e) {
+		} catch (Exception e) {
 			promise.setFailure(e);
-			logger.error("windows acquire interrupted: ", e.getCause() != null ? e.getCause() : e);
+			logger.error("windows acquire exception: ", e.getCause() != null ? e.getCause() : e);
 		}
-		return acquired;
+		return acquired< windowSize;
 	}
 
 	private void scheduleRetryMsg(final ChannelHandlerContext ctx, final Message message, final ChannelPromise promise) {
@@ -352,7 +342,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 				if (task != null) {
 					EventLoopGroupFactory.INS.getWaitWindow().submit(task);
 				}else{
-					windows.release();
+					windows.getAndDecrement();
 				}
 				//设置连接为可写状态
 				setUserDefinedWritability(channel, true);
