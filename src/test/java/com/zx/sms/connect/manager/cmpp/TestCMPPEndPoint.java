@@ -47,7 +47,7 @@ public class TestCMPPEndPoint {
 		child.setPassword("ICP");
 		child.setValid(true);
 		
-		child.setWindows((short)0);
+		child.setWindows((short)16);
 		child.setVersion((short)48);
 		child.setMaxChannels((short)20);
 		child.setRetryWaitTimeSec((short)100);
@@ -68,7 +68,7 @@ public class TestCMPPEndPoint {
 		client.setGroupName("test");
 		client.setUserName("901782");
 		client.setPassword("ICP");
-		client.setWindows((short)0);
+		client.setWindows((short)16);
 		client.setVersion((short)48);
 		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);

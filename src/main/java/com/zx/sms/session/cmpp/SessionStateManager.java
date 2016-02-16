@@ -51,7 +51,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 	 */
 	public SessionStateManager(CMPPEndpointEntity entity, Map<Long, Message> storeMap, Map<Long, Message> preSend) {
 		this.entity = entity;
-		windowSize = entity.getWindows();
+		windowSize = entity.getWindows()<0?0:entity.getWindows();
 		if (windowSize == 0) {
 			windows = null;
 		} else {
@@ -230,10 +230,14 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 		int acquired = 0;
 		try {
 			// 获取发送窗口
-			acquired = (windows == null ? -1 : windows.getAndIncrement());
+			acquired = (windows == null ? -1 : windows.get());
 			// 防止一个连接死掉，把服务挂死，这里要处理窗口不够用的情况
 			if (acquired < windowSize) {
 				//设置channel为可写
+				if(windows != null){
+					//窗口占用增加1
+					windows.getAndIncrement();
+				}
 				setUserDefinedWritability(ctx.channel(),true);
 				
 				safewrite(ctx, message, promise);
@@ -342,7 +346,9 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 				if (task != null) {
 					EventLoopGroupFactory.INS.getWaitWindow().submit(task);
 				}else{
-					windows.getAndDecrement();
+					if(windows.decrementAndGet()<0){
+						windows.set(0);
+					};
 				}
 				//设置连接为可写状态
 				setUserDefinedWritability(channel, true);
