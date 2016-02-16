@@ -275,7 +275,7 @@ public enum LongMessageFrameHolder {
 
 		byte[] msgcontent = frame.getMsgContentBytes();
 		UserDataHeader header = parseUserDataHeader(msgcontent);
-		if(header.infoElement.size() >0 ){
+		if(header.infoElement.size() == 1 ){
 			InformationElement firstElement = header.infoElement.get(0);
 			int i = 0;
 			int frameKey = 0;
@@ -289,7 +289,15 @@ public enum LongMessageFrameHolder {
 				 return new FrameHolder(frameKey,firstElement.infoEleData[i],msgcontent,firstElement.infoEleData[i+1]-1,header.headerlength);
 			}
 		}
-		logger.warn("Not Support LongMsg {}" ,ByteBufUtil.hexDump(msgcontent));
+		if(header.infoElement.size() > 0){
+			StringBuilder sb = new StringBuilder();
+			
+			for(InformationElement te : header.infoElement){
+				sb.append(te.infoEleName).append("=").append(ByteBufUtil.hexDump(te.infoEleData)).append("|");
+			}
+			logger.error("{{}}",sb.toString());
+		}
+		
 		throw new NotSupportedException("Not Support LongMsg");
 
 		/*
@@ -310,10 +318,14 @@ public enum LongMessageFrameHolder {
 		UserDataHeader udh = new UserDataHeader();
 		udh.headerlength = pdu[0]; //05
 		udh.infoElement = new ArrayList<InformationElement>();
+		
 		int i = 1;
 		while(i<udh.headerlength){
 			InformationElement t = new InformationElement();
 			t.infoEleIdenti = pdu[i++];  //00
+			if(t.infoEleIdenti < InfoEleNameList.length){
+				t.infoEleName  = InfoEleNameList[t.infoEleIdenti];
+			}
 			t.infoEleLength = pdu[i++]; //03
 			t.infoEleData = new byte[t.infoEleLength];
 			System.arraycopy(pdu, i, t.infoEleData, 0, t.infoEleLength);
@@ -329,6 +341,7 @@ public enum LongMessageFrameHolder {
 	}
 	
 	private class InformationElement{
+		
 		int infoEleIdenti;
 		String infoEleName;
 		int infoEleLength;
@@ -426,5 +439,47 @@ public enum LongMessageFrameHolder {
 			return (byte) ( DefaultSequenceNumberUtil.getSequenceNo() & 0xff);
 		}
 	}
+	/**
+	 * 参考：
+	 * <a href="https://en.wikipedia.org/wiki/User_Data_Header">协议</a>
+	 */
+	final static String[] InfoEleNameList =  new String[]{"0	Concatenated short messages, 8-bit reference number",
+		"1	Special SMS Message Indication",
+		"2	Reserved",
+		"3	Not used to avoid misinterpretation as <LF> character",
+		"4	Application port addressing scheme, 8 bit address",
+		"5	Application port addressing scheme, 16 bit address",
+		"6	SMSC Control Parameters",
+		"7	UDH Source Indicator",
+		"8	Concatenated short message, 16-bit reference number",
+		"9	Wireless Control Message Protocol",
+		"0A	Text Formatting",
+		"0B	Predefined Sound",
+		"0C	User Defined Sound (iMelody max 128 bytes)",
+		"0D	Predefined Animation",
+		"0E	Large Animation (16*16 times 4 = 32*4 =128 bytes)",
+		"0F	Small Animation (8*8 times 4 = 8*4 =32 bytes)",
+		"10	Large Picture (32*32 = 128 bytes)",
+		"11	Small Picture (16*16 = 32 bytes)",
+		"12	Variable Picture",
+		"13	User prompt indicator",
+		"14	Extended Object",
+		"15	Reused Extended Object",
+		"16	Compression Control",
+		"17	Object Distribution Indicator",
+		"18	Standard WVG object",
+		"19	Character Size WVG object",
+		"1A	Extended Object Data Request Command",
+		"1B	Reserved for future EMS features",
+		"1C	Reserved for future EMS features",
+		"1D	Reserved for future EMS features",
+		"1E	Reserved for future EMS features",
+		"1F	Reserved for future EMS features",
+		"20	RFC 822 E-Mail Header",
+		"21	Hyperlink format element",
+		"22	Reply Address Element",
+		"23	Enhanced Voice Mail Information",
+		"24	National Language Single Shift",
+		"25	National Language Locking Shift"};
 
 }
