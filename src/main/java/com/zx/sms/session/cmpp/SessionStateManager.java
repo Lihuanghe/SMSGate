@@ -73,7 +73,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 	 * 消息窗口，默认16
 	 **/
 	private final int windowSize;
-	private volatile AtomicInteger windows ;
+	private final AtomicInteger windows ;
 	/**
 	 * 重发队列
 	 **/
@@ -230,7 +230,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 		int acquired = 0;
 		try {
 			// 获取发送窗口
-			acquired = (windows == null ? 0 : windows.getAndIncrement());
+			acquired = (windows == null ? -1 : windows.getAndIncrement());
 			// 防止一个连接死掉，把服务挂死，这里要处理窗口不够用的情况
 			if (acquired < windowSize) {
 				//设置channel为可写

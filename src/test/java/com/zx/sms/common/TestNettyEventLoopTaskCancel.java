@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 
+import org.apache.commons.codec.binary.Hex;
 import org.junit.Test;
 
 public class TestNettyEventLoopTaskCancel {
@@ -17,6 +18,10 @@ public class TestNettyEventLoopTaskCancel {
 	public void testcancel() throws Exception
 	{
 		System.out.println(ByteBufUtil.hexDump(new byte[]{10,11,12,13,14,15,127}));
+		String str = "0a0b";
+		
+		byte[] b =	Hex.decodeHex(str.toCharArray());
+		
 		
 		Future future = ins.scheduleAtFixedRate(new Runnable(){
 
