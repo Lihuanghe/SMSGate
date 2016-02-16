@@ -155,13 +155,13 @@ public class MsgId implements Serializable {
 	 * @return the sequenceId
 	 */
 	public int getSequenceId() {
-		return sequenceId;
+		return sequenceId & 0xffff;
 	}
 	/**
 	 * @param sequenceId the sequenceId to set
 	 */
 	public void setSequenceId(int sequenceId) {
-		this.sequenceId = sequenceId;
+		this.sequenceId = sequenceId & 0xffff;
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()

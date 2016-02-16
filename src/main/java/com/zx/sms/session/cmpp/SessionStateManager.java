@@ -243,6 +243,9 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 			acquired = (windows == null ? true : windows.tryAcquire(0, TimeUnit.SECONDS));
 			// 防止一个连接死掉，把服务挂死，这里要处理窗口不够用的情况
 			if (acquired) {
+				//设置channel为可写
+				setUserDefinedWritability(ctx.channel(),true);
+				
 				safewrite(ctx, message, promise);
 			} else {
 				// 加入等待队列
@@ -343,19 +346,17 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 		}
 		if (windows != null) {
 			// 如果等窗口的队列里有任务，先发送等待的消息
-			if (channel != null && channel.isActive() && !waitWindowQueue.isEmpty()) {
+			if (channel != null && channel.isActive()) {
 
 				Runnable task = waitWindowQueue.poll();
 				if (task != null) {
 					EventLoopGroupFactory.INS.getWaitWindow().submit(task);
+				}else{
+					windows.release();
 				}
 				//设置连接为可写状态
-				if(waitWindowQueue.isEmpty()){
-					setUserDefinedWritability(channel, true);
-				}
-			} else {
-				windows.release();
-			}
+				setUserDefinedWritability(channel, true);
+			} 
 		}
 
 		return entry;

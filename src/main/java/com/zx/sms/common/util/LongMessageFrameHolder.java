@@ -1,5 +1,7 @@
 package com.zx.sms.common.util;
 
+import io.netty.buffer.ByteBufUtil;
+
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -272,7 +274,25 @@ public enum LongMessageFrameHolder {
 	private FrameHolder createFrameHolder(LongMessageFrame frame) throws NotSupportedException {
 
 		byte[] msgcontent = frame.getMsgContentBytes();
+		UserDataHeader header = parseUserDataHeader(msgcontent);
+		if(header.infoElement.size() >0 ){
+			InformationElement firstElement = header.infoElement.get(0);
+			int i = 0;
+			int frameKey = 0;
+			if(firstElement.infoEleIdenti == 0 ){
+				 frameKey = firstElement.infoEleData[i]; 
+				 i++;
+				 return new FrameHolder(frameKey,firstElement.infoEleData[i],msgcontent,firstElement.infoEleData[i+1]-1,header.headerlength);
+			}else if(firstElement.infoEleIdenti == 8 ){
+				 frameKey = (((int) firstElement.infoEleData[i] << 8) | (int) firstElement.infoEleData[i+1] & 0xff);
+				 i+=2;
+				 return new FrameHolder(frameKey,firstElement.infoEleData[i],msgcontent,firstElement.infoEleData[i+1]-1,header.headerlength);
+			}
+		}
+		logger.warn("Not Support LongMsg {}" ,ByteBufUtil.hexDump(msgcontent));
+		throw new NotSupportedException("Not Support LongMsg");
 
+		/*
 		if (msgcontent[0] == 5 && msgcontent[1] == 0 && msgcontent[2] == 3) {
 			int frameKey = (int) msgcontent[3];
 			return new FrameHolder(frameKey, msgcontent[4], msgcontent, msgcontent[5] - 1, msgcontent[0]);
@@ -283,6 +303,36 @@ public enum LongMessageFrameHolder {
 			logger.warn("Not Support LongMsg.UDHI" );
 			throw new NotSupportedException("Not Support LongMsg.UDHI");
 		}
+		*/
+	}
+	
+	private UserDataHeader parseUserDataHeader(byte[] pdu){
+		UserDataHeader udh = new UserDataHeader();
+		udh.headerlength = pdu[0]; //05
+		udh.infoElement = new ArrayList<InformationElement>();
+		int i = 1;
+		while(i<udh.headerlength){
+			InformationElement t = new InformationElement();
+			t.infoEleIdenti = pdu[i++];  //00
+			t.infoEleLength = pdu[i++]; //03
+			t.infoEleData = new byte[t.infoEleLength];
+			System.arraycopy(pdu, i, t.infoEleData, 0, t.infoEleLength);
+			i+=t.infoEleLength;
+			udh.infoElement.add(t);
+		}
+		return udh;
+	}
+	
+	private class UserDataHeader{
+		int headerlength;
+		List<InformationElement> infoElement;
+	}
+	
+	private class InformationElement{
+		int infoEleIdenti;
+		String infoEleName;
+		int infoEleLength;
+		byte[] infoEleData;
 	}
 
 	// 用来保存一条短信的各个片断

@@ -20,7 +20,7 @@ public abstract class AbstractTestMessageCodec<T> {
 		protected void initChannel(Channel ch) throws Exception {
 			ChannelPipeline pipeline = ch.pipeline();
 			CMPPCodecChannelInitializer codec = new CMPPCodecChannelInitializer(getVersion());
-			pipeline.addLast("serverLog", new LoggingHandler(LogLevel.INFO));
+			pipeline.addLast("serverLog", new LoggingHandler(LogLevel.DEBUG));
 			pipeline.addLast(codec.pipeName(), codec);
 
 		}

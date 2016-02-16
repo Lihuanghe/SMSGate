@@ -1,5 +1,6 @@
 package com.zx.sms.common;
 
+import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.concurrent.Future;
 
@@ -15,6 +16,8 @@ public class TestNettyEventLoopTaskCancel {
 	@Test
 	public void testcancel() throws Exception
 	{
+		System.out.println(ByteBufUtil.hexDump(new byte[]{10,11,12,13,14,15,127}));
+		
 		Future future = ins.scheduleAtFixedRate(new Runnable(){
 
 			@Override
