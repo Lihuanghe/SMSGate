@@ -369,8 +369,10 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 
 	@Override
 	public String toString() {
-		return "CmppSubmitRequestMessage [msgid=" + msgid + ", registeredDelivery=" + registeredDelivery + ", serviceId=" + serviceId + ", msgsrc=" + msgsrc
-				+ ", srcId=" + srcId + ", destterminalId=" + Arrays.toString(destterminalId) + ", msgContent=" + msgContent +  ", getHeader()=" + getHeader() + "]";
+		StringBuilder sb = new StringBuilder();
+		sb.append("CmppSubmitRequestMessage [msgid=").append(msgid).append(", destterminalId=").append(Arrays.toString(destterminalId)).append(", msgContent=")
+				.append(msgContent).append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
+		return sb.toString();
 	}
 	
 	

@@ -31,9 +31,9 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 	private String reserved = GlobalConstance.emptyString;
 
 	private boolean isReport = false;
-	
+
 	private String msgContent;
-	
+
 	private boolean supportLongMsg = GlobalConstance.isSupportLongMsg;
 
 	public CmppDeliverRequestMessage(Header header) {
@@ -88,7 +88,6 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 	public void setServiceid(String serviceid) {
 		this.serviceid = serviceid;
 	}
-
 
 	/**
 	 * @return the srcterminalId
@@ -198,7 +197,7 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 	public void setReport(boolean isReport) {
 		this.isReport = isReport;
 	}
-	
+
 	public String getMsgContent() {
 		return msgContent;
 	}
@@ -215,25 +214,27 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 	 * @return the msgContent
 	 */
 	public void setMsgContent(String msgContent) {
-		if (msgContent == null){
+		if (msgContent == null) {
 			this.msgContent = GlobalConstance.emptyString;
-		}else{
+		} else {
 			this.msgContent = msgContent;
 		}
 	}
-	
+
 	public CmppDeliverRequestMessage clone() throws CloneNotSupportedException {
 		return (CmppDeliverRequestMessage) super.clone();
 	}
 
 	@Override
 	public String toString() {
-		if(isReport()){
-			return "CmppDeliverRequestMessage [msgId=" + msgId + ", destId=" + destId + ", serviceid=" + serviceid + ", srcterminalId=" + srcterminalId
-					+ ", registeredDelivery=" + registeredDelivery + ", msgContent=" + msgContent + ", getHeader()=" + getHeader() + ", ReportRequest="+ getReportRequestMessage()+ "]";
-					
+		if (isReport()) {
+			return "CmppDeliverRequestMessage [msgId=" + msgId + ", destId=" + destId + ", srcterminalId=" + srcterminalId + ", registeredDelivery="
+					+ registeredDelivery + ", msgContent=" + msgContent + ", getHeader()=" + getHeader() + ", ReportRequest=" + getReportRequestMessage() + "]";
+
 		}
-		return "CmppDeliverRequestMessage [msgId=" + msgId + ", destId=" + destId + ", serviceid=" + serviceid + ", srcterminalId=" + srcterminalId
-				+ ", registeredDelivery=" + registeredDelivery + ", msgContent=" + msgContent + ", getHeader()=" + getHeader() + "]";
+		StringBuilder sb = new StringBuilder();
+		sb.append("CmppDeliverRequestMessage [msgId=").append(msgId).append(", destId=").append(destId).append(", srcterminalId=").append(srcterminalId)
+				.append(", msgContent=").append(msgContent).append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
+		return sb.toString();
 	}
 }

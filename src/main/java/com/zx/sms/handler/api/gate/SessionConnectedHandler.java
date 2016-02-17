@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 import java.util.concurrent.Callable;
 
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppReportRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
+import com.zx.sms.codec.cmpp.msg.CmppTerminateRequestMessage;
 import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.common.util.ChannelUtil;
 import com.zx.sms.common.util.MsgId;
@@ -32,7 +34,6 @@ import com.zx.sms.session.cmpp.SessionState;
 public class SessionConnectedHandler extends AbstractBusinessHandler {
 	private static final Logger logger = LoggerFactory.getLogger(SessionConnectedHandler.class);
 	private int totleCnt = 100000000;
-
 	
 	
 	public int getTotleCnt() {
@@ -111,7 +112,13 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 				public boolean notOver(Future future) {
 					boolean ret = ch.isActive() && totleCnt > 0;
 					if(!ret){
-						ch.close();
+						ChannelFuture promise =	ch.writeAndFlush(new CmppTerminateRequestMessage());
+						promise.addListener(new GenericFutureListener<ChannelFuture>(){
+							@Override
+							public void operationComplete(ChannelFuture future) throws Exception {
+								ch.close();
+							}
+						});
 					}
 					return ret;
 				}
