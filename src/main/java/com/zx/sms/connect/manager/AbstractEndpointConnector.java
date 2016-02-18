@@ -85,7 +85,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	}
 
 	@Override
-	public synchronized void close() throws Exception {
+	public  void close() throws Exception {
 		Channel ch = channels.fetch();
 		while (ch != null) {
 			close(ch);
@@ -129,7 +129,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		return channels;
 	}
 
-	public synchronized void addChannel(Channel ch) {
+	public  void addChannel(Channel ch) {
 
 		// 标识连接已建立
 		ch.attr(GlobalConstance.attributeKey).set(SessionState.Connect);
@@ -171,7 +171,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		}
 	}
 
-	public synchronized void removeChannel(Channel ch) {
+	public void removeChannel(Channel ch) {
 		ch.attr(GlobalConstance.attributeKey).set(SessionState.DisConnect);
 		if (getChannels().remove(ch))
 			decrementConn();
