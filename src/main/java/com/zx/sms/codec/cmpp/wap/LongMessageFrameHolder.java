@@ -1,4 +1,4 @@
-package com.zx.sms.common.util;
+package com.zx.sms.codec.cmpp.wap;
 
 import io.netty.buffer.ByteBufUtil;
 
@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.NotSupportedException;
+import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 
 //短信片断持久化需要集中保存，因为同一短信的不同分片会从不同的连接发送。可能不在同一台主机。
 //可以使用 Redis.Memcached等。
