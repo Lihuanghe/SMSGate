@@ -77,7 +77,7 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 		requestMessage.setSrcterminalType(bodyBuffer.readUnsignedByte());
 		requestMessage.setRegisteredDelivery(bodyBuffer.readUnsignedByte());
 
-		int frameLength = bodyBuffer.readUnsignedByte();
+		int frameLength = frame.getPayloadLength(bodyBuffer.readUnsignedByte());
 
 		if (requestMessage.getRegisteredDelivery() == 0) {
 			byte[] contentbytes = new byte[frameLength];

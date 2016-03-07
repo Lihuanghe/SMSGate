@@ -1,5 +1,6 @@
 package com.zx.sms.codec.cmpp.msg;
 
+import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
 import com.zx.sms.common.GlobalConstance;
 
 /**
@@ -120,6 +121,22 @@ public class LongMessageFrame  {
 
 	public void setContentPart(String contentPart) {
 		this.contentPart = contentPart;
+	}
+	//如果是7bit编码，需要计算真实的数据长度
+	public int getPayloadLength(int udl){
+		if(this.msgfmt == 0)
+			return LongMessageFrameHolder.octetLengthfromseptetsLength(udl);
+		else
+			return udl;
+		
+	}
+	
+	public byte[] getoctets(){
+		if(this.getMsgfmt() ==0 ) {
+			return LongMessageFrameHolder.octetStream2septetStream(this.getMsgContentBytes());
+		}else{
+			 return  this.getMsgContentBytes();
+		}
 	}
 	
 	

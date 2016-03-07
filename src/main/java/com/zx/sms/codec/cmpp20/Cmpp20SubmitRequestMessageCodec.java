@@ -110,7 +110,7 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 		// requestMessage.setDestterminaltype(bodyBuffer.readUnsignedByte());//CMPP2.0
 		// 无该字段 不进行编解码
 
-		short msgLength = bodyBuffer.readUnsignedByte();
+		short msgLength =(short) frame.getPayloadLength(bodyBuffer.readUnsignedByte());
 		byte[] contentbytes = new byte[msgLength];
 		bodyBuffer.readBytes(contentbytes);
 		frame.setMsgContentBytes(contentbytes);

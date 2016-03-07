@@ -1,5 +1,7 @@
 package com.zx.sms.wbxml;
 
+import java.nio.charset.Charset;
+
 import org.apache.commons.codec.binary.Hex;
 import org.junit.Test;
 import org.marre.sms.SmsUserData;
@@ -19,4 +21,9 @@ public class TestWBXML {
 		System.out.println(Hex.encodeHexString(binary));
 	}
 
+	@Test
+	public void testerror() throws Exception{
+		byte[] b = Hex.decodeHex("6211768460c551b55f887d27602530028bf75e2e5e2e62113000".toCharArray());
+		System.out.println(new String(b,Charset.forName("ISO-10646-UCS-2")));
+	}
 }

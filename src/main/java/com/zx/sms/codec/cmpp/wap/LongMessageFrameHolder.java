@@ -34,6 +34,15 @@ public enum LongMessageFrameHolder {
 	 */
 	private ConcurrentHashMap<String, FrameHolder> map = new ConcurrentHashMap<String, FrameHolder>();
 
+	
+	
+	private String generatorString(byte[] msgbytes , short msgfmt){
+		if(msgfmt == 0){
+			return new String(octetStream2septetStream(msgbytes),switchCharset(msgfmt));
+		}else{
+			return new String(msgbytes,switchCharset(msgfmt));
+		}
+	}
 	/**
 	 * 获取一条完整的长短信，如果长短信组装未完成，返回null
 	 **/
@@ -42,17 +51,18 @@ public enum LongMessageFrameHolder {
 		assert (frame.getTppid() == 0);
 
 		// 短信内容不带协议头，直接获取短信内容
-		if (frame.getTpudhi() == 0) {
+		//udhi只取第一个bit
+		if ((frame.getTpudhi() & 0x1) == 0) {
+			
+			return generatorString(frame.getMsgContentBytes(),frame.getMsgfmt());
 
-			return new String(frame.getMsgContentBytes(), switchCharset(frame.getMsgfmt()));
-
-		} else if (frame.getTpudhi() == 1) {
+		} else if ((frame.getTpudhi() & 0x1) == 1) {
 
 			FrameHolder fh = createFrameHolder(frame);
 			// 判断是否只有一帧
 			if (fh.isComplete()) {
 
-				return new String(fh.mergeAllcontent(), switchCharset(frame.getMsgfmt()));
+				return generatorString(fh.mergeAllcontent(),frame.getMsgfmt());
 			}
 
 			// 超过一帧的，进行长短信合并
@@ -71,7 +81,7 @@ public enum LongMessageFrameHolder {
 				
 				map.remove(mapKey);
 				
-				return new String(oldframeHolder.mergeAllcontent(), switchCharset(frame.getMsgfmt()));
+				return generatorString(oldframeHolder.mergeAllcontent(),frame.getMsgfmt());
 			}
 
 		} else {
@@ -255,8 +265,9 @@ public enum LongMessageFrameHolder {
 	}
 
 	private FrameHolder mergeFrameHolder(FrameHolder fh, LongMessageFrame frame) throws NotSupportedException {
-		byte[] msgcontent = frame.getMsgContentBytes();
-
+		byte[] msgcontent = frame.getoctets();
+		UserDataHeader header = parseUserDataHeader(msgcontent);
+		
 		if (msgcontent[0] == 5 && msgcontent[1] == 0 && msgcontent[2] == 3) {
 			int idx = msgcontent[5] - 1;
 			fh.merge(msgcontent, idx);
@@ -274,7 +285,8 @@ public enum LongMessageFrameHolder {
 
 	private FrameHolder createFrameHolder(LongMessageFrame frame) throws NotSupportedException {
 
-		byte[] msgcontent = frame.getMsgContentBytes();
+		byte[] msgcontent = frame.getoctets();
+		
 		UserDataHeader header = parseUserDataHeader(msgcontent);
 		if(header.infoElement.size() == 1 ){
 			InformationElement firstElement = header.infoElement.get(0);
@@ -482,5 +494,56 @@ public enum LongMessageFrameHolder {
 		"23	Enhanced Voice Mail Information",
 		"24	National Language Single Shift",
 		"25	National Language Locking Shift"};
+	
+	/**
+	 * Convert a stream of septets read as octets into a byte array containing the 7-bit
+	 * values from the octet stream.
+	 * @param octets
+	 * @param bitSkip
+	 * FIXME pass the septet length in here, so if there is a spare septet at the end of the octet, we can ignore that
+	 * @return
+	 */
 
+	public static byte[] octetStream2septetStream(byte[] octets) {
+		int septetCount = (8 * octets.length) / 7;
+		byte[] septets = new byte[septetCount];
+		for(int newIndex=septets.length-1; newIndex>=0; --newIndex) {
+			for(int bit=6; bit>=0; --bit) {
+				int oldBitIndex = ((newIndex * 7) + bit);
+				if((octets[oldBitIndex >>> 3] & (1 << (oldBitIndex & 7))) != 0)
+					septets[newIndex] |= (1 << bit);
+			}
+		}
+		
+		return septets;		
+	}
+
+
+	
+	/**
+	 * Convert a list of septet values into an octet stream, with a number of empty bits at the start.
+	 * @param septets
+	 * @param skipBits
+	 * @return
+	 */
+	public static byte[] septetStream2octetStream(byte[] septets) {
+		
+		int octetLength = octetLengthfromseptetsLength(septets.length);
+		byte[] octets = new byte[octetLength];
+		
+		for (int i = 0; i < septets.length; i++) {
+			for (int j = 0; j < 7; j++) {
+				if ((septets[i] & (1 << j)) != 0) {
+					int bitIndex = (i * 7) + j ;
+					octets[bitIndex >>> 3] |= 1 << (bitIndex & 7);
+				}
+			}
+		}
+		return octets;
+	}
+	
+	public static int octetLengthfromseptetsLength(int septetLength)
+	{
+		return (int) Math.ceil((septetLength * 7 ) / 8.0);
+	}
 }

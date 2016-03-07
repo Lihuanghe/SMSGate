@@ -106,7 +106,7 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 
 		requestMessage.setDestterminaltype(bodyBuffer.readUnsignedByte());
 
-		short msgLength = bodyBuffer.readUnsignedByte();
+		short msgLength = (short)(frame.getPayloadLength(bodyBuffer.readUnsignedByte()) & 0xffff);
 
 		byte[] contentbytes = new byte[msgLength];
 		bodyBuffer.readBytes(contentbytes);

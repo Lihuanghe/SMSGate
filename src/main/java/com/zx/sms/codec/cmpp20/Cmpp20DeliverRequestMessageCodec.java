@@ -79,7 +79,7 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 		// requestMessage.setSrcterminalType(bodyBuffer.readUnsignedByte());//CMPP2.0
 		// SrcterminalType不进行编解码
 		requestMessage.setRegisteredDelivery(bodyBuffer.readUnsignedByte());
-		int frameLength = bodyBuffer.readUnsignedByte();
+		int frameLength = frame.getPayloadLength(bodyBuffer.readUnsignedByte());
 
 		if (requestMessage.getRegisteredDelivery() == 0) {
 			byte[] contentbytes = new byte[frameLength];
