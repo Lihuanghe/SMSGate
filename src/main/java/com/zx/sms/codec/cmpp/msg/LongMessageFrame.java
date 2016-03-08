@@ -128,16 +128,24 @@ public class LongMessageFrame  {
 			return LongMessageFrameHolder.octetLengthfromseptetsLength(udl);
 		else
 			return udl;
-		
 	}
 	
-	public byte[] getoctets(){
-		if(this.getMsgfmt() ==0 ) {
-			return LongMessageFrameHolder.octetStream2septetStream(this.getMsgContentBytes());
+	public byte[] getPayloadbytes(int udhl){
+		if(udhl > 0){
+			int payloadlength = msgLength - udhl -1;
+			byte[] payload = new byte[payloadlength];
+			System.arraycopy(msgContentBytes, udhl+1, payload, 0,payloadlength);
+			//如果是7bit编码.先转也8bit编码
+			if(this.msgfmt == 0)
+				
+				return LongMessageFrameHolder.septetStream2octetStream(payload);
+			else
+				return payload;
 		}else{
-			 return  this.getMsgContentBytes();
+			if(this.msgfmt == 0)
+				return LongMessageFrameHolder.septetStream2octetStream(msgContentBytes);
+			else
+				return msgContentBytes;
 		}
 	}
-	
-	
 }

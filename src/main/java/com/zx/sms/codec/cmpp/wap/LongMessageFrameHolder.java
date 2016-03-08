@@ -1,15 +1,14 @@
 package com.zx.sms.codec.cmpp.wap;
 
-import io.netty.buffer.ByteBufUtil;
-
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
+import org.marre.sms.SmsUdhIei;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,25 +35,29 @@ public enum LongMessageFrameHolder {
 
 	
 	
-	private String generatorString(byte[] msgbytes , short msgfmt){
-		if(msgfmt == 0){
-			return new String(octetStream2septetStream(msgbytes),switchCharset(msgfmt));
-		}else{
-			return new String(msgbytes,switchCharset(msgfmt));
-		}
+	private SmsMessage generatorSmsMessage(FrameHolder fh){
+		
 	}
+	
+	
 	/**
 	 * 获取一条完整的长短信，如果长短信组装未完成，返回null
 	 **/
-	public String putAndget(String serviceNum, LongMessageFrame frame) throws NotSupportedException {
+	public SmsMessage putAndget(String serviceNum, LongMessageFrame frame) throws NotSupportedException {
 
 		assert (frame.getTppid() == 0);
 
 		// 短信内容不带协议头，直接获取短信内容
 		//udhi只取第一个bit
 		if ((frame.getTpudhi() & 0x1) == 0) {
+			if(frame.getMsgfmt() == 0){
+				//TODO 这里还没有经过7bit转码 
+				
+			}else{
+				
+			}
 			
-			return generatorString(frame.getMsgContentBytes(),frame.getMsgfmt());
+			return generatorString(frame.getMsgContentBytes(),frame);
 
 		} else if ((frame.getTpudhi() & 0x1) == 1) {
 
@@ -62,7 +65,7 @@ public enum LongMessageFrameHolder {
 			// 判断是否只有一帧
 			if (fh.isComplete()) {
 
-				return generatorString(fh.mergeAllcontent(),frame.getMsgfmt());
+				return generatorString(fh.mergeAllcontent(),frame);
 			}
 
 			// 超过一帧的，进行长短信合并
@@ -81,7 +84,7 @@ public enum LongMessageFrameHolder {
 				
 				map.remove(mapKey);
 				
-				return generatorString(oldframeHolder.mergeAllcontent(),frame.getMsgfmt());
+				return generatorString(oldframeHolder.mergeAllcontent(),frame);
 			}
 
 		} else {
@@ -265,66 +268,66 @@ public enum LongMessageFrameHolder {
 	}
 
 	private FrameHolder mergeFrameHolder(FrameHolder fh, LongMessageFrame frame) throws NotSupportedException {
-		byte[] msgcontent = frame.getoctets();
+		byte[] msgcontent = frame.getMsgContentBytes();
 		UserDataHeader header = parseUserDataHeader(msgcontent);
 		
-		if (msgcontent[0] == 5 && msgcontent[1] == 0 && msgcontent[2] == 3) {
-			int idx = msgcontent[5] - 1;
-			fh.merge(msgcontent, idx);
-
-		} else if (msgcontent[0] == 6 && msgcontent[1] == 8 && msgcontent[2] == 4) {
-			int idx = msgcontent[6] - 1;
-			fh.merge(msgcontent, idx);
-		} else {
-			logger.warn("Not Support LongMsg.UDHI" );
-			throw new NotSupportedException("Not Support LongMsg.UDHI");
+		if(header.infoElement.size() > 0){
+			
+			for(InformationElement udhi : header.infoElement){
+				if(SmsUdhIei.CONCATENATED_8BIT.equals(udhi.udhIei)){
+					
+					 fh.merge(frame.getPayloadbytes(udhi.infoEleLength), udhi.infoEleData[2]-1);
+				}else if(SmsUdhIei.CONCATENATED_16BIT.equals(udhi.udhIei)){
+					
+					 fh.merge(frame.getPayloadbytes(udhi.infoEleLength), udhi.infoEleData[3]-1);
+				}
+			}
+		
+			return fh;
 		}
-
-		return fh;
+		
+		throw new NotSupportedException("Not Support LongMsg");
 	}
 
 	private FrameHolder createFrameHolder(LongMessageFrame frame) throws NotSupportedException {
 
-		byte[] msgcontent = frame.getoctets();
+		byte[] msgcontent = frame.getMsgContentBytes();
 		
 		UserDataHeader header = parseUserDataHeader(msgcontent);
-		if(header.infoElement.size() == 1 ){
-			InformationElement firstElement = header.infoElement.get(0);
+		
+		if(header.infoElement.size() > 0){
+			FrameHolder frameholder = null;
+			InformationElement appudhinfo = null;
 			int i = 0;
 			int frameKey = 0;
-			if(firstElement.infoEleIdenti == 0 ){
-				 frameKey = firstElement.infoEleData[i]; 
-				 i++;
-				 return new FrameHolder(frameKey,firstElement.infoEleData[i],msgcontent,firstElement.infoEleData[i+1]-1,header.headerlength);
-			}else if(firstElement.infoEleIdenti == 8 ){
-				 frameKey = (((int) firstElement.infoEleData[i] << 8) | (int) firstElement.infoEleData[i+1] & 0xff);
-				 i+=2;
-				 return new FrameHolder(frameKey,firstElement.infoEleData[i],msgcontent,firstElement.infoEleData[i+1]-1,header.headerlength);
+			for(InformationElement udhi : header.infoElement){
+				if(SmsUdhIei.CONCATENATED_8BIT.equals(udhi.udhIei)){
+					 frameKey = udhi.infoEleData[i]; 
+					 i++;
+					 frameholder =  new FrameHolder(frameKey,udhi.infoEleData[i],frame.getPayloadbytes(udhi.infoEleLength),udhi.infoEleData[i+1]-1);
+					
+				}else if(SmsUdhIei.CONCATENATED_16BIT.equals(udhi.udhIei)){
+					 frameKey = (((int) udhi.infoEleData[i] << 8) | (int) udhi.infoEleData[i+1] & 0xff);
+					 i+=2;
+					 frameholder =  new FrameHolder(frameKey,udhi.infoEleData[i],frame.getPayloadbytes(udhi.infoEleLength),udhi.infoEleData[i+1]-1);
+				}else{
+					appudhinfo = udhi;
+				}
 			}
-		}
-		if(header.infoElement.size() > 0){
-			StringBuilder sb = new StringBuilder();
-			
-			for(InformationElement te : header.infoElement){
-				sb.append(te.infoEleName).append("=").append(ByteBufUtil.hexDump(te.infoEleData)).append("|");
+			//不是续列短信
+			if(frameholder==null){
+				frameholder =  new FrameHolder(0x0,1,msgcontent,0);
 			}
-			logger.error("{{}}",sb.toString());
+			//如果没有app的udh，默认为文本短信
+			if(appudhinfo == null){
+				appudhinfo = new InformationElement();
+				appudhinfo.udhIei = SmsUdhIei.valueOf((byte)0);
+			}
+			frameholder.setAppUDHinfo(appudhinfo);
+			return frameholder;
 		}
 		
 		throw new NotSupportedException("Not Support LongMsg");
-
-		/*
-		if (msgcontent[0] == 5 && msgcontent[1] == 0 && msgcontent[2] == 3) {
-			int frameKey = (int) msgcontent[3];
-			return new FrameHolder(frameKey, msgcontent[4], msgcontent, msgcontent[5] - 1, msgcontent[0]);
-		} else if (msgcontent[0] == 6 && msgcontent[1] == 8 && msgcontent[2] == 4) {
-			int frameKey = (((int) msgcontent[3] << 8) | (int) msgcontent[4] & 0xff);
-			return new FrameHolder(frameKey, msgcontent[5], msgcontent, msgcontent[6] - 1, msgcontent[0]);
-		} else {
-			logger.warn("Not Support LongMsg.UDHI" );
-			throw new NotSupportedException("Not Support LongMsg.UDHI");
-		}
-		*/
 	}
 	
 	private UserDataHeader parseUserDataHeader(byte[] pdu){
@@ -335,10 +338,7 @@ public enum LongMessageFrameHolder {
 		int i = 1;
 		while(i<udh.headerlength){
 			InformationElement t = new InformationElement();
-			t.infoEleIdenti = pdu[i++];  //00
-			if(t.infoEleIdenti < InfoEleNameList.length){
-				t.infoEleName  = InfoEleNameList[t.infoEleIdenti];
-			}
+			t.udhIei = SmsUdhIei.valueOf(pdu[i++]);  //00
 			t.infoEleLength = pdu[i++]; //03
 			t.infoEleData = new byte[t.infoEleLength];
 			System.arraycopy(pdu, i, t.infoEleData, 0, t.infoEleLength);
@@ -355,8 +355,7 @@ public enum LongMessageFrameHolder {
 	
 	private class InformationElement{
 		
-		int infoEleIdenti;
-		String infoEleName;
+		SmsUdhIei udhIei;
 		int infoEleLength;
 		byte[] infoEleData;
 	}
@@ -395,35 +394,41 @@ public enum LongMessageFrameHolder {
 		private byte[][] content;
 		
 		private int totalbyteLength = 0;
-		private int udhiLength = 0;
+		
 		private BitSet idxBitset ;
 		
+		private InformationElement appUDHinfo;
+		
+		//用来保存应用类型，如文本短信或者wap短信
+		public void setAppUDHinfo(InformationElement appUDHinfo){
+			this.appUDHinfo = appUDHinfo;
+		}
 
-		public FrameHolder(int frameKey, int totalLength, byte[] content, int frameIndex, int udhiLength) {
+		public FrameHolder(int frameKey, int totalLength, byte[] content, int frameIndex) {
 			this.frameKey = frameKey;
 			this.totalLength = totalLength;
-
-			this.udhiLength = udhiLength;
+			
 			this.content = new byte[totalLength][];
 			this.idxBitset = new BitSet(totalLength);
 			merge(content, frameIndex);
 		}
 
+		
 		public synchronized void merge(byte[] content, int idx) {
 			
 			if(idxBitset.get(idx)){
 				logger.warn("have received the same index of Message. do not merge this content. ");
 				return;
 			}
-			if(content.length<=idx){
-				logger.warn("have received error index:{} of Message content length:{}. do not merge this content. ",idx,content.length);
+			if(this.content.length<=idx){
+				logger.warn("have received error index:{} of Message content length:{}. do not merge this content. ",idx,this.content.length);
 				return;
 			}
 			//设置该短信序号已填冲
 			idxBitset.set(idx);
 			
-			this.content[idx] = new byte[content.length - udhiLength - 1];
-			System.arraycopy(content, udhiLength + 1, this.content[idx], 0, this.content[idx].length);
+			this.content[idx] = content;
+		
 			this.totalbyteLength += this.content[idx].length;
 		}
 
@@ -432,6 +437,9 @@ public enum LongMessageFrameHolder {
 		}
 
 		public synchronized byte[] mergeAllcontent() {
+			if(totalLength ==1){
+				return content[0];
+			}
 			byte[] ret = new byte[totalbyteLength];
 			int idx = 0;
 			for (int i = 0; i < totalLength; i++) {
@@ -452,48 +460,7 @@ public enum LongMessageFrameHolder {
 			return (byte) ( DefaultSequenceNumberUtil.getSequenceNo() & 0xff);
 		}
 	}
-	/**
-	 * 参考：
-	 * <a href="https://en.wikipedia.org/wiki/User_Data_Header">协议</a>
-	 */
-	final static String[] InfoEleNameList =  new String[]{"0	Concatenated short messages, 8-bit reference number",
-		"1	Special SMS Message Indication",
-		"2	Reserved",
-		"3	Not used to avoid misinterpretation as <LF> character",
-		"4	Application port addressing scheme, 8 bit address",
-		"5	Application port addressing scheme, 16 bit address",
-		"6	SMSC Control Parameters",
-		"7	UDH Source Indicator",
-		"8	Concatenated short message, 16-bit reference number",
-		"9	Wireless Control Message Protocol",
-		"0A	Text Formatting",
-		"0B	Predefined Sound",
-		"0C	User Defined Sound (iMelody max 128 bytes)",
-		"0D	Predefined Animation",
-		"0E	Large Animation (16*16 times 4 = 32*4 =128 bytes)",
-		"0F	Small Animation (8*8 times 4 = 8*4 =32 bytes)",
-		"10	Large Picture (32*32 = 128 bytes)",
-		"11	Small Picture (16*16 = 32 bytes)",
-		"12	Variable Picture",
-		"13	User prompt indicator",
-		"14	Extended Object",
-		"15	Reused Extended Object",
-		"16	Compression Control",
-		"17	Object Distribution Indicator",
-		"18	Standard WVG object",
-		"19	Character Size WVG object",
-		"1A	Extended Object Data Request Command",
-		"1B	Reserved for future EMS features",
-		"1C	Reserved for future EMS features",
-		"1D	Reserved for future EMS features",
-		"1E	Reserved for future EMS features",
-		"1F	Reserved for future EMS features",
-		"20	RFC 822 E-Mail Header",
-		"21	Hyperlink format element",
-		"22	Reply Address Element",
-		"23	Enhanced Voice Mail Information",
-		"24	National Language Single Shift",
-		"25	National Language Locking Shift"};
+
 	
 	/**
 	 * Convert a stream of septets read as octets into a byte array containing the 7-bit
