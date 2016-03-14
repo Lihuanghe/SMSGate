@@ -54,12 +54,12 @@ public class SmsMmsNotificationMessage extends SmsWapPushMessage
     private static final int DEFAULT_TRANSACTION_ID_LENGTH = 5;
     private static final long DEFAULT_EXPIRY = 3 * 24 * 60 * 60; // 3 days
 
-    protected String transactionId_;
-    protected String from_;
-    protected String subject_;
+    protected String transactionId_="";
+    protected String from_="";
+    protected String subject_="";
     protected int messageClassId_ = MmsConstants.X_MMS_MESSAGE_CLASS_ID_PERSONAL;
-    protected final long size_;
-    protected long expiry_;
+    protected final long size_ ;
+    protected long expiry_=172800;
     protected final String contentLocation_;
 
     public SmsMmsNotificationMessage(String contentLocation, long size)
@@ -91,6 +91,7 @@ public class SmsMmsNotificationMessage extends SmsWapPushMessage
 
         MmsHeaderEncoder.writeHeaderXMmsMessageClass(os, messageClassId_);
         MmsHeaderEncoder.writeHeaderXMmsMessageSize(os, size_);
+       // MmsHeaderEncoder.writeHeaderXMmsExpiryAbsolute(os, expiry_ + System.currentTimeMillis()/1000);
         MmsHeaderEncoder.writeHeaderXMmsExpiryRelative(os, expiry_);
         MmsHeaderEncoder.writeHeaderContentLocation(os, contentLocation_);
     }
@@ -139,4 +140,33 @@ public class SmsMmsNotificationMessage extends SmsWapPushMessage
 
         return super.getUserData();
     }
+
+	public String getTransactionId_() {
+		return transactionId_;
+	}
+
+	public String getFrom_() {
+		return from_;
+	}
+
+	public String getSubject_() {
+		return subject_;
+	}
+
+	public int getMessageClassId_() {
+		return messageClassId_;
+	}
+
+	public long getSize_() {
+		return size_;
+	}
+
+	public long getExpiry_() {
+		return expiry_;
+	}
+
+	public String getContentLocation_() {
+		return contentLocation_;
+	}
+    
 }

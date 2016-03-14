@@ -10,28 +10,22 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import io.netty.util.ReferenceCountUtil;
 
-import java.nio.charset.Charset;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.marre.sms.SmsMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.primitives.Bytes;
-import com.zx.sms.codec.cmpp.CmppSubmitRequestMessageCodec;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
-import com.zx.sms.codec.cmpp.msg.DefaultMessage;
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.codec.cmpp.msg.Message;
-import com.zx.sms.codec.cmpp.packet.CmppSubmitRequest;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20PacketType;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20SubmitRequest;
-import com.zx.sms.codec.cmpp20.packet.Cmpp20SubmitResponse;
 import com.zx.sms.common.GlobalConstance;
-import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
@@ -114,11 +108,11 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 		byte[] contentbytes = new byte[msgLength];
 		bodyBuffer.readBytes(contentbytes);
 		frame.setMsgContentBytes(contentbytes);
-
+		frame.setMsgLength((short)msgLength);
 		requestMessage.setReserve(bodyBuffer.readBytes(Cmpp20SubmitRequest.RESERVE.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 		ReferenceCountUtil.release(bodyBuffer);
 		try {
-			String content = LongMessageFrameHolder.INS.putAndget(StringUtils.join(destTermId, "|"), frame);
+			SmsMessage content = LongMessageFrameHolder.INS.putAndget(StringUtils.join(destTermId, "|"), frame);
 
 			if (content != null) {
 				requestMessage.setMsgContent(content);
@@ -152,7 +146,7 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 		}
 
 		CmppSubmitRequestMessage requestMessage = oldMsg.clone();
-		List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(requestMessage.getMsgContent(), requestMessage.isSupportLongMsg());
+		List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(requestMessage.getMsg(), requestMessage.isSupportLongMsg());
 		boolean first = true;
 		for (LongMessageFrame frame : frameList) {
 

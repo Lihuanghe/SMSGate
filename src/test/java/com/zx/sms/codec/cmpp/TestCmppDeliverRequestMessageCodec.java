@@ -5,17 +5,19 @@ import io.netty.buffer.Unpooled;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.marre.sms.SmsMessage;
+import org.marre.wap.push.SmsMmsNotificationMessage;
+import org.marre.wap.push.SmsWapPushMessage;
+import org.marre.wap.push.WapSIPush;
+import org.marre.wap.push.WapSLPush;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.codec.AbstractTestMessageCodec;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppReportRequestMessage;
-import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.DefaultHeader;
 import com.zx.sms.codec.cmpp.msg.Header;
-import com.zx.sms.codec.cmpp.packet.CmppDeliverRequest;
-import com.zx.sms.codec.cmpp.packet.CmppHead;
 import com.zx.sms.common.util.MsgId;
 
 public class TestCmppDeliverRequestMessageCodec extends AbstractTestMessageCodec<CmppDeliverRequestMessage>{
@@ -113,19 +115,85 @@ public class TestCmppDeliverRequestMessageCodec extends AbstractTestMessageCodec
 	@Test
 	public void testchinesecode()
 	{
-		testlongCodec("1234567890123456789中01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890" );
+		CmppDeliverRequestMessage msg = createTestReq("1234567890123456789中01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890" );
+		testlongCodec(msg);
 	}
 
 	@Test
 	public void testASCIIcode()
 	{
-		testlongCodec("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
+		CmppDeliverRequestMessage msg = createTestReq("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
+		testlongCodec(msg);
 	}
 	
-	
-	public void testlongCodec(String content)
+	@Test
+	public void testSLPUSH()
 	{
-		CmppDeliverRequestMessage msg = createTestReq(content);
+		CmppDeliverRequestMessage msg = createTestReq("");
+		WapSLPush sl = new WapSLPush("http://www.baidu.com");
+		SmsMessage wap = new SmsWapPushMessage(sl);
+		msg.setMsgContent(wap);
+		CmppDeliverRequestMessage result = testWapCodec(msg);
+		SmsWapPushMessage smsmsg = (SmsWapPushMessage)result.getMsg();
+		WapSLPush actsl = (WapSLPush)smsmsg.getWbxml();
+		Assert.assertEquals(sl.getUri(), actsl.getUri());
+	}
+	
+	@Test
+	public void testSIPUSH()
+	{
+		CmppDeliverRequestMessage msg = createTestReq("");
+		WapSIPush si = new WapSIPush("http://www.baidu.com","baidu");
+		SmsMessage wap = new SmsWapPushMessage(si);
+		msg.setMsgContent(wap);
+		CmppDeliverRequestMessage result = testWapCodec(msg);
+		SmsWapPushMessage smsmsg = (SmsWapPushMessage)result.getMsg();
+		WapSIPush actsi = (WapSIPush)smsmsg.getWbxml();
+		Assert.assertEquals(si.getUri(), actsi.getUri());
+		Assert.assertEquals(si.getMessage(), actsi.getMessage());
+	}
+	
+	@Test
+	public void testMMSPUSH()
+	{
+		CmppDeliverRequestMessage msg = createTestReq("");
+		SmsMmsNotificationMessage mms = new SmsMmsNotificationMessage("http://www.baidu.com",50*1024);
+		msg.setMsgContent(mms);
+		mms.setTransactionId("ABC");
+		CmppDeliverRequestMessage result =testWapCodec(msg);
+		SmsMmsNotificationMessage smsmsg = (SmsMmsNotificationMessage)result.getMsg();
+		
+		Assert.assertEquals(smsmsg.getContentLocation_(), smsmsg.getContentLocation_());
+	}
+	
+	public CmppDeliverRequestMessage testWapCodec(CmppDeliverRequestMessage msg)
+	{
+		msg.setSupportLongMsg(true);
+		channel().writeOutbound(msg);
+		ByteBuf buf =channel().readOutbound();
+		ByteBuf copybuf = Unpooled.buffer();
+	    while(buf!=null){
+			
+			
+	    	copybuf.writeBytes(buf.copy());
+			int length = buf.readableBytes();
+			
+			Assert.assertEquals(length, buf.readUnsignedInt());
+			Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
+			
+
+			buf =channel().readOutbound();
+	    }
+	    
+	    CmppDeliverRequestMessage result = decode(copybuf);
+		
+		Assert.assertTrue(result.getMsg() instanceof SmsMessage);
+		return result;
+	}
+	
+	public void testlongCodec(CmppDeliverRequestMessage msg)
+	{
+		
 		
 		msg.setSupportLongMsg(true);
 		channel().writeOutbound(msg);

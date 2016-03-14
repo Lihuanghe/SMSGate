@@ -26,6 +26,13 @@
       <artifactId>rxtx</artifactId>
       <version>2.1.7</version>
     </dependency>
+    
+    <dependency>
+	   <groupId>es.rickyepoderi.wbxml</groupId>
+	  <artifactId>wbxml-stream</artifactId>
+	  <version>0.1.0</version>
+    </dependency>
+    
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>

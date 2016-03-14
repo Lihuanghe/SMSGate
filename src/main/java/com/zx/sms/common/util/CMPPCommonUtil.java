@@ -1,9 +1,12 @@
 package com.zx.sms.common.util;
 
-import java.nio.charset.Charset;
+import org.apache.commons.lang.StringUtils;
+import org.marre.sms.SmsAlphabet;
+import org.marre.sms.SmsDcs;
+import org.marre.sms.SmsMsgClass;
+import org.marre.sms.SmsTextMessage;
 
 import com.google.common.base.Preconditions;
-import com.zx.sms.common.GlobalConstance;
 
 public final class CMPPCommonUtil {
 	
@@ -18,5 +21,26 @@ public final class CMPPCommonUtil {
 		byte copy[] = new byte[length];
 		System.arraycopy(original, 0, copy, 0, Math.min(original.length, length));
 		return copy;
+	}
+	public static SmsTextMessage buildTextMessage(String text){
+		if(haswidthChar(text)){
+			return new SmsTextMessage(text, SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.UCS2, SmsMsgClass.CLASS_UNKNOWN));
+		}else{
+			return new SmsTextMessage(text);
+		}
+		
+	}
+	private static boolean haswidthChar(String content) {
+		if (StringUtils.isEmpty(content))
+			return false;
+
+		byte[] bytes = content.getBytes();
+		for (int i = 0; i < bytes.length; i++) {
+			// 判断最高位是否为1
+			if ((bytes[i] & (byte) 0x80) == (byte) 0x80) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

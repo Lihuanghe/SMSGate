@@ -60,6 +60,7 @@ public class SmsWapPushMessage extends SmsPortAddressedMessage
 {
     protected WspEncodingVersion wspEncodingVersion_ = WspEncodingVersion.VERSION_1_2;
     protected MimeBodyPart pushMsg_;
+    private WbxmlDocument wbxml;
         
     protected SmsWapPushMessage()
     {
@@ -79,6 +80,7 @@ public class SmsWapPushMessage extends SmsPortAddressedMessage
         
         // The current wbxml encoder can only output utf-8
         contentType.setParam("charset", "utf-8");
+        wbxml = pushMsg;
         pushMsg_ = new MimeBodyPart(buildPushMessage(pushMsg), contentType);
     }
     
@@ -201,4 +203,13 @@ public class SmsWapPushMessage extends SmsPortAddressedMessage
     {
         pushMsg_.addHeader("X-Wap-Initiator-URI", initiatorUri);
     }
+
+	public WbxmlDocument getWbxml() {
+		return wbxml;
+	}
+
+	public void setWbxml(WbxmlDocument wbxml) {
+		this.wbxml = wbxml;
+	}
+    
  }

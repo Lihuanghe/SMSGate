@@ -12,6 +12,7 @@ import io.netty.util.ReferenceCountUtil;
 
 import java.util.List;
 
+import org.marre.sms.SmsMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +27,6 @@ import com.zx.sms.codec.cmpp.packet.CmppReportRequest;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
 import com.zx.sms.common.GlobalConstance;
-import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
@@ -76,13 +76,14 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 				.trim());
 		requestMessage.setSrcterminalType(bodyBuffer.readUnsignedByte());
 		requestMessage.setRegisteredDelivery(bodyBuffer.readUnsignedByte());
-
+		
 		int frameLength = frame.getPayloadLength(bodyBuffer.readUnsignedByte());
-
+		
 		if (requestMessage.getRegisteredDelivery() == 0) {
 			byte[] contentbytes = new byte[frameLength];
 			bodyBuffer.readBytes(contentbytes);
 			frame.setMsgContentBytes(contentbytes);
+			frame.setMsgLength((short)frameLength);
 		} else {
 			requestMessage.setReportRequestMessage(new CmppReportRequestMessage());
 			requestMessage.getReportRequestMessage().setMsgId(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer.readBytes(CmppReportRequest.MSGID.getLength()).array()));
@@ -104,7 +105,7 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 		
 		if (requestMessage.getRegisteredDelivery() == 0) {
 			try {
-				String content = LongMessageFrameHolder.INS.putAndget(requestMessage.getSrcterminalId(), frame);
+				SmsMessage content = LongMessageFrameHolder.INS.putAndget(requestMessage.getSrcterminalId(), frame);
 
 				if (content != null) {
 					requestMessage.setMsgContent(content);
@@ -143,7 +144,7 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 		//clone一个消息，防止业务层对msg进行修改
 		CmppDeliverRequestMessage requestMessage = oldMsg.clone();
 		
-		List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(requestMessage.getMsgContent(), requestMessage.isSupportLongMsg());
+		List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(requestMessage.getMsg(), requestMessage.isSupportLongMsg());
 		
 		boolean first = true;
 		for (LongMessageFrame frame : frameList) {
@@ -166,8 +167,7 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 
 			if (!requestMessage.isReport()) {
 				bodyBuffer.writeByte(frame.getMsgLength());
-				assert (frame.getMsgLength() == frame.getMsgContentBytes().length);
-				assert (frame.getMsgLength() <= GlobalConstance.MaxMsgLength);
+
 				bodyBuffer.writeBytes(frame.getMsgContentBytes());
 				//修改消息内容为分片以后的值
 				requestMessage.setMsgContent(frame.getContentPart());

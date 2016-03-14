@@ -22,9 +22,7 @@ public abstract class AbstractTestMessageCodec<T> {
 			CMPPCodecChannelInitializer codec = new CMPPCodecChannelInitializer(getVersion());
 			pipeline.addLast("serverLog", new LoggingHandler(LogLevel.DEBUG));
 			pipeline.addLast(codec.pipeName(), codec);
-
 		}
-
 	});
 	
 	protected int getVersion(){

@@ -91,21 +91,9 @@ public class TestCmpp20DeliverRequestMessageCodec extends AbstractTestMessageCod
 		return msg;
 	}
 	
-	@Test
-	public void testchinesecode()
-	{
-		String str = "1234567890123456789中01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
-		testlongCodecNoSupport(str);
-		testlongCodec(str);
-	}
 
-	@Test
-	public void testASCIIcode()
-	{
-		String str = "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
-		testlongCodecNoSupport(str);
-		testlongCodec(str);
-	}
+
+	
 	
 	
 	public void testlongCodecNoSupport(String content)

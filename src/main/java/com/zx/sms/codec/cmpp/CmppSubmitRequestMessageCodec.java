@@ -13,10 +13,10 @@ import io.netty.util.ReferenceCountUtil;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.marre.sms.SmsMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
@@ -26,7 +26,6 @@ import com.zx.sms.codec.cmpp.packet.CmppSubmitRequest;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
 import com.zx.sms.common.GlobalConstance;
-import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
@@ -111,13 +110,14 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 		byte[] contentbytes = new byte[msgLength];
 		bodyBuffer.readBytes(contentbytes);
 		frame.setMsgContentBytes(contentbytes);
+		frame.setMsgLength((short)msgLength);
 
 		requestMessage.setLinkID(bodyBuffer.readBytes(CmppSubmitRequest.LINKID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 
 		
 
 		try {
-			String content = LongMessageFrameHolder.INS.putAndget(StringUtils.join(destTermId, "|"), frame);
+			SmsMessage content = LongMessageFrameHolder.INS.putAndget(StringUtils.join(destTermId, "|"), frame);
 
 			if (content != null) {
 				requestMessage.setMsgContent(content);
@@ -149,7 +149,7 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 		}
 
 		CmppSubmitRequestMessage requestMessage = oldMsg.clone();
-		List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(requestMessage.getMsgContent(), requestMessage.isSupportLongMsg());
+		List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(requestMessage.getMsg(), requestMessage.isSupportLongMsg());
 		boolean first = true;
 		for (LongMessageFrame frame : frameList) {
 
@@ -201,8 +201,6 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 			}
 			bodyBuffer.writeByte(requestMessage.getDestterminaltype());
 
-			assert (frame.getMsgLength() == frame.getMsgContentBytes().length);
-			assert (frame.getMsgLength() <= GlobalConstance.MaxMsgLength);
 			bodyBuffer.writeByte(frame.getMsgLength());
 
 			bodyBuffer.writeBytes(frame.getMsgContentBytes());

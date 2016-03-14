@@ -99,6 +99,10 @@ public class LongMessageFrame  {
 		return msgLength;
 	}
 	
+	public void setMsgLength(short msgLength) {
+		this.msgLength = msgLength;
+	}
+
 	/**
 	 * @return the msgContentBytes
 	 */
@@ -112,8 +116,8 @@ public class LongMessageFrame  {
 	 */
 	public void setMsgContentBytes(byte[] msgContentBytes) {
 		this.msgContentBytes = msgContentBytes;
-		msgLength = (short) this.msgContentBytes.length;
 	}
+	
 
 	public String getContentPart() {
 		return contentPart;
@@ -138,12 +142,12 @@ public class LongMessageFrame  {
 			//如果是7bit编码.先转也8bit编码
 			if(this.msgfmt == 0)
 				
-				return LongMessageFrameHolder.septetStream2octetStream(payload);
+				return LongMessageFrameHolder.octetStream2septetStream(payload);
 			else
 				return payload;
 		}else{
 			if(this.msgfmt == 0)
-				return LongMessageFrameHolder.septetStream2octetStream(msgContentBytes);
+				return LongMessageFrameHolder.octetStream2septetStream(msgContentBytes);
 			else
 				return msgContentBytes;
 		}
