@@ -70,7 +70,7 @@ public enum LongMessageFrameHolder {
 	 */
 	private ConcurrentHashMap<String, FrameHolder> map = new ConcurrentHashMap<String, FrameHolder>();
 
-	private SmsMessage generatorSmsMessage(FrameHolder fh, LongMessageFrame frame) {
+	private SmsMessage generatorSmsMessage(FrameHolder fh, LongMessageFrame frame) throws NotSupportedException {
 		byte[] contents = fh.mergeAllcontent();
 		InformationElement udheader = fh.getAppUDHinfo();
 		// udh为空表示文本短信
@@ -86,7 +86,7 @@ public enum LongMessageFrameHolder {
 					return parseWapPdu(contents);
 				}else if(destport == 0x158a && srcport ==0){
 					//Nokia手机支持的OTA图片格式
-					return CMPPCommonUtil.buildTextMessage("Nokia手机支持的OTA图片格式,无法解析");
+					throw new NotSupportedException("Nokia手机支持的OTA图片格式,无法解析");
 				}
 				
 				
