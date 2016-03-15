@@ -8,7 +8,9 @@ import io.netty.buffer.Unpooled;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.marre.sms.SmsAlphabet;
 import org.marre.sms.SmsMessage;
+import org.marre.sms.SmsMsgClass;
 import org.marre.sms.SmsTextMessage;
 import org.marre.wap.push.SmsMmsNotificationMessage;
 import org.marre.wap.push.SmsWapPushMessage;
@@ -118,7 +120,7 @@ public class TestCmppSubmitRequestMessageCodec  extends AbstractTestMessageCodec
 		String origin = "112aaaasssss2334455@£$¥èéùìòçØøÅåΔ_ΦΓΛΩΠΨΣΘΞ^{}\\[~]|€ÆæßÉ!\"#¤%&'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà";
 		System.out.println(origin);
 		CmppSubmitRequestMessage msg = createTestReq(origin);
-		msg.setMsgContent(new SmsTextMessage(origin));
+		msg.setMsgContent(new SmsTextMessage(origin, SmsAlphabet.GSM, SmsMsgClass.CLASS_UNKNOWN));
 		
 		CmppSubmitRequestMessage ret =  testWapCodec(msg);
 		Assert.assertEquals(msg.getMsgContent(), ret.getMsgContent());
