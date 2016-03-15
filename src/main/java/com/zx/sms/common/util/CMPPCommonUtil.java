@@ -28,11 +28,9 @@ public final class CMPPCommonUtil {
 		return copy;
 	}
 	public static SmsTextMessage buildTextMessage(String text){
-		if(haswidthChar(text)){
+		
 			return new SmsTextMessage(text, SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.UCS2, SmsMsgClass.CLASS_UNKNOWN));
-		}else{
-			return new SmsTextMessage(text, SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.UCS2, SmsMsgClass.CLASS_UNKNOWN));
-		}
+		
 	}
 	// 处理GSM协议TP-DCS数据编码方案
 	/*
@@ -69,13 +67,9 @@ public final class CMPPCommonUtil {
 		}else{
 			text = new String(bytes,switchCharset(msgfmt));
 		}
-		
-		if(haswidthChar(text)){
-			return new SmsTextMessage(text, SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.UCS2, SmsMsgClass.CLASS_UNKNOWN));
-		}else{
-			return new SmsTextMessage(text);
-		}
+		return new SmsTextMessage(text, SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.UCS2, SmsMsgClass.CLASS_UNKNOWN));
 	}
+	@Deprecated
 	private static boolean haswidthChar(String content) {
 		if (StringUtils.isEmpty(content))
 			return false;
