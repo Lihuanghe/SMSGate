@@ -254,7 +254,7 @@ public abstract class SmsConcatMessage implements SmsMessage
             }
 
             // Convert septets into a string...
-            String msg = SmsPduUtil.readSeptets(ud.getData(), ud.getLength());
+            String msg = SmsPduUtil.readSeptets(ud.getData());
 
             // Create pdus
             for (int i = 0; i < nSms; i++)

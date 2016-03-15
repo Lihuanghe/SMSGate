@@ -1,11 +1,15 @@
 package com.zx.sms.codec.cmpp;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.marre.sms.SmsMessage;
+import org.marre.sms.SmsTextMessage;
 import org.marre.wap.push.SmsMmsNotificationMessage;
 import org.marre.wap.push.SmsWapPushMessage;
 import org.marre.wap.push.WapSIPush;
@@ -63,7 +67,7 @@ public class TestCmppSubmitRequestMessageCodec  extends AbstractTestMessageCodec
 	@Test
 	public void testASCIIcode()
 	{
-		testlongCodec(createTestReq("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"));
+		testlongCodec(createTestReq("1ABC56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"));
 	}
 	
 	
@@ -105,6 +109,18 @@ public class TestCmppSubmitRequestMessageCodec  extends AbstractTestMessageCodec
 		SmsMmsNotificationMessage smsmsg = (SmsMmsNotificationMessage)result.getMsg();
 		
 		Assert.assertEquals(mms.getContentLocation_(), smsmsg.getContentLocation_());
+	}
+	
+	@Test
+	public void testseptedMsg(){
+
+		String origin = "@£$¥èéùìòçÇØøÅåΔ_ΦΓΛΩΠΨΣΘΞ^{}\\[~]|€ÆæßÉ!\"#¤%&'()*+,-./0123456789:;<=>?¡AΑBΒCDEΕFGHΗIΙJKΚLMΜNΝOΟPΡQRSTΤUΥVWXΧYZΖÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà";
+		System.out.println(origin);
+		CmppSubmitRequestMessage msg = createTestReq(origin);
+		msg.setMsgContent(new SmsTextMessage(origin));
+		
+		CmppSubmitRequestMessage ret =  testWapCodec(msg);
+		Assert.assertEquals(msg.getMsgContent(), ret.getMsgContent());
 	}
 	
 	private CmppSubmitRequestMessage createTestReq(String content) {

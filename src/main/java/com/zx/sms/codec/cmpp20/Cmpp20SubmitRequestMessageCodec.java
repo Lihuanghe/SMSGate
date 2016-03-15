@@ -213,19 +213,23 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 					Cmpp20SubmitRequest.RESERVE.getLength(), 0));
 
 			if (first) {
-				requestMessage.setBodyBuffer(bodyBuffer.array());
+				requestMessage.setBodyBuffer(byteBufreadarray(bodyBuffer));
 				requestMessage.getHeader().setBodyLength(requestMessage.getBodyBuffer().length);
 				out.add(requestMessage);
 				first = false;
 			} else {
 				CmppSubmitRequestMessage defaultMsg = requestMessage.clone();
 				defaultMsg.getHeader().setSequenceId(DefaultSequenceNumberUtil.getSequenceNo());
-				defaultMsg.setBodyBuffer(bodyBuffer.array());
+				defaultMsg.setBodyBuffer(byteBufreadarray(bodyBuffer));
 				defaultMsg.getHeader().setBodyLength(defaultMsg.getBodyBuffer().length);
 				out.add(defaultMsg);
 			}
 			ReferenceCountUtil.release(bodyBuffer);
 		}
 	}
-
+	private byte[] byteBufreadarray(ByteBuf buf){
+		byte[] dst = new byte[ buf.readableBytes()];
+		buf.readBytes(dst);
+		return dst;
+	}
 }

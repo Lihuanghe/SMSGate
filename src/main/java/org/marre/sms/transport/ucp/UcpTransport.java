@@ -217,7 +217,7 @@ public class UcpTransport implements SmsTransport
             case GSM:
                 System.out.println("GSM Message without UDH");
                 ucpSubmit.setField(UcpSeries50.FIELD_MT, "3");
-                String msg = SmsPduUtil.readSeptets(pdu.getUserData().getData(), pdu.getUserData().getLength());
+                String msg = SmsPduUtil.readSeptets(pdu.getUserData().getData());
                 ucpSubmit.setField(UcpSeries50.FIELD_MSG, StringUtil.bytesToHexString(SmsPduUtil.toGsmCharset(msg)));
                 System.out.println(msg.length());
                 break;

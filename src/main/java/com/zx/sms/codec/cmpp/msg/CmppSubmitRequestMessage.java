@@ -359,8 +359,9 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 		this.msg = msg;
 		if(msg instanceof SmsTextMessage){
 			SmsTextMessage textMsg = (SmsTextMessage) msg;
-			setMsgContent(textMsg.getText());
+			this.msgContent=textMsg.getText();
 		}
+		
 	}
 
 	public boolean isSupportLongMsg() {

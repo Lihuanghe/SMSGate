@@ -213,16 +213,16 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 			// bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getReserve().getBytes(GlobalConstance.defaultTransportCharset),
 			// CmppSubmitRequest.RESERVE.getLength(), 0));/**cmpp3.0 无该字段，不进行编解码
 			// */
-
+			
 			if (first) {
-				requestMessage.setBodyBuffer(bodyBuffer.array());
+				requestMessage.setBodyBuffer(byteBufreadarray(bodyBuffer));
 				requestMessage.getHeader().setBodyLength(requestMessage.getBodyBuffer().length);
 				out.add(requestMessage);
 				first = false;
 			} else {
 				CmppSubmitRequestMessage defaultMsg = requestMessage.clone();
 				defaultMsg.getHeader().setSequenceId(DefaultSequenceNumberUtil.getSequenceNo());
-				defaultMsg.setBodyBuffer(bodyBuffer.array());
+				defaultMsg.setBodyBuffer(byteBufreadarray(bodyBuffer));
 				defaultMsg.getHeader().setBodyLength(defaultMsg.getBodyBuffer().length);
 				out.add(defaultMsg);
 			}
@@ -230,4 +230,9 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 		}
 	}
 
+	private byte[] byteBufreadarray(ByteBuf buf){
+		byte[] dst = new byte[ buf.readableBytes()];
+		buf.readBytes(dst);
+		return dst;
+	}
 }

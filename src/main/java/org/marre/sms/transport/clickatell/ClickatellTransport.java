@@ -334,7 +334,7 @@ public class ClickatellTransport implements SmsTransport
                 break;
 
             case GSM:
-                String msg = SmsPduUtil.readSeptets(ud.getData(), ud.getLength());            
+                String msg = SmsPduUtil.readSeptets(ud.getData());            
                 try
                 {
                     requestString += "&text=" + URLEncoder.encode(msg, "ISO-8859-1");

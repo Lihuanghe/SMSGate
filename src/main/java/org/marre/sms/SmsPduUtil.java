@@ -205,8 +205,9 @@ public final class SmsPduUtil
      *            Number of decoded chars to read from the stream
      * @return The decoded string
      */
-    public static String readSeptets(byte[] data, int length)
+    public static String readSeptets(byte[] data)
     {
+    	int length = data.length;
         if (data == null)
         {
             return null;

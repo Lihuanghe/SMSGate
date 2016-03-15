@@ -197,7 +197,7 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 
 			if (first) {
 
-				requestMessage.setBodyBuffer(bodyBuffer.array());
+				requestMessage.setBodyBuffer(byteBufreadarray(bodyBuffer));
 				requestMessage.getHeader().setBodyLength(requestMessage.getBodyBuffer().length);
 				out.add(requestMessage);
 				first = false;
@@ -205,7 +205,7 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 
 				CmppDeliverRequestMessage defaultMsg = requestMessage.clone();
 				defaultMsg.getHeader().setSequenceId(DefaultSequenceNumberUtil.getSequenceNo());
-				defaultMsg.setBodyBuffer(bodyBuffer.array());
+				defaultMsg.setBodyBuffer(byteBufreadarray(bodyBuffer));
 				defaultMsg.getHeader().setBodyLength(defaultMsg.getBodyBuffer().length);
 				out.add(defaultMsg);
 			}
@@ -213,5 +213,9 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 		}
 
 	}
-
+	private byte[] byteBufreadarray(ByteBuf buf){
+		byte[] dst = new byte[ buf.readableBytes()];
+		buf.readBytes(dst);
+		return dst;
+	}
 }
