@@ -148,7 +148,8 @@ public class SmsTextMessage extends SmsConcatMessage
         switch (dcs_.getAlphabet())
         {
         case GSM:
-            ud = new SmsUserData(SmsPduUtil.getSeptets(text_), text_.length(), dcs_);
+        	byte[] bs = SmsPduUtil.getSeptets(text_);
+            ud = new SmsUserData(bs, bs.length*8/7, dcs_);
             break;
 
         case LATIN1:

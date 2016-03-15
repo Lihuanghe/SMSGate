@@ -114,7 +114,7 @@ public class TestCmppSubmitRequestMessageCodec  extends AbstractTestMessageCodec
 	@Test
 	public void testseptedMsg(){
 
-		String origin = "@£$¥èéùìòçÇØøÅåΔ_ΦΓΛΩΠΨΣΘΞ^{}\\[~]|€ÆæßÉ!\"#¤%&'()*+,-./0123456789:;<=>?¡AΑBΒCDEΕFGHΗIΙJKΚLMΜNΝOΟPΡQRSTΤUΥVWXΧYZΖÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà";
+		String origin = "112aaaasssss2334455@£$¥èéùìòçØøÅåΔ_ΦΓΛΩΠΨΣΘΞ^{}\\[~]|€ÆæßÉ!\"#¤%&'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà";
 		System.out.println(origin);
 		CmppSubmitRequestMessage msg = createTestReq(origin);
 		msg.setMsgContent(new SmsTextMessage(origin));

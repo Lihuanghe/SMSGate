@@ -75,7 +75,7 @@ public enum LongMessageFrameHolder {
 		InformationElement udheader = fh.getAppUDHinfo();
 		// udh为空表示文本短信
 		if (udheader == null) {
-			return CMPPCommonUtil.buildTextMessage(new String(contents, switchCharset(frame.getMsgfmt())));
+			return CMPPCommonUtil.buildTextMessagefromGSMchar(contents,frame.getMsgfmt());
 		} else {
 			if (SmsUdhIei.APP_PORT_16BIT.equals(udheader.udhIei)) {
 				// 2948 wap_push
@@ -89,14 +89,13 @@ public enum LongMessageFrameHolder {
 					throw new NotSupportedException("Nokia手机支持的OTA图片格式,无法解析");
 				}
 				
-				
 				logger.warn("Unsupported UDH:{} udhdata:{},pdu:[{}]",udheader.udhIei,ByteBufUtil.hexDump(udheader.infoEleData),ByteBufUtil.hexDump(contents));
 				
-				return CMPPCommonUtil.buildTextMessage(new String(contents, switchCharset(frame.getMsgfmt())));
+				return CMPPCommonUtil.buildTextMessagefromGSMchar(contents,frame.getMsgfmt());
 			} else {
 				// 其它都当成文本短信
 				logger.warn("Unsupported UDH:{} udhdata:{},pdu:[{}]",udheader.udhIei,ByteBufUtil.hexDump(udheader.infoEleData),ByteBufUtil.hexDump(contents));
-				return CMPPCommonUtil.buildTextMessage(new String(contents, switchCharset(frame.getMsgfmt())));
+				return CMPPCommonUtil.buildTextMessagefromGSMchar(contents,frame.getMsgfmt());
 			}
 		}
 	}
@@ -111,8 +110,7 @@ public enum LongMessageFrameHolder {
 		// 短信内容不带协议头，直接获取短信内容
 		// udhi只取第一个bit
 		if ((frame.getTpudhi() & 0x1) == 0) {
-
-			return CMPPCommonUtil.buildTextMessage(new String(frame.getPayloadbytes(0), switchCharset(frame.getMsgfmt())));
+			return CMPPCommonUtil.buildTextMessagefromGSMchar(frame.getPayloadbytes(0),frame.getMsgfmt());
 
 		} else if ((frame.getTpudhi() & 0x1) == 1) {
 
@@ -171,34 +169,6 @@ public enum LongMessageFrameHolder {
 		}
 		
 		return result;
-	}
-
-	// 处理GSM协议TP-DCS数据编码方案
-	/*
-	 * 数据编码方案 TP-DCS（TP-Data-Coding-Scheme）长度1byte
-	 * 
-	 * Bit No.7 与Bit No.6 :一般设置为00； Bit No.5： 0—文本未压缩， 1—文本用GSM 标准压缩算法压缩 Bit
-	 * No.4： 0—表示Bit No.1、Bit No.0 为保留位，不含信息类型信息， 1—表示Bit No.1、Bit No.0 含有信息类型信息
-	 * Bit No.3 与Bit No.2： 00—默认的字母表(7bit 编码) 01—8bit， 10—USC2（16bit）编码 11—预留
-	 * Bit No.1 与Bit No.0： 00—Class 0， 01—Class 1， 10—Class 2（SIM 卡特定信息），
-	 * 11—Class 3//写卡
-	 */
-
-	private Charset switchCharset(short type) {
-		switch (type) {
-		case 0:
-			return Charset.forName("US-ASCII");// 7bit编码
-		case 3:
-			return Charset.forName("US-ASCII");// 7bit编码
-		case 4:
-			return Charset.forName("US-ASCII");// 8bit编码,通常用于发送数据消息，比如图片和铃声等；
-		case 8:
-			return Charset.forName("ISO-10646-UCS-2");// 16bit编码
-		case 15:
-			return Charset.forName("GBK");// 预留
-		default:
-			return GlobalConstance.defaultTransportCharset;
-		}
 	}
 
 	private FrameHolder mergeFrameHolder(FrameHolder fh, LongMessageFrame frame) throws NotSupportedException {
@@ -694,7 +664,7 @@ public enum LongMessageFrameHolder {
         byte[] ud = userData.getData();
         byte[] udh = pdu.getUserDataHeaders();
 
-        int nUdSeptets = userData.getLength();
+        int nUdSeptets = ud.length*8/7;
         int nUdBits = 0;
 
         int nUdhBytes = (udh == null) ? 0 : udh.length;

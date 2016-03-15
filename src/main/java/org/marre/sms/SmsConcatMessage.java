@@ -230,10 +230,18 @@ public abstract class SmsConcatMessage implements SmsMessage
         else
         {
             int refno = rnd_.nextInt(256);
-
+            // Convert septets into a string...
+            String msg = SmsPduUtil.readSeptets(ud.getData());
+            
+            if(msg.length()<=ud.getLength()){
+            	//原字符串长度小于udLength ，说明存在GSM的转义字符
+            	//计算转义字符个数,拆分后长度要减去转义字符
+            	 int cnt = SmsPduUtil.countGSMescapechar(msg);
+            	 nMaxConcatChars -= 2*cnt;
+            }
             // Calculate number of SMS needed
-            int nSms = ud.getLength() / nMaxConcatChars;
-            if ((ud.getLength() % nMaxConcatChars) > 0)
+            int nSms = msg.length() / nMaxConcatChars;
+            if ((msg.length() % nMaxConcatChars) > 0)
             {
                 nSms += 1;
             }
@@ -253,8 +261,6 @@ public abstract class SmsConcatMessage implements SmsMessage
                 System.arraycopy(udhElements, 0, pduUdhElements, 1, udhElements.length);
             }
 
-            // Convert septets into a string...
-            String msg = SmsPduUtil.readSeptets(ud.getData());
 
             // Create pdus
             for (int i = 0; i < nSms; i++)
@@ -276,12 +282,18 @@ public abstract class SmsConcatMessage implements SmsMessage
                     udLength = nMaxConcatChars;
                 }
 
-                pduUd = SmsPduUtil.getSeptets(msg.substring(udOffset, udOffset + udLength));
+                if(udOffset + udLength > msg.length()){
+                	  pduUd = SmsPduUtil.getSeptets(msg.substring(udOffset));
+                }else{
+                	  pduUd = SmsPduUtil.getSeptets(msg.substring(udOffset, udOffset + udLength));
+                }
+              
                 smsPdus[i] = new SmsPdu(pduUdhElements, pduUd, udLength, ud.getDcs());
             }
         }
         return smsPdus;
     }
+
 
     /**
      * Converts this message into SmsPdu:s

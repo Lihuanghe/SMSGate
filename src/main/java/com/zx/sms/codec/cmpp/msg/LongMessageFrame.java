@@ -14,6 +14,7 @@ public class LongMessageFrame  {
 	private short tpudhi = 0; //0:msgcontent不带协议头。1:带有协议头
 	private short msgfmt = 8;
 	private short msgLength = 140;
+	//encode septet
 	private byte[] msgContentBytes = GlobalConstance.emptyBytes;
 
 	private String contentPart;
@@ -133,13 +134,13 @@ public class LongMessageFrame  {
 		else
 			return udl;
 	}
-	
+	//get unencode septet bytes
 	public byte[] getPayloadbytes(int udhl){
 		if(udhl > 0){
 			int payloadlength = msgLength - udhl -1;
 			byte[] payload = new byte[payloadlength];
 			System.arraycopy(msgContentBytes, udhl+1, payload, 0,payloadlength);
-			//如果是7bit编码.先转也8bit编码
+			//如果是7bit编码.先转成8bit编码
 			if(this.msgfmt == 0)
 				
 				return LongMessageFrameHolder.octetStream2septetStream(payload);
