@@ -31,7 +31,7 @@ public final class CMPPCommonUtil {
 		if(haswidthChar(text)){
 			return new SmsTextMessage(text, SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.UCS2, SmsMsgClass.CLASS_UNKNOWN));
 		}else{
-			return new SmsTextMessage(text);
+			return new SmsTextMessage(text, SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.UCS2, SmsMsgClass.CLASS_UNKNOWN));
 		}
 	}
 	// 处理GSM协议TP-DCS数据编码方案

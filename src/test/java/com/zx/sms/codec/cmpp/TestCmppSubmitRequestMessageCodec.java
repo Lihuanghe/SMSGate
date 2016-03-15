@@ -104,6 +104,7 @@ public class TestCmppSubmitRequestMessageCodec  extends AbstractTestMessageCodec
 	{
 		CmppSubmitRequestMessage msg = createTestReq("");
 		SmsMmsNotificationMessage mms = new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd?d2=23",50*1024);
+		mms.setFrom("10085");
 		msg.setMsgContent(mms);
 		CmppSubmitRequestMessage result =testWapCodec(msg);
 		SmsMmsNotificationMessage smsmsg = (SmsMmsNotificationMessage)result.getMsg();

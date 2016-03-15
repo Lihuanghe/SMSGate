@@ -81,7 +81,7 @@ public class SmsTextMessage extends SmsConcatMessage
      */
     public SmsTextMessage(String msg)
     {
-        this(msg, SmsAlphabet.GSM, SmsMsgClass.CLASS_UNKNOWN);
+        this(msg, SmsAlphabet.LATIN1, SmsMsgClass.CLASS_UNKNOWN);
     }
     
     /**
