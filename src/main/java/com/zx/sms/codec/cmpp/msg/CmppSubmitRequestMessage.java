@@ -4,8 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.marre.sms.SmsAlphabet;
+import org.marre.sms.SmsDcs;
+import org.marre.sms.SmsMessage;
+import org.marre.sms.SmsMsgClass;
+import org.marre.sms.SmsTextMessage;
+
 import com.zx.sms.codec.cmpp.packet.CmppPacketType;
 import com.zx.sms.common.GlobalConstance;
+import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.MsgId;
 
 /**
@@ -39,8 +46,9 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 	private String reserve = GlobalConstance.emptyString;
 
 	private String msgContent;
+	private transient SmsMessage msg;
 	
-	private boolean supportLongMsg =  GlobalConstance.isSupportLongMsg;
+	private boolean supportLongMsg =  true;
 	
 	public CmppSubmitRequestMessage(Header header) {
 		super(CmppPacketType.CMPPSUBMITREQUEST, header);
@@ -332,7 +340,9 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 	public String getMsgContent() {
 		return msgContent;
 	}
-
+	public SmsMessage getMsg() {
+		return msg;
+	}
 	/**
 	 * @return the msgContent
 	 */
@@ -342,16 +352,24 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 		}else{
 			this.msgContent = msgContent;
 		}
+		this.msg = CMPPCommonUtil.buildTextMessage(this.msgContent);
 	}
 	
-
+	public void setMsgContent(SmsMessage msg){
+		this.msg = msg;
+		if(msg instanceof SmsTextMessage){
+			SmsTextMessage textMsg = (SmsTextMessage) msg;
+			this.msgContent=textMsg.getText();
+		}
+		
+	}
 
 	public boolean isSupportLongMsg() {
 		return supportLongMsg;
 	}
 
 	public void setSupportLongMsg(boolean supportLongMsg) {
-		this.supportLongMsg = supportLongMsg;
+		this.supportLongMsg = true;
 	}
 
 	public static CmppSubmitRequestMessage create(String phone ,String spid,String text){

@@ -3,11 +3,15 @@
  */
 package com.zx.sms.codec.cmpp.msg;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.marre.sms.SmsAlphabet;
+import org.marre.sms.SmsDcs;
+import org.marre.sms.SmsMessage;
+import org.marre.sms.SmsMsgClass;
+import org.marre.sms.SmsTextMessage;
 
 import com.zx.sms.codec.cmpp.packet.CmppPacketType;
 import com.zx.sms.common.GlobalConstance;
+import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.MsgId;
 
 /**
@@ -33,8 +37,10 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 	private boolean isReport = false;
 
 	private String msgContent;
+	
+	private transient SmsMessage msg;
 
-	private boolean supportLongMsg = GlobalConstance.isSupportLongMsg;
+	private boolean supportLongMsg = true;
 
 	public CmppDeliverRequestMessage(Header header) {
 		super(CmppPacketType.CMPPDELIVERREQUEST, header);
@@ -207,7 +213,7 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 	}
 
 	public void setSupportLongMsg(boolean supportLongMsg) {
-		this.supportLongMsg = supportLongMsg;
+		this.supportLongMsg = true;
 	}
 
 	/**
@@ -219,6 +225,19 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 		} else {
 			this.msgContent = msgContent;
 		}
+		this.msg = CMPPCommonUtil.buildTextMessage(this.msgContent);
+	}
+	
+	public void setMsgContent(SmsMessage msg){
+		this.msg = msg;
+		if(msg instanceof SmsTextMessage){
+			SmsTextMessage textMsg = (SmsTextMessage) msg;
+			this.msgContent=textMsg.getText();
+		}
+	}
+
+	public SmsMessage getMsg() {
+		return msg;
 	}
 
 	public CmppDeliverRequestMessage clone() throws CloneNotSupportedException {

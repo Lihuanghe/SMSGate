@@ -30,8 +30,10 @@ public class TestMsgDataDeliverRequestDecoder extends AbstractTestMessageCodec<C
 			Assert.assertEquals(expected.length, length);
 			System.arraycopy(bytebuf.array(), 0, actuals, index,length );
 			index = length;
+			Assert.assertArrayEquals(expected, actuals);
+			Assert.assertEquals("r", result.getMsgContent());
 		}
-		Assert.assertArrayEquals(expected, actuals);
+		
 	}
 
 	// 下面数据截取自现网10085的报文。cmppSubmit2.0协议
