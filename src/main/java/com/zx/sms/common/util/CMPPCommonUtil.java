@@ -29,7 +29,7 @@ public final class CMPPCommonUtil {
 	}
 	public static SmsTextMessage buildTextMessage(String text){
 		
-			return new SmsTextMessage(text, SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.UCS2, SmsMsgClass.CLASS_UNKNOWN));
+			return new SmsTextMessage(text);
 		
 	}
 	// 处理GSM协议TP-DCS数据编码方案
@@ -42,45 +42,31 @@ public final class CMPPCommonUtil {
 	 * Bit No.1 与Bit No.0： 00—Class 0， 01—Class 1， 10—Class 2（SIM 卡特定信息），
 	 * 11—Class 3//写卡
 	 */
-	public static Charset switchCharset(short type) {
+	public static Charset switchCharset(SmsAlphabet type) {
 		switch (type) {
-		case 0:
-			return Charset.forName("US-ASCII");// 7bit编码
-		case 3:
-			return Charset.forName("US-ASCII");// 7bit编码
-		case 4:
-			return Charset.forName("US-ASCII");// 8bit编码,通常用于发送数据消息，比如图片和铃声等；
-		case 8:
+		case ASCII:
+			return StandardCharsets.ISO_8859_1;// 7bit编码
+		case LATIN1:
+			return StandardCharsets.ISO_8859_1;// 8bit编码,通常用于发送数据消息，比如图片和铃声等；
+		case UCS2:
 			return Charset.forName("ISO-10646-UCS-2");// 16bit编码
-		case 15:
+		case RESERVED:
 			return Charset.forName("GBK");// 预留
 		default:
 			return GlobalConstance.defaultTransportCharset;
 		}
 	}
 	
-	public static SmsTextMessage buildTextMessagefromGSMchar(byte[] bytes,short msgfmt){
+	public static SmsTextMessage buildTextMessage(byte[] bytes,SmsDcs msgfmt){
 		String text = null;
-		if(msgfmt == 0){
-			
+		switch(msgfmt.getAlphabet()){
+		case GSM:
 			text = SmsPduUtil.unencodedSeptetsToString(bytes);
-		}else{
-			text = new String(bytes,switchCharset(msgfmt));
+			break;
+		default:
+			text = new String(bytes,switchCharset(msgfmt.getAlphabet()));
 		}
-		return new SmsTextMessage(text, SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.UCS2, SmsMsgClass.CLASS_UNKNOWN));
+		return new SmsTextMessage(text, msgfmt);
 	}
-	@Deprecated
-	private static boolean haswidthChar(String content) {
-		if (StringUtils.isEmpty(content))
-			return false;
 
-		byte[] bytes = content.getBytes();
-		for (int i = 0; i < bytes.length; i++) {
-			// 判断最高位是否为1
-			if ((bytes[i] & (byte) 0x80) == (byte) 0x80) {
-				return true;
-			}
-		}
-		return false;
-	}
 }

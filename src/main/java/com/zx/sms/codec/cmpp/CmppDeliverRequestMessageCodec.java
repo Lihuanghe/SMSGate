@@ -12,6 +12,7 @@ import io.netty.util.ReferenceCountUtil;
 
 import java.util.List;
 
+import org.marre.sms.SmsDcs;
 import org.marre.sms.SmsMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +71,7 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 		LongMessageFrame frame = new LongMessageFrame();
 		frame.setTppid(bodyBuffer.readUnsignedByte());
 		frame.setTpudhi(bodyBuffer.readUnsignedByte());
-		frame.setMsgfmt(bodyBuffer.readUnsignedByte());
+		frame.setMsgfmt(new SmsDcs((byte)bodyBuffer.readUnsignedByte()));
 
 		requestMessage.setSrcterminalId(bodyBuffer.readBytes(CmppDeliverRequest.SRCTERMINALID.getLength()).toString(GlobalConstance.defaultTransportCharset)
 				.trim());
@@ -158,7 +159,7 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 					CmppDeliverRequest.SERVICEID.getLength(), 0));
 			bodyBuffer.writeByte(frame.getTppid());
 			bodyBuffer.writeByte(frame.getTpudhi());
-			bodyBuffer.writeByte(frame.getMsgfmt());
+			bodyBuffer.writeByte(frame.getMsgfmt().getValue());
 			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getSrcterminalId().getBytes(GlobalConstance.defaultTransportCharset),
 					CmppDeliverRequest.SRCTERMINALID.getLength(), 0));
 			bodyBuffer.writeByte(requestMessage.getSrcterminalType());

@@ -9,6 +9,8 @@ public enum SmsAlphabet {
      * Western European languages. It also contains upper case Greek characters.
      */
     GSM,
+    
+    ASCII,  //CMPP 协议，不使用GSM septet编码
 
     /** ISO 8859-1 (ISO Latin-1). */
     LATIN1,

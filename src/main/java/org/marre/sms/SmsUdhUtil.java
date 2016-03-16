@@ -45,6 +45,8 @@ import java.io.IOException;
  */
 public final class SmsUdhUtil
 {
+	public static final int PDUMAXLENGTH = 140;
+	public  static final int ASCIIMAXLENGTH = 159;
     /**
      * Constructor for SmsUdhUtil.
      */
@@ -120,7 +122,7 @@ public final class SmsUdhUtil
     {
         int udLength = ud.getLength();
         
-        int bytesLeft = 140;
+        int bytesLeft = PDUMAXLENGTH;
         int maxChars;
         
         if (udh != null)
@@ -138,6 +140,10 @@ public final class SmsUdhUtil
             maxChars = bytesLeft / 2;
             break;
             
+       
+        case ASCII:
+        	maxChars = bytesLeft+ASCIIMAXLENGTH-PDUMAXLENGTH ; 
+            break;
         case LATIN1:
         default:
             maxChars = bytesLeft;

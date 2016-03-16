@@ -309,7 +309,7 @@ public abstract class SmsConcatMessage implements SmsMessage
         SmsUserData ud = getUserData();
         SmsUdhElement[] udhElements = getUdhElements();        
         int udhLength = SmsUdhUtil.getTotalSize(udhElements);
-        int nBytesLeft = 140 - udhLength;
+        int nBytesLeft = SmsUdhUtil.PDUMAXLENGTH - udhLength;
 
         switch (ud.getDcs().getAlphabet())
         {
@@ -318,6 +318,9 @@ public abstract class SmsConcatMessage implements SmsMessage
             break;
         case UCS2:
             smsPdus = createUnicodePdus(udhElements, ud, nBytesLeft);
+            break;
+        case ASCII:
+        	smsPdus = createOctalPdus(udhElements, ud, nBytesLeft+SmsUdhUtil.ASCIIMAXLENGTH-SmsUdhUtil.PDUMAXLENGTH); 
             break;
         case LATIN1:
         default:

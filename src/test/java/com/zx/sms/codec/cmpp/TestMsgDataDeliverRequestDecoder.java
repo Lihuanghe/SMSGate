@@ -27,7 +27,10 @@ public class TestMsgDataDeliverRequestDecoder extends AbstractTestMessageCodec<C
 			System.out.println(result);
 			ByteBuf bytebuf = Unpooled.copiedBuffer(encode(result));
 			int length = bytebuf.readableBytes();
-			Assert.assertEquals(expected.length, length-1);
+			Assert.assertEquals(expected.length, length);
+			System.arraycopy(bytebuf.array(), 0, actuals, index,length );
+			index = length;
+			Assert.assertArrayEquals(expected, actuals);
 			Assert.assertEquals("r", result.getMsgContent());
 		}
 		

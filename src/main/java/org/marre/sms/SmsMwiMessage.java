@@ -107,7 +107,7 @@ public class SmsMwiMessage extends SmsTextMessage
      */
     public SmsMwiMessage(String text)
     {
-        this(text, SmsAlphabet.GSM);
+        this(text, SmsAlphabet.ASCII);
     }
     
     /**

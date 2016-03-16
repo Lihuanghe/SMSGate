@@ -37,6 +37,10 @@ package org.marre.sms;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.zx.sms.common.util.CMPPCommonUtil;
+
 /**
  * Represents a text message.
  * <p>
@@ -70,7 +74,7 @@ public class SmsTextMessage extends SmsConcatMessage
      * @param messageClass The messageclass
      */
     public SmsTextMessage(String msg, SmsAlphabet alphabet, SmsMsgClass messageClass)
-    {
+    { 
         this(msg, SmsDcs.getGeneralDataCodingDcs(alphabet, messageClass));
     }
 
@@ -81,7 +85,10 @@ public class SmsTextMessage extends SmsConcatMessage
      */
     public SmsTextMessage(String msg)
     {
-        this(msg, SmsAlphabet.UCS2, SmsMsgClass.CLASS_UNKNOWN);
+    	if(haswidthChar(msg))
+    		 setText(msg, SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.UCS2, SmsMsgClass.CLASS_UNKNOWN));
+    	else
+    		 setText(msg, SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.ASCII, SmsMsgClass.CLASS_UNKNOWN));
     }
     
     /**
@@ -151,13 +158,13 @@ public class SmsTextMessage extends SmsConcatMessage
         	byte[] bs = SmsPduUtil.getSeptets(text_);
             ud = new SmsUserData(bs, bs.length*8/7, dcs_);
             break;
-
+        case ASCII:
         case LATIN1:
-            ud = new SmsUserData(text_.getBytes(StandardCharsets.ISO_8859_1), text_.length(), dcs_);
+            ud = new SmsUserData(text_.getBytes(CMPPCommonUtil.switchCharset(dcs_.getAlphabet())), text_.length(), dcs_);
             break;
 
         case UCS2:
-            ud = new SmsUserData(text_.getBytes(StandardCharsets.UTF_16BE), text_.length() * 2, dcs_);
+            ud = new SmsUserData(text_.getBytes(CMPPCommonUtil.switchCharset(dcs_.getAlphabet())), text_.length() * 2, dcs_);
             break;
 
         default:
@@ -175,4 +182,19 @@ public class SmsTextMessage extends SmsConcatMessage
     {
         return null;
     }
+    
+	
+	private static boolean haswidthChar(String content) {
+		if (StringUtils.isEmpty(content))
+			return false;
+
+		byte[] bytes = content.getBytes();
+		for (int i = 0; i < bytes.length; i++) {
+			// 判断最高位是否为1
+			if ((bytes[i] & (byte) 0x80) == (byte) 0x80) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

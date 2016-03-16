@@ -59,11 +59,6 @@ import es.rickyepoderi.wbxml.stream.WbXmlInputFactory;
 public enum LongMessageFrameHolder {
 	INS;
 	private final Logger logger = LoggerFactory.getLogger(LongMessageFrameHolder.class);
-	private final static int UDHILENGTH = 6;
-	private final static int MAXLENGTH = GlobalConstance.MaxMsgLength;
-	private final static String prefix = "(%d/%d)";
-
-	private final static FrameKeyCreator frameKeyCreator = INS.newFrameKeyCreator();
 
 	/**
 	 * 以服务号码+帧唯一码为key
@@ -75,27 +70,27 @@ public enum LongMessageFrameHolder {
 		InformationElement udheader = fh.getAppUDHinfo();
 		// udh为空表示文本短信
 		if (udheader == null) {
-			return CMPPCommonUtil.buildTextMessagefromGSMchar(contents,frame.getMsgfmt());
+			return CMPPCommonUtil.buildTextMessage(contents, frame.getMsgfmt());
 		} else {
 			if (SmsUdhIei.APP_PORT_16BIT.equals(udheader.udhIei)) {
 				// 2948 wap_push
-				int destport = (((udheader.infoEleData[0] & 0xff) << 8) | (udheader.infoEleData[1]&0xff) ) & 0x0ffff;
+				int destport = (((udheader.infoEleData[0] & 0xff) << 8) | (udheader.infoEleData[1] & 0xff)) & 0x0ffff;
 				// 9200 wap-wsp
-				int srcport = (((udheader.infoEleData[2]& 0xff) << 8) | (udheader.infoEleData[3]&0xff)) & 0x0ffff;
+				int srcport = (((udheader.infoEleData[2] & 0xff) << 8) | (udheader.infoEleData[3] & 0xff)) & 0x0ffff;
 				if (destport == 2948 && srcport == 9200) {
 					return parseWapPdu(contents);
-				}else if(destport == 0x158a && srcport ==0){
-					//Nokia手机支持的OTA图片格式
+				} else if (destport == 0x158a && srcport == 0) {
+					// Nokia手机支持的OTA图片格式
 					throw new NotSupportedException("Nokia手机支持的OTA图片格式,无法解析");
 				}
-				
-				logger.warn("Unsupported UDH:{} udhdata:{},pdu:[{}]",udheader.udhIei,ByteBufUtil.hexDump(udheader.infoEleData),ByteBufUtil.hexDump(contents));
-				
-				return CMPPCommonUtil.buildTextMessagefromGSMchar(contents,frame.getMsgfmt());
+
+				logger.warn("Unsupported UDH:{} udhdata:{},pdu:[{}]", udheader.udhIei, ByteBufUtil.hexDump(udheader.infoEleData), ByteBufUtil.hexDump(contents));
+
+				return CMPPCommonUtil.buildTextMessage(contents, frame.getMsgfmt());
 			} else {
 				// 其它都当成文本短信
-				logger.warn("Unsupported UDH:{} udhdata:{},pdu:[{}]",udheader.udhIei,ByteBufUtil.hexDump(udheader.infoEleData),ByteBufUtil.hexDump(contents));
-				return CMPPCommonUtil.buildTextMessagefromGSMchar(contents,frame.getMsgfmt());
+				logger.warn("Unsupported UDH:{} udhdata:{},pdu:[{}]", udheader.udhIei, ByteBufUtil.hexDump(udheader.infoEleData), ByteBufUtil.hexDump(contents));
+				return CMPPCommonUtil.buildTextMessage(contents, frame.getMsgfmt());
 			}
 		}
 	}
@@ -109,10 +104,10 @@ public enum LongMessageFrameHolder {
 
 		// 短信内容不带协议头，直接获取短信内容
 		// udhi只取第一个bit
-		if ((frame.getTpudhi() & 0x1) == 0) {
-			return CMPPCommonUtil.buildTextMessagefromGSMchar(frame.getPayloadbytes(0),frame.getMsgfmt());
+		if ((frame.getTpudhi() & 0x01) == 0) {
+			return CMPPCommonUtil.buildTextMessage(frame.getPayloadbytes(0), frame.getMsgfmt());
 
-		} else if ((frame.getTpudhi() & 0x1) == 1) {
+		} else if ((frame.getTpudhi() & 0x01) == 1) {
 
 			FrameHolder fh = createFrameHolder(frame);
 			// 判断是否只有一帧
@@ -148,7 +143,7 @@ public enum LongMessageFrameHolder {
 
 	}
 
-	public List<LongMessageFrame> splitmsgcontent(SmsMessage content, boolean isSupportLongMsg) throws SmsException  {
+	public List<LongMessageFrame> splitmsgcontent(SmsMessage content, boolean isSupportLongMsg) throws SmsException {
 
 		List<LongMessageFrame> result = new ArrayList<LongMessageFrame>();
 		SmsPdu[] pdus = content.getPdus();
@@ -156,18 +151,18 @@ public enum LongMessageFrameHolder {
 		for (SmsPdu aMsgPdu : pdus) {
 			byte[] udh = aMsgPdu.getUserDataHeaders();
 			LongMessageFrame frame = new LongMessageFrame();
-			frame.setPktotal((short)pdus.length);
-			frame.setPknumber((short)i++);
-			frame.setMsgfmt(aMsgPdu.getDcs().getValue());
+			frame.setPktotal((short) pdus.length);
+			frame.setPknumber((short) i++);
+			frame.setMsgfmt(aMsgPdu.getDcs());
 			frame.setTppid((short) 0);
-			frame.setTpudhi(udh !=null ?(short) 1:(short) 0);
-		
+			frame.setTpudhi(udh != null ? (short) 1 : (short) 0);
+
 			ByteArrayOutputStream btos = new ByteArrayOutputStream(200);
-			frame.setMsgLength((short)encodePdu(aMsgPdu,btos));
+			frame.setMsgLength((short) encodePdu(aMsgPdu, btos));
 			frame.setMsgContentBytes(btos.toByteArray());
-			result.add(frame);	
+			result.add(frame);
 		}
-		
+
 		return result;
 	}
 
@@ -211,7 +206,7 @@ public enum LongMessageFrameHolder {
 					frameholder = new FrameHolder(frameKey, udhi.infoEleData[i], frame.getPayloadbytes(header.headerlength), udhi.infoEleData[i + 1] - 1);
 
 				} else if (SmsUdhIei.CONCATENATED_16BIT.equals(udhi.udhIei)) {
-					frameKey = ((( udhi.infoEleData[i]&0xff) << 8) | (udhi.infoEleData[i + 1]&0xff) & 0x0ffff);
+					frameKey = (((udhi.infoEleData[i] & 0xff) << 8) | (udhi.infoEleData[i + 1] & 0xff) & 0x0ffff);
 					i += 2;
 					frameholder = new FrameHolder(frameKey, udhi.infoEleData[i], frame.getPayloadbytes(header.headerlength), udhi.infoEleData[i + 1] - 1);
 				} else {
@@ -355,16 +350,6 @@ public enum LongMessageFrameHolder {
 		}
 	}
 
-	private FrameKeyCreator newFrameKeyCreator() {
-		return new FrameKeyCreator();
-	}
-
-	private class FrameKeyCreator {
-		public byte getOne() {
-			return (byte) (DefaultSequenceNumberUtil.getSequenceNo() & 0xff);
-		}
-	}
-
 	/**
 	 * Convert a stream of septets read as octets into a byte array containing
 	 * the 7-bit values from the octet stream.
@@ -492,10 +477,10 @@ public enum LongMessageFrameHolder {
 
 		switch (binaryContentType) {
 		case WspTypeDecoder.CONTENT_TYPE_B_PUSH_SI:
-			return dispatchWapPdu_PushWBXML(pdu, transactionId, pduType, headerStartIndex, headerLength,SIinFact);
+			return dispatchWapPdu_PushWBXML(pdu, transactionId, pduType, headerStartIndex, headerLength, SIinFact);
 
 		case WspTypeDecoder.CONTENT_TYPE_B_PUSH_SL:
-			return dispatchWapPdu_PushWBXML(pdu, transactionId, pduType, headerStartIndex, headerLength,SLinFact);
+			return dispatchWapPdu_PushWBXML(pdu, transactionId, pduType, headerStartIndex, headerLength, SLinFact);
 
 		case WspTypeDecoder.CONTENT_TYPE_B_MMS:
 			return dispatchWapPdu_MMS(pdu, transactionId, pduType, headerStartIndex, headerLength);
@@ -504,7 +489,7 @@ public enum LongMessageFrameHolder {
 		}
 	}
 
-	private SmsMessage dispatchWapPdu_PushWBXML(byte[] pdu, int transactionId, int pduType, int headerStartIndex, int headerLength,XMLInputFactory inFact) {
+	private SmsMessage dispatchWapPdu_PushWBXML(byte[] pdu, int transactionId, int pduType, int headerStartIndex, int headerLength, XMLInputFactory inFact) {
 		byte[] header = new byte[headerLength];
 		System.arraycopy(pdu, headerStartIndex, header, 0, header.length);
 		int dataIndex = headerStartIndex + headerLength;
@@ -514,51 +499,50 @@ public enum LongMessageFrameHolder {
 		System.arraycopy(pdu, dataIndex, data, 0, data.length);
 
 		try {
-			Document doc = wbxmlStream2Doc(inFact,new ByteArrayInputStream(data),false);
-			Node node = doc.getFirstChild(); //si sl
-			if("si".equals(node.getNodeName())){
+			Document doc = wbxmlStream2Doc(inFact, new ByteArrayInputStream(data), false);
+			Node node = doc.getFirstChild(); // si sl
+			if ("si".equals(node.getNodeName())) {
 				NodeList nl = node.getChildNodes();
-				
-				if(nl !=null && nl.getLength()>0){
-					for(int index = 0;index<nl.getLength();index++){
+
+				if (nl != null && nl.getLength() > 0) {
+					for (int index = 0; index < nl.getLength(); index++) {
 						Node indication = nl.item(index);
-						
-						if("indication".equals(indication.getNodeName())){
+
+						if ("indication".equals(indication.getNodeName())) {
 							NamedNodeMap attrs = indication.getAttributes();
-							if(attrs!=null){
+							if (attrs != null) {
 								Node uri = attrs.getNamedItem("href");
-								if(uri!=null){
+								if (uri != null) {
 									String uriStr = uri.getNodeValue();
 									Node message = indication.getFirstChild();
-									String text = message!=null ?message.getNodeValue():""; //Message
-									WapSIPush si = new WapSIPush(uriStr,text);
-									return new SmsWapPushMessage(si );
+									String text = message != null ? message.getNodeValue() : ""; // Message
+									WapSIPush si = new WapSIPush(uriStr, text);
+									return new SmsWapPushMessage(si);
 								}
 							}
 						}
 					}
-					
+
 				}
-				
-			}else if("sl".equals(node.getNodeName())){
+
+			} else if ("sl".equals(node.getNodeName())) {
 				NamedNodeMap attrs = node.getAttributes();
-				if(attrs!=null){
+				if (attrs != null) {
 					Node uri = attrs.getNamedItem("href");
-					if(uri!=null){
+					if (uri != null) {
 						String uriStr = uri.getNodeValue();
-					
+
 						WapSLPush sl = new WapSLPush(uriStr);
 						return new SmsWapPushMessage(sl);
 					}
 				}
-				
-				
+
 			}
-			
+
 		} catch (Exception e) {
-			logger.error("pdu = [{}]",ByteBufUtil.hexDump(pdu));
+			logger.error("pdu = [{}]", ByteBufUtil.hexDump(pdu));
 		}
-		
+
 		return null;
 	}
 
@@ -570,222 +554,212 @@ public enum LongMessageFrameHolder {
 		System.arraycopy(pdu, dataIndex, data, 0, data.length);
 		PduParser parse = new PduParser(data);
 		GenericPdu notify = parse.parse();
-		if(notify != null && notify instanceof NotificationInd){
-			NotificationInd nind = (NotificationInd)notify;
-			SmsMmsNotificationMessage mms = new SmsMmsNotificationMessage(new String(nind.getContentLocation(),StandardCharsets.US_ASCII),nind.getMessageSize());
-			mms.setExpiry((int)(nind.getExpiry()-System.currentTimeMillis() / 1000));
-			if(nind.getFrom()!=null)mms.setFrom(nind.getFrom().getString());
-			String msgclass = new String(nind.getMessageClass(),StandardCharsets.UTF_8);
-			
-			if(PduHeaders.MESSAGE_CLASS_PERSONAL_STR.equals(msgclass)){
+		if (notify != null && notify instanceof NotificationInd) {
+			NotificationInd nind = (NotificationInd) notify;
+			SmsMmsNotificationMessage mms = new SmsMmsNotificationMessage(new String(nind.getContentLocation(), StandardCharsets.US_ASCII),
+					nind.getMessageSize());
+			mms.setExpiry((int) (nind.getExpiry() - System.currentTimeMillis() / 1000));
+			if (nind.getFrom() != null)
+				mms.setFrom(nind.getFrom().getString());
+			String msgclass = new String(nind.getMessageClass(), StandardCharsets.UTF_8);
+
+			if (PduHeaders.MESSAGE_CLASS_PERSONAL_STR.equals(msgclass)) {
 				mms.setMessageClass(MmsConstants.X_MMS_MESSAGE_CLASS_ID_PERSONAL);
-			}else if(PduHeaders.MESSAGE_CLASS_ADVERTISEMENT_STR.equals(msgclass))
-			{
+			} else if (PduHeaders.MESSAGE_CLASS_ADVERTISEMENT_STR.equals(msgclass)) {
 				mms.setMessageClass(MmsConstants.X_MMS_MESSAGE_CLASS_ID_ADVERTISMENT);
-			}
-			else if(PduHeaders.MESSAGE_CLASS_AUTO_STR.equals(msgclass))
-			{
+			} else if (PduHeaders.MESSAGE_CLASS_AUTO_STR.equals(msgclass)) {
 				mms.setMessageClass(MmsConstants.X_MMS_MESSAGE_CLASS_ID_AUTO);
-			}
-			else if(PduHeaders.MESSAGE_CLASS_INFORMATIONAL_STR.equals(msgclass))
-			{
+			} else if (PduHeaders.MESSAGE_CLASS_INFORMATIONAL_STR.equals(msgclass)) {
 				mms.setMessageClass(MmsConstants.X_MMS_MESSAGE_CLASS_ID_INFORMATIONAL);
 			}
-			
-			
-			if(nind.getSubject()!=null)mms.setSubject(nind.getSubject().getString());
-			if(nind.getTransactionId()!=null)mms.setTransactionId(new String(nind.getTransactionId()));
-		    return mms;
+
+			if (nind.getSubject() != null)
+				mms.setSubject(nind.getSubject().getString());
+			if (nind.getTransactionId() != null)
+				mms.setTransactionId(new String(nind.getTransactionId()));
+			return mms;
 		}
-		
+
 		return null;
 	}
+
 	private static final XMLInputFactory SLinFact = createSLinFact();
 	private static final XMLInputFactory SIinFact = createSIinFact();
-	
-	private static  XMLInputFactory createSLinFact(){
+
+	private static XMLInputFactory createSLinFact() {
 		XMLInputFactory inFact = new WbXmlInputFactory();
-        inFact.setProperty(WbXmlInputFactory.DEFINITION_PROPERTY, WbXmlInitialization.getDefinitionByName("SL 1.0"));
-        return inFact;
+		inFact.setProperty(WbXmlInputFactory.DEFINITION_PROPERTY, WbXmlInitialization.getDefinitionByName("SL 1.0"));
+		return inFact;
 	}
-	private static XMLInputFactory  createSIinFact(){
+
+	private static XMLInputFactory createSIinFact() {
 		XMLInputFactory inFact = new WbXmlInputFactory();
-	    inFact.setProperty(WbXmlInputFactory.DEFINITION_PROPERTY, WbXmlInitialization.getDefinitionByName("SI 1.0"));
-	    return inFact;
+		inFact.setProperty(WbXmlInputFactory.DEFINITION_PROPERTY, WbXmlInitialization.getDefinitionByName("SI 1.0"));
+		return inFact;
 	}
-    protected Document wbxmlStream2Doc(XMLInputFactory inFact,InputStream in, boolean event) throws Exception {
-        XMLStreamReader xmlStreamReader = null;
-        XMLEventReader xmlEventReader = null;
-         try {
-             if (event) {
-                 xmlEventReader = inFact.createXMLEventReader(in);
-             } else {
-                 xmlStreamReader = inFact.createXMLStreamReader(in);
-             }
-             Transformer xformer = TransformerFactory.newInstance().newTransformer();
-             StAXSource staxSource = event? new StAXSource(xmlEventReader) :
-                     new StAXSource(xmlStreamReader);
-             DOMResult domResult = new DOMResult();
-             xformer.transform(staxSource, domResult);
-             Document doc = (Document) domResult.getNode();
-             doc.normalize();
-             return doc;
-         } finally {
-             if (xmlStreamReader != null) {
-                 try {xmlStreamReader.close();} catch (Exception e) {}
-             }
-             if (xmlEventReader != null) {
-                 try {xmlEventReader.close();} catch (Exception e) {}
-             }
-         } 
-     }
-    
-    private int encodePdu(SmsPdu pdu,OutputStream baos)  throws SmsException{
-        switch (pdu.getDcs().getAlphabet()) {
-        case GSM:
-            return encodeSeptetPdu(pdu,baos);
-        default:
-            return encodeOctetPdu(pdu,baos);
-        }
-    }
-    /**
-     * Encodes an septet encoded pdu.
-     * 
-     * @param pdu
-     * @param destination
-     * @param sender
-     * @return
-     * @throws SmsException
-     */
-    private static int encodeSeptetPdu(SmsPdu pdu ,OutputStream baos)
-        throws SmsException
-    {
-        SmsUserData userData = pdu.getUserData();
-        byte[] ud = userData.getData();
-        byte[] udh = pdu.getUserDataHeaders();
 
-        int nUdSeptets = ud.length*8/7;
-        int nUdBits = 0;
+	protected Document wbxmlStream2Doc(XMLInputFactory inFact, InputStream in, boolean event) throws Exception {
+		XMLStreamReader xmlStreamReader = null;
+		XMLEventReader xmlEventReader = null;
+		try {
+			if (event) {
+				xmlEventReader = inFact.createXMLEventReader(in);
+			} else {
+				xmlStreamReader = inFact.createXMLStreamReader(in);
+			}
+			Transformer xformer = TransformerFactory.newInstance().newTransformer();
+			StAXSource staxSource = event ? new StAXSource(xmlEventReader) : new StAXSource(xmlStreamReader);
+			DOMResult domResult = new DOMResult();
+			xformer.transform(staxSource, domResult);
+			Document doc = (Document) domResult.getNode();
+			doc.normalize();
+			return doc;
+		} finally {
+			if (xmlStreamReader != null) {
+				try {
+					xmlStreamReader.close();
+				} catch (Exception e) {
+				}
+			}
+			if (xmlEventReader != null) {
+				try {
+					xmlEventReader.close();
+				} catch (Exception e) {
+				}
+			}
+		}
+	}
 
-        int nUdhBytes = (udh == null) ? 0 : udh.length;
+	private int encodePdu(SmsPdu pdu, OutputStream baos) throws SmsException {
+		switch (pdu.getDcs().getAlphabet()) {
+		case GSM:
+			return encodeSeptetPdu(pdu, baos);
+		default:
+			return encodeOctetPdu(pdu, baos);
+		}
+	}
 
-        // UDH + UDHL
-        int nUdhBits = 0;
+	/**
+	 * Encodes an septet encoded pdu.
+	 * 
+	 * @param pdu
+	 * @param destination
+	 * @param sender
+	 * @return
+	 * @throws SmsException
+	 */
+	private static int encodeSeptetPdu(SmsPdu pdu, OutputStream baos) throws SmsException {
+		SmsUserData userData = pdu.getUserData();
+		byte[] ud = userData.getData();
+		byte[] udh = pdu.getUserDataHeaders();
 
-        // UD + UDH + UDHL
-        int nTotalBytes = 0;
-        int nTotalBits = 0;
-        int nTotalSeptets = 0;
+		int nUdSeptets = ud.length * 8 / 7;
+		int nUdBits = 0;
 
-        int nFillBits = 0;
-        int length = 0;
+		int nUdhBytes = (udh == null) ? 0 : udh.length;
 
-        try
-        {
-            nUdhBits = nUdhBytes * 8;
-            nUdBits = nUdSeptets * 7;
+		// UDH + UDHL
+		int nUdhBits = 0;
 
-            nTotalBits = nUdBits + nFillBits + nUdhBits;
-            nTotalSeptets = nTotalBits / 7;
+		// UD + UDH + UDHL
+		int nTotalBytes = 0;
+		int nTotalBits = 0;
+		int nTotalSeptets = 0;
 
-            nTotalBytes = nTotalBits / 8;
-            if (nTotalBits % 8 > 0)
-            {
-                nTotalBytes += 1;
-            }
+		int nFillBits = 0;
+		int length = 0;
 
-            // UDH?
-            if ((udh == null) || (udh.length == 0))
-            {
-                // TP-UDL
-            	length = nUdSeptets;
+		try {
+			nUdhBits = nUdhBytes * 8;
+			nUdBits = nUdSeptets * 7;
 
-                // TP-UD
-                baos.write(ud);
-            }
-            else
-            {
-                // The whole UD PDU
-                byte[] fullUd = new byte[nTotalBytes];
+			nTotalBits = nUdBits + nFillBits + nUdhBits;
+			nTotalSeptets = nTotalBits / 7;
 
-                // TP-UDL
-                // UDL includes the length of the UDHL
-              
-                length = nTotalSeptets;
-                // TP-UDH (including user data header length)
-                System.arraycopy(udh, 0, fullUd, 0, nUdhBytes);
+			nTotalBytes = nTotalBits / 8;
+			if (nTotalBits % 8 > 0) {
+				nTotalBytes += 1;
+			}
 
-                // TP-UD
-                SmsPduUtil.arrayCopy(ud, 0, fullUd, nUdhBytes, nFillBits, nUdBits);
+			// UDH?
+			if ((udh == null) || (udh.length == 0)) {
+				// TP-UDL
+				length = nUdSeptets;
 
-                baos.write(fullUd);
-            }
-            baos.close();
-        }
-        catch (IOException ex)
-        {
-            throw new SmsException(ex);
-        }
+				// TP-UD
+				baos.write(ud);
+			} else {
+				// The whole UD PDU
+				byte[] fullUd = new byte[nTotalBytes];
 
-        return length;
-    }
+				// TP-UDL
+				// UDL includes the length of the UDHL
 
-    /**
-     * Encodes an octet encoded sms pdu.
-     * 
-     * @param pdu
-     * @param destination
-     * @param sender
-     * @return
-     * @throws SmsException
-     */
-    private static int encodeOctetPdu(SmsPdu pdu ,OutputStream baos)
-        throws SmsException
-    {
-        SmsUserData userData = pdu.getUserData();
-        byte[] ud = userData.getData();
-        byte[] udh = pdu.getUserDataHeaders();
-        int length = 0;
-        try
-        {
-            int nUdBytes = userData.getLength();
-            int nUdhBytes = (udh == null) ? 0 : udh.length;
+				length = nTotalSeptets;
+				// TP-UDH (including user data header length)
+				System.arraycopy(udh, 0, fullUd, 0, nUdhBytes);
 
-            // 1 octet/ 7 octets
-            // TP-VP - Optional
+				// TP-UD
+				SmsPduUtil.arrayCopy(ud, 0, fullUd, nUdhBytes, nFillBits, nUdBits);
 
-            // UDH?
-            if (nUdhBytes == 0)
-            {
-                // 1 Integer
-                // TP-UDL
-                // UDL includes the length of UDH
-            	length = nUdBytes;
+				baos.write(fullUd);
+			}
+			baos.close();
+		} catch (IOException ex) {
+			throw new SmsException(ex);
+		}
 
-                // n octets
-                // TP-UD
-                baos.write(ud);
-            }
-            else
-            {
-               
-                // TP-UDL includes the length of UDH
-                // +1 is for the size header...
-                length = nUdBytes + nUdhBytes;
-                // TP-UDH (including user data header length)
-                baos.write(udh);
-                // TP-UD
-                baos.write(ud);
+		return length;
+	}
 
-            }
-            baos.close();
-        }
-        catch (IOException ex)
-        {
-            throw new SmsException(ex);
-        }
-        
-        return length;
-    }
-    
+	/**
+	 * Encodes an octet encoded sms pdu.
+	 * 
+	 * @param pdu
+	 * @param destination
+	 * @param sender
+	 * @return
+	 * @throws SmsException
+	 */
+	private static int encodeOctetPdu(SmsPdu pdu, OutputStream baos) throws SmsException {
+		SmsUserData userData = pdu.getUserData();
+		byte[] ud = userData.getData();
+		byte[] udh = pdu.getUserDataHeaders();
+		int length = 0;
+		try {
+			int nUdBytes = userData.getLength();
+			int nUdhBytes = (udh == null) ? 0 : udh.length;
+
+			// 1 octet/ 7 octets
+			// TP-VP - Optional
+
+			// UDH?
+			if (nUdhBytes == 0) {
+				// 1 Integer
+				// TP-UDL
+				// UDL includes the length of UDH
+				length = nUdBytes;
+
+				// n octets
+				// TP-UD
+				baos.write(ud);
+			} else {
+
+				// TP-UDL includes the length of UDH
+				// +1 is for the size header...
+				length = nUdBytes + nUdhBytes;
+				// TP-UDH (including user data header length)
+				baos.write(udh);
+				// TP-UD
+				baos.write(ud);
+
+			}
+			baos.close();
+		} catch (IOException ex) {
+			throw new SmsException(ex);
+		}
+
+		return length;
+	}
+
 }

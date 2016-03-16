@@ -13,6 +13,7 @@ import io.netty.util.ReferenceCountUtil;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.marre.sms.SmsDcs;
 import org.marre.sms.SmsMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +83,7 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 
 		frame.setTppid(bodyBuffer.readUnsignedByte());
 		frame.setTpudhi(bodyBuffer.readUnsignedByte());
-		frame.setMsgfmt(bodyBuffer.readUnsignedByte());
+		frame.setMsgfmt(new SmsDcs((byte)bodyBuffer.readUnsignedByte()));
 
 		requestMessage.setMsgsrc(bodyBuffer.readBytes(CmppSubmitRequest.MSGSRC.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 
@@ -173,7 +174,7 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 			bodyBuffer.writeByte(requestMessage.getFeeterminaltype());
 			bodyBuffer.writeByte(frame.getTppid());
 			bodyBuffer.writeByte(frame.getTpudhi());
-			bodyBuffer.writeByte(frame.getMsgfmt());
+			bodyBuffer.writeByte(frame.getMsgfmt().getValue());
 
 			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getMsgsrc().getBytes(GlobalConstance.defaultTransportCharset),
 					CmppSubmitRequest.MSGSRC.getLength(), 0));

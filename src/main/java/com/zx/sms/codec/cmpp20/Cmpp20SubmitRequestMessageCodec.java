@@ -13,6 +13,7 @@ import io.netty.util.ReferenceCountUtil;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.marre.sms.SmsDcs;
 import org.marre.sms.SmsMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +81,7 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 
 		frame.setTppid(bodyBuffer.readUnsignedByte());
 		frame.setTpudhi(bodyBuffer.readUnsignedByte());
-		frame.setMsgfmt(bodyBuffer.readUnsignedByte());
+		frame.setMsgfmt(new SmsDcs((byte)bodyBuffer.readUnsignedByte()));
 
 		requestMessage.setMsgsrc(bodyBuffer.readBytes(Cmpp20SubmitRequest.MSGSRC.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 
@@ -172,7 +173,7 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 			// 无该字段 不进行编解码
 			bodyBuffer.writeByte(frame.getTppid());
 			bodyBuffer.writeByte(frame.getTpudhi());
-			bodyBuffer.writeByte(frame.getMsgfmt());
+			bodyBuffer.writeByte(frame.getMsgfmt().getValue());
 
 			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getMsgsrc().getBytes(GlobalConstance.defaultTransportCharset),
 					Cmpp20SubmitRequest.MSGSRC.getLength(), 0));

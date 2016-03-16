@@ -69,7 +69,7 @@ public class TestCmppSubmitRequestMessageCodec  extends AbstractTestMessageCodec
 	@Test
 	public void testASCIIcode()
 	{
-		testlongCodec(createTestReq("1ABC56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"));
+		testlongCodec(createTestReq("12345678901AssBC56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"));
 	}
 	
 	
@@ -120,7 +120,7 @@ public class TestCmppSubmitRequestMessageCodec  extends AbstractTestMessageCodec
 		String origin = "112aaaasssss2334455@£$¥èéùìòçØøÅåΔ_ΦΓΛΩΠΨΣΘΞ^{}\\[~]|€ÆæßÉ!\"#¤%&'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà";
 		System.out.println(origin);
 		CmppSubmitRequestMessage msg = createTestReq(origin);
-		msg.setMsgContent(new SmsTextMessage(origin, SmsAlphabet.GSM, SmsMsgClass.CLASS_UNKNOWN));
+		msg.setMsgContent(new SmsTextMessage(origin));
 		
 		CmppSubmitRequestMessage ret =  testWapCodec(msg);
 		Assert.assertEquals(msg.getMsgContent(), ret.getMsgContent());

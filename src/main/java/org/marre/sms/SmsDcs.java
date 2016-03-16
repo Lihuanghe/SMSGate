@@ -86,6 +86,7 @@ public class SmsDcs
         //    1   1  Reserved
         switch (alphabet)
         {
+        case ASCII:
         case GSM:      dcs |= 0x00; break;
         case LATIN1:   dcs |= 0x04; break;
         case UCS2:     dcs |= 0x08; break;
@@ -117,12 +118,12 @@ public class SmsDcs
             // General Data Coding Indication
             if (dcs_ == 0x00)
             {
-                return SmsAlphabet.GSM;
+                return SmsAlphabet.ASCII;
             }
 
             switch (dcs_ & 0x0C)
             {
-            case 0x00: return SmsAlphabet.GSM;
+            case 0x00: return SmsAlphabet.ASCII;
             case 0x04: return SmsAlphabet.LATIN1;
             case 0x08: return SmsAlphabet.UCS2;
             case 0x0C: return SmsAlphabet.RESERVED;
@@ -130,7 +131,7 @@ public class SmsDcs
             }
             
         case MESSAGE_WAITING_STORE_GSM:
-            return SmsAlphabet.GSM;
+            return SmsAlphabet.ASCII;
         
         case MESSAGE_WAITING_STORE_UCS2:
             return SmsAlphabet.UCS2;
@@ -138,7 +139,7 @@ public class SmsDcs
         case DATA_CODING_MESSAGE:
             switch (dcs_ & 0x04)
             {
-            case 0x00: return SmsAlphabet.GSM;
+            case 0x00: return SmsAlphabet.ASCII;
             case 0x04: return SmsAlphabet.LATIN1;
             default:   return null;
             }

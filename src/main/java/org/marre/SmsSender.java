@@ -263,7 +263,7 @@ public class SmsSender
      */
     public String sendTextSms(String text, String dest, String sender) throws SmsException, IOException
     {
-        SmsTextMessage textMessage = new SmsTextMessage(text, SmsAlphabet.GSM, SmsMsgClass.CLASS_UNKNOWN);
+        SmsTextMessage textMessage = new SmsTextMessage(text, SmsAlphabet.ASCII, SmsMsgClass.CLASS_UNKNOWN);
         return sendSms(textMessage, dest, sender);
     }
 
@@ -283,7 +283,7 @@ public class SmsSender
      */
     public String sendTextSms(String text, String dest) throws SmsException, IOException
     {
-        SmsTextMessage textMessage = new SmsTextMessage(text, SmsAlphabet.GSM, SmsMsgClass.CLASS_UNKNOWN);
+        SmsTextMessage textMessage = new SmsTextMessage(text, SmsAlphabet.ASCII, SmsMsgClass.CLASS_UNKNOWN);
         return sendSms(textMessage, dest, null);
     }
     
