@@ -4,6 +4,8 @@
 这是一个在netty5框架下实现的cmpp3.0/cmpp2.0短信协议解析及网关端口管理。
 代码copy了 `huzorro@gmail.com` 基于netty3.7的cmpp协议解析 [huzorro@gmail.com 的代码 ](https://github.com/huzorro/netty3ext)
 
+最新的提交支持发送和解析WapPush短信，以及彩信通知短信。可以实现对彩信或者wap-push短信的拦截和加工处理。wap短信的解析使用 [smsj] (https://github.com/marre/smsj)的短信库
+
 ##性能测试
 在48core，128G内存的物理服务器上测试协议解析效率：35K条/s, cpu使用率25%. 
 
