@@ -82,6 +82,9 @@ public enum LongMessageFrameHolder {
 				} else if (destport == SmsPort.NOKIA_MULTIPART_MESSAGE.getPort() && srcport == SmsPort.ZERO.getPort()) {
 					// Nokia手机支持的OTA图片格式
 					throw new NotSupportedException("Nokia手机支持的OTA图片格式,无法解析");
+				} else if(destport == SmsPort.OTA_SETTINGS_BROWSER.getPort()){
+					// Nokia手机支持的OTA浏览器书签
+					throw new NotSupportedException("Nokia手机支持的OTA浏览器书签,无法解析");
 				}
 
 				logger.warn("UnsupportedportMessage UDH:{} udhdata:{},pdu:[{}]", udheader.udhIei, ByteBufUtil.hexDump(udheader.infoEleData), ByteBufUtil.hexDump(contents));
@@ -101,14 +104,14 @@ public enum LongMessageFrameHolder {
 	 **/
 	public SmsMessage putAndget(String serviceNum, LongMessageFrame frame) throws NotSupportedException {
 
-		assert (frame.getTppid() == 0);
+		//assert (frame.getTppid() == 0);
 
 		// 短信内容不带协议头，直接获取短信内容
 		// udhi只取第一个bit
-		if ((frame.getTpudhi() & 0x01) == 0) {
+		if (frame.getTpudhi() == 0) {
 			return CMPPCommonUtil.buildTextMessage(frame.getPayloadbytes(0), frame.getMsgfmt());
 
-		} else if ((frame.getTpudhi() & 0x01) == 1) {
+		} else if ((frame.getTpudhi() & 0x01) == 1 || (frame.getTpudhi()&0x40)==0x40) {
 
 			FrameHolder fh = createFrameHolder(frame);
 			// 判断是否只有一帧

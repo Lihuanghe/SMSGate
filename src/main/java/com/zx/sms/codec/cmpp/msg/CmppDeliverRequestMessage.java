@@ -3,10 +3,8 @@
  */
 package com.zx.sms.codec.cmpp.msg;
 
-import org.marre.sms.SmsAlphabet;
-import org.marre.sms.SmsDcs;
 import org.marre.sms.SmsMessage;
-import org.marre.sms.SmsMsgClass;
+import org.marre.sms.SmsPortAddressedTextMessage;
 import org.marre.sms.SmsTextMessage;
 
 import com.zx.sms.codec.cmpp.packet.CmppPacketType;
@@ -232,6 +230,9 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 		this.msg = msg;
 		if(msg instanceof SmsTextMessage){
 			SmsTextMessage textMsg = (SmsTextMessage) msg;
+			this.msgContent=textMsg.getText();
+		}else if(msg instanceof SmsPortAddressedTextMessage){
+			SmsPortAddressedTextMessage textMsg = (SmsPortAddressedTextMessage) msg;
 			this.msgContent=textMsg.getText();
 		}
 	}

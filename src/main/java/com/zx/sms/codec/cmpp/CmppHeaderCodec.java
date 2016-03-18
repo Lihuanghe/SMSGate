@@ -60,8 +60,8 @@ public class CmppHeaderCodec extends MessageToMessageCodec<ByteBuf, Message> {
 		// buf由netty写channel的时候释放
 		ByteBuf buf = ctx.alloc().buffer(packetLength);
 		buf.writeInt(packetLength);
-		buf.writeInt(((Long) message.getHeader().getCommandId()).intValue());
-		buf.writeInt(((Long) message.getHeader().getSequenceId()).intValue());
+		buf.writeInt((int) message.getHeader().getCommandId());
+		buf.writeInt((int) message.getHeader().getSequenceId());
 		if (packetLength > headerLength) {
 			buf.writeBytes(message.getBodyBuffer());
 		}
