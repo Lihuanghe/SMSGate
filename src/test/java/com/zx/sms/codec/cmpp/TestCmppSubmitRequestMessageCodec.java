@@ -2,6 +2,7 @@ package com.zx.sms.codec.cmpp;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Random;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -11,6 +12,8 @@ import org.junit.Test;
 import org.marre.sms.SmsAlphabet;
 import org.marre.sms.SmsMessage;
 import org.marre.sms.SmsMsgClass;
+import org.marre.sms.SmsPort;
+import org.marre.sms.SmsPortAddressedTextMessage;
 import org.marre.sms.SmsTextMessage;
 import org.marre.wap.push.SmsMmsNotificationMessage;
 import org.marre.wap.push.SmsWapPushMessage;
@@ -100,18 +103,32 @@ public class TestCmppSubmitRequestMessageCodec  extends AbstractTestMessageCodec
 		Assert.assertEquals(si.getUri(), actsi.getUri());
 		Assert.assertEquals(si.getMessage(), actsi.getMessage());
 	}
-	
+	@Test
+	public void testPortTextSMSH()
+	{
+		Random rnd_ = new Random();
+		CmppSubmitRequestMessage msg = createTestReq("");
+		SmsPortAddressedTextMessage textMsg =new SmsPortAddressedTextMessage(new SmsPort(rnd_.nextInt() &0xffff,"")  ,new SmsPort(rnd_.nextInt()&0xffff,""),"这是一条测试彩信，彩信消息");
+		msg.setMsgContent(textMsg);
+		CmppSubmitRequestMessage result =testWapCodec(msg);
+		SmsPortAddressedTextMessage smsmsg = (SmsPortAddressedTextMessage)result.getMsg();
+		Assert.assertEquals(textMsg.getDestPort_(), smsmsg.getDestPort_());
+		Assert.assertEquals(textMsg.getOrigPort_(), smsmsg.getOrigPort_());
+		Assert.assertEquals(textMsg.getText(), smsmsg.getText());
+	}
 	@Test
 	public void testMMSPUSH()
 	{
 		CmppSubmitRequestMessage msg = createTestReq("");
-		SmsMmsNotificationMessage mms = new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd?d2=23",50*1024);
+		SmsMmsNotificationMessage mms = new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd",50*1024);
 		mms.setFrom("10085");
+		mms.setSubject("这是一条测试彩信，彩信消息ID是：121241");
 		msg.setMsgContent(mms);
 		CmppSubmitRequestMessage result =testWapCodec(msg);
 		SmsMmsNotificationMessage smsmsg = (SmsMmsNotificationMessage)result.getMsg();
-		
+		Assert.assertEquals(mms.getSubject_(), smsmsg.getSubject_());
 		Assert.assertEquals(mms.getContentLocation_(), smsmsg.getContentLocation_());
+		Assert.assertEquals(mms.getFrom_(), smsmsg.getFrom_());
 	}
 	
 	@Test

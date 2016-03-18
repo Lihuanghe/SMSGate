@@ -7,7 +7,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -26,6 +25,9 @@ import org.marre.sms.SmsException;
 import org.marre.sms.SmsMessage;
 import org.marre.sms.SmsPdu;
 import org.marre.sms.SmsPduUtil;
+import org.marre.sms.SmsPort;
+import org.marre.sms.SmsPortAddressedTextMessage;
+import org.marre.sms.SmsTextMessage;
 import org.marre.sms.SmsUdhIei;
 import org.marre.sms.SmsUserData;
 import org.marre.wap.mms.MmsConstants;
@@ -46,10 +48,8 @@ import PduParser.PduHeaders;
 import PduParser.PduParser;
 
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
-import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.util.CMPPCommonUtil;
-import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 
 import es.rickyepoderi.wbxml.definition.WbXmlInitialization;
 import es.rickyepoderi.wbxml.stream.WbXmlInputFactory;
@@ -79,14 +79,15 @@ public enum LongMessageFrameHolder {
 				int srcport = (((udheader.infoEleData[2] & 0xff) << 8) | (udheader.infoEleData[3] & 0xff)) & 0x0ffff;
 				if (destport == 2948 && srcport == 9200) {
 					return parseWapPdu(contents);
-				} else if (destport == 0x158a && srcport == 0) {
+				} else if (destport == SmsPort.NOKIA_MULTIPART_MESSAGE.getPort() && srcport == SmsPort.ZERO.getPort()) {
 					// Nokia手机支持的OTA图片格式
 					throw new NotSupportedException("Nokia手机支持的OTA图片格式,无法解析");
 				}
 
-				logger.warn("Unsupported UDH:{} udhdata:{},pdu:[{}]", udheader.udhIei, ByteBufUtil.hexDump(udheader.infoEleData), ByteBufUtil.hexDump(contents));
+				logger.warn("UnsupportedportMessage UDH:{} udhdata:{},pdu:[{}]", udheader.udhIei, ByteBufUtil.hexDump(udheader.infoEleData), ByteBufUtil.hexDump(contents));
 
-				return CMPPCommonUtil.buildTextMessage(contents, frame.getMsgfmt());
+				SmsTextMessage text = CMPPCommonUtil.buildTextMessage(contents, frame.getMsgfmt());
+				return new SmsPortAddressedTextMessage(new SmsPort(destport),new SmsPort(srcport),text);
 			} else {
 				// 其它都当成文本短信
 				logger.warn("Unsupported UDH:{} udhdata:{},pdu:[{}]", udheader.udhIei, ByteBufUtil.hexDump(udheader.infoEleData), ByteBufUtil.hexDump(contents));

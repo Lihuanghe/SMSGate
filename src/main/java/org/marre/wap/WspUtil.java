@@ -37,6 +37,7 @@ package org.marre.wap;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -673,7 +674,7 @@ public final class WspUtil
      */
     public static void writeExtensionMedia(OutputStream theOs, String theStr) throws IOException
     {
-        theOs.write(theStr.getBytes("ISO-8859-1"));
+        theOs.write(theStr.getBytes(StandardCharsets.UTF_8));
         theOs.write((byte) 0x00);
     }
 
@@ -686,7 +687,7 @@ public final class WspUtil
          * part of the contents. Quote = <Octet 127> End-of-string = <Octet 0>
          */
 
-        byte[] strBytes = theStr.getBytes("ISO-8859-1");
+    	 byte[] strBytes = theStr.getBytes(StandardCharsets.UTF_8);
 
         if ((strBytes[0] & 0x80) > 0x00)
         {
@@ -707,7 +708,7 @@ public final class WspUtil
         // <Octet 34>
         theOs.write(34);
 
-        theOs.write(theStr.getBytes("ISO-8859-1"));
+        theOs.write(theStr.getBytes(StandardCharsets.UTF_8));
         theOs.write(0x00);
     }
 
@@ -717,7 +718,7 @@ public final class WspUtil
          * Token-Text = Token End-of-string
          */
         // TODO: Token => RFC2616
-        theOs.write(theStr.getBytes("ISO-8859-1"));
+        theOs.write(theStr.getBytes(StandardCharsets.UTF_8));
         theOs.write(0x00);
     }
 

@@ -70,7 +70,16 @@ public abstract class SmsPortAddressedMessage extends SmsConcatMessage
         origPort_ = origPort;
     }
     
-    public SmsUdhElement[] getUdhElements()
+    
+    public int getDestPort_() {
+		return destPort_.getPort();
+	}
+
+	public int getOrigPort_() {
+		return origPort_.getPort();
+	}
+
+	public SmsUdhElement[] getUdhElements()
     {
         return new SmsUdhElement[] { SmsUdhUtil.get16BitApplicationPortUdh(destPort_, origPort_) };
     }

@@ -45,6 +45,11 @@ public class SmsPortAddressedTextMessage extends SmsPortAddressedMessage
     /** The text message part. */ 
     protected final SmsTextMessage smsTextMessage_;
     
+    public SmsPortAddressedTextMessage(SmsPort destPort, SmsPort origPort, SmsTextMessage msg)
+    {
+        super(destPort, origPort);
+        smsTextMessage_ = msg;
+    }
     /**
      * Creates a new SmsPortAddressedTextMessage with default 6Bit GSM Alphabet.
      *

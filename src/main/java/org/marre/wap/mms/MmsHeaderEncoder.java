@@ -144,8 +144,9 @@ public final class MmsHeaderEncoder
 
         if (from == null)
         {
-            WspUtil.writeValueLength(os, 1);
-            WspUtil.writeShortInteger(os, MmsConstants.FROM_INSERT_ADDRESS);
+           // WspUtil.writeValueLength(os, 1);
+           // WspUtil.writeShortInteger(os, MmsConstants.FROM_INSERT_ADDRESS);
+        	from = "Unknow";
         }
         else
         {
