@@ -6,6 +6,11 @@ package com.zx.sms.codec.cmpp.msg;
 import org.marre.sms.SmsMessage;
 import org.marre.sms.SmsPortAddressedTextMessage;
 import org.marre.sms.SmsTextMessage;
+import org.marre.wap.push.SmsMmsNotificationMessage;
+import org.marre.wap.push.SmsWapPushMessage;
+import org.marre.wap.push.WapSIPush;
+import org.marre.wap.push.WapSLPush;
+import org.marre.wap.wbxml.WbxmlDocument;
 
 import com.zx.sms.codec.cmpp.packet.CmppPacketType;
 import com.zx.sms.common.GlobalConstance;
@@ -234,6 +239,17 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 		}else if(msg instanceof SmsPortAddressedTextMessage){
 			SmsPortAddressedTextMessage textMsg = (SmsPortAddressedTextMessage) msg;
 			this.msgContent=textMsg.getText();
+		}else if(msg instanceof SmsMmsNotificationMessage){
+			SmsMmsNotificationMessage mms = (SmsMmsNotificationMessage) msg;
+			this.msgContent=mms.getContentLocation_();
+		}else if(msg instanceof SmsWapPushMessage){
+			SmsWapPushMessage wap = (SmsWapPushMessage) msg;
+			WbxmlDocument wbxml = wap.getWbxml();
+			if(wbxml instanceof WapSIPush){
+				this.msgContent=((WapSIPush)wbxml).getUri();
+			}else if(wbxml instanceof WapSLPush){
+				this.msgContent=((WapSLPush)wbxml).getUri();
+			}
 		}
 	}
 
@@ -254,7 +270,7 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("CmppDeliverRequestMessage [msgId=").append(msgId).append(", destId=").append(destId).append(", srcterminalId=").append(srcterminalId)
-				.append(", msgContent=").append(msgContent).append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
+				.append(", msgContent=").append(msgContent).append(", SmsMessageType=").append(msg.getClass().getSimpleName()).append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
 		return sb.toString();
 	}
 }

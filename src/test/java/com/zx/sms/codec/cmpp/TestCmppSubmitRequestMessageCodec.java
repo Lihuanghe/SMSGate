@@ -108,7 +108,7 @@ public class TestCmppSubmitRequestMessageCodec  extends AbstractTestMessageCodec
 	{
 		Random rnd_ = new Random();
 		CmppSubmitRequestMessage msg = createTestReq("");
-		SmsPortAddressedTextMessage textMsg =new SmsPortAddressedTextMessage(new SmsPort(rnd_.nextInt() &0xffff,"")  ,new SmsPort(rnd_.nextInt()&0xffff,""),"这是一条测试彩信，彩信消息");
+		SmsPortAddressedTextMessage textMsg =new SmsPortAddressedTextMessage(new SmsPort(rnd_.nextInt() &0xffff,"")  ,new SmsPort(rnd_.nextInt()&0xffff,""),"这是一条端口文本短信");
 		msg.setMsgContent(textMsg);
 		CmppSubmitRequestMessage result =testWapCodec(msg);
 		SmsPortAddressedTextMessage smsmsg = (SmsPortAddressedTextMessage)result.getMsg();
@@ -176,7 +176,7 @@ public class TestCmppSubmitRequestMessageCodec  extends AbstractTestMessageCodec
 	    }
 	    
 		CmppSubmitRequestMessage result = decode(copybuf);
-	
+		System.out.println(result);
 		Assert.assertEquals(msg.getServiceId(), result.getServiceId());
 		Assert.assertTrue(result.getMsg() instanceof SmsMessage);
 		return result;

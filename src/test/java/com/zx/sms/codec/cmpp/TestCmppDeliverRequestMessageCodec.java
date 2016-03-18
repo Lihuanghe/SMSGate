@@ -186,7 +186,7 @@ public class TestCmppDeliverRequestMessageCodec extends AbstractTestMessageCodec
 	    }
 	    
 	    CmppDeliverRequestMessage result = decode(copybuf);
-		
+		System.out.println(result);
 		Assert.assertTrue(result.getMsg() instanceof SmsMessage);
 		return result;
 	}
