@@ -77,7 +77,7 @@ public enum LongMessageFrameHolder {
 				int destport = (((udheader.infoEleData[0] & 0xff) << 8) | (udheader.infoEleData[1] & 0xff)) & 0x0ffff;
 				// 9200 wap-wsp
 				int srcport = (((udheader.infoEleData[2] & 0xff) << 8) | (udheader.infoEleData[3] & 0xff)) & 0x0ffff;
-				if (destport == 2948 && srcport == 9200) {
+				if (destport == SmsPort.WAP_PUSH.getPort() && srcport == SmsPort.WAP_WSP.getPort()) {
 					return parseWapPdu(contents);
 				} else if (destport == SmsPort.NOKIA_MULTIPART_MESSAGE.getPort() && srcport == SmsPort.ZERO.getPort()) {
 					// Nokia手机支持的OTA图片格式
