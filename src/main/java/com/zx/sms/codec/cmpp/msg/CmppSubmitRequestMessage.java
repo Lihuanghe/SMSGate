@@ -409,10 +409,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("CmppSubmitRequestMessage [msgid=").append(msgid).append(", destterminalId=").append(Arrays.toString(destterminalId)).append(", msgContent=")
-		.append(msgContent).append(", SmsMessageType=").append(msg.getClass().getSimpleName()).append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
+		.append(msgContent).append(", SmsMessageType=").append(msg==null?"":msg.getClass().getSimpleName()).append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
 		return sb.toString();
 	}
-	
-	
-
 }

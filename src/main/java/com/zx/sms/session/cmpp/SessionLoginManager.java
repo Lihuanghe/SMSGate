@@ -168,7 +168,7 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 	}
 
 	private void changeCodecHandler(ChannelHandlerContext ctx, int version) throws Exception {
-		// TODO 更换协议解析器
+		//更换协议解析器
 		logger.info("changeCodec to version:{}", version);
 		ctx.pipeline().replace(CMPPCodecChannelInitializer.codecName, CMPPCodecChannelInitializer.codecName,
 				CMPPCodecChannelInitializer.getCodecHandler(version));
@@ -184,8 +184,6 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 	}
 
 	private void receiveConnectMessage(ChannelHandlerContext ctx, CmppConnectRequestMessage message) throws Exception {
-		// 服务端收到Request，校验用户名密码成功
-		// TODO 用户名密码校验
 
 		String userName = message.getSourceAddr();
 		// 通过用户名获取端口信息
@@ -200,8 +198,8 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 			return;
 		}
 
-		// TODO 协议适配
 		short version = message.getVersion();
+		// 服务端收到Request，校验用户名密码成功
 		int status = validClientMsg(message, childentity);
 		// 认证成功
 		if (status == 0) {

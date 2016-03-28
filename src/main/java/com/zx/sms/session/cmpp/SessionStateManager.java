@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,6 +24,8 @@ import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.codec.cmpp.packet.CmppPacketType;
+import com.zx.sms.codec.cmpp20.Cmpp20DeliverResponseMessageCodec;
+import com.zx.sms.codec.cmpp20.Cmpp20SubmitResponseMessageCodec;
 import com.zx.sms.connect.manager.CMPPEndpointManager;
 import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
@@ -154,7 +155,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 					// SessionStateManager
 					// 是在协议解析的CodecHandler前面的，这里还无法获取消息的具体java类型。所以使用commandId做比较
 					if (message.getHeader().getCommandId() == CmppPacketType.CMPPSUBMITRESPONSE.getCommandId()) {
-						CmppSubmitResponseMessage submitResp = CmppSubmitResponseMessageCodec.decode(message);
+						CmppSubmitResponseMessage submitResp = submitRespdecode(message ,this.entity.getVersion());
 						if (submitResp.getResult() != 0 && submitResp.getResult() != 8) {
 							errlogger.error("Send SubmitMsg ERR . Msg: {} ,Resp:{}", request, submitResp);
 						}
@@ -165,7 +166,8 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 							reWriteLater(ctx, request, ctx.newPromise(), 400);
 						}
 					} else if (message.getHeader().getCommandId() == CmppPacketType.CMPPDELIVERRESPONSE.getCommandId()) {
-						CmppDeliverResponseMessage deliverResp = CmppDeliverResponseMessageCodec.decode(message);
+						CmppDeliverResponseMessage deliverResp = deliverRespdecode(message ,this.entity.getVersion());
+						
 						if (deliverResp.getResult() != 0) {
 							errlogger.error("Send DeliverMsg ERR . Msg: {} ,Resp:{}", request, deliverResp);
 						}
@@ -450,7 +452,27 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 
 		}, delay, TimeUnit.MILLISECONDS);
 	}
-
+	
+	private CmppSubmitResponseMessage submitRespdecode(Message message , short version){
+		if (version == 0x30L) {
+			return CmppSubmitResponseMessageCodec.decode(message);
+		} else if (version == 0x20L) {
+			return Cmpp20SubmitResponseMessageCodec.decode(message);
+		} else if (version == 0x10L) {
+			return CmppSubmitResponseMessageCodec.decode(message);
+		}
+		return null;
+	} 
+	private CmppDeliverResponseMessage deliverRespdecode(Message message , short version){
+		if (version == 0x30L) {
+			return CmppDeliverResponseMessageCodec.decode(message);
+		} else if (version == 0x20L) {
+			return Cmpp20DeliverResponseMessageCodec.decode(message);
+		} else if (version == 0x10L) {
+			return CmppDeliverResponseMessageCodec.decode(message);
+		}
+		return null;
+	} 
 	private class Entry {
 		// 保证future的可见性，
 		volatile Future future;

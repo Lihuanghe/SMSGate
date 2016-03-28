@@ -154,7 +154,6 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 		boolean first = true;
 		int d=0;
 		for (LongMessageFrame frame : frameList) {
-			if(d++ == 1) continue;
 			ByteBuf bodyBuffer = Unpooled.buffer(CmppSubmitRequest.ATTIME.getBodyLength() + frame.getMsgLength() + requestMessage.getDestUsrtl()
 					* CmppSubmitRequest.DESTTERMINALID.getLength());
 

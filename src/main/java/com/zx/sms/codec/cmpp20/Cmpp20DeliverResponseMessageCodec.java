@@ -13,6 +13,7 @@ import java.util.List;
 
 import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.msg.Message;
+import com.zx.sms.codec.cmpp.packet.CmppDeliverResponse;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20DeliverResponse;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20PacketType;
@@ -45,20 +46,7 @@ public class Cmpp20DeliverResponseMessageCodec extends MessageToMessageCodec<Mes
 			out.add(msg);
 			return;
         } ;	
-        
-        CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(msg.getHeader());
-     
-        
-        ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
-        
-		responseMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer
-				.readBytes(Cmpp20DeliverResponse.MSGID.getLength())
-				.array()));
-		responseMessage.setResult(bodyBuffer.readUnsignedByte());
-		
-		ReferenceCountUtil.release(bodyBuffer);
-		out.add(responseMessage);
-		
+		out.add(decode(msg));
 	}
 
 	@Override
@@ -74,5 +62,18 @@ public class Cmpp20DeliverResponseMessageCodec extends MessageToMessageCodec<Mes
 		out.add(msg);
 		
 	}
-
+	public static CmppDeliverResponseMessage decode(Message msg){
+        CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(msg.getHeader());
+     
+        
+        ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
+        
+		responseMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer
+				.readBytes(Cmpp20DeliverResponse.MSGID.getLength())
+				.array()));
+		responseMessage.setResult(bodyBuffer.readUnsignedByte());
+		
+		ReferenceCountUtil.release(bodyBuffer);
+		return responseMessage;
+	}
 }
