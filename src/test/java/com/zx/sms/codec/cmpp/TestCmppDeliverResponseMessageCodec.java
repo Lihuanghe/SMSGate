@@ -7,9 +7,9 @@ import org.junit.Test;
 
 import com.zx.sms.codec.AbstractTestMessageCodec;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
-import com.zx.sms.codec.cmpp.packet.CmppConnectResponse;
 import com.zx.sms.codec.cmpp.packet.CmppDeliverResponse;
 import com.zx.sms.codec.cmpp.packet.CmppHead;
+import com.zx.sms.codec.cmpp20.packet.Cmpp20DeliverResponse;
 import com.zx.sms.common.util.MsgId;
 
 public class TestCmppDeliverResponseMessageCodec extends AbstractTestMessageCodec<CmppDeliverResponseMessage> {
@@ -26,7 +26,7 @@ public class TestCmppDeliverResponseMessageCodec extends AbstractTestMessageCode
 		ByteBuf copybuf = buf.copy();
 		
 		int length = buf.readableBytes();
-		int expectLength = CmppDeliverResponse.MSGID.getBodyLength() +  CmppHead.COMMANDID.getHeadLength();
+		int expectLength = (getVersion()==0x30?CmppDeliverResponse.MSGID.getBodyLength():Cmpp20DeliverResponse.MSGID.getBodyLength()) +  CmppHead.COMMANDID.getHeadLength();
 		
 		Assert.assertEquals(expectLength, length);
 		Assert.assertEquals(expectLength, buf.readUnsignedInt());

@@ -6,11 +6,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.zx.sms.codec.AbstractTestMessageCodec;
-import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
-import com.zx.sms.codec.cmpp.packet.CmppDeliverResponse;
 import com.zx.sms.codec.cmpp.packet.CmppHead;
 import com.zx.sms.codec.cmpp.packet.CmppSubmitResponse;
+import com.zx.sms.codec.cmpp20.packet.Cmpp20SubmitResponse;
 import com.zx.sms.common.util.MsgId;
 
 public class TestCmppSubmitResponseMessageCodec  extends AbstractTestMessageCodec<CmppSubmitResponseMessage>{
@@ -21,12 +20,12 @@ public class TestCmppSubmitResponseMessageCodec  extends AbstractTestMessageCode
 		
 		msg.setMsgId(new MsgId());
 		
-		msg.setResult(3413);
+		msg.setResult(3413&0xff);
 		ByteBuf buf = encode(msg);
 		ByteBuf copybuf = buf.copy();
 		
 		int length = buf.readableBytes();
-		int expectLength = CmppSubmitResponse.MSGID.getBodyLength() +  CmppHead.COMMANDID.getHeadLength();
+		int expectLength = (getVersion()==0x30?CmppSubmitResponse.MSGID.getBodyLength():Cmpp20SubmitResponse.MSGID.getBodyLength()) +  CmppHead.COMMANDID.getHeadLength();
 		
 		Assert.assertEquals(expectLength, length);
 		Assert.assertEquals(expectLength, buf.readUnsignedInt());
