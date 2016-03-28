@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn292964(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="FolderHierarchy" 
+    targetNamespace="FolderHierarchy" elementFormDefault="qualified" 
+    attributeFormDefault="unqualified">
+  <xs:include schemaLocation="FolderHierarchy.xsd"/>
+  <xs:element name="FolderSyncResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Status"/>
+        <xs:element ref="SyncKey" minOccurs="0"/>
+        <xs:element name="Changes" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Count" type="xs:unsignedInt" minOccurs="0"/>
+              <xs:element name="Update" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element ref="ServerId"/>
+                    <xs:element ref="ParentId"/>
+                    <xs:element name="DisplayName" type="xs:string"/>
+                    <xs:element name="Type" type="xs:integer"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Delete" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element ref="ServerId"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Add" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element ref="ServerId"/>
+                    <xs:element ref="ParentId"/>
+                    <xs:element name="DisplayName" type="xs:string"/>
+                    <xs:element name="Type" type="xs:integer"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

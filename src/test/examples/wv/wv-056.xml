@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!DOCTYPE WV-CSP-Message PUBLIC "-//OMA//DTD WV-CSP 1.1//EN" "/home/ricky/NetBeansProjects/wbxml-stream/dtd/wv-csp_1_1.dtd">
+<WV-CSP-Message>
+   <Session>
+      <SessionDescriptor>
+         <SessionType>Inband</SessionType>
+
+         <SessionID>im.user.com#48815@server.com</SessionID>
+      </SessionDescriptor>
+
+      <Transaction>
+         <TransactionDescriptor>
+            <TransactionMode>Request</TransactionMode>
+
+            <TransactionID>IMApp01#12345@NOK5110</TransactionID>
+         </TransactionDescriptor>
+
+         <TransactionContent>
+            <SendMessage-Request>
+               <DeliveryReport>T</DeliveryReport>
+
+               <MessageInfo>
+                  <ContentType>text/plain</ContentType>
+
+                  <ContentEncoding>None</ContentEncoding>
+
+                  <ContentSize>58</ContentSize>
+
+                  <Recipient>
+                     <User>
+                        <UserID>wv:he@there.com</UserID>
+                     </User>
+
+                     <Group>
+                        <ScreenName>
+                           <SName>Wicked Vicky</SName>
+
+                           <GroupID>wv:john/chatgroup@there.com</GroupID>
+                        </ScreenName>
+                     </Group>
+
+                     <ContactList>wv:john/My_friends@smith.com</ContactList>
+                  </Recipient>
+
+                  <Sender>
+                     <User>
+                        <UserID>wv:john@smith.com</UserID>
+                     </User>
+                  </Sender>
+
+                  <DateTime>20010925T1340Z</DateTime>
+
+                  <Validity>600</Validity>
+               </MessageInfo>
+
+               <ContentData>Hurry up; they are ringing the bells in the WV already...</ContentData>
+            </SendMessage-Request>
+         </TransactionContent>
+      </Transaction>
+   </Session>
+</WV-CSP-Message>
+

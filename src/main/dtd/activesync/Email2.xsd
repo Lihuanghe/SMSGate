@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn292961(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="Email2" 
+    targetNamespace="Email2" elementFormDefault="qualified" 
+    attributeFormDefault="unqualified">
+  <xs:element name="UmCallerID" type="xs:string"/>
+  <xs:element name="UmUserNotes" type="xs:string"/>
+  <xs:element name="UmAttDuration" type="xs:integer"/>
+  <xs:element name="UmAttOrder" type="xs:integer"/>
+  <xs:element name="ConversationId" type="xs:string"/>
+  <xs:element name="ConversationIndex" type="xs:string"/>
+  <xs:element name="LastVerbExecuted" type="xs:integer"/>
+  <xs:element name="LastVerbExecutionTime" type="xs:dateTime"/>
+  <xs:element name="ReceivedAsBcc" type="xs:boolean"/>
+  <xs:element name="Sender" type="xs:string"/>
+  <xs:element name="CalendarType" type="xs:integer"/>
+  <xs:element name="IsLeapMonth" type="xs:unsignedByte"/>
+  <xs:element name="AccountId" type="xs:string"/>
+  <xs:element name="FirstDayOfWeek" type="xs:unsignedByte"/>
+  <xs:element name="MeetingMessageType" type="xs:unsignedByte"/>
+  <xs:group name="AllProps">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="UmCallerID"/>
+        <xs:element ref="UmUserNotes"/>
+        <xs:element ref="UmAttDuration"/>
+        <xs:element ref="UmAttOrder"/>
+        <xs:element ref="ConversationId"/>
+        <xs:element ref="ConversationIndex"/>
+        <xs:element ref="LastVerbExecuted"/>
+        <xs:element ref="LastVerbExecutionTime"/>
+        <xs:element ref="ReceivedAsBcc"/>
+        <xs:element ref="Sender"/>
+        <xs:element ref="CalendarType"/>
+        <xs:element ref="IsLeapMonth"/>
+        <xs:element ref="AccountId"/>
+        <xs:element ref="FirstDayOfWeek"/>
+        <xs:element ref="MeetingMessageType"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+</xs:schema>

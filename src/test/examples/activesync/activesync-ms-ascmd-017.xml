@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sync xmlns="AirSync">
+<Collections>
+<Collection>
+<SyncKey>560109801</SyncKey>
+<CollectionId>5</CollectionId>
+<DeletesAsMoves>1</DeletesAsMoves>
+<GetChanges>1</GetChanges>
+<WindowSize>512</WindowSize>
+</Collection>
+</Collections>
+<HeartbeatInterval>60</HeartbeatInterval>
+<WindowSize>512</WindowSize>
+</Sync>

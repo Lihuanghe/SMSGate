@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE WV-CSP-Message PUBLIC "-//OMA//DTD WV-CSP 1.1//EN" "/home/ricky/NetBeansProjects/wbxml-stream/dtd/wv-csp_1_1.dtd">
+<WV-CSP-Message>
+   <Session>
+      <SessionDescriptor>
+         <SessionType>Inband</SessionType>
+
+         <SessionID>im.user.com#48815@server.com</SessionID>
+      </SessionDescriptor>
+
+      <Transaction>
+         <TransactionDescriptor>
+            <TransactionMode>Request</TransactionMode>
+
+            <TransactionID>IMApp01#12348@NOK5110</TransactionID>
+
+            <Poll>F</Poll>
+         </TransactionDescriptor>
+
+         <TransactionContent>
+            <Invite-Response>
+               <InviteID>0x38382025</InviteID>
+
+               <Acceptance>T</Acceptance>
+
+               <Sender>
+                  <Group>
+                     <ScreenName>
+                        <SName>WV</SName>
+
+                        <GroupID>wv:john/partygroup@there.com</GroupID>
+                     </ScreenName>
+                  </Group>
+               </Sender>
+
+               <ResponseNote>OK, just a sec!</ResponseNote>
+            </Invite-Response>
+         </TransactionContent>
+      </Transaction>
+   </Session>
+</WV-CSP-Message>
+

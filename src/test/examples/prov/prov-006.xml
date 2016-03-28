@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE wap-provisioningdoc PUBLIC "-//WAPFORUM//DTD PROV 1.0//EN"
+                                     "http://www.wapforum.org/DTD/prov.dtd">
+<wap-provisioningdoc version="1.1">
+    <characteristic type="NAPDEF">
+        <parm name="NAPID" value="INTERNET"/>
+        <parm name="BEARER" value="CDMA2000-1X-SIMPLE-IP"/>
+        <parm name="NAME" value="MY ISP CDMA2000-1X Simple IP"/>
+        <parm name="NAP-ADDRESS" value="166.224.1.1"/>
+        <parm name="NAP-ADDRTYPE" value="IPV4"/>
+        <characteristic type="NAPAUTHINFO">
+            <parm name="AUTHTYPE" value="CHAP"/>
+            <parm name="AUTHNAME" value="john@carrier.com"/>
+            <parm name="AUTHSECRET" value="xyzabc"/>
+        </characteristic>
+        <characteristic type="NAPAUTHINFO">
+            <parm name="AUTHTYPE" value="PAP"/>
+            <parm name="AUTHNAME" value="john@carrier.com"/>
+            <parm name="AUTHSECRET" value="xyzabc"/>
+        </characteristic>
+    </characteristic>
+    <characteristic type="BOOTSTRAP">
+        <parm name="CONTEXT-ALLOW" value="0"/>
+        <parm name="PROVURL" value="http://www.operator.com/TPS/"/>
+    </characteristic>
+</wap-provisioningdoc>

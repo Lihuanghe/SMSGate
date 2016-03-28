@@ -1,0 +1,143 @@
+<?xml version="1.0"?>
+<!DOCTYPE wap-provisioningdoc PUBLIC "-//WAPFORUM//DTD PROV 1.0//EN"
+                                     "http://www.wapforum.org/DTD/prov.dtd">
+<wap-provisioningdoc version="1.1">
+    <characteristic type="PXLOGICAL">
+        <parm name="PROXY-ID" value="www.operator.com"/>
+        <parm name="PROXY-PW" value="proxypasswd"/>
+        <parm name="PPGAUTH-TYPE" value="HTTP-BASIC"/>
+        <parm name="NAME" value="DefaultProxy"/>
+        <parm name="MASTER"/>
+        <parm name="PUSHENABLED" value="1"/>
+        <parm name="STARTPAGE" value="http://www.operator.com/start.wml"/>
+        <characteristic type="PXAUTHINFO">
+            <parm name="PXAUTH-TYPE" value="HTTP-BASIC"/>
+            <parm name="PXAUTH-ID" value="httpusername"/>
+            <parm name="PXAUTH-PW" value="httpuserpassw"/>
+        </characteristic>
+        <characteristic type="PXPHYSICAL">
+            <parm name="PHYSICAL-PROXY-ID" value="PROXY 1"/>
+            <parm name="DOMAIN" value=" "/>
+            <parm name="PXADDR" value="215.221.51.5"/>
+            <parm name="PXADDRTYPE" value="IPV4"/>
+            <parm name="TO-NAPID" value="NAP1"/>
+            <characteristic type="PORT">
+                <parm name="PORTNBR" value="9203"/>
+            </characteristic>
+        </characteristic>
+        <characteristic type="PXPHYSICAL">
+            <parm name="PHYSICAL-PROXY-ID" value="PROXY 2"/>
+            <parm name="DOMAIN" value=" "/>
+            <parm name="DOMAIN" value="/SMS/"/>
+            <parm name="PXADDR" value="9201611"/>
+            <parm name="PXADDRTYPE" value="E164"/>
+            <parm name="TO-NAPID" value="NAP3"/>
+            <characteristic type="PORT">
+                <parm name="PORTNBR" value="9201"/>
+            </characteristic>
+        </characteristic>
+    </characteristic>
+    <characteristic type="PXLOGICAL">
+        <parm name="PROXY-ID" value="163.187.51.4"/>
+        <parm name="NAME" value="EcommerceProxy"/>
+        <parm name="STARTPAGE" value="http://www.ecom.com/startpage.wml"/>
+        <characteristic type="PXAUTHINFO">
+            <parm name="PXAUTH-TYPE" value="HTTP-BASIC"/>
+            <parm name="PXAUTH-ID" value="httpusername"/>
+            <parm name="PXAUTH-PW" value="httpuserpassw"/>
+        </characteristic>
+        <characteristic type="PXPHYSICAL">
+            <parm name="PHYSICAL-PROXY-ID" value="PROXY 1"/>
+            <parm name="DOMAIN" value="www.ecom.com/"/>
+            <parm name="PXADDR" value="166.224.1.68"/>
+            <parm name="PXADDRTYPE" value="IPV4"/>
+            <parm name="TO-NAPID" value="NAP1"/>
+            <parm name="TO-NAPID" value="NAP2"/>
+            <characteristic type="PORT">
+                <parm name="PORTNBR" value="9203"/>
+            </characteristic>
+        </characteristic>
+        <characteristic type="PXPHYSICAL">
+            <parm name="PHYSICAL-PROXY-ID" value="PROXY 2"/>
+            <parm name="DOMAIN" value="www.ecom.com/SMSContent/"/>
+            <parm name="DOMAIN" value="www.ecom.com/SMS/"/>
+            <parm name="PXADDR" value="9400410"/>
+            <parm name="PXADDRTYPE" value="E164"/>
+            <parm name="TO-NAPID" value="NAP3"/>
+            <parm name="TO-NAPID" value="NAP4"/>
+            <characteristic type="PORT">
+                <parm name="PORTNBR" value="9203"/>
+            </characteristic>
+        </characteristic>
+    </characteristic>
+    <characteristic type="NAPDEF">
+        <parm name="NAPID" value="NAP1"/>
+        <parm name="BEARER" value="GSM-CSD"/>
+        <parm name="NAME" value="ANY NAME 3"/>
+        <parm name="NAP-ADDRESS" value="+35808124303"/>
+        <parm name="NAP-ADDRTYPE" value="E164"/>
+        <parm name="CALLTYPE" value="ANALOG-MODEM"/>
+        <characteristic type="NAPAUTHINFO">
+            <parm name="AUTHTYPE" value="PAP"/>
+            <parm name="AUTHNAME" value="wapuser"/>
+            <parm name="AUTHSECRET" value="wappassw"/>
+        </characteristic>
+        <characteristic type="VALIDITY">
+            <parm name="COUNTRY" value="228"/>
+            <parm name="NETWORK" value="001"/>
+        </characteristic>
+    </characteristic>
+    <characteristic type="NAPDEF">
+        <parm name="NAPID" value="NAP2"/>
+        <parm name="BEARER" value="GSM-CSD"/>
+        <parm name="NAME" value="ANY NAME 4"/>
+        <parm name="NAP-ADDRESS" value="+35808124002"/>
+        <parm name="NAP-ADDRTYPE" value="E164"/>
+        <parm name="CALLTYPE" value="ANALOG-MODEM"/>
+        <parm name="LINKSPEED" value="AUTOBAUDING"/>
+        <characteristic type="NAPAUTHINFO">
+            <parm name="AUTHTYPE" value="PAP"/>
+            <parm name="AUTHNAME" value="wwwmmmuser"/>
+            <parm name="AUTHSECRET" value="wwwmmmsecret"/>
+        </characteristic>
+        <characteristic type="VALIDITY">
+            <parm name="COUNTRY" value="113"/>
+            <parm name="NETWORK" value="004"/>
+        </characteristic>
+    </characteristic>
+    <characteristic type="NAPDEF">
+        <parm name="NAPID" value="NAP3"/>
+        <parm name="BEARER" value="GSM-SMS"/>
+        <parm name="NAME" value="ANY NAME 5"/>
+        <parm name="NAP-ADDRESS" value="+35809503401"/>
+        <parm name="NAP-ADDRTYPE" value="E164"/>
+    </characteristic>
+    <characteristic type="NAPDEF">
+        <parm name="NAPID" value="NAP4"/>
+        <parm name="BEARER" value="GSM-SMS"/>
+        <parm name="NAME" value="ANY NAME 6"/>
+        <parm name="NAP-ADDRESS" value="+36209400400"/>
+    </characteristic>
+    <characteristic type="NAPDEF">
+        <parm name="NAPID" value="INTERNET"/>
+        <parm name="BEARER" value="GSM-GPRS"/>
+        <parm name="NAME" value="MY ISP GPRS"/>
+        <parm name="NAP-ADDRESS" value="MYISP.gprs"/>
+        <parm name="NAP-ADDRTYPE" value="APN"/>
+        <parm name="DELIVERY-ERR-SDU" value="3"/>
+        <parm name="RESIDUAL-BER" value="70"/>
+        <parm name="SDU-ERROR-RATIO" value="6"/>
+        <parm name="TRAFFIC-CLASS" value="60"/>
+        <parm name="TRAFFIC-HANDL-PRIO" value="1"/>
+        <parm name="MAX-BITRATE-DNLINK" value="8"/>
+        <characteristic type="NAPAUTHINFO">
+            <parm name="AUTHTYPE" value="PAP"/>
+            <parm name="AUTHNAME" value="wwwmmmuser"/>
+            <parm name="AUTHSECRET" value="wwwmmmsecret"/>
+        </characteristic>
+    </characteristic>
+    <characteristic type="VENDORCONFIG">
+        <parm name="NAME" value="PRODUCT"/>
+        <parm name="RINGTONES" value="http://www.sonera.fi/music.wml"/>
+    </characteristic>
+</wap-provisioningdoc>

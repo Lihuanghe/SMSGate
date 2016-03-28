@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!DOCTYPE WV-CSP-Message PUBLIC "-//OMA//DTD WV-CSP 1.1//EN" "/home/ricky/NetBeansProjects/wbxml-stream/dtd/wv-csp_1_1.dtd">
+<WV-CSP-Message>
+   <Session>
+      <SessionDescriptor>
+         <SessionType>Inband</SessionType>
+
+         <SessionID>im.user.com#48815@server.com</SessionID>
+      </SessionDescriptor>
+
+      <Transaction>
+         <TransactionDescriptor>
+            <TransactionMode>Response</TransactionMode>
+
+            <TransactionID>IMApp01#12345@NOK5110</TransactionID>
+
+            <Poll>F</Poll>
+         </TransactionDescriptor>
+
+         <TransactionContent>
+            <ClientCapability-Response>
+               <ClientID>
+                  <URL>http://206.226.10.25:80/IMPSAPP</URL>
+               </ClientID>
+
+               <CapabilityList>
+                  <ClientType>MOBILE_PHONE</ClientType>
+
+                  <InitialDeliveryMethod>P</InitialDeliveryMethod>
+
+                  <AcceptedContentType>text/plain; charset=us-ascii</AcceptedContentType>
+
+                  <AcceptedContentType>application/x-sms</AcceptedContentType>
+
+                  <AcceptedContentType>text/x-vCard; charset=us-ascii</AcceptedContentType>
+
+                  <AcceptedContentType>text/x-vCalendar; charset=us-ascii</AcceptedContentType>
+
+                  <AcceptedTransferEncoding>BASE64</AcceptedTransferEncoding>
+
+                  <AcceptedContentLength>32767</AcceptedContentLength>
+
+                  <SupportedBearer>SMS</SupportedBearer>
+
+                  <SupportedBearer>WSP</SupportedBearer>
+
+                  <SupportedBearer>HTTP</SupportedBearer>
+
+                  <MultiTrans>1</MultiTrans>
+
+                  <ParserSize>32767</ParserSize>
+
+                  <SupportedCIRMethod>WAPSMS</SupportedCIRMethod>
+
+                  <SupportedCIRMethod>WAPUDP</SupportedCIRMethod>
+
+                  <SupportedCIRMethod>SUDP</SupportedCIRMethod>
+
+                  <SupportedCIRMethod>STCP</SupportedCIRMethod>
+
+                  <UDPPort>91</UDPPort>
+
+                  <TCPAddress>100.100.100.100</TCPAddress>
+
+                  <TCPPort>98</TCPPort>
+
+                  <ServerPollMin>3</ServerPollMin>
+               </CapabilityList>
+            </ClientCapability-Response>
+         </TransactionContent>
+      </Transaction>
+   </Session>
+</WV-CSP-Message>
+

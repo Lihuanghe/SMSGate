@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MeetingResponse xmlns:search="Search" xmlns="MeetingResponse">
+<Request>
+<UserResponse>2</UserResponse>
+<CollectionId>19</CollectionId>
+<RequestId>19:39</RequestId>
+<InstanceId>20090907T07:00:00.000Z</InstanceId>
+</Request>
+<Request>
+<UserResponse>1</UserResponse>
+<search:LongId>RgAAAju... ...ALS8pQAARL</search:LongId>
+<InstanceId>20091210T17:30:00.000Z</InstanceId>
+</Request>
+</MeetingResponse>

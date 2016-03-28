@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn292975(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="MeetingResponse" 
+    targetNamespace="MeetingResponse" elementFormDefault="qualified" 
+    attributeFormDefault="unqualified">
+  <xs:element name="MeetingResponseResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="RequestId" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="64"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Status" type="xs:unsignedByte"/>
+              <xs:element name="CalendarId" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="64"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

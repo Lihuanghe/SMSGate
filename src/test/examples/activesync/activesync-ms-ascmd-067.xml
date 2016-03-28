@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResolveRecipients xmlns="ResolveRecipients">
+<To>Testers</To>
+<Options>
+<CertificateRetrieval>3</CertificateRetrieval>
+<MaxCertificates>99</MaxCertificates>
+<MaxAmbiguousRecipients>99</MaxAmbiguousRecipients>
+<Picture>
+<MaxSize>1024</MaxSize>
+<MaxPictures>10</MaxPictures>
+</Picture>
+</Options>
+</ResolveRecipients>

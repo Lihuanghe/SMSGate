@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ItemOperations xmlns:airsync="AirSync"
+xmlns:airsyncbase="AirSyncBase" xmlns:search="Search"
+xmlns="ItemOperations">
+<Fetch>
+<Store>Mailbox</Store>
+<search:LongId>RgAAAACYWCHnyBZ%2fTq8bujFmR1EPBwBzyWfENpc
+EQ7zUNyaWwM4BAAAA8FxEAABzyWfENpcEQ7zUNyaWwM4BAAAA8HA
+CAAAJ</search:LongId>
+<Options>
+<airsyncbase:BodyPreference>
+<airsyncbase:Type>1</airsyncbase:Type>
+</airsyncbase:BodyPreference>
+</Options>
+</Fetch>
+</ItemOperations>

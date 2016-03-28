@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn292989(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:airsyncbase=
+    "AirSyncBase" xmlns:calendar="Calendar" xmlns:contacts="Contacts" 
+    xmlns:contacts2="Contacts2" xmlns:rm="RightsManagement" xmlns="AirSync" 
+    targetNamespace="AirSync" elementFormDefault="qualified" 
+    attributeFormDefault="unqualified">
+  <xs:import namespace="AirSyncBase" schemaLocation="AirSyncBase.xsd"/>
+  <xs:import namespace="Calendar" schemaLocation="Calendar.xsd"/>
+  <xs:import namespace="Contacts" schemaLocation="Contacts.xsd"/>
+  <xs:import namespace="Contacts2" schemaLocation="Contacts2.xsd"/>
+  <xs:import namespace="RightsManagement" 
+      schemaLocation="RightsManagement.xsd"/>
+  <xs:element name="SyncKey">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:maxLength value="64"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="ClientId">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:maxLength value="64"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="ServerId">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:maxLength value="64"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Status" type="xs:unsignedByte"/>
+  <xs:element name="Class" type="xs:string"/>
+  <xs:element name="CollectionId">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:maxLength value="64"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="GetChanges" type="xs:boolean"/>
+  <xs:element name="MoreAvailable" type="airsyncbase:EmptyTag"/>
+  <xs:element name="WindowSize">
+    <xs:simpleType>
+      <xs:restriction base="xs:integer">
+        <xs:minInclusive value="0"/>
+        <xs:maxInclusive value="512"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="FilterType">
+    <xs:simpleType>
+      <xs:restriction base="xs:unsignedByte">
+        <xs:minInclusive value="0"/>
+        <xs:maxInclusive value="8"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Conflict">
+    <xs:simpleType>
+      <xs:restriction base="xs:unsignedByte">
+        <xs:minInclusive value="0"/>
+        <xs:maxInclusive value="1"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="DeletesAsMoves" type="xs:boolean"/>
+  <xs:element name="Supported">
+    <xs:complexType mixed="true">
+      <xs:sequence minOccurs="0">
+        <xs:choice maxOccurs="unbounded">
+          <xs:group ref="calendar:GhostingProps"/>
+          <xs:group ref="contacts:GhostingProps"/>
+          <xs:group ref="contacts2:GhostingProps"/>
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SoftDelete">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ServerId"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="MIMESupport">
+    <xs:simpleType>
+      <xs:restriction base="xs:unsignedByte">
+        <xs:minInclusive value="0"/>
+        <xs:maxInclusive value="2"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="MIMETruncation">
+    <xs:simpleType>
+      <xs:restriction base="xs:unsignedByte">
+        <xs:minInclusive value="0"/>
+        <xs:maxInclusive value="8"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Wait">
+    <xs:simpleType>
+      <xs:restriction base="xs:integer">
+        <xs:minInclusive value="1"/>
+        <xs:maxInclusive value="59"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Limit" type="xs:integer"/>
+  <xs:element name="Partial" type="airsyncbase:EmptyTag"/>
+  <xs:element name="ConversationMode" type="xs:boolean"/>
+  <xs:element name="MaxItems">
+    <xs:simpleType>
+      <xs:restriction base="xs:integer">
+        <xs:minInclusive value="1"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="HeartbeatInterval">
+    <xs:simpleType>
+      <xs:restriction base="xs:integer">
+        <xs:minInclusive value="60"/>
+        <xs:maxInclusive value="3540"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Options">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="FilterType" minOccurs="0"/>
+        <xs:element ref="Class" minOccurs="0"/>
+        <xs:element ref="airsyncbase:BodyPreference" minOccurs="0" 
+            maxOccurs="unbounded"/>
+        <xs:element ref="airsyncbase:BodyPartPreference" minOccurs="0"/>
+        <xs:element ref="Conflict" minOccurs="0"/>
+        <xs:element ref="MIMESupport" minOccurs="0"/>
+        <xs:element ref="MIMETruncation" minOccurs="0"/>
+        <xs:element ref="MaxItems" minOccurs="0"/>
+        <xs:element ref="rm:RightsManagementSupport" minOccurs="0"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

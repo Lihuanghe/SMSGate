@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sync xmlns:email="Email"
+xmlns:airsyncbase="AirSyncBase" xmlns="AirSync">
+<Collections>
+<Collection>
+<SyncKey>2</SyncKey>
+<CollectionId>7</CollectionId>
+<Status>1</Status>
+<Commands>
+<Add>
+<ServerId>7:1</ServerId>
+<ApplicationData>
+<email:To>"deviceuser" &lt;anat@contoso.com&gt;
+</email:To>
+<email:From>"deviceuser2" &lt;chris@contoso.com&gt;
+</email:From>
+<email:Subject>Email with Attachment</email:Subject>
+<email:DateReceived>2007-05-08T17:57:22.890Z
+</email:DateReceived>
+<email:DisplayTo>deviceuser</email:DisplayTo>
+<email:ThreadTopic>Email with Attachment
+</email:ThreadTopic>
+<email:Importance>1</email:Importance>
+<email:Read>0</email:Read>
+<airsyncbase:Attachments>
+<airsyncbase:Attachment>
+<airsyncbase:DisplayName>ActiveSyncClient_
+AcceptingMeetingRequest.JPG</airsyncbase:DisplayName>
+<airsyncbase:FileReference>7%3a1%3a0
+</airsyncbase:FileReference>
+<airsyncbase:Method>1</airsyncbase:Method>
+<airsyncbase:EstimatedDataSize>18790
+</airsyncbase:EstimatedDataSize>
+</airsyncbase:Attachment>
+</airsyncbase:Attachments>
+<airsyncbase:Body>
+<airsyncbase:Type>2</airsyncbase:Type>
+<airsyncbase:EstimatedDataSize>58
+</airsyncbase:EstimatedDataSize>
+<airsyncbase:Truncated>1</airsyncbase:Truncated>
+<airsyncbase:Data>&lt;html&gt;</airsyncbase:Data>
+</airsyncbase:Body>
+<email:MessageClass>IPM.Note</email:MessageClass>
+<email:InternetCPID>28591</email:InternetCPID>
+<email:Flag />
+<email:ContentClass>urn:content-classes:message
+</email:ContentClass>
+<airsyncbase:NativeBodyType>1</airsyncbase:NativeBodyType>
+</ApplicationData>
+</Add>
+</Commands>
+</Collection>
+</Collections>
+</Sync>

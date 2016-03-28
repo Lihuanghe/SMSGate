@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ItemOperations xmlns="ItemOperations" xmlns:airsync="AirSync" xmlns:email="Email"
+xmlns:email2="Email2" xmlns:airsyncbase="AirSyncBase">
+<Status>1</Status>
+<Response>
+<Fetch>
+<Status>1</Status>
+<airsync:CollectionId>17</airsync:CollectionId>
+<airsync:ServerId>17:11</airsync:ServerId>
+<airsync:Class>Email</airsync:Class>
+<Properties>
+<email:To>"Anat Kerry" &lt;anat@contoso.com&gt;</email:To>
+<email:From>"Chris Gray" &lt;chris@contoso.com&gt;</email:From>
+<email:Subject>opaque s + e</email:Subject>
+<email:DateReceived>2007-02-01T06:42:46.015Z</email:DateReceived>
+<email:DisplayTo>Anat Kerry</email:DisplayTo>
+<email:ThreadTopic>opaque s + e</email:ThreadTopic>
+<email:Importance>1</email:Importance>
+<email:Read>1</email:Read>
+<airsyncbase:Attachments>
+<airsyncbase:Attachment>
+<airsyncbase:DisplayName>smime.p7m</airsyncbase:DisplayName>
+<airsyncbase:FileReference>RgAAAAA4u8%2fWvU8lQ7GtLlC7V9V3BwCdyWYIRkOHRp2ozB%2f0DXQsAHgM%2bwAF
+AAA6pk60fqkEQbWH4Wm%2bnjh7AHgNBA%2bgAAAJ%3a0</airsyncbase:FileReference>
+<airsyncbase:Method>1</airsyncbase:Method>
+<airsyncbase:EstimatedDataSize>9340</airsyncbase:EstimatedDataSize>
+</airsyncbase:Attachment>
+</airsyncbase:Attachments>
+<airsyncbase:Body>
+<airsyncbase:Type>4</airsyncbase:Type>
+<airsyncbase:EstimatedDataSize>13813</airsyncbase:EstimatedDataSize>
+<airsyncbase:Data>Received: from contoso.com ([157.55.97.121])
+by contoso.com ([157.55.97.121]) with mapi;
+Wed, 31 Jan 2007 22:42:45 -0800
+From: Chris Gray &lt;chris@contoso.com&gt;
+To: Anat Kerry &lt;anat@contoso.com&gt;
+Content-Class: urn:content-classes:message
+Date: Wed, 31 Jan 2007 22:42:41 -0800
+Subject: opaque s + e
+Thread-Topic: opaque s + e
+Thread-Index: AcdFzCv5tyCXieBuTd2I5APpEvS+iQ==
+Message-ID:
+&lt;3AA64EB47EA90441B587E169BE9E387B780D00C326@contoso.com&gt;
+Content-Language: en-US
+X-MS-Exchange-Organization-AuthAs: Internal
+X-MS-Exchange-Organization-AuthMechanism: 04
+X-MS-Exchange-Organization-AuthSource:
+contoso.com
+X-MS-Has-Attach: yes
+X-MS-Exchange-Organization-SCL: -1
+X-MS-TNEF-Correlator:
+acceptlanguage: en-US
+Content-Type: application/x-pkcs7-mime; smime-type=enveloped-data;
+name="smime.p7m"
+Content-Disposition: attachment; filename="smime.p7m"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+MIAGCSqGSIb3DQEHA6CAMIACAQAxggJEMIIBHgIBADCBhjB4MRMwEQYKCZImiZPyLGQBGRYDY29t
+MRkwFwYKCZImiZPyLGQBGRYJbWljcm9zb2Z0MRYwFAYKCZImiZPyLGQBGRYGZXh0ZXN0MR0wGwYK
+CZImiZPyLGQBGRYNamluZ2h1YWMwMURPTTEPMA0GA1UEAxMGVGVzdENBAgonJIo2AAAAAAAHMA0G
+(Large section of sample data removed)
+</airsyncbase:Data>
+</airsyncbase:Body>
+<email:MessageClass>IPM.Note.SMIME</email:MessageClass>
+<email:InternetCPID>20127</email:InternetCPID>
+<email:Flag/>
+<email:ContentClass>urn:content-classes:message</email:ContentClass>
+<airsyncbase:NativeBodyType>1</airsyncbase:NativeBodyType>
+<email2:ConversationId>...</email2:ConversationId>
+<email2:ConversationIndex>...</email2:ConversationIndex>
+</Properties>
+</Fetch>
+</Response>
+</ItemOperations>

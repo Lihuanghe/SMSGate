@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ItemOperations xmlns:airsync="AirSync" xmlns="ItemOperations">
+<Status>1</Status>
+<Response>
+<EmptyFolderContents>
+<Status>1</Status>
+<airsync:CollectionId>15</airsync:CollectionId>
+</EmptyFolderContents>
+</Response>
+</ItemOperations>

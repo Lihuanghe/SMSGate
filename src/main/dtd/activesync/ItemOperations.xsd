@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn338932(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:airsyncbase=
+    "AirSyncBase" xmlns:calendar="Calendar" xmlns:contacts="Contacts" 
+    xmlns:contacts2="Contacts2" xmlns:documentlibrary="DocumentLibrary" 
+    xmlns:email="Email" xmlns:email2="Email2" xmlns:rm="RightsManagement" 
+    xmlns:tasks="Tasks" xmlns="ItemOperations" targetNamespace="ItemOperations" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:import namespace="AirSyncBase" schemaLocation="AirSyncBase.xsd"/>
+  <xs:import namespace="Calendar" schemaLocation="Calendar.xsd"/>
+  <xs:import namespace="Contacts" schemaLocation="Contacts.xsd"/>
+  <xs:import namespace="Contacts2" schemaLocation="Contacts2.xsd"/>
+  <xs:import namespace="DocumentLibrary" schemaLocation="DocumentLibrary.xsd"/>
+  <xs:import namespace="Email" schemaLocation="Email.xsd"/>
+  <xs:import namespace="Email2" schemaLocation="Email2.xsd"/>
+  <xs:import namespace="RightsManagement" schemaLocation=
+      "RightsManagement.xsd"/>
+  <xs:import namespace="Tasks" schemaLocation="Tasks.xsd"/>
+  <xs:element name="Store">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:minLength value="1"/>
+        <xs:maxLength value="256"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Range">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:pattern value="[0-9]{1,9}-[0-9]{1,9}"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Total" type="xs:integer"/>
+  <xs:element name="Properties">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="Range" minOccurs="0"/>
+        <xs:element ref="Total" minOccurs="0"/>
+        <xs:element ref="Data" minOccurs="0"/>
+        <xs:element ref="Part" minOccurs="0"/>
+        <xs:element ref="Version" minOccurs="0"/>
+        <xs:element ref="airsyncbase:Body" minOccurs="0"/>
+        <xs:element ref="airsyncbase:BodyPart" minOccurs="0"/>
+        <xs:element ref="airsyncbase:Attachments" minOccurs="0"/>
+        <xs:element ref="airsyncbase:NativeBodyType" minOccurs="0"/>
+        <xs:group ref="calendar:AllProps"/>
+        <xs:group ref="contacts:AllProps"/>
+        <xs:group ref="contacts2:AllProps"/>
+        <xs:group ref="documentlibrary:AllProps"/>
+        <xs:group ref="email:AllProps"/>
+        <xs:group ref="email2:AllProps"/>
+        <xs:group ref="tasks:AllProps"/>
+        <xs:element ref="rm:RightsManagementLicense" minOccurs="0"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Data" type="xs:string"/>
+  <xs:element name="Status" type="xs:integer"/>
+  <xs:element name="Version" type="xs:dateTime"/>
+  <xs:element name="Schema">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:group ref="email:TopLevelSchemaProps"/>
+        <xs:group ref="airsyncbase:TopLevelSchemaProps"/>
+        <xs:group ref="calendar:TopLevelSchemaProps"/>
+        <xs:group ref="contacts:TopLevelSchemaProps"/>
+        <xs:group ref="contacts2:TopLevelSchemaProps"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Part" type="xs:integer"/>
+  <xs:element name="DeleteSubFolders" type="airsyncbase:EmptyTag"/>
+  <xs:element name="UserName">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:maxLength value="100"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Password">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:maxLength value="256"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="DstFldId">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:maxLength value="64"/>
+        <xs:minLength value="1"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="ConversationId" type="xs:string"/>
+  <xs:element name="MoveAlways" type="airsyncbase:EmptyTag"/>
+</xs:schema>

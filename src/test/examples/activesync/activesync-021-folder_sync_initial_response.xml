@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE ActiveSync PUBLIC "-//MICROSOFT//DTD ActiveSync//EN" "http://www.microsoft.com/">
+<FolderSync xmlns="FolderHierarchy">
+  <Status>1</Status>
+  <SyncKey>1</SyncKey>
+  <Changes>
+    <Count>5</Count>
+    <Add>
+      <ServerId>1</ServerId>
+      <ParentId>0</ParentId>
+      <DisplayName>Calendar</DisplayName>
+      <Type>8</Type>
+    </Add>
+    <Add>
+      <ServerId>2</ServerId>
+      <ParentId>0</ParentId>
+      <DisplayName>Contacts</DisplayName>
+      <Type>9</Type>
+    </Add>
+    <Add>
+      <ServerId>3</ServerId>
+      <ParentId>0</ParentId>
+      <DisplayName>INBOX</DisplayName>
+      <Type>5</Type>
+    </Add>
+    <Add>
+      <ServerId>12</ServerId>
+      <ParentId>3</ParentId>
+      <DisplayName>Family</DisplayName>
+      <!-- user created mail folder -->
+      <Type>12</Type>
+    </Add>
+    <Add>
+      <ServerId>RI</ServerId>
+      <ParentId>0</ParentId>
+      <DisplayName>RecipientInfo</DisplayName>
+      <Type>19</Type>
+    </Add>
+  </Changes>
+</FolderSync>

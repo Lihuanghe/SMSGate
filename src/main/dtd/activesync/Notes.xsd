@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn338947(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="Notes" 
+    targetNamespace="Notes" elementFormDefault="qualified" 
+    attributeFormDefault="unqualified">
+  <xs:element name="Subject" type="xs:string"/>
+  <xs:element name="MessageClass" type="xs:string"/>
+  <xs:element name="LastModifiedDate" type="xs:string"/>
+  <xs:element name="Categories">
+    <xs:complexType>
+      <xs:sequence minOccurs="0">
+        <xs:element name="Category" type="xs:string" maxOccurs="300"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

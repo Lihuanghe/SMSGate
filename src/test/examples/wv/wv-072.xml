@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE WV-CSP-Message PUBLIC "-//OMA//DTD WV-CSP 1.1//EN" "/home/ricky/NetBeansProjects/wbxml-stream/dtd/wv-csp_1_1.dtd">
+<WV-CSP-Message>
+   <Session>
+      <SessionDescriptor>
+         <SessionType>Inband</SessionType>
+
+         <SessionID>im.user.com#48815@server.com</SessionID>
+      </SessionDescriptor>
+
+      <Transaction>
+         <TransactionDescriptor>
+            <TransactionMode>Request</TransactionMode>
+
+            <TransactionID>IMApp01#12345@NOK5110</TransactionID>
+
+            <Poll>F</Poll>
+         </TransactionDescriptor>
+
+         <TransactionContent>
+            <DeliveryReport-Request>
+               <Result>
+                  <Code>200</Code>
+
+                  <Description>Successfully completed.</Description>
+               </Result>
+
+               <DeliveryTime>20010925T1341Z</DeliveryTime>
+
+               <MessageInfo>
+                  <MessageID>0x0000f132</MessageID>
+
+                  <ContentType>text/plain</ContentType>
+
+                  <ContentEncoding>None</ContentEncoding>
+
+                  <ContentSize>41</ContentSize>
+
+                  <Recipient>
+                     <Group>
+                        <ScreenName>
+                           <SName>B. Billy</SName>
+
+                           <GroupID>wv:/happy@hippie.com</GroupID>
+                        </ScreenName>
+                     </Group>
+                  </Recipient>
+
+                  <Sender>
+                     <Group>
+                        <ScreenName>
+                           <SName>Johnnie</SName>
+
+                           <GroupID>wv:/happy@hippie.com</GroupID>
+                        </ScreenName>
+                     </Group>
+                  </Sender>
+
+                  <DateTime>20010925T1340Z</DateTime>
+
+                  <Validity>600</Validity>
+               </MessageInfo>
+            </DeliveryReport-Request>
+         </TransactionContent>
+      </Transaction>
+   </Session>
+</WV-CSP-Message>
+

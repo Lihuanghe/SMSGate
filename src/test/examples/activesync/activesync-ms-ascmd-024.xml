@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Ping xmlns="Ping">
+<Status>6</Status>
+<MaxFolders>200</MaxFolders>
+</Ping>

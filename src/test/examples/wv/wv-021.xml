@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!DOCTYPE WV-CSP-Message PUBLIC "-//OMA//DTD WV-CSP 1.1//EN" "/home/ricky/NetBeansProjects/wbxml-stream/dtd/wv-csp_1_1.dtd">
+<WV-CSP-Message>
+   <Session>
+      <SessionDescriptor>
+         <SessionType>Inband</SessionType>
+
+         <SessionID>im.user.com#48815@server.com</SessionID>
+      </SessionDescriptor>
+
+      <Transaction>
+         <TransactionDescriptor>
+            <TransactionMode>Response</TransactionMode>
+
+            <TransactionID>IMApp01#12345@NOK5110</TransactionID>
+
+            <Poll>F</Poll>
+         </TransactionDescriptor>
+
+         <TransactionContent>
+            <Search-Response>
+               <!-- EXPECTED ::= 595760001 -->
+               <SearchID>595760001</SearchID>
+
+               <SearchFindings>7</SearchFindings>
+
+               <CompletionFlag>F</CompletionFlag>
+
+               <SearchIndex>5</SearchIndex>
+
+               <SearchResult>
+                  <UserList>
+                     <User>
+                        <UserID>wv:he@there.com</UserID>
+                     </User>
+
+                     <User>
+                        <UserID>wv:she@there.com</UserID>
+                     </User>
+
+                     <User>
+                        <UserID>wv:matthias@salamander.com</UserID>
+                     </User>
+
+                     <User>
+                        <UserID>wv:francisco@don.com</UserID>
+                     </User>
+
+                     <User>
+                        <UserID>wv:john@smith.com</UserID>
+                     </User>
+                  </UserList>
+               </SearchResult>
+            </Search-Response>
+         </TransactionContent>
+      </Transaction>
+   </Session>
+</WV-CSP-Message>
+

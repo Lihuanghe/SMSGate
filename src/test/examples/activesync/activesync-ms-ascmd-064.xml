@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sync xmlns:calendar="Calendar" xmlns:airsyncbase="AirSyncBase" xmlns="AirSync">
+<Collections>
+<Collection>
+<SyncKey>1761460822</SyncKey>
+<CollectionId>1</CollectionId>
+<Status>1</Status>
+<Commands>
+<Add>
+<ServerId>1:1</ServerId>
+<ApplicationData>
+<calendar:TimeZone>4AEAACgARwBNAFQALQAwADgAOgAwADAAKQAgAFAAYQBjAGkAZgBpAGMAIABUAGkAbQBlACAAKA
+BVAFMAIAAmACAAQwAAAAsAAAABAAIAAAAAAAAAAAAAACgARwBNAFQALQAwADgAOgAwADAAKQAgAFAAYQBjAGkAZgBpAGM
+AIABUAGkAbQBlACAAKABVAFMAIAAmACAAQwAAAAMAAAACAAIAAAAAAAAAxP///w==</calendar:TimeZone>
+<calendar:DtStamp>20100406T170219Z</calendar:DtStamp>
+<calendar:StartTime>20100503T090000Z</calendar:StartTime>
+<calendar:Subject>TestMeeting</calendar:Subject>
+<calendar:UID>040000008200E00074C5B7101A82E00800000000122CD5EB1DB7CA0100000000000000001000000
+0CA93B43442E5314A8AF02D7E133D17EF</calendar:UID>
+<calendar:OrganizerName>Chris Gray</calendar:OrganizerName>
+<calendar:OrganizerEmail>chris@contoso.com</calendar:OrganizerEmail>
+<calendar:Attendees>
+<calendar:Attendee>
+<calendar:Email>anat@contoso.com</calendar:Email>
+<calendar:Name>Anat Kerry</calendar:Name>
+<calendar:AttendeeType>1</calendar:AttendeeType>
+</calendar:Attendee>
+</calendar:Attendees>
+<calendar:Location>My Office</calendar:Location>
+<calendar:EndTime>20100503T100000Z</calendar:EndTime>
+<airsyncbase:Body>
+<airsyncbase:Type>3</airsyncbase:Type>
+<airsyncbase:EstimatedDataSize>275</airsyncbase:EstimatedDataSize>
+<airsyncbase:Truncated>1</airsyncbase:Truncated>
+</airsyncbase:Body>
+<calendar:Sensitivity>0</calendar:Sensitivity>
+<calendar:BusyStatus>1</calendar:BusyStatus>
+<calendar:AllDayEvent>0</calendar:AllDayEvent>
+<calendar:Reminder>15</calendar:Reminder>
+<calendar:MeetingStatus>3</calendar:MeetingStatus>
+<airsyncbase:NativeBodyType>3</airsyncbase:NativeBodyType>
+<calendar:ResponseRequested>1</calendar:ResponseRequested>
+<calendar:ResponseType>5</calendar:ResponseType>
+</ApplicationData>
+</Add>
+</Commands>
+</Collection>
+</Collections>
+</Sync>

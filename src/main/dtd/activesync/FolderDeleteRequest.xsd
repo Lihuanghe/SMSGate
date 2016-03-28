@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn338926(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="FolderHierarchy" 
+    targetNamespace="FolderHierarchy" elementFormDefault="qualified" 
+    attributeFormDefault="unqualified">
+  <xs:include schemaLocation="FolderHierarchy.xsd"/>
+  <xs:element name="FolderDeleteRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="SyncKey"/>
+        <xs:element ref="ServerId"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE WV-CSP-Message PUBLIC "-//OMA//DTD WV-CSP 1.1//EN" "/home/ricky/NetBeansProjects/wbxml-stream/dtd/wv-csp_1_1.dtd">
+<WV-CSP-Message>
+   <Session>
+      <SessionDescriptor>
+         <SessionType>Outband</SessionType>
+      </SessionDescriptor>
+
+      <Transaction>
+         <TransactionDescriptor>
+            <TransactionMode>Request</TransactionMode>
+
+            <TransactionID>IMApp01#12345@NOK5110</TransactionID>
+         </TransactionDescriptor>
+
+         <TransactionContent>
+            <Login-Request>
+               <UserID>wv:user@im.com</UserID>
+
+               <ClientID>
+                  <URL>http://206.226.10.25:80/IMPSAPP</URL>
+               </ClientID>
+
+               <DigestBytes>alkkuayfdsAKDSJfsdfjhksadhlkasdlkfgsal</DigestBytes>
+
+               <TimeToLive>120</TimeToLive>
+
+               <SessionCookie>im.user.com#20011224#328746293</SessionCookie>
+            </Login-Request>
+         </TransactionContent>
+      </Transaction>
+   </Session>
+</WV-CSP-Message>
+

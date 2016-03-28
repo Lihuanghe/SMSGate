@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!DOCTYPE WV-CSP-Message PUBLIC "-//OMA//DTD WV-CSP 1.1//EN" "/home/ricky/NetBeansProjects/wbxml-stream/dtd/wv-csp_1_1.dtd">
+<WV-CSP-Message>
+   <Session>
+      <SessionDescriptor>
+         <SessionType>Inband</SessionType>
+
+         <SessionID>im.user.com#48815@server.com</SessionID>
+      </SessionDescriptor>
+
+      <Transaction>
+         <TransactionDescriptor>
+            <TransactionMode>Request</TransactionMode>
+
+            <TransactionID>IMApp01#12345@NOK5110</TransactionID>
+         </TransactionDescriptor>
+
+         <TransactionContent>
+            <CreateList-Request>
+               <ContactList>wv:john/My_friends@smith.com</ContactList>
+
+               <NickList>
+                  <NickName>
+                     <Name>Brainstorm</Name>
+
+                     <UserID>wv:bright@dark.com</UserID>
+                  </NickName>
+
+                  <NickName>
+                     <Name>Randall the Vandal</Name>
+
+                     <UserID>wv:randall@fairlane.com</UserID>
+                  </NickName>
+               </NickList>
+
+               <ContactListProperties>
+                  <Property>
+                     <Name>DisplayName</Name>
+
+                     <Value>My friends</Value>
+                  </Property>
+
+                  <Property>
+                     <Name>Default</Name>
+
+                     <Value>F</Value>
+                  </Property>
+               </ContactListProperties>
+            </CreateList-Request>
+         </TransactionContent>
+      </Transaction>
+   </Session>
+</WV-CSP-Message>
+

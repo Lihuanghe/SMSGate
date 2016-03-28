@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<!DOCTYPE ConML PUBLIC "-//CONML//DTD ConML//EN" "http://www.nokia.com/">
+<!-- This script was manually generated 
+     after the reading of install_sis.py from ticket #35.
+  -->
+<ConML>
+  <Execute>
+    <Install>
+      <Name>
+        C:\Temp\MyApp
+      </Name>
+      <InstParams/>
+    </Install>
+  </Execute>
+</ConML>
+

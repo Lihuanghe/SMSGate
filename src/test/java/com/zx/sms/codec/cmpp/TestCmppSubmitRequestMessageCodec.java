@@ -66,7 +66,7 @@ public class TestCmppSubmitRequestMessageCodec  extends AbstractTestMessageCodec
 	public void testchinesecode()
 	{
 		
-		testlongCodec(createTestReq("1234567890123456789中01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890" ));
+		testlongCodec(createTestReq("尊敬的客户,您好！您于2016-03-23 14:51:36通过中国移动10085销售专线订购的【一加手机高清防刮保护膜】，请点击支付http://www.10085.cn/web85/page/zyzxpay/wap_order.html?orderId=76DEF9AE1808F506FD4E6CB782E3B8E7EE875E766D3D335C 完成下单。请在60分钟内完成支付，如有疑问，请致电10085咨询，谢谢！中国移动10085"));
 	}
 
 	@Test

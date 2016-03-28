@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!DOCTYPE wap-provisioningdoc PUBLIC "-//WAPFORUM//DTD PROV 1.0//EN"
+                                     "http://www.wapforum.org/DTD/prov.dtd">
+<wap-provisioningdoc version="1.1">
+    <characteristic type="NAPDEF">
+        <parm name="NAPID" value="INTERNET-PRIMARY"/>              
+        <parm name="BEARER" value="CDMA2000-1X-MOBILE-IP"/>        
+        <parm name="NAME" value="MY ISP CDMA2000-1X Mobile IP (Primary)"/>
+        <parm name="NAP-ADDRESS" value="166.224.1.1"/>             
+        <parm name="NAP-ADDRTYPE" value="IPV4"/>                   
+        <parm name="MAX-NUM-RETRY" value="2"/>                     
+        <parm name="FIRST-RETRY-TIMEOUT" value="6"/>               
+        <parm name="REREG-THRESHOLD" value="30"/>                  
+        <parm name="T-BIT"/>                                       
+        <characteristic type="NAPAUTHINFO">                        
+            <parm name="AUTHTYPE" value="MD5"/>                        
+            <parm name="AUTHNAME" value="john@carrier.com"/>           
+            <parm name="AUTHSECRET" value="ha-xyzabc"/>                
+            <parm name="AUTH-ENTITY" value="HA"/>                      
+        </characteristic>                                          
+        <characteristic type="NAPAUTHINFO">                        
+            <parm name="AUTHTYPE" value="MD5"/>                        
+            <parm name="AUTHNAME" value="john@carrier.com"/>           
+            <parm name="AUTHSECRET" value="aaa-xyzabc"/>               
+            <parm name="AUTH-ENTITY" value="AAA"/>                     
+        </characteristic>                                          
+    </characteristic>                                          
+    <characteristic type="NAPDEF">                             
+        <parm name="NAPID" value="INTERNET-BACKUP"/>               
+        <parm name="BEARER" value="CDMA2000-1X-MOBILE-IP"/>        
+        <parm name="NAME" value="MY ISP CDMA2000-1X Mobile IP (Secondary)"/>
+        <parm name="NAP-ADDRESS" value="166.224.2.1"/>             
+        <parm name="NAP-ADDRTYPE" value="IPV4"/>                   
+        <parm name="MAX-NUM-RETRY" value="2"/>                     
+        <parm name="FIRST-RETRY-TIMEOUT" value="6"/>               
+        <parm name="REREG-THRESHOLD" value="30"/>                  
+        <parm name="T-BIT"/>                                       
+        <characteristic type="NAPAUTHINFO">                        
+            <parm name="AUTHTYPE" value="MD5"/>                        
+            <parm name="AUTHNAME" value="john@carrier.com"/>           
+            <parm name="AUTHSECRET" value="xyzabc"/>                   
+            <parm name="AUTH-ENTITY" value="HA"/>                      
+            <parm name="AUTH-ENTITY" value="AAA"/>                     
+        </characteristic>                                          
+    </characteristic>                                          
+    <characteristic type="BOOTSTRAP">                          
+        <parm name="CONTEXT-ALLOW" value="0"/>                     
+        <parm name="PROVURL" value="http://www.operator.com/TPS/"/>
+    </characteristic>
+</wap-provisioningdoc>

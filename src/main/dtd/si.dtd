@@ -1,0 +1,52 @@
+<!--
+Service Indication (SI) Document Type Definition.
+
+Copyright Wireless Application Protocol Forum Ltd., 1998,1999.
+                      All rights reserved.  
+
+SI is an XML language.  Typical usage:
+   <?xml version="1.0"?>
+   <!DOCTYPE si PUBLIC "-//WAPFORUM//DTD SI 1.0//EN"
+                "http://www.wapforum.org/DTD/si.dtd">
+   <si>
+   ...
+   </si>
+
+Terms and conditions of use are available from the Wireless 
+Application Protocol Forum Ltd. web site at
+http://www.wapforum.org/docs/copyright.htm.
+-->
+
+
+<!ENTITY % Datetime "CDATA">             <!-- ISO date and time -->
+<!ENTITY % URI      "CDATA">             <!-- URI designating a 
+                                              hypertext node    -->
+
+
+<!--====================== The SI Element ======================-->
+<!ELEMENT si (indication,info?)>
+
+
+<!--================== The indication Element ==================-->
+<!ELEMENT indication (#PCDATA)>
+<!ATTLIST indication
+  href	        %URI;                                      #IMPLIED
+  si-id	        CDATA                                      #IMPLIED
+  created	%Datetime;	                           #IMPLIED
+  si-expires	%Datetime;	                           #IMPLIED
+  action	(signal-none|signal-low|signal-medium|signal-high|delete)         #IMPLIED
+>
+
+
+<!--===================== The INFO Element =====================-->
+<!ELEMENT info (item+)>
+
+<!ELEMENT item (#PCDATA)>
+<!ATTLIST item
+  class	        NMTOKEN                                   #REQUIRED 
+>
+
+<!--
+Copyright Wireless Application Protocol Forum Ltd., 1998,1999.
+                      All rights reserved.  
+-->

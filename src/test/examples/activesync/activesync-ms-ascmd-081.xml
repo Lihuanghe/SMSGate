@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Settings xmlns="Settings">
+<Status>1</Status>
+<UserInformation>
+<Status>1</Status>
+<Get>
+<EmailAddresses>
+<SMTPAddress>chris@contoso.com</SMTPAddress>
+</EmailAddresses>
+</Get>
+</UserInformation>
+</Settings>

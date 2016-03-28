@@ -1,0 +1,175 @@
+<!-- 
+SyncML Representation Protocol (SYNCML) V1.1 Document Type Definition
+
+Copyright Open Mobile Alliance Ltd., 2002-2003
+          All rights reserved
+
+SYNCML is an XML language. Typical usage:
+   <?xml version="1.0"?>
+   <!DOCTYPE SyncML PUBLIC "-//OMA//DTD SYNCML 1.1//EN"
+             "http://www.openmobilealliance.org/DTD/OMA-SyncML-RepPro-DTD-V1_1_2-20030505-D.dtd"
+             [<?oma-syncml-ver supported-versions="1.1"?>]>
+   <SyncML>
+      ...
+   </SyncML>
+
+Terms and conditions of use are available from the
+Open Mobile Alliance Ltd. web site at
+http://www.openmobilealliance.org/useterms.html
+-->
+
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!-- Root Element -->
+<!ELEMENT SyncML (SyncHdr, SyncBody)>
+<!ELEMENT SyncHdr (VerDTD, VerProto, SessionID, MsgID, Target, Source, RespURI?, NoResp?, Cred?, Meta?)>
+<!ELEMENT SyncBody ((Alert | Atomic | Copy | Exec | Get | Map | Put | Results | Search | Sequence | Status | Sync | Add | Replace | Delete)+, Final?)>
+<!-- Commonly Used Elements -->
+<!-- Archive indicator for Delete -->
+<!ELEMENT Archive EMPTY>
+<!-- Value must be one of "Add" | "Alert" | "Atomic" | "Copy" | "Delete" | "Exec" | "Get" | "Map" | "Put" | "Replace" | "Results" | "Search" | "Sequence" | "Status" | "Sync". -->
+<!ELEMENT Cmd (#PCDATA)>
+<!-- Authentication Challenge -->
+<!ELEMENT Chal (Meta)>
+<!-- Sync message unique identifier for command -->
+<!ELEMENT CmdID (#PCDATA)>
+<!-- Reference to command identifier -->
+<!ELEMENT CmdRef (#PCDATA)>
+<!-- Credentials -->
+<!ELEMENT Cred (Meta?, Data)>
+<!-- Final message flag -->
+<!ELEMENT Final EMPTY>
+<!-- Desired language for results -->
+<!ELEMENT Lang (#PCDATA)>
+<!-- Location displayable name -->
+<!ELEMENT LocName (#PCDATA)>
+<!-- Location URI -->
+<!ELEMENT LocURI (#PCDATA)>
+<!-- Indication for more data to come -->
+<!ELEMENT MoreData EMPTY>
+<!-- SyncML Message ID -->
+<!ELEMENT MsgID (#PCDATA)>
+<!-- Reference to a SyncML Message ID -->
+<!ELEMENT MsgRef (#PCDATA)>
+<!-- No Response Status Requested Indicator -->
+<!ELEMENT NoResp EMPTY>
+<!-- No Results Requested Indicator -->
+<!ELEMENT NoResults EMPTY>
+<!-- NumberOfChanges used to display progress information -->
+<!ELEMENT NumberOfChanges (#PCDATA)>
+<!-- URI recipient used for response -->
+<!ELEMENT RespURI (#PCDATA)>
+<!-- SyncML session identifier -->
+<!ELEMENT SessionID (#PCDATA)>
+<!-- Soft delete indicator for Delete -->
+<!ELEMENT SftDel EMPTY>
+<!-- Source location -->
+<!ELEMENT Source (LocURI, LocName?)>
+<!ELEMENT SourceRef (#PCDATA)>
+<!-- Target location information -->
+<!ELEMENT Target (LocURI, LocName?)>
+<!ELEMENT TargetRef (#PCDATA)>
+<!-- SyncML specificaiton major/minor version info. -->
+<!-- For this version of the DTD, the value is "1.1" -->
+<!ELEMENT VerDTD (#PCDATA)>
+<!-- Data sync protocol major/minor version -->
+<!-- For example, "xyz/1.1" -->
+<!ELEMENT VerProto (#PCDATA)>
+<!-- Synchronization data elements -->
+<!-- Item element type -->
+<!ELEMENT Item (Target?, Source?, Meta?, Data?, MoreData?)>
+<!-- Meta element type -->
+<!-- Element types in the content MUST have name space declared. -->
+<!--The Meta content would be something such as: <Meta> <Type xmlns='syncml:metinf'>text/calendar</Type> <Format xmlns='syncml:metinf'>xml</Format> </Meta>-->
+<!-- <!ELEMENT Meta (#PCDATA)> -->
+<!-- Actual data content -->
+<!ELEMENT Data (#PCDATA)>
+<!-- SyncML Commands -->
+<!-- Add operation. -->
+<!ELEMENT Add (CmdID, NoResp?, Cred?, Meta?, Item+)>
+<!-- Alert operation. -->
+<!-- Alert types are either "User Agent" or "Application" oriented -->
+<!ELEMENT Alert (CmdID, NoResp?, Cred?, Data?, Item*)>
+<!-- Atomic operation. All or nothing semantics. -->
+<!ELEMENT Atomic (CmdID, NoResp?, Meta?, (Add | Replace | Delete | Copy | Atomic | Map | Sequence | Sync | Get | Exec | Alert)+)>
+<!-- Copy operation. -->
+<!ELEMENT Copy (CmdID, NoResp?, Cred?, Meta?, Item+)>
+<!-- Delete operation. -->
+<!ELEMENT Delete (CmdID, NoResp?, Archive?, SftDel?, Cred?, Meta?, Item+)>
+<!-- Exec operation -->
+<!-- Executable can either be referenced with Target element type -->
+<!-- or can be specified in the Data element type. -->
+<!ELEMENT Exec (CmdID, NoResp?, Cred?, Meta?, Item)>
+<!-- Get operation. -->
+<!ELEMENT Get (CmdID, NoResp?, Lang?, Cred?, Meta?, Item+)>
+<!-- MAP operation. Create/Delete an item id map kept at the server. -->
+<!ELEMENT Map (CmdID, Target, Source, Cred?, Meta?, MapItem+)>
+<!ELEMENT MapItem (Target, Source)>
+<!-- Put operation. -->
+<!ELEMENT Put (CmdID, NoResp?, Lang?, Cred?, Meta?, Item+)>
+<!-- Replace operation. -->
+<!ELEMENT Replace (CmdID, NoResp?, Cred?, Meta?, Item+)>
+<!-- Results operation. -->
+<!ELEMENT Results (CmdID, MsgRef?, CmdRef, Meta?, TargetRef?, SourceRef?, Item+)>
+<!-- Search operation. -->
+<!ELEMENT Search (CmdID, NoResp?, NoResults?, Cred?, Target?, Source+, Lang?, Meta, Data)>
+<!-- Sequence operation. -->
+<!ELEMENT Sequence (CmdID, NoResp?, Meta?, (Add | Replace | Delete | Copy | Atomic | Map | Sync | Get | Alert | Exec)+)>
+<!-- Status operation. -->
+<!ELEMENT Status (CmdID, MsgRef, CmdRef, Cmd, TargetRef*, SourceRef*, Cred?, Chal?, Data, Item*)>
+<!-- Synchronize Operation. -->
+<!ELEMENT Sync (CmdID, NoResp?, Cred?, Target?, Source?, Meta?, NumberOfChanges?, (Add | Atomic | Copy | Delete | Replace | Sequence)*)>
+
+<!-- End of DTD Definition -->
+
+<!-- 
+SyncML Meta Information (SYNCML-METINF) V1.1 Document Type Definition
+
+Copyright Open Mobile Alliance Ltd., 2002-2003
+          All rights reserved
+
+This DTD defines a sequence of meta-information that is used within
+the SyncML Representation Protocol DTD. Typical usage:
+   <!DOCTYPE MetInf PUBLIC "-//OMA//DTD SYNCML-METINF 1.1//EN"
+             "http://www.openmobilealliance.org/DTD/OMA-SyncML-MetaInfo-DTD-V1_1_2-20030505-D.dtd"
+             [<?oma-syncml-metinf-ver supported-versions="1.1"?>]>
+   <element>
+      ...
+   </element>
+
+Terms and conditions of use are available from the
+Open Mobile Alliance Ltd. web site at
+http://www.openmobilealliance.org/useterms.html
+-->
+
+<!-- Root Element -->
+<!--
+  <!ELEMENT MetInf (Format?, Type?, Mark?, Size?, Anchor?, Version?, NextNonce?, MaxMsgSize?, MaxObjSize?, EMI*, Mem?)>
+-->
+<!ELEMENT Meta (Format?, Type?, Mark?, Size?, Anchor?, Version?, NextNonce?, MaxMsgSize?, MaxObjSize?, EMI*, Mem?)>
+<!-- Format or encoding type -->
+<!ELEMENT Format (#PCDATA)>
+<!-- Element specific type specification -->
+<!ELEMENT Type (#PCDATA)>
+<!-- Mark -->
+<!ELEMENT Mark (#PCDATA)>
+<!-- Byte count -->
+<!ELEMENT Size (#PCDATA)>
+<!-- Data versioning info -->
+<!ELEMENT Anchor (Last?, Next)>
+<!ELEMENT Last (#PCDATA)>
+<!ELEMENT Next (#PCDATA)>
+<!ELEMENT Version (#PCDATA)>
+<!ELEMENT NextNonce (#PCDATA)>
+<!ELEMENT MaxMsgSize (#PCDATA)>
+<!ELEMENT MaxObjSize (#PCDATA)>
+<!-- Experimental Meta Information extension -->
+<!ELEMENT EMI (#PCDATA)>
+<!-- Dynamic Memory -->
+<!ELEMENT Mem (SharedMem?, FreeMem, FreeID)>
+<!-- Free Memory in the number of identifiers -->
+<!ELEMENT FreeID (#PCDATA)>
+<!-- Free Memory in bytes -->
+<!ELEMENT FreeMem (#PCDATA)>
+<!-- Shared Memory -->
+<!ELEMENT SharedMem EMPTY>
+<!-- End of DTD -->

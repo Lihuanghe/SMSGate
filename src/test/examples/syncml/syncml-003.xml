@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<!DOCTYPE SyncML PUBLIC "-//SYNCML//DTD SyncML 1.1//EN" "http://www.syncml.org/docs/syncml_represent_v11_20020213.dtd">
+<SyncML xmlns='SYNCML:SYNCML1.1'>
+    <SyncHdr>
+        <VerDTD>1.1</VerDTD>
+        <VerProto>SyncML/1.1</VerProto>
+        <SessionID>1</SessionID>
+        <MsgID>1</MsgID>
+        <Target><LocURI>http://www.syncml.org/sync-server</LocURI></Target>
+        <Source><LocURI>IMEI:493005100592800</LocURI></Source>
+        <Cred> <!--The authentication is optional.-->
+            <Meta><Type xmlns='syncml:metinf'>syncml:auth-basic</Type></Meta>
+            <Data>QnJ1Y2UyOk9oQmVoYXZl</Data> <!--base64 formatting of "userid:password"-->
+        </Cred>
+        <Meta> <!--The Meta is now used to indicate the maximum SyncML message size, which client can receive.-->
+            <MaxMsgSize xmlns='syncml:metinf'>5000</MaxMsgSize>
+        </Meta>
+    </SyncHdr>
+    <SyncBody>
+        <Alert>
+            <CmdID>1</CmdID>
+            <Data>200</Data> <!-- 200 = TWO_WAY_ALERT -->
+            <Item>
+                <Target><LocURI>./contacts/james_bond</LocURI></Target>
+                <Source><LocURI>./dev-contacts</LocURI></Source>
+                <Meta>
+                    <Anchor xmlns='syncml:metinf'>
+                        <Last>234</Last>
+                        <Next>276</Next>
+                    </Anchor>
+                </Meta>
+            </Item>
+        </Alert>
+        <Put>
+            <CmdID>2</CmdID>
+            <Meta><Type xmlns='syncml:metinf'>application/vnd.syncml-devinf+wbxml</Type></Meta>
+            <Item>
+                <Source><LocURI>./devinf11</LocURI></Source>
+                <Data>
+                    <DevInf xmlns='syncml:devinf'>
+                        <Man>Big Factory, Ltd.</Man>
+                        <Mod>4119</Mod>
+                        <OEM>Jane's phones</OEM>
+                        <FwV>2.0e</FwV>
+                        <SwV>2.0</SwV>
+                        <HwV>1.22I</HwV>
+                        <DevID>1218182THD000001-2</DevID>
+                        <DevTyp>phone</DevTyp>
+                        <DataStore>
+                            <SourceRef>./contacts</SourceRef>
+                            <DisplayName>Phonebook</DisplayName>
+                            <MaxGUIDSize>32</MaxGUIDSize>
+                            <Rx-Pref>
+                                <CTType>text/x-vcard </CTType>
+                                <VerCT>2.1</VerCT>
+                            </Rx-Pref>
+                            <Tx-Pref>
+                                <CTType>text/x-vcard</CTType>
+                                <VerCT>2.1</VerCT>
+                            </Tx-Pref>
+                        </DataStore>
+                        <CTCap>
+                            <CTType>text/x-vcard</CTType>
+                            <PropName>BEGIN</PropName>
+                            <ValEnum>VCARD</ValEnum>
+                            <PropName>END</PropName>
+                            <ValEnum>VCARD</ValEnum>
+                            <PropName>VERSION</PropName>
+                            <ValEnum>2.1</ValEnum>
+                            <PropName>N</PropName>
+                            <PropName>TEL</PropName>
+                            <ParamName>VOICE</ParamName>
+                            <ParamName>CELL</ParamName>
+                        </CTCap>
+                        <SyncCap>
+                            <SyncType>01</SyncType>
+                            <SyncType>02</SyncType>
+                        </SyncCap>
+                    </DevInf>
+                </Data>
+            </Item>
+        </Put>
+        <Get>
+            <CmdID>3</CmdID>
+            <Meta><Type xmlns='syncml:metinf'>application/vnd.syncml-devinf+xml</Type></Meta>
+            <Item>
+                <Target><LocURI>./devinf11</LocURI></Target>
+            </Item>
+        </Get>
+        <Final/>
+    </SyncBody>
+</SyncML>

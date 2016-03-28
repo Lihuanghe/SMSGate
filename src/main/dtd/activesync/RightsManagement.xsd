@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn292948(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:airsyncbase=
+    "AirSyncBase" xmlns="RightsManagement" targetNamespace="RightsManagement" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:import namespace="AirSyncBase" schemaLocation="AirSyncBase.xsd"/>
+  <xs:simpleType name="NonEmptyStringType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="RightsManagementSupport" type="xs:boolean"/>
+  <xs:element name="TemplateID" type="NonEmptyStringType"/>
+  <xs:element name="RemoveRightsManagementProtection" 
+      type="airsyncbase:EmptyTag"/>
+  <xs:element name="RightsManagementTemplates">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="RightsManagementTemplate" maxOccurs="20">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="TemplateID"/>
+              <xs:element name="TemplateName" type="NonEmptyStringType"/>
+              <xs:element name="TemplateDescription" 
+                  type="NonEmptyStringType"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RightsManagementLicense">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Owner" type="xs:boolean"/>
+        <xs:element name="ContentOwner" type="NonEmptyStringType"/>
+        <xs:element name="ReplyAllAllowed" type="xs:boolean"/>
+        <xs:element name="EditAllowed" type="xs:boolean"/>
+        <xs:element name="ReplyAllowed" type="xs:boolean"/>
+        <xs:element name="ForwardAllowed" type="xs:boolean"/>
+        <xs:element name="ExportAllowed" type="xs:boolean"/>
+        <xs:element name="ModifyRecipientsAllowed" type="xs:boolean"/>
+        <xs:element ref="TemplateID"/>
+        <xs:element name="ExtractAllowed" type="xs:boolean"/>
+        <xs:element name="TemplateDescription" type="NonEmptyStringType"/>
+        <xs:element name="ContentExpiryDate" type="xs:dateTime"/>
+        <xs:element name="TemplateName" type="NonEmptyStringType"/>
+        <xs:element name="PrintAllowed" type="xs:boolean"/>
+        <xs:element name="ProgrammaticAccessAllowed" type="xs:boolean"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

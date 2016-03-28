@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Search xmlns:documentlibrary="DocumentLibrary"
+xmlns="Search">
+<Store>
+<Name>DocumentLibrary</Name>
+<Query>
+<EqualTo>
+<documentlibrary:LinkId/>
+<Value>\\somehost\directory</Value>
+</EqualTo>
+</Query>
+<Options>
+<Range>0-999</Range>
+</Options>
+</Store>
+</Search>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn338907(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:airsync=
+    "AirSync" xmlns="GetItemEstimate" targetNamespace="GetItemEstimate" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:import namespace="AirSync" schemaLocation="AirSync.xsd"/>
+  <xs:element name="GetItemEstimateRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Collections">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Collection" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element ref="airsync:SyncKey"/>
+                    <xs:element name="CollectionId">
+                      <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                          <xs:maxLength value="64"/>
+                        </xs:restriction>
+                      </xs:simpleType>
+                    </xs:element>
+                    <xs:element ref="airsync:FilterType" minOccurs="0"/>
+                    <xs:element ref="airsync:Options" minOccurs="0" 
+                        maxOccurs="2"/>
+                    <xs:element ref="airsync:ConversationMode" minOccurs="0"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

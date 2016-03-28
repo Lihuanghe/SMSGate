@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sync xmlns="AirSync">
+<Collections>
+<Collection>
+<SyncKey>1723058747</SyncKey>
+<CollectionId>10</CollectionId>
+</Collection>
+</Collections>
+<Wait>8</Wait>
+<Partial/>
+</Sync>

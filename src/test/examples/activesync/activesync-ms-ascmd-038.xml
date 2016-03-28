@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ItemOperations xmlns:airsyncbase="AirSyncBase"
+xmlns="ItemOperations">
+<Status>1</Status>
+<Response>
+<Fetch>
+<Status>1</Status>
+<airsyncbase:FileReference>7%3a1%3a0</airsyncbase:FileReference>
+<Properties>
+<airsyncbase:ContentType>text/plain
+</airsyncbase:ContentType>
+<Data>U291cmNlIERlcG90IFN5c3RlbSBSZXF1aXJlbWVudHMNClRv
+IHJ1biBTb3VyY2UgRGVwb3QsIHlvdXIgY29tcHV0ZXIgbXVzdCBtZ
+WV0IGNlcnRhaW4gaGFyZHdhcmUgYW5kIHNvZnR3YXJlIHJlcXVpc
+mVtZW50cy4gVG8gcnVuIHRoZSBTb3VyY2UgRGVwb3QgY2xpZW50L
+CBjaGVjayB0aGUgZm9sbG93aW5nIGxpc3Qgb2YgbWluaW11bSBw
+bGF0Zm9ybS1zcGVjaWZpYyByZXF1aXJlbWVudHMgZm9yIFNvdXJj
+ZSBEZXBvdC4gDQoNClNvZnR3YXJlIFJlcXVpcmVtZW50cw0KV2luZG9
+3cyBYUCBhbmQgV2luZG93cyAyMDAwIJYgSW50ZWwgb3IgQVhQ
+NjQNCk5UNCAtIEludGVsIA0KV2luZG93cyA5eCCWIEludGVsDQ
+pIYXJkd2FyZSBSZXF1aXJlbWVudHMNCkludGVsIENsaWVudA0K
+DQp4ODYgcHJvY2Vzc29yDQpQZW50aXVtIG9yIGJldHRlciANCkV
+ub3VnaCBoYXJkIGRpc2sgc3BhY2UgdG8gaG9sZCB0aGUgZmlsZX
+MNCkFYUDY0IENsaWVudA0KDQpBbHBoYSBDbGllbnQgc3lzdGVtI
+HJ1bm5pbmcgYW4gQVhQNjQgZW11bGF0b3IuIA0KSG93IHRvDQoN
+Ckluc3RhbGwgU291cmNlIERlcG90DQoNCg0KLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0
+tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCg0KU2VuZCB
+1cyBmZWVkYmFjayBhbmQgc3VnZ2VzdGlvbnMgb24gdGhpcyBIZW
+xwIHRvcGljIG9yIHRoaXMgcHJvZHVjdC4NCg0KQ29udGFjdCBzdX
+Bwb3J0IGZvciBhc3Npc3RhbmNlLg0KDQoNCmMuIDIwMDQuIE1pY3
+Jvc29mdCBDb25maWRlbnRpYWwgDQpMYXN0IHVwZGF0ZWQgMy8xO
+S8yMDA0IA==</Data>
+</Properties>
+</Fetch>
+</Response>
+</ItemOperations>

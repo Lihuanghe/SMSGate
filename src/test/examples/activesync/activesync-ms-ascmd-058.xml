@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sync xmlns:calendar="Calendar" xmlns="AirSync">
+<Collections>
+<Collection>
+<SyncKey>509910681</SyncKey>
+<CollectionId>1</CollectionId>
+<GetChanges>1</GetChanges>
+<Commands>
+<Add>
+<ClientId>1</ClientId>
+<ApplicationData>
+<calendar:TimeZone>4AEAACgARwBNAFQALQAwADgAOgAwADAAKQAgAFAAYQBjAGkAZgBpAGMAIABUAGkAbQBlACAAKA
+BVAFMAIAAmACAAQwAAAAsAAAABAAIAAAAAAAAAAAAAACgARwBNAFQALQAwADgAOgAwADAAKQAgAFAAYQBjAGkAZgBpAGM
+AIABUAGkAbQBlACAAKABVAFMAIAAmACAAQwAAAAMAAAACAAIAAAAAAAAAxP///w==</calendar:TimeZone>
+<calendar:DtStamp>20100406T170219Z</calendar:DtStamp>
+<calendar:StartTime>20100503T090000Z</calendar:StartTime>
+<calendar:Subject>TestMeeting</calendar:Subject>
+<calendar:UID>040000008200E00074C5B7101A82E0080000000036BD76EAAAD5CA0100000000000000001000000
+0C45185F686A5D542B20BF2CE2F477D55</calendar:UID>
+<calendar:Attendees>
+<calendar:Attendee>
+<calendar:Email>testuser2@contoso.com</calendar:Email>
+<calendar:Name>Test User 2</calendar:Name>
+<calendar:AttendeeStatus>0</calendar:AttendeeStatus>
+<calendar:AttendeeType>1</calendar:AttendeeType>
+</calendar:Attendee>
+</calendar:Attendees>
+<calendar:Location>My Office</calendar:Location>
+<calendar:EndTime>20100503T100000Z</calendar:EndTime>
+<calendar:Sensitivity>0</calendar:Sensitivity>
+<calendar:BusyStatus>1</calendar:BusyStatus>
+<calendar:AllDayEvent>0</calendar:AllDayEvent>
+</ApplicationData>
+</Add>
+</Commands>
+</Collection>
+</Collections>
+</Sync>

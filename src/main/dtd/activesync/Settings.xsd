@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn338920(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:airsyncbase=
+    "AirSyncBase" xmlns="Settings" targetNamespace="Settings" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:import namespace="AirSyncBase" schemaLocation="AirSyncBase.xsd"/>
+  <xs:simpleType name="DeviceInformationStringType">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="1024"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="NonEmptyStringType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="Status" type="xs:integer"/>
+  <xs:element name="OofState">
+    <xs:simpleType>
+      <xs:restriction base="xs:integer">
+        <xs:enumeration value="0"/>
+        <xs:enumeration value="1"/>
+        <xs:enumeration value="2"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="StartTime" type="xs:dateTime"/>
+  <xs:element name="EndTime" type="xs:dateTime"/>
+  <xs:element name="OofMessage">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="AppliesToInternal" type="airsyncbase:EmptyTag" 
+            minOccurs="0"/>
+        <xs:element name="AppliesToExternalKnown" type="airsyncbase:EmptyTag" 
+            minOccurs="0"/>
+        <xs:element name="AppliesToExternalUnknown" type="airsyncbase:EmptyTag" 
+            minOccurs="0"/>
+        <xs:element name="Enabled" type="NonEmptyStringType" minOccurs="0"/>
+        <xs:element name="ReplyMessage" type="xs:string" minOccurs="0"/>
+        <xs:element ref="BodyType" minOccurs="0"/>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="BodyType" type="NonEmptyStringType"/>
+  <xs:element name="Password">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:maxLength value="255"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Model" type="DeviceInformationStringType"/>
+  <xs:element name="IMEI" type="DeviceInformationStringType"/>
+  <xs:element name="FriendlyName" type="DeviceInformationStringType"/>
+  <xs:element name="OS" type="DeviceInformationStringType"/>
+  <xs:element name="OSLanguage" type="DeviceInformationStringType"/>
+  <xs:element name="PhoneNumber" type="DeviceInformationStringType"/>
+  <xs:element name="UserAgent" type="DeviceInformationStringType"/>
+  <xs:element name="EnableOutboundSMS">
+    <xs:simpleType>
+      <xs:restriction base="xs:integer">
+        <xs:minInclusive value="0"/>
+        <xs:maxInclusive value="1"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="MobileOperator" type="DeviceInformationStringType"/>
+  <xs:element name="Accounts">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Account" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:all>
+              <xs:element name="AccountId" type="xs:string" minOccurs="0"/>
+              <xs:element name="AccountName" type="xs:string" minOccurs="0"/>
+              <xs:element name="UserDisplayName" type="xs:string" 
+                  minOccurs="0"/>
+              <xs:element name="SendDisabled" type="xs:boolean" minOccurs="0"/>
+              <xs:element name="EmailAddresses" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="SMTPAddress" type="xs:string" 
+                        minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="PrimarySmtpAddress" type="xs:string" 
+                        minOccurs="0"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

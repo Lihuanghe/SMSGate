@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sync xmlns="AirSync" xmlns:airsyncbase="AirSyncBase" xmlns:contacts="Contacts">
+<Collections>
+<Collection>
+<SyncKey>1593447001</SyncKey>
+<CollectionId>2</CollectionId>
+<Commands>
+<Change>
+<ServerId>2:1</ServerId>
+<ApplicationData>
+<contacts:Department>Accounting</contacts:Department>
+<contacts:Email1Address>"elvin@contoso.com"
+&lt;elvin@contoso.com&gt;</contacts:Email1Address>
+<contacts:FileAs>Sills, Elvin</contacts:FileAs>
+<contacts:FirstName>Elvin</contacts:FirstName>
+<contacts:LastName>Sills</contacts:LastName>
+<contacts:JobTitle>Manager</contacts:JobTitle>
+<contacts:OfficeLocation>456</contacts:OfficeLocation>
+</ApplicationData>
+</Change>
+</Commands>
+</Collection>
+</Collections>
+</Sync>

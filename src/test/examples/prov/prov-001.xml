@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!DOCTYPE wap-provisioningdoc PUBLIC "-//WAPFORUM//DTD PROV 1.0//EN"
+                                     "http://www.wapforum.org/DTD/prov.dtd">
+<wap-provisioningdoc version="1.0">
+    <characteristic type="PXLOGICAL">
+        <parm name="PROXY-ID" value="170.187.51.4"/>
+        <parm name="NAME" value="BankMainProxy"/>
+        <parm name="STARTPAGE" value="http://www.bank.com/startpage.wml"/>
+        <characteristic type="PXAUTHINFO">
+            <parm name="PXAUTH-TYPE" value="HTTP-BASIC"/>
+            <parm name="PXAUTH-ID" value="pxusername"/>
+            <parm name="PXAUTH-PW" value="pxuserpasswd"/>
+        </characteristic>
+        <characteristic type="PXPHYSICAL">
+            <parm name="PHYSICAL-PROXY-ID" value="PROXY 1"/>
+            <parm name="DOMAIN" value="www.bank.com/"/>
+            <parm name="PXADDR" value="170.187.51.3"/>
+            <parm name="PXADDRTYPE" value="IPV4"/>
+            <parm name="TO-NAPID" value="INTERNET"/>
+            <parm name="TO-NAPID" value="NAP1"/>
+            <characteristic type="PORT">
+                <parm name="PORTNBR" value="9203"/>
+            </characteristic>
+        </characteristic>
+    </characteristic>
+    <characteristic type="NAPDEF">
+        <parm name="NAPID" value="NAP1"/>
+        <parm name="BEARER" value="GSM-CSD"/>
+        <parm name="NAME" value="MY ISP CSD"/>
+        <parm name="NAP-ADDRESS" value="+35808124002"/>
+        <parm name="NAP-ADDRTYPE" value="E164"/>
+        <parm name="CALLTYPE" value="ANALOG-MODEM"/>
+        <characteristic type="NAPAUTHINFO">
+            <parm name="AUTHTYPE" value="PAP"/>
+            <parm name="AUTHNAME" value="wwwmmmuser"/>
+            <parm name="AUTHSECRET" value="wwwmmmsecret"/>
+        </characteristic>
+        <characteristic type="VALIDITY">
+            <parm name="COUNTRY" value="228"/>
+            <parm name="NETWORK" value="001"/>
+        </characteristic>
+    </characteristic>
+</wap-provisioningdoc>

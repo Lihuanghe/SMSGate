@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn292986(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns=
+    "http://schemas.microsoft.com/exchange/autodiscover/mobilesync/responseschema/2006" 
+    targetNamespace=
+    "http://schemas.microsoft.com/exchange/autodiscover/mobilesync/responseschema/2006" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:element name="Response">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Culture" type="xs:string" minOccurs="0"/>
+        <xs:element name="User" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="DisplayName" minOccurs="0"/>
+              <xs:element name="EMailAddress" minOccurs="1"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Action" minOccurs="0">
+          <xs:complexType>
+            <xs:all>
+              <xs:element name="Redirect" type="xs:string" 
+                  minOccurs="0"/>
+              <xs:element name="Settings" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Server" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Type" type="xs:string" 
+                              minOccurs="0"/>
+                          <xs:element name="Url" type="xs:string" 
+                              minOccurs="0"/>
+                          <xs:element name="Name" type="xs:string" 
+                              minOccurs="0"/>
+                          <xs:element name="ServerData" type="xs:string" 
+                              minOccurs="0"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Error" minOccurs="0">
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element name="Status" type="xs:string" 
+                        minOccurs="0"/>
+                    <xs:element name="Message" type="xs:string" 
+                        minOccurs="0"/>
+                    <xs:element name="DebugData" type="xs:string" 
+                        minOccurs="0"/>
+                    <xs:element name="ErrorCode" type="xs:integer" 
+                        minOccurs="0"/>
+                  </xs:all>
+                </xs:complexType>
+              </xs:element>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Error" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ErrorCode" type="xs:integer" 
+                  minOccurs="0"/>
+              <xs:element name="Message" type="xs:string" 
+                  minOccurs="0"/>
+              <xs:element name="DebugData" type="xs:string" 
+                  minOccurs="0"/>
+            </xs:sequence>
+            <xs:attribute name="Time" type="xs:string"/>
+            <xs:attribute name="Id" type="xs:unsignedInt"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

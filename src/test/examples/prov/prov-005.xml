@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE wap-provisioningdoc PUBLIC "-//WAPFORUM//DTD PROV 1.0//EN"
+                                     "http://www.wapforum.org/DTD/prov.dtd">
+<wap-provisioningdoc version="1.1">
+    <characteristic type="NAPDEF">
+        <parm name="NAPID" value="INTERNET"/>
+        <parm name="BEARER" value="GSM-GPRS"/>
+        <parm name="NAME" value="MY ISP GPRS"/>
+        <parm name="NAP-ADDRESS" value="MYISP.gprs"/>
+        <parm name="NAP-ADDRTYPE" value="APN"/>
+    </characteristic>
+    <characteristic type="BOOTSTRAP">
+        <parm name="CONTEXT-ALLOW" value="0"/>
+        <parm name="PROVURL" value="http://www.operator.com/TPS/"/>
+    </characteristic>
+</wap-provisioningdoc>

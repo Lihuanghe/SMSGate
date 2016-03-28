@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn338945(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:airsyncbase=
+    "AirSyncBase" xmlns:email2="Email2" xmlns:tasks="Tasks" xmlns="Email" 
+    targetNamespace="Email" elementFormDefault="qualified" 
+    attributeFormDefault="unqualified">
+  <xs:import namespace="AirSyncBase" schemaLocation="AirSyncBase.xsd"/>
+  <xs:import namespace="Email2" schemaLocation="Email2.xsd"/>
+  <xs:import namespace="Tasks" schemaLocation="Tasks.xsd"/>
+  <xs:element name="To">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:maxLength value="32768"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Cc" type="xs:string"/>
+  <xs:element name="From">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:maxLength value="32768"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Subject" type="xs:string"/>
+  <xs:element name="ReplyTo" type="xs:string"/>
+  <xs:element name="DateReceived" type="xs:dateTime"/>
+  <xs:element name="DisplayTo" type="xs:string"/>
+  <xs:element name="ThreadTopic" type="xs:string"/>
+  <xs:element name="Importance" type="xs:unsignedByte"/>
+  <xs:element name="Read" type="xs:boolean"/>
+  <xs:element name="MessageClass" type="xs:string"/>
+  <xs:element name="MeetingRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="AllDayEvent" type="xs:unsignedByte" minOccurs="0"/>
+        <xs:element name="StartTime" type="xs:dateTime" minOccurs="1"/>
+        <xs:element name="DtStamp" type="xs:dateTime"/>
+        <xs:element name="EndTime" type="xs:dateTime"/>
+        <xs:element name="InstanceType" type="xs:unsignedByte"/>
+        <xs:element name="Location" minOccurs="0">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:maxLength value="32768"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="Organizer" type="xs:string" minOccurs="0"/>
+        <xs:element name="RecurrenceId" type="xs:dateTime" minOccurs="0"/>
+        <xs:element name="Reminder" type="xs:unsignedShort" minOccurs="0"/>
+        <xs:element name="ResponseRequested" type="xs:unsignedByte" 
+            minOccurs="0"/>
+        <xs:element name="Recurrences" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Recurrence">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Type" type="xs:unsignedByte"/>
+                    <xs:element name="Interval" type="xs:integer"/>
+                    <xs:element name="Until" type="xs:dateTime"/>
+                    <xs:element name="Occurrences" type="xs:integer" 
+                        minOccurs="0"/>
+                    <xs:element name="WeekOfMonth" type="xs:integer" 
+                        minOccurs="0"/>
+                    <xs:element name="DayOfMonth" type="xs:integer" 
+                        minOccurs="0"/>
+                    <xs:element name="DayOfWeek" type="xs:integer" 
+                        minOccurs="0"/>
+                    <xs:element name="MonthOfYear" type="xs:integer" 
+                        minOccurs="0"/>
+                    <xs:element ref="email2:CalendarType" minOccurs="0"/>
+                    <xs:element ref="email2:IsLeapMonth" minOccurs="0"/>
+                    <xs:element ref="email2:FirstDayOfWeek" minOccurs="0"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Sensitivity" type="xs:integer" minOccurs="0"/>
+        <xs:element name="BusyStatus" type="xs:integer" minOccurs="0"/>
+        <xs:element name="TimeZone" type="xs:string"/>
+        <xs:element name="GlobalObjId" type="xs:string"/>
+        <xs:element name="DisallowNewTimeProposal" type="xs:unsignedByte" 
+            minOccurs="0"/>
+        <xs:element ref="email2:MeetingMessageType"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="InternetCPID" type="xs:string"/>
+  <xs:element name="Flag">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tasks:Subject" minOccurs="0"/>
+        <xs:element name="Status" type="xs:integer" minOccurs="0"/>
+        <xs:element name="FlagType" type="xs:string" minOccurs="0"/>
+        <xs:element ref="tasks:DateCompleted" minOccurs="0"/>
+        <xs:element name="CompleteTime" type="xs:dateTime" minOccurs="0"/>
+        <xs:element ref="tasks:StartDate" minOccurs="0"/>
+        <xs:element ref="tasks:DueDate" minOccurs="0"/>
+        <xs:element ref="tasks:UtcStartDate" minOccurs="0"/>
+        <xs:element ref="tasks:UtcDueDate" minOccurs="0"/>
+        <xs:element ref="tasks:ReminderSet" minOccurs="0"/>
+        <xs:element ref="tasks:ReminderTime" minOccurs="0"/>
+        <xs:element ref="tasks:OrdinalDate" minOccurs="0"/>
+        <xs:element ref="tasks:SubOrdinalDate" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ContentClass" type="xs:string"/>
+  <xs:element name="Categories">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Category" type="xs:string" minOccurs="0" 
+            maxOccurs="300"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:group name="AllProps">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="To"/>
+        <xs:element ref="Cc"/>
+        <xs:element ref="From"/>
+        <xs:element ref="Subject"/>
+        <xs:element ref="ReplyTo"/>
+        <xs:element ref="DateReceived"/>
+        <xs:element ref="DisplayTo"/>
+        <xs:element ref="ThreadTopic"/>
+        <xs:element ref="Importance"/>
+        <xs:element ref="Read"/>
+        <xs:element ref="MessageClass"/>
+        <xs:element ref="MeetingRequest"/>
+        <xs:element ref="InternetCPID"/>
+        <xs:element ref="Flag"/>
+        <xs:element ref="ContentClass"/>
+        <xs:element ref="Categories"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="TopLevelSchemaProps">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="To" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Cc" type="airsyncbase:EmptyTag"/>
+        <xs:element name="From" type="airsyncbase:EmptyTag"/>
+        <xs:element name="ReplyTo" type="airsyncbase:EmptyTag"/>
+        <xs:element name="DateReceived" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Subject" type="airsyncbase:EmptyTag"/>
+        <xs:element name="DisplayTo" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Importance" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Read" type="airsyncbase:EmptyTag"/>
+        <xs:element name="MessageClass" type="airsyncbase:EmptyTag"/>
+        <xs:element name="MeetingRequest" type="airsyncbase:EmptyTag"/>
+        <xs:element name="ThreadTopic" type="airsyncbase:EmptyTag"/>
+        <xs:element name="InternetCPID" type="airsyncbase:EmptyTag"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="ComparisonProps">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="DateReceived" type="airsyncbase:EmptyTag"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+</xs:schema>

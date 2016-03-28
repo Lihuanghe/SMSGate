@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn292959(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:search="Search" 
+    xmlns="MeetingResponse" targetNamespace="MeetingResponse" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:import namespace="Search" schemaLocation="Search.xsd"/>
+  <xs:element name="MeetingResponseRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Request" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:all>
+              <xs:element name="UserResponse">
+                <xs:simpleType>
+                  <xs:restriction base="xs:unsignedByte">
+                    <xs:enumeration value="3"/>
+                    <xs:enumeration value="1"/>
+                    <xs:enumeration value="2"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="CollectionId" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="64"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="RequestId" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="64"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element ref="search:LongId" minOccurs="0"/>
+              <xs:element name="InstanceId" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:minLength value="24"/>
+                    <xs:maxLength value="24"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,267 @@
+<!ELEMENT WV-CSP-Message (Session)>
+<!ATTLIST WV-CSP-Message xmlns CDATA #IMPLIED>
+<!ELEMENT Session (SessionDescriptor, Transaction+)>
+<!ELEMENT SessionDescriptor (SessionType, SessionID?)>
+<!ELEMENT SessionType (#PCDATA)>
+<!ELEMENT SessionID (#PCDATA)>
+<!ELEMENT Transaction (TransactionDescriptor, TransactionContent)>
+<!ELEMENT TransactionDescriptor (TransactionMode, TransactionID?, Poll?)>
+<!ELEMENT TransactionMode (#PCDATA)>
+<!ELEMENT TransactionID (#PCDATA)>
+<!ELEMENT Poll (#PCDATA)>
+<!--
+<!ELEMENT TransactionContent (#PCDATA)>
+<!ATTLIST TransactionContent xmlns CDATA #REQUIRED>
+-->
+
+<!ELEMENT TransactionContent (Status | Polling-Request | Login-Request | Login-Response | Service-Request | Service-Response | ClientCapability-Request | ClientCapability-Response | Logout-Request | Disconnect | KeepAlive-Request | KeepAlive-Response | GetSPInfo-Request | GetSPInfo-Response | Search-Request | Search-Response | StopSearch-Request | Invite-Request | Invite-Response | InviteUser-Request | InviteUser-Response | CancelInvite-Request | CancelInviteUser-Request | SubscribePresence-Request | UnsubscribePresence-Request | PresenceNotification-Request | GetWatcherList-Request | GetWatcherList-Response | GetPresence-Request | GetPresence-Response | PresenceAuth-Request | PresenceAuth-User | CancelAuth-Request | UpdatePresence-Request | SendMessage-Request | SendMessage-Response | SetDeliveryMethod-Request | GetMessageList-Request | GetMessageList-Response | RejectMessage-Request | MessageNotification | GetMessage-Request | GetMessage-Response | NewMessage | MessageDelivered | DeliveryReport-Request | ForwardMessage-Request | GetBlockedList-Request | GetBlockedList-Response | BlockEntity-Request | GetList-Request | GetList-Response | CreateList-Request | DeleteList-Request | ListManage-Request | ListManage-Response | CreateAttributeList-Request | DeleteAttributeList-Request | GetAttributeList-Request | GetAttributeList-Response | CreateGroup-Request | DeleteGroup-Request | JoinGroup-Request | JoinGroup-Response | LeaveGroup-Request | LeaveGroup-Response | GetGroupMembers-Request | GetGroupMembers-Response | AddGroupMembers-Request | RemoveGroupMembers-Request | MemberAccess-Request | GetGroupProps-Request | GetGroupProps-Response | SetGroupProps-Request | RejectList-Request | RejectList-Response | SubscribeGroupNotice-Request | SubscribeGroupNotice-Response | GroupChangeNotice)>
+<!ATTLIST TransactionContent xmlns CDATA #IMPLIED>
+<!ELEMENT Status (Result, ClientID?)>
+<!ELEMENT Polling-Request EMPTY>
+<!ELEMENT Login-Request (UserID, ClientID, Password?, DigestBytes?, DigestSchema?, TimeToLive?, SessionCookie)>
+<!ELEMENT Login-Response (ClientID, Result, Nonce?, DigestSchema?, SessionID?, KeepAliveTime?, CapabilityRequest?)>
+<!ELEMENT Service-Request (ClientID, Functions, AllFunctionsRequest)>
+<!ELEMENT Service-Response (ClientID, Functions?, AllFunctions?)>
+<!ELEMENT ClientCapability-Request (ClientID, CapabilityList)>
+<!ELEMENT ClientCapability-Response (ClientID, CapabilityList)>
+<!ELEMENT Logout-Request EMPTY>
+<!ELEMENT Disconnect (Result)>
+<!ELEMENT KeepAlive-Request (TimeToLive?)>
+<!ELEMENT KeepAlive-Response (Result, KeepAliveTime?)>
+<!ELEMENT GetSPInfo-Request (ClientID?)>
+<!ELEMENT GetSPInfo-Response (ClientID?, Name, Logo?, Description?,URL?)>
+
+<!ELEMENT Search-Request (SearchPairList*, SearchLimit?, SearchID?, SearchIndex?)>
+<!ELEMENT StopSearch-Request (SearchID)>
+<!ELEMENT Search-Response (SearchID?, SearchFindings, CompletionFlag, SearchIndex, SearchResult?)>
+<!ELEMENT CompletionFlag (#PCDATA)>
+<!ELEMENT Invite-Request (InviteID, InviteType, Recipient, GroupID?, PresenceSubList?, URLList?, InviteNote?, ScreenName?, Validity?)>
+<!ELEMENT Invite-Response (InviteID, Acceptance, Sender, ResponseNote?)>
+<!ELEMENT InviteUser-Request (InviteID, InviteType, Sender, GroupID?, PresenceSubList?, URLList?, InviteNote?, Validity?)>
+<!ELEMENT InviteUser-Response (InviteID, Acceptance, ResponseNote?, ScreenName?)>
+<!ELEMENT CancelInvite-Request (InviteID, Recipient, InviteNote?, URLList?, ScreenName?)>
+<!ELEMENT CancelInviteUser-Request (InviteID, Sender, InviteNote?, URLList?)>
+<!ELEMENT SubscribePresence-Request (User*, ContactList*, PresenceSubList?)>
+<!ELEMENT UnsubscribePresence-Request (User*, ContactList*)>
+<!ELEMENT PresenceNotification-Request (Presence+)>
+<!ELEMENT GetWatcherList-Request EMPTY>
+<!ELEMENT GetWatcherList-Response (User*)>
+<!ELEMENT GetPresence-Request ((User+ | ContactList+), PresenceSubList?)>
+<!ELEMENT GetPresence-Response (Result, Presence*)>
+<!ELEMENT PresenceAuth-Request (UserID, PresenceSubList?)>
+<!ELEMENT PresenceAuth-User (UserID, Acceptance)>
+<!ELEMENT CancelAuth-Request (UserID)>
+<!ELEMENT UpdatePresence-Request (PresenceSubList)>
+<!ELEMENT GetList-Request EMPTY>
+<!ELEMENT GetList-Response (ContactList*, DefaultContactList?)>
+<!ELEMENT CreateList-Request (ContactList, NickList?, ContactListProperties?)>
+<!ELEMENT DeleteList-Request (ContactList)>
+<!ELEMENT ListManage-Request (ContactList, (AddNickList | RemoveNickList | ContactListProperties)?)>
+<!ELEMENT ListManage-Response (Result, NickList?, ContactListProperties?)>
+<!ELEMENT CreateAttributeList-Request (PresenceSubList, UserID*, ContactList*, DefaultList)>
+<!ELEMENT DeleteAttributeList-Request (UserID*, ContactList*, DefaultList)>
+<!ELEMENT GetAttributeList-Request (DefaultList, ContactList*, User*)>
+<!ELEMENT GetAttributeList-Response (Result, DefaultAttributeList?, Presence*)>
+<!ELEMENT SendMessage-Request (DeliveryReport, MessageInfo, ContentData?)>
+
+<!ELEMENT SendMessage-Response (Result, MessageID?)>
+<!ELEMENT SetDeliveryMethod-Request (DeliveryMethod, AcceptedContentLength?, GroupID?)>
+<!ELEMENT GetMessageList-Request (GroupID?, MessageCount?)>
+<!ELEMENT GetMessageList-Response (MessageInfo*)>
+<!ELEMENT RejectMessage-Request (MessageID+)>
+<!ELEMENT MessageNotification (MessageInfo)>
+<!ELEMENT GetMessage-Request (MessageID)>
+<!ELEMENT GetMessage-Response (MessageInfo, ContentData?)>
+<!ELEMENT NewMessage (MessageInfo, ContentData?)>
+<!ELEMENT MessageDelivered (MessageID)>
+<!ELEMENT DeliveryReport-Request (Result, DeliveryTime?, MessageInfo)>
+<!ELEMENT DeliveryTime (#PCDATA)>
+<!ELEMENT ForwardMessage-Request (MessageID, Recipient)>
+<!ELEMENT GetBlockedList-Request EMPTY>
+<!ELEMENT GetBlockedList-Response (BlockList?, GrantList?)>
+<!ELEMENT BlockEntity-Request (BlockList?, GrantList?)>
+<!ELEMENT CreateGroup-Request (GroupID, GroupProperties, JoinGroup, ScreenName?, SubscribeNotification)>
+<!ELEMENT DeleteGroup-Request (GroupID)>
+<!ELEMENT JoinGroup-Request (GroupID, ScreenName?, JoinedRequest, SubscribeNotification)>
+<!ELEMENT JoinGroup (#PCDATA)>
+<!ELEMENT SubscribeNotification (#PCDATA)>
+<!ELEMENT JoinGroup-Response (UserList?, WelcomeNote?)>
+<!ELEMENT LeaveGroup-Request (GroupID)>
+<!ELEMENT LeaveGroup-Response (GroupID?, Result)>
+<!ELEMENT GetGroupMembers-Request (GroupID)>
+<!ELEMENT GetGroupMembers-Response (Admin?, Mod?, Users?)>
+<!ELEMENT AddGroupMembers-Request (GroupID, UserList)>
+<!ELEMENT RemoveGroupMembers-Request (GroupID, UserList)>
+<!ELEMENT MemberAccess-Request (GroupID, Admin?, Mod?, Users?)>
+<!ELEMENT GetGroupProps-Request (GroupID)>
+<!ELEMENT GetGroupProps-Response (GroupProperties, OwnProperties)>
+<!ELEMENT SetGroupProps-Request (GroupID, GroupProperties?, OwnProperties?)>
+<!ELEMENT RejectList-Request (GroupID, AddList?, RemoveList?)>
+<!ELEMENT RejectList-Response (UserList?)>
+<!ELEMENT SubscribeGroupNotice-Request (GroupID, SubscribeType)>
+<!ELEMENT SubscribeGroupNotice-Response (Value)>
+<!ELEMENT GroupChangeNotice (GroupID, Joined?, Left?, GroupProperties?, OwnProperties?)>
+<!ELEMENT DigestBytes (#PCDATA)>
+<!ELEMENT DigestSchema (#PCDATA)>
+<!ELEMENT Password (#PCDATA)>
+<!ELEMENT Nonce (#PCDATA)>
+<!ELEMENT CapabilityRequest (#PCDATA)>
+
+<!ELEMENT CapabilityList (ClientType, InitialDeliveryMethod, ((AnyContent, AcceptedCharSet*) | AcceptedContentType*), AcceptedTransferEncoding*, AcceptedContentLength, SupportedBearer*, MultiTrans, ParserSize, SupportedCIRMethod*, UDPPort?, TCPAddress?, TCPPort?, ServerPollMin?, DefaultLanguage?)>
+<!ELEMENT ClientType (#PCDATA)>
+<!ELEMENT InitialDeliveryMethod (#PCDATA)>
+<!ELEMENT AnyContent (#PCDATA)>
+<!ELEMENT AcceptedCharSet (#PCDATA)>
+<!ELEMENT AcceptedContentType (#PCDATA)>
+<!ELEMENT AcceptedTransferEncoding (#PCDATA)>
+<!ELEMENT AcceptedContentLength (#PCDATA)>
+<!ELEMENT SupportedBearer (#PCDATA)>
+<!ELEMENT MultiTrans (#PCDATA)>
+<!ELEMENT ParserSize (#PCDATA)>
+<!ELEMENT SupportedCIRMethod (#PCDATA)>
+<!ELEMENT UDPPort (#PCDATA)>
+<!ELEMENT TCPAddress (#PCDATA)>
+<!ELEMENT TCPPort (#PCDATA)>
+<!ELEMENT ServerPollMin (#PCDATA)>
+<!ELEMENT DefaultLanguage (#PCDATA)>
+<!ELEMENT Result (Code, Description?, DetailedResult*)>
+<!ELEMENT Code (#PCDATA)>
+<!ELEMENT Description (#PCDATA)>
+<!ELEMENT DetailedResult (Code, Description?, UserID*, GroupID*, ScreenName*, MessageID*)>
+<!ELEMENT SessionCookie (#PCDATA)>
+<!ELEMENT Sender (User | Group)>
+<!ELEMENT Recipient (User*, Group*, ContactList*)>
+<!ELEMENT User (UserID, ClientID?)>
+<!ELEMENT Group (GroupID | ScreenName)>
+<!ELEMENT UserID (#PCDATA)>
+<!ELEMENT ClientID (URL?, MSISDN?)>
+<!ELEMENT GroupID (#PCDATA)>
+<!ELEMENT MessageID (#PCDATA)>
+<!ELEMENT MessageURI (#PCDATA)>
+<!ELEMENT ScreenName (SName, GroupID)>
+<!ELEMENT NickName (Name, UserID)>
+<!ELEMENT URLList (URL+)>
+<!ELEMENT URL (#PCDATA)>
+<!ELEMENT MSISDN (#PCDATA)>
+<!ELEMENT GroupList (GroupID+)>
+<!ELEMENT UserList (User*, ScreenName*)>
+<!ELEMENT ContactList (#PCDATA)>
+<!ELEMENT DefaultContactList (#PCDATA)>
+<!ELEMENT NickList ((NickName | UserID)*)>
+<!ELEMENT AddNickList ((NickName | UserID)*)>
+<!ELEMENT RemoveNickList (UserID+)>
+<!ELEMENT DefaultList (#PCDATA)>
+<!ELEMENT SearchPairList (SearchElement, SearchString)>
+
+<!ELEMENT SearchElement (#PCDATA)>
+<!ELEMENT SearchString (#PCDATA)>
+<!ELEMENT SearchLimit (#PCDATA)>
+<!ELEMENT SearchID (#PCDATA)>
+<!ELEMENT SearchIndex (#PCDATA)>
+<!ELEMENT SearchFindings (#PCDATA)>
+<!ELEMENT SearchResult (UserList?, GroupList?)>
+<!ELEMENT InviteID (#PCDATA)>
+<!ELEMENT InviteType (#PCDATA)>
+<!ELEMENT InviteNote (#PCDATA)>
+<!ELEMENT Acceptance (#PCDATA)>
+<!ELEMENT ResponseNote (#PCDATA)>
+<!ELEMENT DefaultAttributeList (PresenceSubList*)>
+<!ELEMENT Presence ((UserID | ContactList), PresenceSubList*)>
+<!ELEMENT PresenceSubList (#PCDATA)>
+<!ATTLIST PresenceSubList xmlns CDATA #REQUIRED xmlns:Ext CDATA #IMPLIED>
+<!ELEMENT KeepAliveTime (#PCDATA)>
+<!ELEMENT TimeToLive (#PCDATA)>
+<!ELEMENT SName (#PCDATA)>
+<!ELEMENT Name (#PCDATA)>
+<!ELEMENT Value (#PCDATA)>
+<!ELEMENT Validity (#PCDATA)>
+<!ELEMENT MessageInfo (MessageID?, MessageURI?, ContentType?, ContentEncoding?, ContentSize, Recipient, Sender, DateTime?, Validity?)>
+<!ELEMENT DateTime (#PCDATA)>
+<!ELEMENT MessageCount (#PCDATA)>
+<!ELEMENT DeliveryReport (#PCDATA)>
+<!ELEMENT DeliveryMethod (#PCDATA)>
+<!ELEMENT BlockList (InUse?,(EntityList| (AddList?, RemoveList?)))>
+<!ELEMENT GrantList (InUse?,(EntityList| (AddList?, RemoveList?)))>
+<!ELEMENT EntityList (UserID*, ScreenName*, GroupID*)>
+<!ELEMENT AddList (UserID*, ScreenName*, GroupID*)>
+<!ELEMENT RemoveList (UserID*, ScreenName*, GroupID*)>
+<!ELEMENT InUse (#PCDATA)>
+<!ELEMENT ContactListProperties (Property+)>
+<!ELEMENT GroupProperties (Property+, WelcomeNote?)>
+<!ELEMENT OwnProperties (Property+)>
+<!ELEMENT Property (Name, Value?)>
+<!ELEMENT WelcomeNote (ContentType, ContentEncoding?, ContentData)>
+
+<!ELEMENT JoinedRequest (#PCDATA)>
+<!ELEMENT Admin (UserList)>
+<!ELEMENT Mod (UserList)>
+<!ELEMENT Users (UserList)>
+<!ELEMENT SubscribeType (#PCDATA)>
+<!ELEMENT Joined (UserList)>
+<!ELEMENT Left (UserList)>
+<!ELEMENT Logo (ContentType, ContentSize?, ContentEncoding, ContentData)>
+<!ELEMENT ContentType (#PCDATA)>
+<!ELEMENT ContentData (#PCDATA)>
+<!ELEMENT ContentSize (#PCDATA)>
+<!ELEMENT ContentEncoding (#PCDATA)>
+<!ELEMENT AllFunctionsRequest (#PCDATA)>
+<!ELEMENT AllFunctions (WVCSPFeat)>
+<!ELEMENT Functions (WVCSPFeat)>
+<!ELEMENT WVCSPFeat (FundamentalFeat?, PresenceFeat?, IMFeat?, GroupFeat?)>
+<!ELEMENT FundamentalFeat (ServiceFunc?, SearchFunc?, InviteFunc?)>
+<!ELEMENT PresenceFeat (ContListFunc?, PresenceAuthFunc?, PresenceDeliverFunc?, AttListFunc?)>
+<!ELEMENT IMFeat (IMSendFunc?, IMReceiveFunc?, IMAuthFunc?)>
+<!ELEMENT GroupFeat (GroupMgmtFunc?, GroupUseFunc?, GroupAuthFunc?)>
+<!ELEMENT ServiceFunc (GETSPI?)>
+<!ELEMENT SearchFunc (SRCH?, STSRC?)>
+<!ELEMENT InviteFunc (INVIT?, CAINV?)>
+<!ELEMENT ContListFunc (GCLI?, CCLI?, DCLI?, MCLS?)>
+<!ELEMENT PresenceAuthFunc (GETWL?, REACT?, CAAUT?)>
+<!ELEMENT PresenceDeliverFunc (GETPR?, UPDPR?)>
+<!ELEMENT AttListFunc (CALI?, DALI?, GALS?)>
+<!ELEMENT IMSendFunc (MDELIV?, FWMSG?)>
+<!ELEMENT IMReceiveFunc (SETD?, GETLM?, GETM?, REJCM?, NOTIF?, NEWM?)>
+<!ELEMENT IMAuthFunc (GLBLU?, BLENT?)>
+<!ELEMENT GroupMgmtFunc (CREAG?, DELGR?, GETGP?, SETGP?)>
+<!ELEMENT GroupUseFunc (SUBGCN?, GRCHN?)>
+<!ELEMENT GroupAuthFunc (GETGM?, ADDGM?, RMVGM?, MBRAC?, REJEC?)>
+<!ELEMENT GETSPI EMPTY>
+<!ELEMENT SRCH EMPTY>
+<!ELEMENT STSRC EMPTY>
+<!ELEMENT INVIT EMPTY>
+<!ELEMENT CAINV EMPTY>
+
+<!ELEMENT GCLI EMPTY>
+<!ELEMENT CCLI EMPTY>
+<!ELEMENT DCLI EMPTY>
+<!ELEMENT MCLS EMPTY>
+<!ELEMENT GETWL EMPTY>
+<!ELEMENT REACT EMPTY>
+<!ELEMENT CAAUT EMPTY>
+<!ELEMENT GETPR EMPTY>
+<!ELEMENT UPDPR EMPTY>
+<!ELEMENT CALI EMPTY>
+<!ELEMENT DALI EMPTY>
+<!ELEMENT GALS EMPTY>
+<!ELEMENT MDELIV EMPTY>
+<!ELEMENT FWMSG EMPTY>
+<!ELEMENT SETD EMPTY>
+<!ELEMENT GETLM EMPTY>
+<!ELEMENT GETM EMPTY>
+<!ELEMENT REJCM EMPTY>
+<!ELEMENT NOTIF EMPTY>
+<!ELEMENT NEWM EMPTY>
+<!ELEMENT GLBLU EMPTY>
+<!ELEMENT BLENT EMPTY>
+<!ELEMENT CREAG EMPTY>
+<!ELEMENT DELGR EMPTY>
+<!ELEMENT GETGP EMPTY>
+<!ELEMENT SETGP EMPTY>
+<!ELEMENT SUBGCN EMPTY>
+<!ELEMENT GRCHN EMPTY>
+<!ELEMENT GETGM EMPTY>
+<!ELEMENT ADDGM EMPTY>
+<!ELEMENT RMVGM EMPTY>
+<!ELEMENT MBRAC EMPTY>
+<!ELEMENT REJEC EMPTY>
+

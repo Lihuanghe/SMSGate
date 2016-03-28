@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Search xmlns:airsync="AirSync" xmlns:email="Email" xmlns:airsyncbase="AirSyncBase"
+xmlns="Search">
+<Status>1</Status>
+<Response>
+<Store>
+<Status>1</Status>
+<Result>
+<airsync:Class>Email</airsync:Class>
+<LongId>RgAAAAAaty%2f%2b4QxHTJOZnIR0P9qkBwA6pk60fqkEQbWH4Wm%2bnjh7AJKAUQo6AAA6pk60fqkEQbWH4Wm
+%2bnjh7AJKAURrEAAAJ</LongId>
+<airsync:CollectionId>6</airsync:CollectionId>
+<Properties>
+<email:To>"Chris Gray" &lt;chris@contoso.com></email:To>
+<email:From>"Jan Kotas" &lt;jan@contoso.com></email:From>
+<email:Subject>Subject</email:Subject>
+<email:DateReceived>2007-04-02T19:20:32.000Z</email:DateReceived>
+<email:DisplayTo>Chris Gray</email:DisplayTo>
+<email:Read>1</email:Read>
+<airsyncbase:Body>
+<airsyncbase:Type>4</airsyncbase:Type>
+<airsyncbase:Preview>The beginning of this message</airsyncbase:Preview>
+<airsyncbase:EstimatedDataSize>2288</airsyncbase:EstimatedDataSize>
+<airsyncbase:Truncated>1</airsyncbase:Truncated>
+<airsyncbase:Data>Received: from 157.55.97.120 ([157.55.97.120]) by
+contoso.com ([157.55.97.121]) with Microsoft Exchange Server HTTP-DAV ; Mon, 2 Apr 2007
+19:20:32 +0000 From: Jan Kotas &lt;jan@contoso.com> To: Chris Gray &lt;chris@contoso.com>
+Content-Class: urn:content-classes:message Date: Mon, 27 Apr 1998 13:05:29 -0700 Subject:
+Subject Thread-Topic: Topic Message-ID:
+&lt;3AA64EB47EA90441B587E169BE9E387B9280511AC4@contoso.com> Accept-Language: en-US X-MS-Has-
+Attach: X-MS-TNEF-Correlator: Content-Type: text/plain; charset="iso-8859-1" Content-
+Transfer-Encoding: quoted-printable MIME-Version: 1.0
+Body12345678901234567890123456789012345678901234567890123456789012345678901=
+234567890123456789012345678901234567890123456789012345678901234567890123456=
+789012345678901234567890123456789012345678901234567890123456789012345678901=
+23456789012345678901234567890123456789012345678901234567890123456789</airsyncbase:Data>
+</airsyncbase:Body>
+<email:MessageClass>IPM.Note</email:MessageClass>
+<email:InternetCPID>28591</email:InternetCPID>
+<email:Flag/>
+<email:ContentClass>urn:content-classes:message</email:ContentClass>
+<airsyncbase:NativeBodyType>1</airsyncbase:NativeBodyType>
+</Properties>
+</Result>
+<Range>0-0</Range>
+<Total>1</Total>
+</Store>
+</Response>
+</Search>

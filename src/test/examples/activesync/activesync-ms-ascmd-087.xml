@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ItemOperations xmlns:documentlibrary="DocumentLibrary"
+xmlns="ItemOperations">
+<Status>1</Status>
+<Response>
+<Fetch>
+<Status>1</Status>
+<documentlibrary:LinkId>\\somehost\directory\
+ActiveSyncDocumentFetch.txt</documentlibrary:LinkId>
+<Properties>
+<Range>10-19</Range>
+<Total>26</Total>
+<Data>S0xNTk9QUVJTVA==</Data>
+<Version>2005-04-03T12:34:56.345Z</Version>
+</Properties>
+</Fetch>
+</Response>
+</ItemOperations>

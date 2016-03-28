@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sync xmlns="AirSync" xmlns:airsyncbase="AirSyncBase">
+<Collections>
+<Collection>
+<SyncKey>2</SyncKey>
+<CollectionId>17</CollectionId>
+<DeletesAsMoves/>
+<GetChanges/>
+<Options>
+<airsyncbase:BodyPreference>
+<airsyncbase:Type>4</airsyncbase:Type>
+<airsyncbase:TruncationSize>512</airsyncbase:TruncationSize>
+</airsyncbase:BodyPreference>
+<MIMESupport>1</MIMESupport>
+</Options>
+</Collection>
+</Collections>
+</Sync>

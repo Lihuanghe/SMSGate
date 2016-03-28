@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sync xmlns="AirSync" xmlns:airsyncbase="AirSyncBase" xmlns:contacts="Contacts">
+<Collections>
+<Collection>
+<SyncKey>846142473</SyncKey>
+<CollectionId>2</CollectionId>
+<Status>1</Status>
+<Commands>
+<Add>
+<ServerId>2:1</ServerId>
+<ApplicationData>
+<airsyncbase:Body>
+<airsyncbase:Type>1</airsyncbase:Type>
+<airsyncbase:EstimatedDataSize>0</airsyncbase:EstimatedDataSize>
+<airsyncbase:Truncated>1</airsyncbase:Truncated>
+</airsyncbase:Body>
+<contacts:Department>Accounting</contacts:Department>
+<contacts:Email1Address>"elvin@contoso.com"
+&lt;elvin@contoso.com&gt;</contacts:Email1Address>
+<contacts:FileAs>Sills, Elvin</contacts:FileAs>
+<contacts:FirstName>Elvin</contacts:FirstName>
+<contacts:CompanyName>Contoso, Inc.</contacts:CompanyName>
+<contacts:LastName>Sills</contacts:LastName>
+<contacts:JobTitle>Assistant Manager</contacts:JobTitle>
+<contacts:OfficeLocation>123</contacts:OfficeLocation>
+<airsyncbase:NativeBodyType>1</airsyncbase:NativeBodyType>
+</ApplicationData>
+</Add>
+</Commands>
+</Collection>
+</Collections>
+</Sync>

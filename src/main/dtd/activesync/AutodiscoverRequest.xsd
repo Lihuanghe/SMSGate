@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn338937(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns=
+    "http://schemas.microsoft.com/exchange/autodiscover/mobilesync/requestschema/2006" 
+    targetNamespace=
+    "http://schemas.microsoft.com/exchange/autodiscover/mobilesync/requestschema/2006" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:element name="Autodiscover">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Request" type="RequestType"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="RequestType">
+    <xs:sequence>
+      <xs:sequence>
+        <xs:element name="EMailAddress" type="xs:string"/>
+        <xs:element name="AcceptableResponseSchema" type="xs:string"/>
+      </xs:sequence>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

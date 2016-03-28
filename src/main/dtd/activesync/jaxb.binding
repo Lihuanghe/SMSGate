@@ -1,0 +1,17 @@
+<jaxb:bindings xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  version="1.0">
+  <jaxb:bindings schemaLocation="Contacts.xsd">
+    <jaxb:bindings node="/xs:schema/xs:group[@name='TopLevelSchemaProps']/xs:sequence/xs:choice/xs:element[@name='Categories']">
+      <jaxb:factoryMethod name="TypeContactsTopLevelSchemaPropsCategories"/>
+    </jaxb:bindings>
+    <jaxb:bindings node="/xs:schema/xs:group[@name='GhostingProps']/xs:sequence/xs:choice/xs:element[@name='Categories']">
+      <jaxb:factoryMethod name="TypeContactsGhostingPropsCategories"/>
+    </jaxb:bindings>
+  </jaxb:bindings>
+  <jaxb:bindings schemaLocation="Calendar.xsd">
+    <jaxb:bindings node="/xs:schema/xs:group[@name='TopLevelSchemaProps']/xs:sequence/xs:choice/xs:element[@name='Subject']">
+      <jaxb:factoryMethod name="TypeCalendarTopLevelSchemaPropsSubject"/>
+    </jaxb:bindings>
+  </jaxb:bindings>
+</jaxb:bindings>

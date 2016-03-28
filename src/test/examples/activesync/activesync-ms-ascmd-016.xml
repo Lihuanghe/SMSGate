@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sync xmlns:calendar="Calendar" xmlns:airsyncbase="AirSyncBase" xmlns="AirSync">
+<Collections>
+<Collection>
+<SyncKey>1024910365</SyncKey>
+<CollectionId>1</CollectionId>
+<Status>1</Status>
+<Commands>
+<Add>
+<ServerId>1:1</ServerId>
+<ApplicationData>
+<calendar:TimeZone>aAEAACgARwBNAFQALQAwADYAOgAwADAAKQAgAEMAZQBuAHQAcgBhAGwAIABUAGkAbQBlACAAKA
+BVAFMAIAAmACAAQwAAAAsAAAABAAIAAAAAAAAAAAAAACgARwBNAFQALQAwADYAOgAwADAAKQAgAEMAZQBuAHQAcgBhAGw
+AIABUAGkAbQBlACAAKABVAFMAIAAmACAAQwAAAAMAAAACAAIAAAAAAAAAxP///w==</calendar:TimeZone>
+<calendar:DtStamp>20091020T161724Z</calendar:DtStamp>
+<calendar:StartTime>20091020T163000Z</calendar:StartTime>
+<calendar:Subject>Status Meeting</calendar:Subject>
+<calendar:UID>040000008200E00074C5B7101A82E0080000000039F2FBCEA051CA0100000000000000001000000
+0D9221B7FF439514E87E0D2FE13295CE2</calendar:UID>
+<calendar:OrganizerName>Kim Truelsen</calendar:OrganizerName>
+<calendar:OrganizerEmail>kim@contoso.com</calendar:OrganizerEmail>
+<calendar:Attendees>
+<calendar:Attendee>
+<calendar:Email>toby@contoso.com</calendar:Email>
+<calendar:Name>Toby Nixon</calendar:Name>
+<calendar:AttendeeType>1</calendar:AttendeeType>
+</calendar:Attendee>
+</calendar:Attendees>
+<calendar:Location>My office</calendar:Location>
+<calendar:EndTime>20091020T173000Z</calendar:EndTime>
+<calendar:Recurrence>
+<calendar:Type>1</calendar:Type>
+<calendar:Interval>1</calendar:Interval>
+<calendar:DayOfWeek>4</calendar:DayOfWeek>
+</calendar:Recurrence>
+<airsyncbase:Body>
+<airsyncbase:Type>3</airsyncbase:Type>
+<airsyncbase:EstimatedDataSize>275</airsyncbase:EstimatedDataSize>
+<airsyncbase:Truncated>1</airsyncbase:Truncated>
+</airsyncbase:Body>
+<calendar:Sensitivity>0</calendar:Sensitivity>
+<calendar:BusyStatus>1</calendar:BusyStatus>
+<calendar:AllDayEvent>0</calendar:AllDayEvent>
+<calendar:Reminder>15</calendar:Reminder>
+<calendar:Exceptions>
+<calendar:Exception>
+<calendar:DtStamp>20091020T162543Z</calendar:DtStamp>
+<calendar:Location>Your office</calendar:Location>
+<airsyncbase:Body>
+<airsyncbase:Type>3</airsyncbase:Type>
+<airsyncbase:EstimatedDataSize>273</airsyncbase:EstimatedDataSize>
+<airsyncbase:Truncated>1</airsyncbase:Truncated>
+</airsyncbase:Body>
+<calendar:Categories />
+<calendar:ExceptionStartTime>20091020T163000Z</calendar:ExceptionStartTime>
+<calendar:BusyStatus>2</calendar:BusyStatus>
+<calendar:AppointmentReplyTime>20091020T180257Z</calendar:AppointmentReplyTime>
+<calendar:ResponseType>3</calendar:ResponseType>
+</calendar:Exception>
+<calendar:Exception>
+<calendar:DtStamp>20091027T161136Z</calendar:DtStamp>
+<calendar:StartTime>20091027T163000Z</calendar:StartTime>
+<calendar:EndTime>20091027T173000Z</calendar:EndTime>
+<calendar:Categories />
+<calendar:ExceptionStartTime>20091027T163000Z</calendar:ExceptionStartTime>
+<calendar:BusyStatus>2</calendar:BusyStatus>
+<calendar:AppointmentReplyTime>20091027T161136Z</calendar:AppointmentReplyTime>
+<calendar:ResponseType>3</calendar:ResponseType>
+</calendar:Exception>
+</calendar:Exceptions>
+<calendar:MeetingStatus>3</calendar:MeetingStatus>
+<airsyncbase:NativeBodyType>3</airsyncbase:NativeBodyType>
+<calendar:ResponseRequested>1</calendar:ResponseRequested>
+<calendar:ResponseType>2</calendar:ResponseType>
+</ApplicationData>
+</Add>
+<Add>
+<ServerId>1:2</ServerId>
+<ApplicationData>
+<calendar:TimeZone>4AEAACgARwBNAFQALQAwADgAOgAwADAAKQAgAFAAYQBjAGkAZgBpAGMAIABUAGkAbQBlACAAKA
+BVAFMAIAAmACAAQwAAAAsAAAABAAIAAAAAAAAAAAAAACgARwBNAFQALQAwADgAOgAwADAAKQAgAFAAYQBjAGkAZgBpAGM
+AIABUAGkAbQBlACAAKABVAFMAIAAmACAAQwAAAAMAAAACAAIAAAAAAAAAxP///w==</calendar:TimeZone>
+<calendar:DtStamp>20091027T161226Z</calendar:DtStamp>
+<calendar:StartTime>20091029T163000Z</calendar:StartTime>
+<calendar:Subject>Planning meeting</calendar:Subject>
+<calendar:UID>040000008200E00074C5B7101A82E008000000007D5639462057CA0100000000000000001000000
+065870766FB4D69479C217C16F9AD5E5B</calendar:UID>
+<calendar:OrganizerName>Kim Truelsen</calendar:OrganizerName>
+<calendar:OrganizerEmail>kim@contoso.com</calendar:OrganizerEmail>
+<calendar:Location />
+<calendar:EndTime>20091029T173000Z</calendar:EndTime>
+<airsyncbase:Body>
+<airsyncbase:Type>3</airsyncbase:Type>
+<airsyncbase:EstimatedDataSize>238</airsyncbase:EstimatedDataSize>
+<airsyncbase:Truncated>1</airsyncbase:Truncated>
+</airsyncbase:Body>
+<calendar:Sensitivity>0</calendar:Sensitivity>
+<calendar:BusyStatus>2</calendar:BusyStatus>
+<calendar:AllDayEvent>0</calendar:AllDayEvent>
+<calendar:Reminder>15</calendar:Reminder>
+<calendar:MeetingStatus>0</calendar:MeetingStatus>
+<airsyncbase:NativeBodyType>3</airsyncbase:NativeBodyType>
+<calendar:ResponseRequested>1</calendar:ResponseRequested>
+<calendar:ResponseType>1</calendar:ResponseType>
+</ApplicationData>
+</Add>
+</Commands>
+</Collection>
+</Collections>
+</Sync>

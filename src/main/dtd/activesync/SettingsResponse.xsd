@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn292992(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:rm=
+    "RightsManagement" xmlns="Settings" targetNamespace="Settings" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:include schemaLocation="Settings.xsd"/>
+  <xs:import namespace="RightsManagement" schemaLocation=
+      "RightsManagement.xsd"/>
+  <xs:element name="DeviceInformationResponse">
+    <xs:complexType>
+      <xs:all>
+        <xs:element ref="Status" minOccurs="0"/>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SettingsResponse">
+    <xs:complexType>
+      <xs:all>
+        <xs:element ref="Status" minOccurs="0"/>
+        <xs:element name="Oof" minOccurs="0">
+          <xs:complexType>
+            <xs:all>
+              <xs:element ref="Status" minOccurs="0"/>
+              <xs:element name="Get" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element ref="OofState" minOccurs="0"/>
+                    <xs:element ref="StartTime"/>
+                    <xs:element ref="EndTime"/>
+                    <xs:element ref="OofMessage" minOccurs="0" maxOccurs="3"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="DeviceInformationResponse" minOccurs="0"/>
+        <xs:element name="DevicePassword" minOccurs="0">
+          <xs:complexType>
+            <xs:all>
+              <xs:element ref="Status" minOccurs="0"/>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="UserInformation" minOccurs="0">
+          <xs:complexType>
+            <xs:all>
+              <xs:element ref="Status" minOccurs="0"/>
+              <xs:element name="Get" minOccurs="0">
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element ref="Accounts" minOccurs="0"/>
+                  </xs:all>
+                </xs:complexType>
+              </xs:element>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="RightsManagementInformation" minOccurs="0">
+          <xs:complexType>
+            <xs:all>
+              <xs:element ref="Status" minOccurs="0"/>
+              <xs:element name="Get">
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element ref="rm:RightsManagementTemplates"/>
+                  </xs:all>
+                </xs:complexType>
+              </xs:element>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

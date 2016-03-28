@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SendMail xmlns="ComposeMail">
+<ClientId>633916348086136194</ClientId>
+<SaveInSentItems />
+<Mime>From: testuser1
+To: testuser2
+Cc:
+Bcc:
+Subject:
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2900.3350
+This is the email body content.</Mime>
+</SendMail>

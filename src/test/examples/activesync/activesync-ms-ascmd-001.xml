@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Settings xmlns="Settings">
+<DeviceInformation>
+<Set>
+<Model>...</Model>
+<IMEI>...</IMEI>
+<FriendlyName>...</FriendlyName>
+<OS>...</OS>
+<OSLanguage>...</OSLanguage>
+<PhoneNumber>...</PhoneNumber>
+<MobileOperator>...</MobileOperator>
+<UserAgent>...</UserAgent>
+</Set>
+</DeviceInformation>
+</Settings>

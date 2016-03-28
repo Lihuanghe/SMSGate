@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SmartReply xmlns="ComposeMail">
+<ClientId>d7b99822-685a-4a40-8dfb-87a114926986</ClientId>
+<SaveInSentItems />
+<Source>
+<FolderId>5</FolderId>
+<ItemId>5:10</ItemId>
+</Source>
+<Mime>From: testuser1
+To: "Test User 2" &lt;testuser2@contoso.com&gt;
+Cc:
+Bcc:
+Subject: RE: Lunch
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2900.3350
+This is the body of the smart reply message.</Mime>
+</SmartReply>

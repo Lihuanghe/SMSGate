@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SmartForward xmlns="ComposeMail">
+<ClientId>634145285982398784</ClientId>
+<Source>
+<LongId>RgAAAAA%2fygDboRrKQ6odHngUY8KtBwCwZCmLZplDQJqLAuQKTJwjAAAAjGzeAACwZCmLZplDQJqLAuQKTJw
+jAAAAjmvbAAAJ</LongId>
+</Source>
+<Mime>From: anat@contoso.com
+To: chris@contoso.com
+Cc:
+Bcc:
+Subject: Presentation
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2900.3350
+This is the content of the forwarded message.</Mime>
+</SmartForward>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE ActiveSync PUBLIC "-//MICROSOFT//DTD ActiveSync//EN" "http://www.microsoft.com/">
+<SendMail xmlns="ComposeMail">
+  <ClientId>1</ClientId>
+  <SaveInSentItems/>
+  <Mime>RnJvbTogZmFrZXVzZXJAZXhhbXBsZS5jb20KVG86IGZha2V1c2VyQGV4YW1wbGUuY29tCkNjOgpCY2M6ClN1YmplY3Q6IEZyb20gTlN5bmMKTUlNRS1WZXJzaW9uOiAxLjAKQ29udGVudC1UeXBlOiB0ZXh0L3BsYWluOyBjaGFyc2V0PSZxdW90O2lzby04ODU5LTEmcXVvdDsKQ29udGVudC1UcmFuc2Zlci1FbmNvZGluZzogN2JpdApYLU1pbWVPTEU6IFByb2R1Y2VkIEJ5IE1pY3Jvc29mdCBNaW1lT0xFIFY2LjAwLjI5MDAuMzM1MApUaGlzIGlzIHRoZSBib2R5IHRleHQuCg==</Mime>
+</SendMail>

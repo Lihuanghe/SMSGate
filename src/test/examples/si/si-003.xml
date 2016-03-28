@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE si PUBLIC "-//WAPFORUM//DTD SI 1.0//EN"
+					"http://www.wapforum.org/DTD/si.dtd">
+<si>
+	<indication href="http://wap.yahoo.fr/"
+				si-id="si-id-003"
+				created="2003-01-25T14:15:15Z"
+				si-expires="2010-01-25T00:00:00Z"
+				action="signal-high">
+		Can you feel it ?
+	</indication>
+	<info>
+		<item class="test1"/>
+		<item class="test2"/>
+	</info>
+</si>

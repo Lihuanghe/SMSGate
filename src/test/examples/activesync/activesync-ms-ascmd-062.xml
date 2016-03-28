@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sync xmlns:email="Email" xmlns:email2="Email2" xmlns:airsyncbase="AirSyncBase"
+xmlns="AirSync">
+<Collections>
+<Collection>
+<SyncKey>1744744472</SyncKey>
+<CollectionId>5</CollectionId>
+<Status>1</Status>
+<Commands>
+<Add>
+<ServerId>5:1</ServerId>
+<ApplicationData>
+<email:To>"Anat Kerry" &lt;anat@contoso.com&gt;</email:To>
+<email:From>"Chris Gray" &lt;chris@contoso.com&gt;</email:From>
+<email:Subject>TestMeeting</email:Subject>
+<email:DateReceived>2010-04-06T17:02:26.332Z</email:DateReceived>
+<email:DisplayTo>Anat Kerry</email:DisplayTo>
+<email:ThreadTopic>TestMeeting</email:ThreadTopic>
+<email:Importance>1</email:Importance>
+<email:Read>0</email:Read>
+<airsyncbase:Body>
+<airsyncbase:Type>3</airsyncbase:Type>
+<airsyncbase:EstimatedDataSize>432</airsyncbase:EstimatedDataSize>
+<airsyncbase:Truncated>1</airsyncbase:Truncated>
+</airsyncbase:Body>
+<email:MessageClass>IPM.Schedule.Meeting.Request</email:MessageClass>
+<email:MeetingRequest>
+<email:AllDayEvent>0</email:AllDayEvent>
+<email:StartTime>2010-05-03T16:00:00.000Z</email:StartTime>
+<email:DtStamp>2010-04-06T17:02:19.499Z</email:DtStamp>
+<email:EndTime>2010-05-03T17:00:00.000Z</email:EndTime>
+<email:InstanceType>0</email:InstanceType>
+<email:Location>My Office</email:Location>
+<email:Organizer>"Chris Gray" &lt;chris@contoso.com&gt;</email:Organizer>
+<email:Reminder>900</email:Reminder>
+<email:ResponseRequested>1</email:ResponseRequested>
+<email:Sensitivity>0</email:Sensitivity>
+<email:BusyStatus>2</email:BusyStatus>
+<email:TimeZone>4AEAACgARwBNAFQALQAwADgAOgAwADAAKQAgAFAAYQBjAGkAZgBpAGMAIABUAGkAbQBlACAAKABVA
+FMAIAAmACAAQwAAAAsAAAABAAIAAAAAAAAAAAAAACgARwBNAFQALQAwADgAOgAwADAAKQAgAFAAYQBjAGkAZgBpAGMAIA
+BUAGkAbQBlACAAKABVAFMAIAAmACAAQwAAAAMAAAACAAIAAAAAAAAAxP///w==</email:TimeZone>
+<email:GlobalObjId>BAAAAIIA4AB0xbcQGoLgCAAAAAASLNXrHbfKAQAAAAAAAAAAEAAAAMqTtDRC5TFKivAtfhM9F+
+8=</email:GlobalObjId>
+<email2:MeetingMessageType>1</email2:MeetingMessageType>
+</email:MeetingRequest>
+<email:InternetCPID>28591</email:InternetCPID>
+<email:Flag />
+<email:ContentClass>urn:content-classes:calendarmessage</email:ContentClass>
+<airsyncbase:NativeBodyType>3</airsyncbase:NativeBodyType>
+<email2:ConversationId>...</email2:ConversationId>
+<email2:ConversationIndex>...</email2:ConversationIndex>
+<email:Categories />
+</ApplicationData>
+</Add>
+</Commands>
+</Collection>
+</Collections>
+</Sync>

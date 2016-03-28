@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!DOCTYPE SyncML PUBLIC "-//SYNCML//DTD SyncML 1.1//EN" "http://www.syncml.org/docs/syncml_represent_v11_20020213.dtd">
+<SyncML xmlns='SYNCML:SYNCML1.1'>
+    <SyncHdr>
+        <VerDTD>1.1</VerDTD>
+        <VerProto>DM/1.1</VerProto>
+        <SessionID>0</SessionID>
+        <MsgID>0</MsgID>
+        <Target>
+            <LocURI>My_SyncML_DM_Device</LocURI>
+        </Target>
+        <Source>
+            <LocURI>http://www.TheUltimateManagementServer.com</LocURI>
+        </Source>
+    </SyncHdr>
+    <SyncBody>
+        <Add>
+            <CmdID>1</CmdID>
+            <Item>
+                <Target>
+                    <LocURI>
+                    ./SyncML/DMAcc/UltimateManagement
+                    </LocURI>
+                </Target>
+                <Meta>
+                    <Format xmlns="syncml:metinf">node</Format>
+                </Meta>
+                <Data/>
+            </Item>
+            <Item>
+                <Target>
+                    <LocURI>./SyncML/DMAcc/UltimateManagement/Addr</LocURI>
+                </Target>
+                <Data>www.TheUltimateManagementServer.com</Data>
+            </Item>
+            <Item>
+                <Target>
+                    <LocURI>./SyncML/Con/My_ISP</LocURI>
+                </Target>
+            </Item>
+            <Item>
+                <Target>
+                    <LocURI>./SyncML/Con/My_ISP/PX/Addr</LocURI>
+                </Target>
+                <Data>123.123.123.123</Data>
+            </Item>
+            <!--...and so on until all bootstrap parameters are transferred.-->
+        </Add>
+        <Final/>
+    </SyncBody>
+</SyncML>

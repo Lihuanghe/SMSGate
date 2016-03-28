@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!DOCTYPE SyncML PUBLIC "-//SYNCML//DTD SyncML 1.1//EN" "http://www.syncml.org/docs/syncml_represent_v11_20020213.dtd">
+<SyncML xmlns='SYNCML:SYNCML1.1'>
+    <SyncHdr>
+        <VerDTD>1.1</VerDTD>
+        <VerProto>SyncML/1.1</VerProto>
+        <SessionID>1</SessionID>
+        <MsgID>2</MsgID>
+        <Target><LocURI>http://www.syncml.org/sync-server</LocURI></Target>
+        <Source><LocURI>IMEI:493005100592800</LocURI></Source>
+    </SyncHdr>
+    <SyncBody>
+        <Status>
+            <CmdID>1</CmdID>
+            <MsgRef>1</MsgRef><CmdRef>0</CmdRef><Cmd>SyncHdr</Cmd>
+            <TargetRef>IMEI:493005100592800</TargetRef>
+            <SourceRef> http://www.syncml.org/sync-server </SourceRef>
+            <Data>212</Data> <!--Statuscode for OK, authenticated for session-->
+        </Status>
+        <Status>
+            <CmdID>2</CmdID>
+            <MsgRef>1</MsgRef><CmdRef>5</CmdRef><Cmd>Alert</Cmd>
+            <TargetRef>./dev-contacts</TargetRef>
+            <SourceRef>./contacts/james_bond</SourceRef>
+            <Data>200</Data> <!--Statuscode for Success-->
+            <Item>
+                <Data>
+                <Anchor xmlns='syncml:metinf'><Next>200005022T093223Z </Next></Anchor>
+                </Data>
+            </Item>
+        </Status>
+        <Sync>
+            <CmdID>3</CmdID>
+            <Target><LocURI>./contacts/james_bond</LocURI></Target>
+            <Source><LocURI>./dev-contacts</LocURI></Source>
+            <Meta>
+                <Mem xmlns='syncml:metinf'>
+                    <FreeMem>8100</FreeMem>
+                    <!--Free memory (bytes) in Calendar database on a device -->
+                    <FreeID>81</FreeID>
+                    <!--Number of free records in Calendar database-->
+                </Mem>
+            </Meta>
+            <Replace>
+                <CmdID>4</CmdID>
+                <Meta><Type xmlns='syncml:metinf'>text/x-vcard</Type></Meta>
+                <Item>
+                    <Source><LocURI>1012</LocURI></Source>
+                    <Data><!--The vCard data would be placed here.--></Data>
+                </Item>
+            </Replace>
+        </Sync>
+        <Final/>
+    </SyncBody>
+</SyncML>

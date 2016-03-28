@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResolveRecipients xmlns="ResolveRecipients">
+<To>all@contoso.com</To>
+<To>chris@contoso.com</To>
+<To>Anat</To>
+<To>myPersonalDistributionList</To>
+<Options>
+<MaxAmbiguousRecipients>2</MaxAmbiguousRecipients>
+<Availability>
+<StartTime>2008-12-01T08:00:00.000Z</StartTime>
+<EndTime>2008-12-03T08:00:00.000Z</EndTime>
+</Availability>
+</Options>
+</ResolveRecipients>

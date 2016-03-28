@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!DOCTYPE WV-CSP-Message PUBLIC "-//OMA//DTD WV-CSP 1.1//EN" "/home/ricky/NetBeansProjects/wbxml-stream/dtd/wv-csp_1_1.dtd">
+<WV-CSP-Message>
+   <Session>
+      <SessionDescriptor>
+         <SessionType>Inband</SessionType>
+
+         <SessionID>im.user.com#48815@server.com</SessionID>
+      </SessionDescriptor>
+
+      <Transaction>
+         <TransactionDescriptor>
+            <TransactionMode>Request</TransactionMode>
+
+            <TransactionID>IMApp01#12345@NOK5110</TransactionID>
+         </TransactionDescriptor>
+
+         <TransactionContent>
+            <BlockEntity-Request>
+               <BlockList>
+                  <InUse>T</InUse>
+
+                  <AddList />
+
+                  <RemoveList>
+                     <UserID>wv:matthias@salamander.com</UserID>
+                  </RemoveList>
+               </BlockList>
+
+               <GrantList>
+                  <InUse />
+
+                  <AddList>
+                     <UserID>wv:matthias@salamander.com</UserID>
+                  </AddList>
+
+                  <RemoveList />
+               </GrantList>
+            </BlockEntity-Request>
+         </TransactionContent>
+      </Transaction>
+   </Session>
+</WV-CSP-Message>
+

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn292953(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:airsyncbase=
+    "AirSyncBase" xmlns="ComposeMail" targetNamespace="ComposeMail" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:import namespace="AirSyncBase" schemaLocation="AirSyncBase.xsd"/>
+  <xs:element name="ClientId">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:minLength value="1"/>
+        <xs:maxLength value="40"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="AccountId" type="xs:string"/>
+  <xs:element name="SaveInSentItems" type="airsyncbase:EmptyTag"/>
+  <xs:element name="ReplaceMime" type="airsyncbase:EmptyTag"/>
+  <xs:element name="Mime" type="xs:string"/>
+  <xs:element name="Status" type="xs:integer"/>
+  <xs:element name="Source">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="FolderId" minOccurs="0">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="1"/>
+              <xs:maxLength value="64"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="ItemId" minOccurs="0">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="1"/>
+              <xs:maxLength value="64"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="LongId" minOccurs="0">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:minLength value="1"/>
+              <xs:maxLength value="256"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="InstanceId" type="xs:string" minOccurs="0"/>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

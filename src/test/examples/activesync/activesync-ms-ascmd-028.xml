@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ItemOperations xmlns:airsync="AirSync" xmlns:email="Email" xmlns:email2="Email2" xmlns="ItemOperations" xmlns:airsyncbase="AirSyncBase">
+<Status>1</Status>
+<Response>
+<Fetch>
+  <Status>1</Status>
+  <airsync:CollectionId>7</airsync:CollectionId>
+  <airsync:ServerId>7:1</airsync:ServerId>
+  <airsync:Class>Email</airsync:Class>
+  <Properties>
+    <email:To>"deviceuser" &lt;anat@contoso.com&gt;</email:To>
+    <email:Cc>"deviceuser3" &lt;chris@contoso.com.com&gt;</email:Cc>
+    <email:From>"deviceuser2" &lt;dag@contoso.com&gt;</email:From>
+    <email:Subject>Subject</email:Subject>
+    <email:DateReceived>2007-05-08T17:29:07.890Z</email:DateReceived>
+    <email:DisplayTo>DeviceUserDisplayName</email:DisplayTo>
+    <email:ThreadTopic>Subject</email:ThreadTopic>
+    <email:Importance>1</email:Importance>
+    <email:Read>0</email:Read>
+    <airsyncbase:Body>
+      <airsyncbase:Type>1</airsyncbase:Type>
+      <airsyncbase:EstimatedDataSize>20
+      </airsyncbase:EstimatedDataSize>
+      <airsyncbase:Data>Body as plain text</airsyncbase:Data>
+    </airsyncbase:Body>
+    <email:MessageClass>IPM.Note</email:MessageClass>
+    <email:InternetCPID>28591</email:InternetCPID>
+    <email:Flag />
+    <email:ContentClass>urn:content-classes:message</email:ContentClass>
+    <airsyncbase:NativeBodyType>1</airsyncbase:NativeBodyType>
+    <email2:ConversationId>...</email2:ConversationId>
+    <email2:ConversationIndex>...</email2:ConversationIndex>
+  </Properties>
+</Fetch>
+</Response>
+</ItemOperations>

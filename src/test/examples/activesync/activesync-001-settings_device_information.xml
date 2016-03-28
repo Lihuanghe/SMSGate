@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE ActiveSync PUBLIC "-//MICROSOFT//DTD ActiveSync//EN" "http://www.microsoft.com/">
+<Settings xmlns="Settings">
+  <DeviceInformation>
+    <Set>
+      <Model>0.11-beta</Model>
+      <IMEI>1234567890</IMEI>
+      <FriendlyName>Test Device</FriendlyName>
+      <OS>Linux</OS>
+      <OSLanguage>de_DE</OSLanguage>
+      <PhoneNumber>+49301234567890</PhoneNumber>
+      <MobileOperator>O2</MobileOperator>
+      <UserAgent>libwbxml</UserAgent>
+    </Set>
+  </DeviceInformation>
+</Settings>

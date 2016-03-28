@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE o-ex:rights PUBLIC "-//OMA//DTD DRMREL 1.0//EN" "http://www.openmobilealliance.org/DTD/drmrel10.dtd">
+<o-ex:rights xmlns:o-ex="http://odrl.net/1.1/ODRL-EX" xmlns:o-dd="http://odrl.net/1.1/ODRL-DD">
+    <o-ex:context>
+        <o-dd:version>1.0</o-dd:version>
+    </o-ex:context>
+    <o-ex:agreement>
+        <o-ex:asset>
+            <o-ex:context>
+                <o-dd:uid>cid:4567829547@foo.com</o-dd:uid>
+            </o-ex:context>
+        </o-ex:asset>
+        <o-ex:permission>
+            <o-dd:play/>
+        </o-ex:permission>
+    </o-ex:agreement>
+</o-ex:rights>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Search xmlns="Search" xmlns:airsync="AirSync">
+<Store>
+<Name>Mailbox</Name>
+<Query>
+<And>
+<airsync:CollectionId>7</airsync:CollectionId>
+<FreeText>Presentation</FreeText>
+</And>
+</Query>
+<Options>
+<RebuildResults />
+<Range>0-4</Range>
+<DeepTraversal/>
+</Options>
+</Store>
+</Search>

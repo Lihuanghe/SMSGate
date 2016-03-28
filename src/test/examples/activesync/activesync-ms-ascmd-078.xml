@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ValidateCert xmlns="ValidateCert">
+<CertificateChain>
+<Certificate>MIICYjCCAcugAwIBAgIUYGs8jZbX0Vxj/0CIrh8...</Certificate>
+<Certificate>MIIB8zCCAVygAwIBAgIUdhWamYEKM9eaFVFSylR...</Certificate>
+<Certificate>MIIB8zCCAVygAwIBAgIU9uwT6UARSuw1KdJmYN6...</Certificate>
+<Certificate>MIIB8zCCAVygAwIBAgIUB0959dCBM5WSLg7NuM4...</Certificate>
+<Certificate>MIIB8zCCAVygAwIBAgIUGFjVCBrvrguSaNxziWN...</Certificate>
+</CertificateChain>
+<Certificates>
+<Certificate>MIICYjCCAcugAwIBAgIUYGs8jZbX0VxjObu4nw0...</Certificate>
+</Certificates>
+<CheckCRL>1</CheckCRL>
+</ValidateCert>

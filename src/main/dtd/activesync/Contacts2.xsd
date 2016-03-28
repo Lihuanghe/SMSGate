@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn338930(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:airsyncbase=
+    "AirSyncBase" xmlns="Contacts2" targetNamespace="Contacts2" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:import namespace="AirSyncBase" schemaLocation="AirSyncBase.xsd"/>
+  <xs:element name="CustomerId" type="xs:string"/>
+  <xs:element name="GovernmentId" type="xs:string"/>
+  <xs:element name="IMAddress" type="xs:string"/>
+  <xs:element name="IMAddress2" type="xs:string"/>
+  <xs:element name="IMAddress3" type="xs:string"/>
+  <xs:element name="ManagerName" type="xs:string"/>
+  <xs:element name="CompanyMainPhone" type="xs:string"/>
+  <xs:element name="AccountName" type="xs:string"/>
+  <xs:element name="NickName" type="xs:string"/>
+  <xs:element name="MMS" type="xs:string"/>
+  <xs:group name="AllProps">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="CustomerId"/>
+        <xs:element ref="GovernmentId"/>
+        <xs:element ref="IMAddress"/>
+        <xs:element ref="IMAddress2"/>
+        <xs:element ref="IMAddress3"/>
+        <xs:element ref="ManagerName"/>
+        <xs:element ref="CompanyMainPhone"/>
+        <xs:element ref="AccountName"/>
+        <xs:element ref="NickName"/>
+        <xs:element ref="MMS"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="GhostingProps">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="CustomerId" type="airsyncbase:EmptyTag"/>
+        <xs:element name="GovernmentId" type="airsyncbase:EmptyTag"/>
+        <xs:element name="IMAddress" type="airsyncbase:EmptyTag"/>
+        <xs:element name="IMAddress2" type="airsyncbase:EmptyTag"/>
+        <xs:element name="IMAddress3" type="airsyncbase:EmptyTag"/>
+        <xs:element name="ManagerName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="CompanyMainPhone" type="airsyncbase:EmptyTag"/>
+        <xs:element name="AccountName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="NickName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="MMS" type="airsyncbase:EmptyTag"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="TopLevelSchemaProps">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="CustomerId" type="airsyncbase:EmptyTag"/>
+        <xs:element name="GovernmentId" type="airsyncbase:EmptyTag"/>
+        <xs:element name="IMAddress" type="airsyncbase:EmptyTag"/>
+        <xs:element name="IMAddress2" type="airsyncbase:EmptyTag"/>
+        <xs:element name="IMAddress3" type="airsyncbase:EmptyTag"/>
+        <xs:element name="ManagerName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="CompanyMainPhone" type="airsyncbase:EmptyTag"/>
+        <xs:element name="AccountName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="NickName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="MMS" type="airsyncbase:EmptyTag"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+</xs:schema>

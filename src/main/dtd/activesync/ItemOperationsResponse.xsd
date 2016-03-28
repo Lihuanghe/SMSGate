@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn338952(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:airsyncbase=
+    "AirSyncBase" xmlns:airsync="AirSync" xmlns:documentlibrary=
+    "DocumentLibrary" xmlns:search="Search" xmlns="ItemOperations" 
+    targetNamespace="ItemOperations" elementFormDefault="qualified" 
+    attributeFormDefault="unqualified">
+  <xs:include schemaLocation="ItemOperations.xsd"/>
+  <xs:import namespace="AirSync" schemaLocation="AirSync.xsd"/>
+  <xs:import namespace="AirSyncBase" schemaLocation="AirSyncBase.xsd"/>
+  <xs:import namespace="DocumentLibrary" schemaLocation="DocumentLibrary.xsd"/>
+  <xs:import namespace="Search" schemaLocation="Search.xsd"/>
+  <xs:element name="ItemOperationsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Status"/>
+        <xs:element name="Response" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Move" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element ref="Status"/>
+                    <xs:element ref="ConversationId"/>
+                  </xs:all>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="EmptyFolderContents" minOccurs="0" 
+                  maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element ref="Status"/>
+                    <xs:element ref="airsync:CollectionId"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Fetch" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element ref="Status"/>
+                    <xs:element ref="airsync:CollectionId" minOccurs="0"/>
+                    <xs:element ref="airsync:ServerId" minOccurs="0"/>
+                    <xs:element ref="search:LongId" minOccurs="0"/>
+                    <xs:element ref="airsync:Class" minOccurs="0"/>
+                    <xs:element ref="documentlibrary:LinkId" minOccurs="0"/>
+                    <xs:element ref="Properties" minOccurs="0"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

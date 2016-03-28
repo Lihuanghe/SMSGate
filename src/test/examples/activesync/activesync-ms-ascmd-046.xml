@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Search xmlns="Search">
+<Store>
+<Name>GAL</Name>
+<Query>Anat</Query>
+<Options>
+<Range>0-1</Range>
+<RebuildResults/>
+<DeepTraversal/>
+</Options>
+</Store>
+</Search>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MoveItems xmlns="Move">
+<Move>
+<SrcMsgId>5:1</SrcMsgId>
+<SrcFldId>5</SrcFldId>
+<DstFldId>14</DstFldId>
+</Move>
+</MoveItems>

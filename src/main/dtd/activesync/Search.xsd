@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn338941(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:airsyncbase=
+    "AirSyncBase" xmlns:airsync="AirSync" xmlns:documentlibrary=
+    "DocumentLibrary" xmlns:email="Email" xmlns:rm="RightsManagement" 
+    xmlns="Search" targetNamespace="Search" elementFormDefault="qualified" 
+    attributeFormDefault="unqualified">
+  <xs:import namespace="AirSync" schemaLocation="AirSync.xsd"/>
+  <xs:import namespace="AirSyncBase" schemaLocation="AirSyncBase.xsd"/>
+  <xs:import namespace="DocumentLibrary" schemaLocation="DocumentLibrary.xsd"/>
+  <xs:import namespace="Email" schemaLocation="Email.xsd"/>
+  <xs:import namespace="RightsManagement" 
+      schemaLocation="RightsManagement.xsd"/>
+  <xs:complexType name="queryType" mixed="true">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="And" type="queryType" minOccurs="0"/>
+        <xs:element name="Or" type="queryType" minOccurs="0"/>
+        <xs:element name="FreeText" type="xs:string" minOccurs="0"/>
+        <xs:element ref="airsync:Class" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="airsync:CollectionId" minOccurs="0" 
+            maxOccurs="unbounded"/>
+        <xs:element name="ConversationId" type="xs:string" minOccurs="0"/>
+        <xs:element name="EqualTo" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="documentlibrary:LinkId"/>
+              <xs:element ref="Value"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="GreaterThan" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="email:ComparisonProps"/>
+              <xs:element ref="Value"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="LessThan" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="email:ComparisonProps"/>
+              <xs:element ref="Value"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Name">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:minLength value="1"/>
+        <xs:maxLength value="256"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Query" type="queryType"/>
+  <xs:element name="Options">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="airsync:MIMESupport" minOccurs="0"/>
+        <xs:element ref="airsyncbase:BodyPreference" minOccurs="0" 
+            maxOccurs="unbounded"/>
+        <xs:element ref="airsyncbase:BodyPartPreference" minOccurs="0"/>
+        <xs:element ref="rm:RightsManagementSupport" minOccurs="0"/>
+        <xs:element ref="Range"/>
+        <xs:element name="UserName">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:maxLength value="100"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="Password">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:maxLength value="100"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="DeepTraversal" type="airsyncbase:EmptyTag"/>
+        <xs:element name="RebuildResults" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Picture" minOccurs="0">
+          <xs:complexType>
+            <xs:all>
+              <xs:element name="MaxSize" type="xs:unsignedInt" minOccurs="0"/>
+              <xs:element name="MaxPictures" type="xs:unsignedInt" 
+                  minOccurs="0"/>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Status" type="xs:integer"/>
+  <xs:element name="Total" type="xs:integer"/>
+  <xs:element name="Value">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:maxLength value="1024"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="LongId">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:minLength value="1"/>
+        <xs:maxLength value="256"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Range">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:pattern value="[0-9]{1,3}-[0-9]{1,3}"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+</xs:schema>

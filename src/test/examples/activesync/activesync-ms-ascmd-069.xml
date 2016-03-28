@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResolveRecipients xmlns="ResolveRecipients">
+<Status>1</Status>
+<Response>
+<To>Contact</To>
+<Status>1</Status>
+<RecipientCount>1</RecipientCount>
+<Recipient>
+<Type>2</Type>
+<DisplayName>Chris Gray</DisplayName>
+<EmailAddress>chris@contoso.com</EmailAddress>
+</Recipient>
+</Response>
+</ResolveRecipients>

@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn338917(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:airsyncbase=
+    "AirSyncBase" xmlns="Calendar" targetNamespace="Calendar" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:import namespace="AirSyncBase" schemaLocation="AirSyncBase.xsd"/>
+  <xs:element name="Timezone" type="xs:string"/>
+  <xs:element name="AllDayEvent" type="xs:unsignedByte"/>
+  <xs:element name="BusyStatus">
+    <xs:simpleType>
+      <xs:restriction base="xs:unsignedByte">
+        <xs:minInclusive value="0"/>
+        <xs:maxInclusive value="3"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="OrganizerName" type="xs:string"/>
+  <xs:element name="OrganizerEmail" type="xs:string"/>
+  <xs:element name="DtStamp" type="xs:string"/>
+  <xs:element name="EndTime" type="xs:string"/>
+  <xs:element name="Location" type="xs:string"/>
+  <xs:element name="Reminder" type="xs:unsignedInt"/>
+  <xs:element name="Sensitivity">
+    <xs:simpleType>
+      <xs:restriction base="xs:unsignedByte">
+        <xs:minInclusive value="0"/>
+        <xs:maxInclusive value="3"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Subject" type="xs:string"/>
+  <xs:element name="StartTime" type="xs:string"/>
+  <xs:element name="UID">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:maxLength value="300"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="MeetingStatus">
+    <xs:simpleType>
+      <xs:restriction base="xs:unsignedByte">
+        <xs:enumeration value="1"/>
+        <xs:enumeration value="0"/>
+        <xs:enumeration value="3"/>
+        <xs:enumeration value="5"/>
+        <xs:enumeration value="7"/>
+        <xs:enumeration value="9"/>
+        <xs:enumeration value="11"/>
+        <xs:enumeration value="13"/>
+        <xs:enumeration value="15"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Attendees">
+    <xs:complexType>
+      <xs:sequence minOccurs="0">
+        <xs:element name="Attendee" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:all>
+              <xs:element name="Email" type="xs:string"/>
+              <xs:element name="Name" type="xs:string"/>
+              <xs:element name="AttendeeStatus" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:unsignedByte">
+                    <xs:enumeration value="0"/>
+                    <xs:enumeration value="2"/>
+                    <xs:enumeration value="3"/>
+                    <xs:enumeration value="4"/>
+                    <xs:enumeration value="5"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="AttendeeType" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:unsignedByte">
+                    <xs:enumeration value="1"/>
+                    <xs:enumeration value="2"/>
+                    <xs:enumeration value="3"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Categories">
+    <xs:complexType>
+      <xs:sequence minOccurs="0">
+        <xs:element name="Category" type="xs:string" maxOccurs="300"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Recurrence">
+    <xs:complexType>
+      <xs:all minOccurs="0">
+        <xs:element name="Type">
+          <xs:simpleType>
+            <xs:restriction base="xs:unsignedByte">
+              <xs:minInclusive value="0"/>
+              <xs:maxInclusive value="6"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="Occurrences" type="xs:unsignedShort" minOccurs="0"/>
+        <xs:element name="Interval">
+          <xs:simpleType>
+            <xs:restriction base="xs:unsignedShort">
+              <xs:minInclusive value="0"/>
+              <xs:maxInclusive value="999"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="WeekOfMonth">
+          <xs:simpleType>
+            <xs:restriction base="xs:unsignedByte">
+              <xs:minInclusive value="1"/>
+              <xs:maxInclusive value="5"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="DayOfWeek" minOccurs="0">
+          <xs:simpleType>
+            <xs:restriction base="xs:unsignedShort">
+              <xs:minInclusive value="1"/>
+              <xs:maxInclusive value="127"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="MonthOfYear" minOccurs="0">
+          <xs:simpleType>
+            <xs:restriction base="xs:unsignedByte">
+              <xs:minInclusive value="1"/>
+              <xs:maxInclusive value="12"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="Until" type="xs:string" minOccurs="0"/>
+        <xs:element name="DayOfMonth" minOccurs="0">
+          <xs:simpleType>
+            <xs:restriction base="xs:unsignedByte">
+              <xs:minInclusive value="1"/>
+              <xs:maxInclusive value="31"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="CalendarType" minOccurs="0">
+          <xs:simpleType>
+            <xs:restriction base="xs:unsignedByte">
+              <xs:minInclusive value="0"/>
+              <xs:maxInclusive value="23"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="IsLeapMonth" minOccurs="0">
+          <xs:simpleType>
+            <xs:restriction base="xs:unsignedByte">
+              <xs:minInclusive value="0"/>
+              <xs:maxInclusive value="1"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="FirstDayOfWeek" minOccurs="0">
+          <xs:simpleType>
+            <xs:restriction base="xs:unsignedByte">
+              <xs:minInclusive value="0"/>
+              <xs:maxInclusive value="6"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Exceptions">
+    <xs:complexType>
+      <xs:sequence minOccurs="0">
+        <xs:element name="Exception" maxOccurs="1000">
+          <xs:complexType>
+            <xs:all>
+              <xs:element name="Deleted" type="xs:unsignedByte" minOccurs="0"/>
+              <xs:element name="ExceptionStartTime" type="xs:string"/>
+              <xs:element ref="Subject" minOccurs="0"/>
+              <xs:element ref="StartTime" minOccurs="0"/>
+              <xs:element ref="EndTime" minOccurs="0"/>
+              <xs:element ref="airsyncbase:Body" minOccurs="0"/>
+              <xs:element ref="Location" minOccurs="0"/>
+              <xs:element ref="Categories" minOccurs="0"/>
+              <xs:element ref="Sensitivity" minOccurs="0"/>
+              <xs:element ref="BusyStatus" minOccurs="0"/>
+              <xs:element ref="AllDayEvent" minOccurs="0"/>
+              <xs:element ref="Reminder" minOccurs="0"/>
+              <xs:element ref="DtStamp" minOccurs="0"/>
+              <xs:element ref="MeetingStatus" minOccurs="0"/>
+              <xs:element ref="Attendees" minOccurs="0"/>
+              <xs:element ref="AppointmentReplyTime" minOccurs="0"/>
+              <xs:element ref="ResponseType" minOccurs="0"/>
+              <xs:element ref="OnlineMeetingConfLink" minOccurs="0"/>
+              <xs:element ref="OnlineMeetingExternalLink" minOccurs="0"/>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ResponseRequested" type="xs:boolean"/>
+  <xs:element name="AppointmentReplyTime" type="xs:string"/>
+  <xs:element name="ResponseType" type="xs:unsignedInt"/>
+  <xs:element name="DisallowNewTimeProposal" type="xs:boolean"/>
+  <xs:element name="OnlineMeetingConfLink" type="xs:string"/>
+  <xs:element name="OnlineMeetingExternalLink" type="xs:string"/>
+  <xs:group name="AllProps">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="Timezone"/>
+        <xs:element ref="AllDayEvent"/>
+        <xs:element ref="BusyStatus"/>
+        <xs:element ref="OrganizerName"/>
+        <xs:element ref="OrganizerEmail"/>
+        <xs:element ref="DtStamp"/>
+        <xs:element ref="EndTime"/>
+        <xs:element ref="Location"/>
+        <xs:element ref="Reminder"/>
+        <xs:element ref="Sensitivity"/>
+        <xs:element ref="Subject"/>
+        <xs:element ref="StartTime"/>
+        <xs:element ref="UID"/>
+        <xs:element ref="MeetingStatus"/>
+        <xs:element ref="Attendees"/>
+        <xs:element ref="Categories"/>
+        <xs:element ref="Recurrence"/>
+        <xs:element ref="Exceptions"/>
+        <xs:element ref="ResponseRequested"/>
+        <xs:element ref="AppointmentReplyTime"/>
+        <xs:element ref="ResponseType"/>
+        <xs:element ref="DisallowNewTimeProposal"/>
+        <xs:element ref="OnlineMeetingConfLink"/>
+        <xs:element ref="OnlineMeetingExternalLink"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="GhostingProps">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="Timezone" type="airsyncbase:EmptyTag"/>
+        <xs:element name="AllDayEvent" type="airsyncbase:EmptyTag"/>
+        <xs:element name="BusyStatus" type="airsyncbase:EmptyTag"/>
+        <xs:element name="OrganizerName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="OrganizerEmail" type="airsyncbase:EmptyTag"/>
+        <xs:element name="DtStamp" type="airsyncbase:EmptyTag"/>
+        <xs:element name="EndTime" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Location" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Reminder" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Sensitivity" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Subject" type="airsyncbase:EmptyTag"/>
+        <xs:element name="StartTime" type="airsyncbase:EmptyTag"/>
+        <xs:element name="UID" type="airsyncbase:EmptyTag"/>
+        <xs:element name="MeetingStatus" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Attendees" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Categories" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Recurrence" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Exceptions" type="airsyncbase:EmptyTag"/>
+        <xs:element name="DisallowNewTimeProposal" 
+            type="airsyncbase:EmptyTag"/>
+        <xs:element name="ResponseRequested" type="airsyncbase:EmptyTag"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="TopLevelSchemaProps">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="Timezone" type="airsyncbase:EmptyTag"/>
+        <xs:element name="StartTime" type="airsyncbase:EmptyTag"/>
+        <xs:element name="EndTime" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Subject" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Location" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Reminder" type="airsyncbase:EmptyTag"/>
+        <xs:element name="AllDayEvent" type="airsyncbase:EmptyTag"/>
+        <xs:element name="BusyStatus" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Recurrence" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Sensitivity" type="airsyncbase:EmptyTag"/>
+        <xs:element name="DtStamp" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Attendees" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Categories" type="airsyncbase:EmptyTag"/>
+        <xs:element name="MeetingStatus" type="airsyncbase:EmptyTag"/>
+        <xs:element name="OrganizerName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="OrganizerEmail" type="airsyncbase:EmptyTag"/>
+        <xs:element name="UID" type="airsyncbase:EmptyTag"/>
+        <xs:element name="DisallowNewTimeProposal" 
+            type="airsyncbase:EmptyTag"/>
+        <xs:element name="ResponseRequested" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Exceptions" type="airsyncbase:EmptyTag"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+</xs:schema>

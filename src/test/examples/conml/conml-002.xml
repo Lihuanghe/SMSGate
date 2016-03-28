@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!DOCTYPE ConML PUBLIC "-//CONML//DTD ConML//EN" "http://www.nokia.com/">
+<!-- This document was created from a sniffed WBXML document. -->
+<ConML>
+ <Execute>
+  <Install>
+   <Name>C:\Data\Installs\helloworldbasic.sis</Name>
+   <InstParams/>
+  </Install>
+ </Execute>
+</ConML>

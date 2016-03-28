@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Ping xmlns="Ping">
+<Status>2</Status>
+<Folders>
+<Folder>1234</Folder>
+<Folder>5678</Folder>
+</Folders>
+</Ping>

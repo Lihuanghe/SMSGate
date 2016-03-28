@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE SyncML PUBLIC "-//SYNCML//DTD SyncML 1.1//EN" "http://www.syncml.org/docs/syncml_represent_v11_20020213.dtd">
+<SyncML xmlns='SYNCML:SYNCML1.1'>
+    <SyncHdr>
+        <VerDTD>1.1</VerDTD>
+        <VerProto>SyncML/1.1</VerProto>
+        <SessionID>1</SessionID>
+        <MsgID>2</MsgID>
+        <Target><LocURI>IMEI:493005100592800</LocURI></Target>
+        <Source><LocURI>http://www.syncml.org/sync-server</LocURI></Source>
+    </SyncHdr>
+    <SyncBody>
+        <Status>
+            <CmdID>1</CmdID>
+            <MsgRef>2</MsgRef><CmdRef>0</CmdRef><Cmd>SyncHdr</Cmd>
+            <TargetRef>http://www.syncml.org/sync-server</TargetRef>
+            <SourceRef>IMEI:493005100592800</SourceRef>
+            <Data>101</Data>
+        </Status>
+    </SyncBody>
+</SyncML>

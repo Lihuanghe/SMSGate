@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn293002(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:airsyncbase=
+    "AirSyncBase" xmlns="Provision" targetNamespace="Provision" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:import namespace="AirSyncBase" schemaLocation="AirSyncBase.xsd"/>
+  <xs:simpleType name="unsignedByteOrEmpty">
+    <xs:union memberTypes="xs:unsignedByte airsyncbase:EmptyTag"/>
+  </xs:simpleType>
+  <xs:simpleType name="unsignedIntOrEmpty">
+    <xs:union memberTypes="xs:unsignedInt airsyncbase:EmptyTag"/>
+  </xs:simpleType>
+  <xs:element name="PolicyType" type="xs:string"/>
+  <xs:element name="PolicyKey" type="xs:string"/>
+  <xs:element name="EASProvisionDoc">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="DevicePasswordEnabled" type="xs:boolean" 
+            minOccurs="0"/>
+        <xs:element name="AlphanumericDevicePasswordRequired" type="xs:boolean" 
+            minOccurs="0"/>
+        <xs:element name="PasswordRecoveryEnabled" type="xs:boolean" 
+            minOccurs="0"/>
+        <xs:element name="RequireStorageCardEncryption" type="xs:boolean" 
+            minOccurs="0"/>
+        <xs:element name="AttachmentsEnabled" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="MinDevicePasswordLength" type="unsignedByteOrEmpty" 
+            minOccurs="0"/>
+        <xs:element name="MaxInactivityTimeDeviceLock" 
+            type="unsignedIntOrEmpty" minOccurs="0"/>
+        <xs:element name="MaxDevicePasswordFailedAttempts" 
+            type="unsignedByteOrEmpty" minOccurs="0"/>
+        <xs:element name="MaxAttachmentSize" type="unsignedIntOrEmpty" 
+            minOccurs="0"/>
+        <xs:element name="AllowSimpleDevicePassword" type="xs:boolean" 
+            minOccurs="0"/>
+        <xs:element name="DevicePasswordExpiration" type="unsignedIntOrEmpty" 
+            minOccurs="0"/>
+        <xs:element name="DevicePasswordHistory" type="xs:unsignedInt" 
+            minOccurs="0"/>
+        <xs:element name="AllowStorageCard" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="AllowCamera" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="RequireDeviceEncryption" type="xs:boolean" 
+            minOccurs="0"/>
+        <xs:element name="AllowUnsignedApplications" type="xs:boolean" 
+            minOccurs="0"/>
+        <xs:element name="AllowUnsignedInstallationPackages" type="xs:boolean" 
+            minOccurs="0"/>
+        <xs:element name="MinDevicePasswordComplexCharacters" 
+            type="xs:unsignedByte" minOccurs="0"/>
+        <xs:element name="AllowWiFi" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="AllowTextMessaging" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="AllowPOPIMAPEmail" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="AllowBluetooth" type="xs:unsignedByte" 
+            minOccurs="0"/>
+        <xs:element name="AllowIrDA" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="RequireManualSyncWhenRoaming" type="xs:boolean" 
+            minOccurs="0"/>
+        <xs:element name="AllowDesktopSync" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="MaxCalendarAgeFilter" type="xs:unsignedInt" 
+            minOccurs="0"/>
+        <xs:element name="AllowHTMLEmail" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="MaxEmailAgeFilter" type="xs:unsignedInt" 
+            minOccurs="0"/>
+        <xs:element name="MaxEmailBodyTruncationSize" type="xs:integer" 
+            minOccurs="0"/>
+        <xs:element name="MaxEmailHTMLBodyTruncationSize" type="xs:integer" 
+            minOccurs="0"/>
+        <xs:element name="RequireSignedSMIMEMessages" type="xs:boolean" 
+            minOccurs="0"/>
+        <xs:element name="RequireEncryptedSMIMEMessages" type="xs:boolean" 
+            minOccurs="0"/>
+        <xs:element name="RequireSignedSMIMEAlgorithm" type="xs:integer" 
+            minOccurs="0"/>
+        <xs:element name="RequireEncryptionSMIMEAlgorithm" type="xs:integer" 
+            minOccurs="0"/>
+        <xs:element name="AllowSMIMEEncryptionAlgorithmNegotiation" 
+            type="xs:integer" minOccurs="0"/>
+        <xs:element name="AllowSMIMESoftCerts" type="xs:boolean" 
+            minOccurs="0"/>
+        <xs:element name="AllowBrowser" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="AllowConsumerEmail" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="AllowRemoteDesktop" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="AllowInternetSharing" type="xs:boolean" 
+            minOccurs="0"/>
+        <xs:element name="UnapprovedInROMApplicationList" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ApplicationName" type="xs:string" minOccurs="0" 
+                  maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ApprovedApplicationList" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Hash" type="xs:string" minOccurs="0" 
+                  maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

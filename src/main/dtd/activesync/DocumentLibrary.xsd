@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="DocumentLibrary" 
+    targetNamespace="DocumentLibrary" elementFormDefault="qualified" 
+    attributeFormDefault="unqualified">
+  <xs:element name="LinkId" type="xs:string"/>
+  <xs:element name="DisplayName" type="xs:string"/>
+  <xs:element name="IsFolder" type="xs:unsignedByte"/>
+  <xs:element name="CreationDate" type="xs:dateTime"/>
+  <xs:element name="LastModifiedDate" type="xs:dateTime"/>
+  <xs:element name="IsHidden" type="xs:unsignedByte"/>
+  <xs:element name="ContentLength" type="xs:integer"/>
+  <xs:element name="ContentType" type="xs:string"/>
+  <xs:group name="AllProps">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="LinkId"/>
+        <xs:element ref="DisplayName"/>
+        <xs:element ref="IsFolder"/>
+        <xs:element ref="CreationDate"/>
+        <xs:element ref="LastModifiedDate"/>
+        <xs:element ref="IsHidden"/>
+        <xs:element ref="ContentLength"/>
+        <xs:element ref="ContentType"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+</xs:schema>

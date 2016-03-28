@@ -1,0 +1,21 @@
+<!--
+E-Mail Notification (EMN) Document Type Definition.
+EMN is an XML language. Typical usage:
+	<?xml version="1.0"?>
+	<!DOCTYPE emn PUBLIC "-//OMA//DTD EMN 1.0//EN"
+		"http://www.openmobilealliance.com/tech/DTD/emn.dtd">
+	<emn
+	...
+	/>
+-->
+
+<!ENTITY % Datetime "CDATA"> 	<!-- ISO date and time -->
+<!ENTITY % URI "CDATA"> 		<!-- URI designating an
+					e-mail account -->
+
+<!--==================== The EMN Element ====================-->
+<!ELEMENT emn EMPTY>
+<!ATTLIST emn
+	mailbox 		%URI; 	#REQUIRED
+	timestamp	%Datetime;	#IMPLIED
+>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ItemOperations xmlns="ItemOperations">
+<Move>
+<DstFldId>15</DstFldId>
+<ConversationId>...</ConversationId>
+<Options>
+<MoveAlways/>
+</Options>
+</Move>
+</ItemOperations>

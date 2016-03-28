@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!DOCTYPE SyncML PUBLIC "-//SYNCML//DTD SyncML 1.1//EN" "http://www.syncml.org/docs/syncml_represent_v11_20020213.dtd">
+<SyncML xmlns='SYNCML:SYNCML1.1'>
+    <SyncHdr>
+        <VerDTD>1.1</VerDTD>
+        <VerProto>SyncML/1.1</VerProto>
+        <SessionID>1</SessionID>
+        <MsgID>1</MsgID>
+        <Target><LocURI>http://www.syncml.org/sync-server</LocURI></Target>
+        <Source><LocURI>IMEI:493005100592800</LocURI></Source>
+        <Cred> <!--The authentication is optional.-->
+            <Meta><Type xmlns='syncml:metinf'>syncml:auth-basic</Type></Meta>
+            <Data>QnJ1Y2UyOk9oQmVoYXZl</Data> <!--base64 formatting of "userid:password"-->
+        </Cred>
+    </SyncHdr>
+    <SyncBody>
+        <Alert>
+            <CmdID>1</CmdID>
+            <Data>200</Data> <!-- 200 = TWO_WAY_ALERT -->
+            <Item>
+                <Target><LocURI>./contacts/james_bond</LocURI></Target>
+                <Source><LocURI>./dev-contacts</LocURI></Source>
+                <Meta>
+                    <Anchor xmlns='syncml:metinf'>
+                        <Last>234</Last>
+                        <Next>276</Next>
+                    </Anchor>
+                </Meta>
+            </Item>
+        </Alert>
+        <Sync>
+            <CmdID>2</CmdID>
+            <Target><LocURI>./contacts/james_bond</LocURI></Target>
+            <Source><LocURI>./dev-contacts</LocURI></Source>
+            <Meta>
+                <Mem xmlns='syncml:metinf'>
+                    <FreeMem>8100</FreeMem>
+                    <!--Free memory (bytes) in Calendar database on a device -->
+                    <FreeID>81</FreeID>
+                    <!--Number of free records in Calendar database-->
+                </Mem>
+            </Meta>
+            <Replace>
+                <CmdID>3</CmdID>
+                <Meta><Type xmlns='syncml:metinf'>text/x-vcard</Type></Meta>
+                <Item>
+                    <Source><LocURI>1012</LocURI></Source>
+                    <Data><!--The vCard data would be placed here.--></Data>
+                </Item>
+            </Replace>
+        </Sync>
+        <Final/>
+    </SyncBody>
+</SyncML>

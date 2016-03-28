@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Search xmlns="Search" xmlns:airsync="AirSync"
+xmlns:email="Email">
+<Store>
+<Name>Mailbox</Name>
+<Query>
+<And>
+<airsync:Class>Email</airsync:Class>
+<airsync:CollectionId>7</airsync:CollectionId>
+<FreeText>Sales Totals</FreeText>
+</And>
+</Query>
+<Options>
+<RebuildResults />
+<Range>0-4</Range>
+</Options>
+</Store>
+</Search>

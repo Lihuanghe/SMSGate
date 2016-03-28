@@ -1,0 +1,49 @@
+<!-- 
+SyncML Meta Information (SYNCML-METINF) V1.1 Document Type Definition
+
+Copyright Open Mobile Alliance Ltd., 2002-2003
+          All rights reserved
+
+This DTD defines a sequence of meta-information that is used within
+the SyncML Representation Protocol DTD. Typical usage:
+   <!DOCTYPE MetInf PUBLIC "-//OMA//DTD SYNCML-METINF 1.1//EN"
+             "http://www.openmobilealliance.org/DTD/OMA-SyncML-MetaInfo-DTD-V1_1_2-20030505-D.dtd"
+             [<?oma-syncml-metinf-ver supported-versions="1.1"?>]>
+   <element>
+      ...
+   </element>
+
+Terms and conditions of use are available from the
+Open Mobile Alliance Ltd. web site at
+http://www.openmobilealliance.org/useterms.html
+-->
+
+<!-- Root Element -->
+<!ELEMENT MetInf (Format?, Type?, Mark?, Size?, Anchor?, Version?, NextNonce?, MaxMsgSize?, MaxObjSize?, EMI*, Mem?)>
+<!-- Format or encoding type -->
+<!ELEMENT Format (#PCDATA)>
+<!-- Element specific type specification -->
+<!ELEMENT Type (#PCDATA)>
+<!-- Mark -->
+<!ELEMENT Mark (#PCDATA)>
+<!-- Byte count -->
+<!ELEMENT Size (#PCDATA)>
+<!-- Data versioning info -->
+<!ELEMENT Anchor (Last?, Next)>
+<!ELEMENT Last (#PCDATA)>
+<!ELEMENT Next (#PCDATA)>
+<!ELEMENT Version (#PCDATA)>
+<!ELEMENT NextNonce (#PCDATA)>
+<!ELEMENT MaxMsgSize (#PCDATA)>
+<!ELEMENT MaxObjSize (#PCDATA)>
+<!-- Experimental Meta Information extension -->
+<!ELEMENT EMI (#PCDATA)>
+<!-- Dynamic Memory -->
+<!ELEMENT Mem (SharedMem?, FreeMem, FreeID)>
+<!-- Free Memory in the number of identifiers -->
+<!ELEMENT FreeID (#PCDATA)>
+<!-- Free Memory in bytes -->
+<!ELEMENT FreeMem (#PCDATA)>
+<!-- Shared Memory -->
+<!ELEMENT SharedMem EMPTY>
+<!-- End of DTD -->

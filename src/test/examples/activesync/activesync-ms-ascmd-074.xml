@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Settings xmlns="Settings">
+<Oof>
+<Set>
+<OofState>2</OofState>
+<OofMessage>
+<AppliesToInternal/>
+<Enabled>1</Enabled>
+<ReplyMessage> &lt;html&gt;&lt;head&gt;&lt;meta
+http-equiv="Content-Type" content="text/html;
+charset=utf-8"&gt;&lt;style&gt;@font-face
+{font-family:Verdana}p.MsoNormal, li.MsoNormal,
+div.MsoNormal {margin:0in; margin-bottom:.0001pt;
+font-size:10.0pt; font-family:Verdana} a:link,
+span.MsoHyperlink {color:blue; text-
+decoration:underline}a:visited,
+span.MsoHyperlinkFollowed {color:purple;
+text-decoration:underline} span.EmailStyle17
+{font-family:Arial; color:windowtext} @page Section1
+{margin:1.0in 1.25in 1.0in 1.25in} div.Section1 {}
+&lt;/style&gt; &lt;/head&gt; &lt;body lang="EN-US"
+link="blue" vlink="purple"&gt; &lt;div class="Section1"&gt;
+&lt;p class="MsoNormal"&gt;&lt;font size="2"
+face="Arial"&gt;&lt;span style="font-size:10.0pt;
+font-family:Arial"&gt;I'll be out of the office
+today.&lt;/span&gt;&lt;/font&gt;&lt;/p&gt; &lt;/div&gt;
+&lt;/body&gt;&lt;/html&gt;</ReplyMessage>
+<BodyType>HTML</BodyType>
+</OofMessage>
+<OofMessage>
+<AppliesToExternalKnown/>
+<Enabled>0</Enabled>
+</OofMessage>
+<OofMessage>
+<AppliesToExternalUnknown/>
+<Enabled>0</Enabled>
+</OofMessage>
+</Set>
+</Oof>
+</Settings>

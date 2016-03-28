@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<!DOCTYPE SyncML PUBLIC "-//SYNCML//DTD SyncML 1.1//EN" "http://www.syncml.org/docs/syncml_represent_v11_20020213.dtd">
+<SyncML xmlns='SYNCML:SYNCML1.1'>
+    <SyncHdr>
+        <VerDTD>1.1</VerDTD>
+        <VerProto>SyncML/1.1</VerProto>
+        <SessionID>1</SessionID>
+        <MsgID>1</MsgID>
+        <Target><LocURI>IMEI:493005100592800</LocURI></Target>
+        <Source><LocURI>http://www.syncml.org/sync-server</LocURI></Source>
+    </SyncHdr>
+    <SyncBody>
+        <Status>
+            <CmdID>1</CmdID>
+            <MsgRef>1</MsgRef><CmdRef>0</CmdRef><Cmd>SyncHdr</Cmd>
+            <TargetRef>http://www.syncml.org/sync-server</TargetRef>
+            <SourceRef>IMEI:493005100592800</SourceRef>
+            <Data>212</Data> <!--Statuscode for OK, authenticated for session-->
+        </Status>
+        <Status>
+            <CmdID>2</CmdID>
+            <MsgRef>1</MsgRef><CmdRef>1</CmdRef><Cmd>Alert</Cmd>
+            <TargetRef>./contacts/james_bond</TargetRef>
+            <SourceRef>./dev-contacts</SourceRef>
+            <Data>200</Data> <!--Statuscode for OK-->
+            <Item>
+                <Data><Anchor xmlns='syncml:metinf'><Next>276</Next></Anchor></Data>
+            </Item>
+        </Status>
+        <Status>
+            <CmdID>3</CmdID>
+            <MsgRef>1</MsgRef><CmdRef>2</CmdRef><Cmd>Sync</Cmd>
+            <TargetRef>./contacts/james_bond</TargetRef>
+            <SourceRef>./dev-contacts</SourceRef>
+            <Data>200</Data> <!--Statuscode for Success-->
+        </Status>
+        <Status>
+            <CmdID>4</CmdID>
+            <MsgRef>1</MsgRef><CmdRef>3</CmdRef><Cmd>Replace</Cmd>
+            <SourceRef>1012</SourceRef>
+            <Data>200</Data> <!--Statuscode for Success-->
+        </Status>
+        <Alert>
+            <CmdID>5</CmdID>
+            <Data>200</Data> <!-- 200 = TWO_WAY_ALERT -->
+            <Item>
+                <Target><LocURI>./dev-contacts</LocURI></Target>
+                <Source><LocURI>./contacts/james_bond</LocURI></Source>
+                <Meta>
+                    <Anchor xmlns='syncml:metinf'>
+                        <Last>200005021T081812Z </Last>
+                        <Next>200005022T093223Z </Next>
+                    </Anchor>
+                </Meta>
+            </Item>
+        </Alert>
+        <Sync>
+            <CmdID>6</CmdID>
+            <Target><LocURI>./dev-contacts</LocURI></Target>
+            <Source><LocURI>./contacts/james_bond</LocURI></Source>
+            <Replace>
+                <CmdID>7</CmdID>
+                <Meta><Type xmlns='syncml:metinf'>text/x-vcard</Type></Meta>
+                <Item>
+                    <Target><LocURI>1023</LocURI></Target>
+                    <Data><!--The vCard data would be placed here.--></Data>
+                </Item>
+            </Replace>
+            <Add>
+                <CmdID>8</CmdID>
+                <Meta><Type xmlns='syncml:metinf'>text/x-vcard</Type></Meta>
+                <Item>
+                    <Source><LocURI>10536681</LocURI></Source>
+                    <Data><!--The vCard data would be placed here.--></Data>
+                </Item>
+            </Add>
+        </Sync>
+        <Final/>
+    </SyncBody>
+</SyncML>

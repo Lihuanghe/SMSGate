@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GetItemEstimate xmlns="GetItemEstimate">
+<Response>
+<Status>1</Status>
+<Collection>
+<CollectionId>5</CollectionId>
+<Estimate>1</Estimate>
+</Collection>
+</Response>
+</GetItemEstimate>

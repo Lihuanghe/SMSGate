@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn338953(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:airsyncbase=
+    "AirSyncBase" xmlns="Settings" targetNamespace="Settings" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:include schemaLocation="Settings.xsd"/>
+  <xs:import namespace="AirSyncBase" schemaLocation="AirSyncBase.xsd"/>
+  <xs:element name="DeviceInformationRequest">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="Set">
+          <xs:complexType>
+            <xs:all>
+              <xs:element ref="Model" minOccurs="0"/>
+              <xs:element ref="IMEI" minOccurs="0"/>
+              <xs:element ref="FriendlyName" minOccurs="0"/>
+              <xs:element ref="OS" minOccurs="0"/>
+              <xs:element ref="OSLanguage" minOccurs="0"/>
+              <xs:element ref="PhoneNumber" minOccurs="0"/>
+              <xs:element ref="UserAgent" minOccurs="0"/>
+              <xs:element ref="EnableOutboundSMS" minOccurs="0"/>
+              <xs:element ref="MobileOperator" minOccurs="0"/>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SettingsRequest">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="RightsManagementInformation" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Get" type="airsyncbase:EmptyTag"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Oof" minOccurs="0">
+          <xs:complexType>
+            <xs:choice>
+              <xs:element name="Get" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element ref="BodyType"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Set">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element ref="OofState" minOccurs="0"/>
+                    <xs:element ref="StartTime" minOccurs="0"/>
+                    <xs:element ref="EndTime" minOccurs="0"/>
+                    <xs:element ref="OofMessage" minOccurs="0" maxOccurs="3"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="DevicePassword" minOccurs="0">
+          <xs:complexType>
+            <xs:choice>
+              <xs:element name="Set">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element ref="Password"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="DeviceInformationRequest" minOccurs="0"/>
+        <xs:element name="UserInformation" minOccurs="0">
+          <xs:complexType>
+            <xs:choice>
+              <xs:element name="Get" type="airsyncbase:EmptyTag"/>
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

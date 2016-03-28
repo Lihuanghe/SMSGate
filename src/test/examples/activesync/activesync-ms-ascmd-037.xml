@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ItemOperations xmlns:airsyncbase="AirSyncBase"
+xmlns="ItemOperations">
+<Fetch>
+<Store>Mailbox</Store>
+<airsyncbase:FileReference>7%3a1%3a0</airsyncbase:FileReference>
+</Fetch>
+</ItemOperations>

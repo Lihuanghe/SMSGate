@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sync xmlns:rm="RightsManagement" xmlns="AirSync">
+<Collections>
+<Collection>
+<SyncKey>52305585</SyncKey>
+<CollectionId>5</CollectionId>
+<DeletesAsMoves>1</DeletesAsMoves>
+<GetChanges>1</GetChanges>
+<WindowSize>512</WindowSize>
+<Options>
+<rm:RightsManagementSupport>0</rm:RightsManagementSupport>
+</Options>
+</Collection>
+</Collections>
+</Sync>

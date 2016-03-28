@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResolveRecipients xmlns="ResolveRecipients">
+<Status>1</Status>
+<Response>
+<To>Testers</To>
+<Status>1</Status>
+<RecipientCount>2</RecipientCount>
+<Recipient>
+<Type>1</Type>
+<DisplayName>Testers</DisplayName>
+<EmailAddress>testers@example.com</EmailAddress>
+<Certificates>
+<Status>1</Status>
+<CertificateCount>2</CertificateCount>
+<RecipientCount>3</RecipientCount>
+<MiniCertificate>AAAAAEfXfBA=</MiniCertificate>
+</Certificates>
+<Picture>
+<Status>173</Status>
+</Picture>
+</Recipient>
+<Recipient>...</Recipient>
+</Response>
+</ResolveRecipients>

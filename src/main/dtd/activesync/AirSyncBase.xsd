@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn338954(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:email2="Email2" 
+    xmlns:itemoperations="ItemOperations" xmlns="AirSyncBase" 
+    targetNamespace="AirSyncBase" elementFormDefault="qualified" 
+    attributeFormDefault="unqualified">
+  <xs:import namespace="Email2" schemaLocation="Email2.xsd"/>
+  <xs:import namespace="ItemOperations" schemaLocation="ItemOperations.xsd"/>
+  <xs:simpleType name="EmptyTag">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="0"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="FileReference" type="xs:string"/>
+  <xs:element name="BodyPreference">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Type" type="xs:unsignedByte"/>
+        <xs:element name="TruncationSize" type="xs:unsignedInt" minOccurs="0"/>
+        <xs:element name="AllOrNone" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="Preview" minOccurs="0">
+          <xs:simpleType>
+            <xs:restriction base="xs:unsignedInt">
+              <xs:minInclusive value="0"/>
+              <xs:maxInclusive value="255"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="BodyPartPreference">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Type">
+          <xs:simpleType>
+            <xs:restriction base="xs:unsignedByte">
+              <xs:minInclusive value="1"/>
+              <xs:maxInclusive value="4"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="TruncationSize" type="xs:unsignedInt" minOccurs="0"/>
+        <xs:element name="AllOrNone" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="Preview" minOccurs="0">
+          <xs:simpleType>
+            <xs:restriction base="xs:unsignedInt">
+              <xs:minInclusive value="0"/>
+              <xs:maxInclusive value="255"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Body">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Type" type="xs:unsignedByte"/>
+        <xs:element name="EstimatedDataSize" type="xs:unsignedInt" 
+            minOccurs="0"/>
+        <xs:element name="Truncated" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="Data" type="xs:string" minOccurs="0"/>
+        <xs:element name="Preview" type="xs:string" minOccurs="0"/>
+        <xs:element ref="itemoperations:Part" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="BodyPart">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Status">
+          <xs:simpleType>
+            <xs:restriction base="xs:unsignedByte">
+              <xs:enumeration value="1"/>
+              <xs:enumeration value="176"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="Type" type="xs:unsignedByte"/>
+        <xs:element name="EstimatedDataSize" type="xs:unsignedInt"/>
+        <xs:element name="Truncated" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="Data" type="xs:string" minOccurs="0"/>
+        <xs:element name="Preview" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Attachments">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Attachment" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:all>
+              <xs:element name="DisplayName" type="xs:string" minOccurs="0"/>
+              <xs:element ref="FileReference"/>
+              <xs:element name="Method" type="xs:unsignedByte"/>
+              <xs:element name="EstimatedDataSize" type="xs:unsignedInt"/>
+              <xs:element name="ContentId" type="xs:string" minOccurs="0"/>
+              <xs:element name="ContentLocation" type="xs:string" 
+                  minOccurs="0"/>
+              <xs:element name="IsInline" type="xs:boolean" minOccurs="0"/>
+              <xs:element ref="email2:UmAttDuration" minOccurs="0"/>
+              <xs:element ref="email2:UmAttOrder" minOccurs="0"/>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="NativeBodyType" type="xs:unsignedByte"/>
+  <xs:group name="AllProps">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="Body"/>
+        <xs:element ref="BodyPart"/>
+        <xs:element ref="Attachments"/>
+        <xs:element ref="NativeBodyType"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="TopLevelSchemaProps">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="Body" type="EmptyTag"/>
+        <xs:element name="BodyPart" type="EmptyTag"/>
+        <xs:element name="Attachments" type="EmptyTag"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+</xs:schema>

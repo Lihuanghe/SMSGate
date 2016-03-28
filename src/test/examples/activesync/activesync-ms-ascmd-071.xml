@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResolveRecipients xmlns="ResolveRecipients">
+<Status>1</Status>
+<Response>
+<To>all@contoso.com</To>
+<Status>1</Status>
+<RecipientCount>1</RecipientCount>
+<Recipient>
+<Type>1</Type>
+<DisplayName>All Contoso Full Time Employees</DisplayName>
+<EmailAddress>all@contoso.com</EmailAddress>
+<Availability>
+<Status>162</Status>
+</Availability>
+</Recipient>
+</Response>
+<Response>
+<To>ryan@contoso.com</To>
+<Status>1</Status>
+<RecipientCount>1</RecipientCount>
+<Recipient>
+<Type>1</Type>
+<DisplayName>Chris Gray</DisplayName>
+<EmailAddress>chris@contoso.com</EmailAddress>
+<Availability>
+<Status>1</Status>
+<MergedFreeBusy>002000000000000000000000001002002200000010000000</MergedFreeBusy>
+</Availability>
+</Recipient>
+</Response>
+<Response>
+<To>tom</To>
+<Status>3</Status>
+<RecipientCount>30</RecipientCount>
+<Recipient>
+<Type>2</Type>
+<DisplayName>Anat Kerry</DisplayName>
+<EmailAddress>anatk@contoso.com</EmailAddress>
+</Recipient>
+<Recipient>
+<Type>1</Type>
+<DisplayName>Anat Reding</DisplayName>
+<EmailAddress>anetr@contoso.com</EmailAddress>
+</Recipient>
+</Response>
+<Response>
+<To>myPersonalDistributionList</To>
+<Status>1</Status>
+<RecipientCount>4</RecipientCount>
+<Recipient>
+<Type>2</Type>
+<DisplayName>chris@fourthcoffee.com</DisplayName>
+<EmailAddress>chris@fourthcoffee.com</EmailAddress>
+<Availability>
+<Status>162</Status>
+</Availability>
+</Recipient>
+<Recipient>
+<Type>1</Type>
+<DisplayName>Anet Reding</DisplayName>
+<EmailAddress>anetr@contoso.com</EmailAddress>
+<Availability>
+<Status>161</Status>
+</Availability>
+</Recipient>
+<Recipient>
+<Type>2</Type>
+<DisplayName>Dag Rovik</DisplayName>
+<EmailAddress>dag@contoso.com</EmailAddress>
+<Availability>
+<Status>1</Status>
+<MergedFreeBusy>333333333333333333330000001002002200000010000000</MergedFreeBusy>
+</Availability>
+</Recipient>
+<Recipient>
+<Type>2</Type>
+<DisplayName>fabrice@fourthcoffee.com</DisplayName>
+<EmailAddress>fabrice@fourthcoffee.com</EmailAddress>
+<Availability>
+<Status>162</Status>
+</Availability>
+</Recipient>
+</Response>
+</ResolveRecipients>

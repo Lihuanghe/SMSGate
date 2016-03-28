@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE ActiveSync PUBLIC "-//MICROSOFT//DTD ActiveSync//EN" "http://www.microsoft.com/">
+<Provision xmlns="Provision">
+  <Policies>
+    <Policy>
+      <PolicyType>MS-EAS-Provisioning-WBXML</PolicyType>
+    </Policy>
+  </Policies>
+</Provision>

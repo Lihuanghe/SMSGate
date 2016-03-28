@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn338938(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="Ping" 
+    targetNamespace="Ping" elementFormDefault="qualified" 
+    attributeFormDefault="unqualified">
+  <xs:element name="PingRequest">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="HeartbeatInterval" minOccurs="0">
+          <xs:simpleType>
+            <xs:restriction base="xs:integer"/>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="Folders" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Folder" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element name="Id">
+                      <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                          <xs:maxLength value="64"/>
+                        </xs:restriction>
+                      </xs:simpleType>
+                    </xs:element>
+                    <xs:element name="Class">
+                      <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                          <xs:enumeration value="Email"/>
+                          <xs:enumeration value="Calendar"/>
+                          <xs:enumeration value="Contacts"/>
+                          <xs:enumeration value="Tasks"/>
+                          <xs:enumeration value="Notes"/>
+                        </xs:restriction>
+                      </xs:simpleType>
+                    </xs:element>
+                  </xs:all>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

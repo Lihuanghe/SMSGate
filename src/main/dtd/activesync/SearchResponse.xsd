@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn338935(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:airsyncbase=
+    "AirSyncBase" xmlns:airsync="AirSync" xmlns:calendar="Calendar" 
+    xmlns:contacts="Contacts" xmlns:contacts2="Contacts2" 
+    xmlns:documentlibrary="DocumentLibrary" xmlns:email="Email" 
+    xmlns:email2="Email2" xmlns:gal="GAL" xmlns:notes="Notes" 
+    xmlns:tasks="Tasks" xmlns="Search" targetNamespace="Search" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:include schemaLocation="Search.xsd"/>
+  <xs:import namespace="AirSync" schemaLocation="AirSync.xsd"/>
+  <xs:import namespace="AirSyncBase" schemaLocation="AirSyncBase.xsd"/>
+  <xs:import namespace="Calendar" schemaLocation="Calendar.xsd"/>
+  <xs:import namespace="Contacts" schemaLocation="Contacts.xsd"/>
+  <xs:import namespace="Contacts2" schemaLocation="Contacts2.xsd"/>
+  <xs:import namespace="DocumentLibrary" schemaLocation="DocumentLibrary.xsd"/>
+  <xs:import namespace="Email" schemaLocation="Email.xsd"/>
+  <xs:import namespace="Email2" schemaLocation="Email2.xsd"/>
+  <xs:import namespace="GAL" schemaLocation="GAL.xsd"/>
+  <xs:import namespace="Notes" schemaLocation="Notes.xsd"/>
+  <xs:import namespace="Tasks" schemaLocation="Tasks.xsd"/>
+  <xs:element name="SearchResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Status" minOccurs="0"/>
+        <xs:element name="Response" minOccurs="0">
+          <xs:complexType>
+            <xs:all>
+              <xs:element name="Store">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element ref="Status"/>
+                    <xs:element name="Result" nillable="true" minOccurs="1" 
+                        maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element ref="airsync:Class"/>
+                          <xs:element ref="LongId" minOccurs="0"/>
+                          <xs:element ref="airsync:CollectionId"/>
+                          <xs:element name="Properties">
+                            <xs:complexType>
+                              <xs:group ref="SearchProperties"/>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element ref="Range" minOccurs="0"/>
+                    <xs:element ref="Total" minOccurs="0"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:group name="SearchProperties">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="airsyncbase:Attachments"/>
+        <xs:element ref="airsyncbase:Body"/>
+        <xs:element ref="airsyncbase:BodyPart"/>
+        <xs:element ref="airsyncbase:NativeBodyType"/>
+        <xs:element ref="calendar:Timezone"/>
+        <xs:element ref="calendar:AllDayEvent"/>
+        <xs:element ref="calendar:BusyStatus"/>
+        <xs:element ref="calendar:OrganizerName"/>
+        <xs:element ref="calendar:OrganizerEmail"/>
+        <xs:element ref="calendar:DtStamp"/>
+        <xs:element ref="calendar:EndTime"/>
+        <xs:element ref="calendar:Location"/>
+        <xs:element ref="calendar:Reminder"/>
+        <xs:element ref="calendar:Sensitivity"/>
+        <xs:element ref="calendar:Subject"/>
+        <xs:element ref="calendar:StartTime"/>
+        <xs:element ref="calendar:UID"/>
+        <xs:element ref="calendar:MeetingStatus"/>
+        <xs:element ref="calendar:Attendees"/>
+        <xs:element ref="calendar:Recurrence"/>
+        <xs:element ref="calendar:Exceptions"/>
+        <xs:element ref="calendar:ResponseRequested"/>
+        <xs:element ref="calendar:AppointmentReplyTime"/>
+        <xs:element ref="calendar:ResponseType"/>
+        <xs:element ref="calendar:DisallowNewTimeProposal"/>
+        <xs:element ref="contacts:Anniversary"/>
+        <xs:element ref="contacts:AssistantName"/>
+        <xs:element ref="contacts:AssistantPhoneNumber"/>
+        <xs:element ref="contacts:Birthday"/>
+        <xs:element ref="contacts:Business2PhoneNumber"/>
+        <xs:element ref="contacts:BusinessAddressCity"/>
+        <xs:element ref="contacts:BusinessPhoneNumber"/>
+        <xs:element ref="contacts:WebPage"/>
+        <xs:element ref="contacts:BusinessAddressCountry"/>
+        <xs:element ref="contacts:Department"/>
+        <xs:element ref="contacts:Email1Address"/>
+        <xs:element ref="contacts:Email2Address"/>
+        <xs:element ref="contacts:Email3Address"/>
+        <xs:element ref="contacts:BusinessFaxNumber"/>
+        <xs:element ref="contacts:FileAs"/>
+        <xs:element ref="contacts:Alias"/>
+        <xs:element ref="contacts:WeightedRank"/>
+        <xs:element ref="contacts:FirstName"/>
+        <xs:element ref="contacts:MiddleName"/>
+        <xs:element ref="contacts:HomeAddressCity"/>
+        <xs:element ref="contacts:HomeAddressCountry"/>
+        <xs:element ref="contacts:HomeFaxNumber"/>
+        <xs:element ref="contacts:HomePhoneNumber"/>
+        <xs:element ref="contacts:Home2PhoneNumber"/>
+        <xs:element ref="contacts:HomeAddressPostalCode"/>
+        <xs:element ref="contacts:HomeAddressState"/>
+        <xs:element ref="contacts:HomeAddressStreet"/>
+        <xs:element ref="contacts:MobilePhoneNumber"/>
+        <xs:element ref="contacts:Suffix"/>
+        <xs:element ref="contacts:CompanyName"/>
+        <xs:element ref="contacts:OtherAddressCity"/>
+        <xs:element ref="contacts:OtherAddressCountry"/>
+        <xs:element ref="contacts:CarPhoneNumber"/>
+        <xs:element ref="contacts:OtherAddressPostalCode"/>
+        <xs:element ref="contacts:OtherAddressState"/>
+        <xs:element ref="contacts:OtherAddressStreet"/>
+        <xs:element ref="contacts:PagerNumber"/>
+        <xs:element ref="contacts:Title"/>
+        <xs:element ref="contacts:BusinessAddressPostalCode"/>
+        <xs:element ref="contacts:LastName"/>
+        <xs:element ref="contacts:Spouse"/>
+        <xs:element ref="contacts:BusinessAddressState"/>
+        <xs:element ref="contacts:BusinessAddressStreet"/>
+        <xs:element ref="contacts:JobTitle"/>
+        <xs:element ref="contacts:YomiFirstName"/>
+        <xs:element ref="contacts:YomiLastName"/>
+        <xs:element ref="contacts:YomiCompanyName"/>
+        <xs:element ref="contacts:OfficeLocation"/>
+        <xs:element ref="contacts:RadioPhoneNumber"/>
+        <xs:element ref="contacts:Picture"/>
+        <xs:element ref="contacts:Categories"/>
+        <xs:element ref="contacts:Children"/>
+        <xs:element ref="contacts2:CustomerId"/>
+        <xs:element ref="contacts2:GovernmentId"/>
+        <xs:element ref="contacts2:IMAddress"/>
+        <xs:element ref="contacts2:IMAddress2"/>
+        <xs:element ref="contacts2:IMAddress3"/>
+        <xs:element ref="contacts2:ManagerName"/>
+        <xs:element ref="contacts2:CompanyMainPhone"/>
+        <xs:element ref="contacts2:AccountName"/>
+        <xs:element ref="contacts2:NickName"/>
+        <xs:element ref="contacts2:MMS"/>
+        <xs:element ref="documentlibrary:LinkId"/>
+        <xs:element ref="documentlibrary:DisplayName"/>
+        <xs:element ref="documentlibrary:IsFolder"/>
+        <xs:element ref="documentlibrary:CreationDate"/>
+        <xs:element ref="documentlibrary:LastModifiedDate"/>
+        <xs:element ref="documentlibrary:IsHidden"/>
+        <xs:element ref="documentlibrary:ContentLength"/>
+        <xs:element ref="documentlibrary:ContentType"/>
+        <xs:element ref="email:To"/>
+        <xs:element ref="email:Cc"/>
+        <xs:element ref="email:From"/>
+        <xs:element ref="email:Subject"/>
+        <xs:element ref="email:ReplyTo"/>
+        <xs:element ref="email:DateReceived"/>
+        <xs:element ref="email:DisplayTo"/>
+        <xs:element ref="email:ThreadTopic"/>
+        <xs:element ref="email:Importance"/>
+        <xs:element ref="email:Read"/>
+        <xs:element ref="email:MessageClass"/>
+        <xs:element ref="email:MeetingRequest"/>
+        <xs:element ref="email:InternetCPID"/>
+        <xs:element ref="email:Flag"/>
+        <xs:element ref="email:ContentClass"/>
+        <xs:element ref="email2:UmCallerID"/>
+        <xs:element ref="email2:UmUserNotes"/>
+        <xs:element ref="email2:ConversationId"/>
+        <xs:element ref="email2:ConversationIndex"/>
+        <xs:element ref="email2:Sender"/>
+        <xs:element ref="email2:LastVerbExecuted"/>
+        <xs:element ref="email2:LastVerbExecutionTime"/>
+        <xs:element ref="email2:ReceivedAsBcc"/>
+        <xs:element ref="email:Categories"/>
+        <xs:element ref="notes:Subject"/>
+        <xs:element ref="notes:MessageClass"/>
+        <xs:element ref="notes:LastModifiedDate"/>
+        <xs:element ref="notes:Categories"/>
+        <xs:element ref="tasks:Subject"/>
+        <xs:element ref="tasks:Importance"/>
+        <xs:element ref="tasks:UtcStartDate"/>
+        <xs:element ref="tasks:StartDate"/>
+        <xs:element ref="tasks:UtcDueDate"/>
+        <xs:element ref="tasks:DueDate"/>
+        <xs:element ref="tasks:Categories"/>
+        <xs:element ref="tasks:Recurrence"/>
+        <xs:element ref="tasks:Complete"/>
+        <xs:element ref="tasks:DateCompleted"/>
+        <xs:element ref="tasks:Sensitivity"/>
+        <xs:element ref="tasks:ReminderTime"/>
+        <xs:element ref="tasks:ReminderSet"/>
+        <xs:group ref="gal:TopLevelSchemaProps"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+</xs:schema>

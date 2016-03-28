@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn292949(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="ValidateCert" 
+    targetNamespace="ValidateCert" elementFormDefault="qualified" 
+    attributeFormDefault="unqualified">
+  <xs:element name="ValidateCertRequest">
+    <xs:complexType>
+      <xs:all minOccurs="0">
+        <xs:element name="CertificateChain" minOccurs="0">
+          <xs:complexType>
+            <xs:choice maxOccurs="unbounded">
+              <xs:element name="Certificate" maxOccurs="unbounded">
+                <xs:simpleType>
+                  <xs:restriction base="xs:base64Binary">
+                    <xs:minLength value="4"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Certificates">
+          <xs:complexType>
+            <xs:choice maxOccurs="unbounded">
+              <xs:element name="Certificate" maxOccurs="unbounded">
+                <xs:simpleType>
+                  <xs:restriction base="xs:base64Binary">
+                    <xs:minLength value="4"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="CheckCrl" minOccurs="0">
+          <xs:simpleType>
+            <xs:restriction base="xs:integer">
+              <xs:minInclusive value="0"/>
+              <xs:maxInclusive value="1"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

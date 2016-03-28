@@ -1,0 +1,61 @@
+<!-- 
+SyncML Device Information (SYNCML-DEVINF) V1.1 Document Type Definition
+
+Copyright Open Mobile Alliance Ltd., 2002-2003
+          All rights reserved
+
+This DTD defines device information that is used within
+the SyncML Representation Protocol DTD. Typical usage:
+   <!DOCTYPE DevInf PUBLIC "-//OMA//DTD SYNCML-DEVINF 1.1//EN"
+             "http://www.openmobilealliance.org/DTD/OMA-SyncML-DevInfo-DTD-V1_1_2-20030505-D.dtd"
+             [<?oma-syncml-devinf-ver supported-versions="1.1"?>]>
+   <DevInf>
+      ...
+   </DevInf>
+
+Terms and conditions of use are available from the
+Open Mobile Alliance Ltd. web site at
+http://www.openmobilealliance.org/useterms.html
+-->
+
+<!-- Root element -->
+<!ELEMENT DevInf (VerDTD, Man?, Mod?, OEM?, FwV?, SwV?, HwV?, DevID, DevTyp, DataStore+, CTCap*, Ext*)>
+<!ELEMENT Man (#PCDATA)>
+<!ELEMENT Mod (#PCDATA)>
+<!ELEMENT OEM (#PCDATA)>
+<!ELEMENT FwV (#PCDATA)>
+<!ELEMENT SwV (#PCDATA)>
+<!ELEMENT HwV (#PCDATA)>
+<!ELEMENT DevID (#PCDATA)>
+<!ELEMENT DevTyp (#PCDATA)>
+<!ELEMENT DataStore (SourceRef, DisplayName?, MaxGUIDSize?, Rx-Pref, Rx*, Tx-Pref, Tx*, DSMem?, SyncCap)>
+<!ELEMENT MaxGUIDSize (#PCDATA)>
+<!ELEMENT Rx-Pref (CTType, VerCT)>
+<!ELEMENT Rx (CTType, VerCT)>
+<!ELEMENT Tx-Pref (CTType, VerCT)>
+<!ELEMENT Tx (CTType, VerCT)>
+<!ELEMENT DSMem (SharedMem?, MaxMem?, MaxID?)>
+<!ELEMENT SharedMem EMPTY>
+<!ELEMENT SourceRef (#PCDATA)>
+<!ELEMENT DisplayName (#PCDATA)>
+<!ELEMENT CTCap ((CTType, (PropName, (ValEnum+ | (DataType, Size?))?,DisplayName?, (ParamName, (ValEnum+ | (DataType, Size?))?,DisplayName?)*)+)+)>
+<!ELEMENT CTType (#PCDATA)>
+<!ELEMENT DataType (#PCDATA)>
+<!ELEMENT Size (#PCDATA)>
+<!ELEMENT PropName (#PCDATA)>
+<!ELEMENT ValEnum (#PCDATA)>
+<!ELEMENT ParamName (#PCDATA)>
+<!ELEMENT SyncCap (SyncType+)>
+<!ELEMENT SyncType (#PCDATA)>
+<!ELEMENT Ext (XNam,XVal*)>
+<!ELEMENT XNam (#PCDATA)>
+<!ELEMENT XVal (#PCDATA)>
+<!ELEMENT MaxMem (#PCDATA)>
+<!ELEMENT MaxID (#PCDATA)>
+<!ELEMENT VerCT (#PCDATA)>
+<!ELEMENT VerDTD (#PCDATA)>
+<!-- New Elements are added here -->
+<!ELEMENT UTC EMPTY>
+<!ELEMENT SupportLargeObjs EMPTY>
+<!ELEMENT SupportNumberOfChanges EMPTY>
+<!-- End of DTD -->

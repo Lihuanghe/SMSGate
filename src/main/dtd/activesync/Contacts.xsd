@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn338914(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:airsyncbase=
+    "AirSyncBase" xmlns="Contacts" targetNamespace="Contacts" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:import namespace="AirSyncBase" schemaLocation="AirSyncBase.xsd"/>
+  <xs:element name="Anniversary" type="xs:dateTime"/>
+  <xs:element name="AssistantName" type="xs:string"/>
+  <xs:element name="AssistantPhoneNumber" type="xs:string"/>
+  <xs:element name="Birthday" type="xs:dateTime"/>
+  <xs:element name="Business2PhoneNumber" type="xs:string"/>
+  <xs:element name="BusinessAddressCity" type="xs:string"/>
+  <xs:element name="BusinessPhoneNumber" type="xs:string"/>
+  <xs:element name="WebPage" type="xs:string"/>
+  <xs:element name="BusinessAddressCountry" type="xs:string"/>
+  <xs:element name="Department" type="xs:string"/>
+  <xs:element name="Email1Address" type="xs:string"/>
+  <xs:element name="Email2Address" type="xs:string"/>
+  <xs:element name="Email3Address" type="xs:string"/>
+  <xs:element name="BusinessFaxNumber" type="xs:string"/>
+  <xs:element name="FileAs" type="xs:string"/>
+  <xs:element name="Alias" type="xs:string"/>
+  <xs:element name="WeightedRank" type="xs:int"/>
+  <xs:element name="FirstName" type="xs:string"/>
+  <xs:element name="MiddleName" type="xs:string"/>
+  <xs:element name="HomeAddressCity" type="xs:string"/>
+  <xs:element name="HomeAddressCountry" type="xs:string"/>
+  <xs:element name="HomeFaxNumber" type="xs:string"/>
+  <xs:element name="HomePhoneNumber" type="xs:string"/>
+  <xs:element name="Home2PhoneNumber" type="xs:string"/>
+  <xs:element name="HomeAddressPostalCode" type="xs:string"/>
+  <xs:element name="HomeAddressState" type="xs:string"/>
+  <xs:element name="HomeAddressStreet" type="xs:string"/>
+  <xs:element name="MobilePhoneNumber" type="xs:string"/>
+  <xs:element name="Suffix" type="xs:string"/>
+  <xs:element name="CompanyName" type="xs:string"/>
+  <xs:element name="OtherAddressCity" type="xs:string"/>
+  <xs:element name="OtherAddressCountry" type="xs:string"/>
+  <xs:element name="CarPhoneNumber" type="xs:string"/>
+  <xs:element name="OtherAddressPostalCode" type="xs:string"/>
+  <xs:element name="OtherAddressState" type="xs:string"/>
+  <xs:element name="OtherAddressStreet" type="xs:string"/>
+  <xs:element name="PagerNumber" type="xs:string"/>
+  <xs:element name="Title" type="xs:string"/>
+  <xs:element name="BusinessAddressPostalCode" type="xs:string"/>
+  <xs:element name="LastName" type="xs:string"/>
+  <xs:element name="Spouse" type="xs:string"/>
+  <xs:element name="BusinessAddressState" type="xs:string"/>
+  <xs:element name="BusinessAddressStreet" type="xs:string"/>
+  <xs:element name="JobTitle" type="xs:string"/>
+  <xs:element name="YomiFirstName" type="xs:string"/>
+  <xs:element name="YomiLastName" type="xs:string"/>
+  <xs:element name="YomiCompanyName" type="xs:string"/>
+  <xs:element name="OfficeLocation" type="xs:string"/>
+  <xs:element name="RadioPhoneNumber" type="xs:string"/>
+  <xs:element name="Picture" type="xs:string"/>
+  <xs:element name="Categories">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Category" type="xs:string" minOccurs="0" 
+            maxOccurs="300"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Children">
+    <xs:complexType>
+      <xs:sequence minOccurs="0">
+        <xs:element name="Child" type="xs:string" minOccurs="0" 
+            maxOccurs="300"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:group name="AllProps">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="Anniversary"/>
+        <xs:element ref="AssistantName"/>
+        <xs:element ref="AssistantPhoneNumber"/>
+        <xs:element ref="Birthday"/>
+        <xs:element ref="Business2PhoneNumber"/>
+        <xs:element ref="BusinessAddressCity"/>
+        <xs:element ref="BusinessPhoneNumber"/>
+        <xs:element ref="WebPage"/>
+        <xs:element ref="BusinessAddressCountry"/>
+        <xs:element ref="Department"/>
+        <xs:element ref="Email1Address"/>
+        <xs:element ref="Email2Address"/>
+        <xs:element ref="Email3Address"/>
+        <xs:element ref="BusinessFaxNumber"/>
+        <xs:element ref="FileAs"/>
+        <xs:element ref="Alias"/>
+        <xs:element ref="WeightedRank"/>
+        <xs:element ref="FirstName"/>
+        <xs:element ref="MiddleName"/>
+        <xs:element ref="HomeAddressCity"/>
+        <xs:element ref="HomeAddressCountry"/>
+        <xs:element ref="HomeFaxNumber"/>
+        <xs:element ref="HomePhoneNumber"/>
+        <xs:element ref="Home2PhoneNumber"/>
+        <xs:element ref="HomeAddressPostalCode"/>
+        <xs:element ref="HomeAddressState"/>
+        <xs:element ref="HomeAddressStreet"/>
+        <xs:element ref="MobilePhoneNumber"/>
+        <xs:element ref="Suffix"/>
+        <xs:element ref="CompanyName"/>
+        <xs:element ref="OtherAddressCity"/>
+        <xs:element ref="OtherAddressCountry"/>
+        <xs:element ref="CarPhoneNumber"/>
+        <xs:element ref="OtherAddressPostalCode"/>
+        <xs:element ref="OtherAddressState"/>
+        <xs:element ref="OtherAddressStreet"/>
+        <xs:element ref="PagerNumber"/>
+        <xs:element ref="Title"/>
+        <xs:element ref="BusinessAddressPostalCode"/>
+        <xs:element ref="LastName"/>
+        <xs:element ref="Spouse"/>
+        <xs:element ref="BusinessAddressState"/>
+        <xs:element ref="BusinessAddressStreet"/>
+        <xs:element ref="JobTitle"/>
+        <xs:element ref="YomiFirstName"/>
+        <xs:element ref="YomiLastName"/>
+        <xs:element ref="YomiCompanyName"/>
+        <xs:element ref="OfficeLocation"/>
+        <xs:element ref="RadioPhoneNumber"/>
+        <xs:element ref="Picture"/>
+        <xs:element ref="Categories"/>
+        <xs:element ref="Children"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="GhostingProps">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="Anniversary" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Birthday" type="airsyncbase:EmptyTag"/>
+        <xs:element name="WebPage" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Children" type="airsyncbase:EmptyTag"/>
+        <xs:element name="BusinessAddressCountry" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Department" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Email1Address" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Email2Address" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Email3Address" type="airsyncbase:EmptyTag"/>
+        <xs:element name="BusinessFaxNumber" type="airsyncbase:EmptyTag"/>
+        <xs:element name="FileAs" type="airsyncbase:EmptyTag"/>
+        <xs:element name="FirstName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="HomeAddressCity" type="airsyncbase:EmptyTag"/>
+        <xs:element name="HomeAddressCountry" type="airsyncbase:EmptyTag"/>
+        <xs:element name="HomeFaxNumber" type="airsyncbase:EmptyTag"/>
+        <xs:element name="HomePhoneNumber" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Home2PhoneNumber" type="airsyncbase:EmptyTag"/>
+        <xs:element name="HomeAddressPostalCode" type="airsyncbase:EmptyTag"/>
+        <xs:element name="HomeAddressState" type="airsyncbase:EmptyTag"/>
+        <xs:element name="HomeAddressStreet" type="airsyncbase:EmptyTag"/>
+        <xs:element name="BusinessAddressCity" type="airsyncbase:EmptyTag"/>
+        <xs:element name="MiddleName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="MobilePhoneNumber" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Suffix" type="airsyncbase:EmptyTag"/>
+        <xs:element name="CompanyName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="OtherAddressCity" type="airsyncbase:EmptyTag"/>
+        <xs:element name="OtherAddressCountry" type="airsyncbase:EmptyTag"/>
+        <xs:element name="CarPhoneNumber" type="airsyncbase:EmptyTag"/>
+        <xs:element name="OtherAddressPostalCode" type="airsyncbase:EmptyTag"/>
+        <xs:element name="OtherAddressState" type="airsyncbase:EmptyTag"/>
+        <xs:element name="OtherAddressStreet" type="airsyncbase:EmptyTag"/>
+        <xs:element name="PagerNumber" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Title" type="airsyncbase:EmptyTag"/>
+        <xs:element name="BusinessAddressPostalCode" 
+            type="airsyncbase:EmptyTag"/>
+        <xs:element name="AssistantName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="AssistantPhoneNumber" type="airsyncbase:EmptyTag"/>
+        <xs:element name="AssistnamePhoneNumber" type="airsyncbase:EmptyTag"/>
+        <xs:element name="LastName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Spouse" type="airsyncbase:EmptyTag"/>
+        <xs:element name="BusinessAddressState" type="airsyncbase:EmptyTag"/>
+        <xs:element name="BusinessAddressStreet" type="airsyncbase:EmptyTag"/>
+        <xs:element name="BusinessPhoneNumber" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Business2PhoneNumber" type="airsyncbase:EmptyTag"/>
+        <xs:element name="JobTitle" type="airsyncbase:EmptyTag"/>
+        <xs:element name="YomiFirstName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="YomiLastName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="YomiCompanyName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="OfficeLocation" type="airsyncbase:EmptyTag"/>
+        <xs:element name="RadioPhoneNumber" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Picture" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Categories" type="airsyncbase:EmptyTag"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="TopLevelSchemaProps">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="Anniversary" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Birthday" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Webpage" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Children" type="airsyncbase:EmptyTag"/>
+        <xs:element name="BusinessAddressCountry" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Department" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Email1Address" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Email2Address" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Email3Address" type="airsyncbase:EmptyTag"/>
+        <xs:element name="BusinessFaxNumber" type="airsyncbase:EmptyTag"/>
+        <xs:element name="FileAs" type="airsyncbase:EmptyTag"/>
+        <xs:element name="FirstName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="HomeAddressCity" type="airsyncbase:EmptyTag"/>
+        <xs:element name="HomeAddressCountry" type="airsyncbase:EmptyTag"/>
+        <xs:element name="HomeFaxNumber" type="airsyncbase:EmptyTag"/>
+        <xs:element name="HomeTelephoneNumber" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Home2TelephoneNumber" type="airsyncbase:EmptyTag"/>
+        <xs:element name="HomeAddressPostalCode" type="airsyncbase:EmptyTag"/>
+        <xs:element name="HomeAddressState" type="airsyncbase:EmptyTag"/>
+        <xs:element name="HomeAddressStreet" type="airsyncbase:EmptyTag"/>
+        <xs:element name="BusinessAddressCity" type="airsyncbase:EmptyTag"/>
+        <xs:element name="MiddleName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="MobileTelephoneNumber" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Suffix" type="airsyncbase:EmptyTag"/>
+        <xs:element name="CompanyName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="OtherAddressCity" type="airsyncbase:EmptyTag"/>
+        <xs:element name="OtherAddressCountry" type="airsyncbase:EmptyTag"/>
+        <xs:element name="CarTelephoneNumber" type="airsyncbase:EmptyTag"/>
+        <xs:element name="OtherAddressPostalCode" type="airsyncbase:EmptyTag"/>
+        <xs:element name="OtherAddressState" type="airsyncbase:EmptyTag"/>
+        <xs:element name="OtherAddressStreet" type="airsyncbase:EmptyTag"/>
+        <xs:element name="PagerNumber" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Title" type="airsyncbase:EmptyTag"/>
+        <xs:element name="BusinessAddressPostalCode" 
+            type="airsyncbase:EmptyTag"/>
+        <xs:element name="AssistantName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="AssistantTelephoneNumber" 
+            type="airsyncbase:EmptyTag"/>
+        <xs:element name="LastName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Spouse" type="airsyncbase:EmptyTag"/>
+        <xs:element name="BusinessAddressState" type="airsyncbase:EmptyTag"/>
+        <xs:element name="BusinessAddressStreet" type="airsyncbase:EmptyTag"/>
+        <xs:element name="BusinessTelephoneNumber" 
+            type="airsyncbase:EmptyTag"/>
+        <xs:element name="Business2TelephoneNumber" 
+            type="airsyncbase:EmptyTag"/>
+        <xs:element name="JobTitle" type="airsyncbase:EmptyTag"/>
+        <xs:element name="YomiFirstName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="YomiLastName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="YomiCompanyName" type="airsyncbase:EmptyTag"/>
+        <xs:element name="OfficeLocation" type="airsyncbase:EmptyTag"/>
+        <xs:element name="RadioTelephoneNumber" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Categories" type="airsyncbase:EmptyTag"/>
+        <xs:element name="Picture" type="airsyncbase:EmptyTag"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+</xs:schema>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Search xmlns:gal="Gal" xmlns="Search">
+<Status>1</Status>
+<Response>
+<Store>
+<Status>1</Status>
+<Result>
+<Properties>
+<gal:DisplayName>Anat Kerry</gal:DisplayName>
+<gal:Phone>+1 (301) 5550156 X8376</gal:Phone>
+<gal:Office>Bldg36/6163</gal:Office>
+<gal:Title>SDE</gal:Title>
+<gal:Company>Contoso</gal:Company>
+<gal:Alias>anatk</gal:Alias>
+<gal:FirstName>Anat</gal:FirstName>
+<gal:LastName>Kerry</gal:LastName>
+<gal:EmailAddress>anatk@contoso.com</gal:EmailAddress>
+</Properties>
+</Result>
+<Result>
+<Properties>
+<gal:DisplayName>Anat Gray</gal:DisplayName>
+<gal:Phone>+1 (953) 5550195 </gal:Phone>
+<gal:Office>Bldg2/2710</gal:Office>
+<gal:Title>SDET</gal:Title>
+<gal:Company>Contoso</gal:Company>
+<gal:Alias>anatg</gal:Alias>
+<gal:FirstName>Anat</gal:FirstName>
+<gal:LastName>Gray</gal:LastName>
+<gal:MobilePhone>+1 (953) 5550167</gal:MobilePhone>
+<gal:EmailAddress>anatg@contoso.com</gal:EmailAddress>
+</Properties>
+</Result>
+<Range>0-1</Range>
+<Total>11</Total>
+</Store>
+</Response>
+</Search>

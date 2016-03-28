@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn292965(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="ComposeMail" 
+    targetNamespace="ComposeMail" elementFormDefault="qualified" 
+    attributeFormDefault="unqualified">
+  <xs:include schemaLocation="ComposeMail.xsd"/>
+  <xs:element name="SmartReplyResponse">
+    <xs:complexType>
+      <xs:all>
+        <xs:element ref="Status" minOccurs="0"/>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

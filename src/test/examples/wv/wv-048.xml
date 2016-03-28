@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!DOCTYPE WV-CSP-Message PUBLIC "-//OMA//DTD WV-CSP 1.1//EN" "/home/ricky/NetBeansProjects/wbxml-stream/dtd/wv-csp_1_1.dtd">
+<WV-CSP-Message>
+   <Session>
+      <SessionDescriptor>
+         <SessionType>Outband</SessionType>
+      </SessionDescriptor>
+
+      <Transaction>
+         <TransactionDescriptor>
+            <TransactionMode>Request</TransactionMode>
+
+            <TransactionID>IMApp01#12345@NOK5110</TransactionID>
+
+            <Poll>F</Poll>
+         </TransactionDescriptor>
+
+         <TransactionContent>
+            <PresenceAuth-Request>
+               <UserID>wv:matthias@salamander.com</UserID>
+
+               <PresenceSubList>
+                  <OnlineStatus />
+
+                  <Registration />
+
+                  <ClientInfo />
+
+                  <TimeZone />
+
+                  <GeoLocation />
+
+                  <Address />
+
+                  <FreeTextLocation />
+
+                  <PLMN />
+
+                  <CommCap />
+
+                  <UserAvailability />
+
+                  <PreferredContacts />
+
+                  <PreferredLanguage />
+
+                  <StatusText />
+
+                  <StatusMood />
+
+                  <Alias />
+
+                  <StatusContent />
+
+                  <ContactInfo />
+               </PresenceSubList>
+            </PresenceAuth-Request>
+         </TransactionContent>
+      </Transaction>
+   </Session>
+</WV-CSP-Message>
+

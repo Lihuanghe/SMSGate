@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ItemOperations xmlns="ItemOperations" xmlns:airsync="AirSync"
+xmlns:airsyncbase="AirSyncBase">
+<Fetch>
+<Store>Mailbox</Store>
+<airsync:CollectionId>17</airsync:CollectionId>
+<airsync:ServerId>17:11</airsync:ServerId>
+<Options>
+<airsync:MIMESupport>1</airsync:MIMESupport>
+<airsyncbase:BodyPreference>
+<airsyncbase:Type>4</airsyncbase:Type>
+</airsyncbase:BodyPreference>
+</Options>
+</Fetch>
+</ItemOperations>

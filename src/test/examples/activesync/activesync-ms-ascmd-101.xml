@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ItemOperations xmlns="ItemOperations">
+<Status>1</Status>
+<Response>
+<Status>1</Status>
+<Move>
+<Status>1</Status>
+<ConversationId>...</ConversationId>
+</Move>
+</Response>
+</ItemOperations>

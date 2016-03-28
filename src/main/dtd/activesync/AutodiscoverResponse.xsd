@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn292971(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns=
+    "http://schemas.microsoft.com/exchange/autodiscover/responseschema/2006" 
+    targetNamespace=
+    "http://schemas.microsoft.com/exchange/autodiscover/responseschema/2006"
+    xmlns:mobilesync=
+    "http://schemas.microsoft.com/exchange/autodiscover/mobilesync/responseschema/2006" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:import namespace=
+      "http://schemas.microsoft.com/exchange/autodiscover/mobilesync/responseschema/2006" 
+      schemaLocation="AutodiscoverMobileSync.xsd"/>
+  <xs:element name="Autodiscover">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="mobilesync:Response"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

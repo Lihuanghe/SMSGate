@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn338922(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:rm=
+    "RightsManagement" xmlns="ComposeMail" targetNamespace="ComposeMail" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:include schemaLocation="ComposeMail.xsd"/>
+  <xs:import namespace="RightsManagement" schemaLocation=
+      "RightsManagement.xsd"/>
+  <xs:element name="SmartReplyRequest">
+    <xs:complexType>
+      <xs:all>
+        <xs:element ref="ClientId"/>
+        <xs:element ref="Source"/>
+        <xs:element ref="AccountId" minOccurs="0"/>
+        <xs:element ref="SaveInSentItems" minOccurs="0"/>
+        <xs:element ref="ReplaceMime" minOccurs="0"/>
+        <xs:element ref="Mime"/>
+        <xs:element ref="rm:TemplateID" minOccurs="0"/>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

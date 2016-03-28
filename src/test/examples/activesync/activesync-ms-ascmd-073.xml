@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Settings xmlns="Settings">
+<Status>1</Status>
+<Oof>
+<Status>1</Status>
+<Get>
+<OofState>2</OofState>
+<StartTime>2007-05-08T10:45:51.250Z</StartTime>
+<EndTime>2007-05-11T10:45:51.250Z</EndTime>
+<OofMessage>
+<AppliesToInternal />
+<Enabled>1</Enabled>
+<ReplyMessage>Internal OOF Message</ReplyMessage>
+<BodyType>Text</BodyType>
+</OofMessage>
+<OofMessage>
+<AppliesToExternalKnown />
+<Enabled>1</Enabled>
+<ReplyMessage>External OOF Message</ReplyMessage>
+<BodyType>Text</BodyType>
+</OofMessage>
+<OofMessage>
+<AppliesToExternalUnknown /><Enabled>0</Enabled>
+<ReplyMessage>External OOF Message</ReplyMessage>
+<BodyType>Text</BodyType>
+</OofMessage>
+</Get>
+</Oof>
+</Settings>

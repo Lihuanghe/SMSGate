@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE SyncML PUBLIC "-//SYNCML//DTD SyncML 1.1//EN" "http://www.syncml.org/docs/syncml_represent_v11_20020213.dtd">
+<SyncML xmlns='SYNCML:SYNCML1.1'>
+    <SyncBody>
+        <Sync>
+			<Add>
+				<CmdID>6</CmdID>
+				<Meta><Type xmlns='syncml:metinf'>text/x-vcard</Type></Meta>
+				<Item>
+					<Source>
+						<LocURI>pas-id-3F4B790300000000</LocURI>
+					</Source>
+					<Data>BEGIN:VCARD
+VERSION:2.1
+X-EVOLUTION-FILE-AS:Ximian, Inc.
+N:
+LABEL;WORK;ENCODING=QUOTED-PRINTABLE:401 Park Drive  3 West=0ABoston, MA
+02215=0AUSA
+TEL;WORK;VOICE:(617) 236-0442
+TEL;WORK;FAX:(617) 236-8630
+EMAIL;INTERNET:[EMAIL PROTECTED]
+URL:www.ximian.com/
+ORG:Ximian, Inc.
+NOTE:Welcome to the Ximian Addressbook.
+UID:pas-id-3F4B790300000000
+END:VCARD</Data>
+				</Item>
+			</Add>
+        </Sync>
+        <Final/>
+    </SyncBody>
+</SyncML>

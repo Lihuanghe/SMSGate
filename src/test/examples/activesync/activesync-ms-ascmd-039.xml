@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ItemOperations xmlns:airsync="AirSync"
+xmlns:airsyncbase="AirSyncBase" xmlns="ItemOperations">
+<Fetch>
+<Store>Mailbox</Store>
+<airsync:CollectionId>5</airsync:CollectionId>
+<airsync:ServerId>5:1</airsync:ServerId>
+<Options>
+<airsyncbase:BodyPreference>
+<airsyncbase:Type>1</airsyncbase:Type>
+<airsyncbase:TruncationSize>5120</airsyncbase:TruncationSize>
+<airsyncbase:AllOrNone>0</airsyncbase:AllOrNone>
+</airsyncbase:BodyPreference>
+</Options>
+</Fetch>
+</ItemOperations>

@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!DOCTYPE WV-CSP-Message PUBLIC "-//OMA//DTD WV-CSP 1.1//EN" "/home/ricky/NetBeansProjects/wbxml-stream/dtd/wv-csp_1_1.dtd">
+<WV-CSP-Message>
+   <Session>
+      <SessionDescriptor>
+         <SessionType>Inband</SessionType>
+
+         <SessionID>im.user.com#48815@server.com</SessionID>
+      </SessionDescriptor>
+
+      <Transaction>
+         <TransactionDescriptor>
+            <TransactionMode>Request</TransactionMode>
+
+            <TransactionID>IMApp01#12345@NOK5110</TransactionID>
+
+            <Poll>F</Poll>
+         </TransactionDescriptor>
+
+         <TransactionContent>
+            <MessageNotification>
+               <MessageInfo>
+                  <MessageID>0x0000f132</MessageID>
+
+                  <ContentType>text/plain</ContentType>
+
+                  <ContentEncoding>None</ContentEncoding>
+
+                  <ContentSize>189</ContentSize>
+
+                  <Recipient>
+                     <Group>
+                        <ScreenName>
+                           <SName>Johnnie</SName>
+
+                           <GroupID>wv:john/chatgroup@there.com</GroupID>
+                        </ScreenName>
+                     </Group>
+                  </Recipient>
+
+                  <Sender>
+                     <Group>
+                        <ScreenName>
+                           <SName>Wicked Vicky</SName>
+
+                           <GroupID>wv:john/chatgroup@there.com</GroupID>
+                        </ScreenName>
+                     </Group>
+                  </Sender>
+
+                  <!-- datetime format test
+                         - with seconds
+                         - with timezone
+                         - with number seperators
+                         - with timezone of Germany
+                   -->
+                  <DateTime>2001-09-25T13:40:13+01</DateTime>
+
+                  <Validity>600</Validity>
+               </MessageInfo>
+            </MessageNotification>
+         </TransactionContent>
+      </Transaction>
+   </Session>
+</WV-CSP-Message>
+

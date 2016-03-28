@@ -1,0 +1,24 @@
+<!ELEMENT o-ex:rights (o-ex:context, o-ex:agreement)>
+<!ATTLIST o-ex:rights
+	xmlns:o-ex CDATA #FIXED "http://odrl.net/1.1/ODRL-EX"
+	xmlns:o-dd CDATA #FIXED "http://odrl.net/1.1/ODRL-DD"
+	xmlns:ds CDATA #FIXED "http://www.w3.org/2000/09/xmldsig#/"
+>
+<!ELEMENT o-ex:context (o-dd:version?, o-dd:uid?)>
+<!ELEMENT o-dd:version (#PCDATA)>
+<!ELEMENT o-dd:uid (#PCDATA)>
+<!ELEMENT o-ex:agreement (o-ex:asset, o-ex:permission)>
+<!ELEMENT o-ex:asset (o-ex:context, ds:KeyInfo?)>
+<!ELEMENT ds:KeyInfo (ds:KeyValue)>
+<!ELEMENT ds:KeyValue (#PCDATA)>
+<!ELEMENT o-ex:permission (o-dd:play?, o-dd:display?, o-dd:execute?, o-dd:print?)>
+<!ELEMENT o-dd:play (o-ex:constraint?)>
+<!ELEMENT o-dd:display (o-ex:constraint?)>
+<!ELEMENT o-dd:execute (o-ex:constraint?)>
+<!ELEMENT o-dd:print (o-ex:constraint?)>
+<!ELEMENT o-ex:constraint (o-dd:count?, o-dd:datetime?, o-dd:interval?)>
+<!ELEMENT o-dd:count (#PCDATA)>
+<!ELEMENT o-dd:datetime (o-dd:start?, o-dd:end?)>
+<!ELEMENT o-dd:start (#PCDATA)>
+<!ELEMENT o-dd:end (#PCDATA)>
+<!ELEMENT o-dd:interval (#PCDATA)>

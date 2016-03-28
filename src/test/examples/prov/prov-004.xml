@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<!DOCTYPE wap-provisioningdoc PUBLIC "-//WAPFORUM//DTD PROV 1.0//EN"
+                                     "http://www.wapforum.org/DTD/prov.dtd">
+<wap-provisioningdoc version="1.1">
+    <characteristic type="BOOTSTRAP">
+        <parm name="CONTEXT-ALLOW" value="0"/>
+        <parm name="PROVURL" value="http://www.operator.com/TPS/"/>
+    </characteristic>
+    <characteristic type="PXLOGICAL">
+        <parm name="PROXY-ID" value="170.187.51.4"/>
+        <parm name="PROXY-PW" value="proxypasswd"/>
+        <parm name="PPGAUTH-TYPE" value="HTTP-DIGEST"/>
+        <parm name="NAME" value="TrustedProvProxy"/>
+        <parm name="TRUST"/>
+        <parm name="PUSHENABLED" value="1"/>
+        <parm name="STARTPAGE" value="http://www.operator.com/home.wml"/>
+        <characteristic type="PXAUTHINFO">
+            <parm name="PXAUTH-TYPE" value="HTTP-BASIC"/>
+            <parm name="PXAUTH-ID" value="subscribername"/>
+            <parm name="PXAUTH-PW" value="subscriberpassw"/>
+        </characteristic>
+        <characteristic type="PXPHYSICAL">
+            <parm name="PHYSICAL-PROXY-ID" value="PROXY 1"/>
+            <parm name="DOMAIN" value=".operator.com/"/>
+            <parm name="PXADDR" value="221.125.33.5"/>
+            <parm name="PXADDRTYPE" value="IPV4"/>
+            <parm name="TO-NAPID" value="NAP1"/>
+        </characteristic>
+        <characteristic type="PXPHYSICAL">
+            <parm name="PHYSICAL-PROXY-ID" value="PROXY 2"/>
+            <parm name="DOMAIN" value="www.operator.com/"/>
+            <parm name="PXADDR" value="9201612"/>
+            <parm name="PXADDRTYPE" value="E164"/>
+            <parm name="TO-NAPID" value="NAP2"/>
+        </characteristic>
+    </characteristic>
+    <characteristic type="NAPDEF">
+        <parm name="NAPID" value="NAP1"/>
+        <parm name="BEARER" value="GSM-CSD"/>
+        <parm name="NAME" value="ANY NAME 7"/>
+        <parm name="NAP-ADDRESS" value="+35808124303"/>
+        <parm name="NAP-ADDRTYPE" value="E164"/>
+        <parm name="CALLTYPE" value="ANALOG-MODEM"/>
+        <characteristic type="NAPAUTHINFO">
+            <parm name="AUTHTYPE" value="PAP"/>
+            <parm name="AUTHNAME" value="wapuser"/>
+            <parm name="AUTHSECRET" value="wappassw"/>
+        </characteristic>
+        <characteristic type="VALIDITY">
+            <parm name="COUNTRY" value="228"/>
+            <parm name="NETWORK" value="001"/>
+        </characteristic>
+    </characteristic>
+    <characteristic type="NAPDEF">
+        <parm name="NAPID" value="NAP2"/>
+        <parm name="BEARER" value="GSM-SMS"/>
+        <parm name="NAME" value="ANY NAME 8"/>
+        <parm name="NAP-ADDRESS" value="+35809503401"/>
+    </characteristic>
+</wap-provisioningdoc>

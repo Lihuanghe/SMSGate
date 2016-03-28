@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sync xmlns="AirSync" xmlns:contacts="Contacts">
+<Collections>
+<Collection>
+<SyncKey>0</SyncKey>
+<CollectionId>2</CollectionId>
+<Supported>
+<contacts:JobTitle/>
+<contacts:OfficeLocation/>
+</Supported>
+</Collection>
+</Collections>
+</Sync>

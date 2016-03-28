@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!--
+    A DTD on localhost is nearly useless.
+    After a conversion to and from wbxml this information is completely lost.
+    I commented this DOCTYPE because the result is always a default DOCTYPE.
+
+<!DOCTYPE CHARACTERISTIC-LIST PUBLIC "-//WAPFORUM//DTD NOKIA-OTA 1.0//EN" "http://localhost:8080/OMABootSendWEB/DTD/characteristic_list.dtd">
+-->
+<!DOCTYPE CHARACTERISTIC-LIST SYSTEM "characteristic-list.dtd">
+<CHARACTERISTIC-LIST>
+   <CHARACTERISTIC TYPE="BOOKMARK"> 
+      <PARM NAME="NAME" VALUE="TV2"/>
+      <PARM NAME="URL" VALUE="http://wap.tv2.dk"/>
+      <PARM NAME="ICON" VALUE="R0lGODlhIAAgAPMAAP//AP8zAMwAAJkAAGYAAN0AAKoAAIgAAHcAAFUAAEQAACIAABEAALu7u8jIyP8AMyH5BAEAAA4ALAAAAAAgACAAQATh0MlJq704Z8bkucyiJARyHEM6HAjCNJw2hWNpnmdLJMrSyUBMICApAAqbhUiheDVgicQg8dPQSKaBQVAQGFaIXa8KDC2ZaCU5yL4QPe3yoXAIfDacfJVBZV9JNi16fWUiWChbAl5gBAxjMlclKFoGX4w8PkF/BJydO5hrbXp5caUYd6YycwVvqRY4R64goa4dMRKtGBxKaqNShIVMUSUcTwxTtCCGnC04LMWkkMtZlJbPMLdJNVlbXV8sYplW04iKi+Cg0tvUKixh6eqALfM64cnKwlH6PI+mu7y8sskaCMFFADs="/>
+   </CHARACTERISTIC>
+</CHARACTERISTIC-LIST>

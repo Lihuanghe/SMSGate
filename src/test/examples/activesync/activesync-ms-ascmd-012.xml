@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sync xmlns="AirSync" xmlns:email="Email" xmlns:email2="Email2"
+xmlns:airsyncbase="AirSyncBase">
+<Collections>
+<Collection>
+<SyncKey>3</SyncKey>
+<CollectionId>17</CollectionId>
+<Status>1</Status>
+<Commands>
+<Change>
+<ServerId>17:11</ServerId>
+<ApplicationData>
+<email:To>"Leonor Marques" &lt;leonor@contoso.com&gt;</email:To>
+<email:From>"Wei Yu" &lt;wei@contoso.com&gt;</email:From>
+<email:Subject>opaque s + e </email:Subject>
+<email:DateReceived>2007-02-01T06:42:46.015Z</email:DateReceived>
+<email:DisplayTo>Leonor Marques</email:DisplayTo>
+<email:ThreadTopic>opaque s + e</email:ThreadTopic>
+<email:Importance>1</email:Importance>
+<email:Read>1</email:Read>
+<airsyncbase:Attachments>
+<airsyncbase:Attachment>
+<airsyncbase:DisplayName>smime.p7m</airsyncbase:DisplayName>
+<airsyncbase:FileReference>17%3a11%3a0</airsyncbase:FileReference>
+<airsyncbase:Method>1</airsyncbase:Method>
+<airsyncbase:EstimatedDataSize>9340</airsyncbase:EstimatedDataSize>
+</airsyncbase:Attachment>
+</airsyncbase:Attachments>
+<airsyncbase:Body>
+<airsyncbase:Type>4</airsyncbase:Type>
+<airsyncbase:EstimatedDataSize>13814</airsyncbase:EstimatedDataSize>
+<airsyncbase:Truncated>1</airsyncbase:Truncated>
+<airsyncbase:Data>Received: from contoso.com ([157.55.97.121])
+By contoso.com ([157.55.97.121]) with mapi;
+Wed, 31 Jan 2007 22:42:45 -0800
+From: Wei Yu &lt;wei@contoso.com&gt;
+To: Leonor &lt;leonor@contoso.com&gt;
+Content-Class: urn:content-classes:message
+Date: Wed, 31 Jan 2007 22:42:41 -0800
+Subject: opaque s + e
+Thread-Topic: opaque s + e
+Thread-Index: AcdFzCv5tyCXieBuTd2I5APpEvS+iQ==
+Message-ID:
+&lt;3AA64EB47EA90</airsyncbase:Data>
+</airsyncbase:Body>
+<email:MessageClass>IPM.Note.SMIME</email:MessageClass>
+<email:InternetCPID>20127</email:InternetCPID>
+<email:Flag/>
+<email:ContentClass>urn:content-classes:message</email:ContentClass>
+<airsyncbase:NativeBodyType>1</airsyncbase:NativeBodyType>
+<email2:ConversationId>...</email2:ConversationId>
+<email2:ConversationIndex>...</email2:ConversationIndex>
+</ApplicationData>
+</Change>
+</Commands>
+</Collection>
+</Collections>
+</Sync>

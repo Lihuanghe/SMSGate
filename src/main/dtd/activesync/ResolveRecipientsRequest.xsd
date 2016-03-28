@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn292982(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns=
+    "ResolveRecipients" targetNamespace="ResolveRecipients" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:element name="ResolveRecipientsRequest">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="To" maxOccurs="1000">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:maxLength value="256"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="Options" minOccurs="0">
+          <xs:complexType>
+            <xs:all>
+              <xs:element name="CertificateRetrieval" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:integer">
+                    <xs:minInclusive value="1"/>
+                    <xs:maxInclusive value="3"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="MaxCertificates" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:integer">
+                    <xs:minInclusive value="0"/>
+                    <xs:maxInclusive value="9999"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="MaxAmbiguousRecipients" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:integer">
+                    <xs:minInclusive value="0"/>
+                    <xs:maxInclusive value="9999"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Availability" minOccurs="0">
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element name="StartTime" type="xs:string"/>
+                    <xs:element name="EndTime" type="xs:string" minOccurs="0"/>
+                  </xs:all>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Picture" minOccurs="0">
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element name="MaxSize" type="xs:unsignedInt" 
+                        minOccurs="0"/>
+                    <xs:element name="MaxPictures" type="xs:unsignedInt" 
+                        minOccurs="0"/>
+                  </xs:all>
+                </xs:complexType>
+              </xs:element>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

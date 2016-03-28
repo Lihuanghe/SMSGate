@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<!DOCTYPE SyncML PUBLIC "-//SYNCML//DTD SyncML 1.1//EN" "http://www.syncml.org/docs/syncml_represent_v11_20020213.dtd">
+<SyncML xmlns='SYNCML:SYNCML1.1'>
+    <SyncHdr>
+        <VerDTD>1.1</VerDTD>
+        <VerProto>SyncML/1.1</VerProto>
+        <SessionID>1</SessionID>
+        <MsgID>1</MsgID>
+        <Target><LocURI>IMEI:493005100592800</LocURI></Target>
+        <Source><LocURI>http://www.syncml.org/sync-server</LocURI></Source>
+        <Cred> <!--The authentication is optional.-->
+            <Meta><Type xmlns='syncml:metinf'>syncml:auth-basic</Type></Meta>
+            <Data>QnJ1Y2UyOk9oQmVoYXZl</Data> <!--base64 formatting of "userid:password"-->
+        </Cred>
+    </SyncHdr>
+    <SyncBody>
+        <Status>
+            <CmdID>1</CmdID>
+            <MsgRef>1</MsgRef><CmdRef>0</CmdRef><Cmd>SyncHdr</Cmd>
+            <TargetRef>http://www.syncml.org/sync-server</TargetRef>
+            <SourceRef>IMEI:493005100592800</SourceRef>
+            <Data>212</Data> <!--Statuscode for OK, authenticated for session-->
+        </Status>
+        <Status>
+            <CmdID>2</CmdID>
+            <MsgRef>1</MsgRef><CmdRef>1</CmdRef><Cmd>Alert</Cmd>
+            <TargetRef>./contacts/james_bond</TargetRef>
+            <SourceRef>./dev-contacts</SourceRef>
+            <Data>200</Data> <!--Statuscode for OK-->
+            <Item>
+            <Data><Anchor xmlns='syncml:metinf'><Next>276</Next></Anchor></Data>
+            </Item>
+        </Status>
+        <Status>
+            <CmdID>3</CmdID>
+            <MsgRef>1</MsgRef><CmdRef>2</CmdRef><Cmd>Put</Cmd>
+            <SourceRef>./devinf11</SourceRef>
+            <Data>200</Data> <!--Statuscode for OK-->
+        </Status>
+        <Results>
+            <CmdID>4</CmdID>
+            <MsgRef>1</MsgRef><CmdRef>3</CmdRef>
+            <Meta><Type xmlns='syncml:metinf'>application/vnd.syncml-devinf+wbxml</Type></Meta>
+            <Item>
+                <Source><LocURI>./devinf11</LocURI></Source>
+                <Data>
+                    <DevInf xmlns='syncml:devinf'>
+                        <Man>Small Factory, Ltd.</Man>
+                        <Mod>Tiny Server</Mod>
+                        <OEM>Tiny Shop</OEM>
+                        <DevID>485749KR</DevID>
+                        <DevTyp>Server</DevTyp>
+                        <DataStore>
+                            <SourceRef>./contacts</SourceRef>
+                            <DisplayName>Addressbook</DisplayName>
+                            <Rx-Pref>
+                                <CTType>text/x-vcard </CTType>
+                                <VerCT>2.1</VerCT>
+                            </Rx-Pref>
+                            <Rx>
+                                <CTType>text/vcard </CTType>
+                                <VerCT>3.0</VerCT>
+                            </Rx>
+                            <Tx-Pref>
+                                <CTType>text/x-vcard</CTType>
+                                <VerCT>2.1</VerCT>
+                            </Tx-Pref>
+                            <Tx>
+                                <CTType>text/vcard</CTType>
+                                <VerCT>3.0</VerCT>
+                            </Tx>
+                        </DataStore>
+                        <CTCap>
+                            <CTType>text/x-vcard</CTType>
+                            <PropName>BEGIN</PropName>
+                            <ValEnum>VCARD</ValEnum>
+                            <PropName>END</PropName>
+                            <ValEnum>VCARD</ValEnum>
+                            <PropName>VERSION</PropName>
+                            <ValEnum>2.1</ValEnum>
+                            <PropName>N</PropName>
+                            <PropName>TEL</PropName>
+                            <ParamName>VOICE</ParamName>
+                            <ParamName>CELL</ParamName>
+                            <CTType>text/vcard</CTType>
+                            <PropName>BEGIN</PropName>
+                            <ValEnum>VCARD</ValEnum>
+                            <PropName>END</PropName>
+                            <ValEnum>VCARD</ValEnum>
+                            <PropName>VERSION</PropName>
+                            <ValEnum>3.0</ValEnum>
+                            <PropName>N</PropName>
+                            <PropName>TEL</PropName>
+                            <ParamName>VOICE</ParamName>
+                            <ParamName>FAX</ParamName>
+                            <ParamName>CELL</ParamName>
+                        </CTCap>
+                        <SyncCap>
+                            <SyncType>01</SyncType>
+                            <SyncType>02</SyncType>
+                            <SyncType>07</SyncType>
+                        </SyncCap>
+                    </DevInf>
+                </Data>
+            </Item>
+        </Results>
+        <Alert>
+            <CmdID>5</CmdID>
+            <Data>201</Data> <!-- 201 = TWO_WAY_ALERT -->
+            <Item>
+                <Target><LocURI>./dev-contacts</LocURI></Target>
+                <Source><LocURI>./contacts/james_bond</LocURI></Source>
+                <Meta>
+                    <Anchor xmlns='syncml:metinf'>
+                        <Last>200005021T081812Z </Last>
+                        <Next>200005022T093223Z </Next>
+                    </Anchor>
+                </Meta>
+            </Item>
+        </Alert>
+        <Final/>
+    </SyncBody>
+</SyncML>

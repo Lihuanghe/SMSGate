@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sync xmlns="AirSync">
+<Collections>
+<Collection>
+<SyncKey>6</SyncKey>
+<CollectionId>1</CollectionId>
+<DeletesAsMoves/>
+<GetChanges/>
+<Options> ... </Options>
+</Collection>
+</Collections>
+</Sync>

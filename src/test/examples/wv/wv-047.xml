@@ -1,0 +1,406 @@
+<?xml version="1.0"?>
+<!DOCTYPE WV-CSP-Message PUBLIC "-//OMA//DTD WV-CSP 1.1//EN" "/home/ricky/NetBeansProjects/wbxml-stream/dtd/wv-csp_1_1.dtd">
+<WV-CSP-Message>
+   <Session>
+      <SessionDescriptor>
+         <SessionType>Inband</SessionType>
+
+         <SessionID>im.user.com#48815@server.com</SessionID>
+      </SessionDescriptor>
+
+      <Transaction>
+         <TransactionDescriptor>
+            <TransactionMode>Response</TransactionMode>
+
+            <TransactionID>IMApp01#12345@NOK5110</TransactionID>
+
+            <Poll>F</Poll>
+         </TransactionDescriptor>
+
+         <TransactionContent>
+            <GetPresence-Response>
+               <Result>
+                  <Code>200</Code>
+
+                  <Description>Successfully completed.</Description>
+               </Result>
+
+               <Presence>
+                  <UserID>wv:he@there.com</UserID>
+
+                  <PresenceSubList>
+                     <OnlineStatus>
+                        <Qualifier>T</Qualifier>
+
+                        <PresenceValue>T</PresenceValue>
+                     </OnlineStatus>
+
+                     <Registration>
+                        <Qualifier>T</Qualifier>
+
+                        <PresenceValue>T</PresenceValue>
+                     </Registration>
+
+                     <ClientInfo>
+                        <Qualifier>T</Qualifier>
+
+                        <ClientType>MOBILE_PHONE</ClientType>
+
+                        <DevManufacturer>ABC Company</DevManufacturer>
+
+                        <Model>xyz200</Model>
+
+                        <Language>fin</Language>
+                     </ClientInfo>
+
+                     <TimeZone>
+                        <Qualifier>T</Qualifier>
+
+                        <Zone>+02</Zone>
+                     </TimeZone>
+
+                     <GeoLocation>
+                        <Qualifier>T</Qualifier>
+
+                        <Longitude>35 24 15.652W</Longitude>
+
+                        <Latitude>12 36 22.5N</Latitude>
+
+                        <Accuracy>200</Accuracy>
+                     </GeoLocation>
+
+                     <Address>
+                        <Qualifier>T</Qualifier>
+
+                        <Country>GB</Country>
+
+                        <City>London</City>
+                     </Address>
+
+                     <FreeTextLocation>
+                        <Qualifier>T</Qualifier>
+
+                        <PresenceValue>At home</PresenceValue>
+                     </FreeTextLocation>
+
+                     <PLMN>
+                        <Qualifier>T</Qualifier>
+
+                        <PresenceValue>Sonera</PresenceValue>
+                     </PLMN>
+
+                     <CommCap>
+                        <Qualifier>T</Qualifier>
+
+                        <CommC>
+                           <Cap>CALL</Cap>
+
+                           <Status>OPEN</Status>
+
+                           <Contact>+35804123123</Contact>
+
+                           <Note>I am using this phone during office hours</Note>
+                        </CommC>
+
+                        <CommC>
+                           <Cap>CALL</Cap>
+
+                           <Status>CLOSED</Status>
+
+                           <Contact>+35805456456</Contact>
+
+                           <Note>I am using this phone outside office hours</Note>
+                        </CommC>
+
+                        <CommC>
+                           <Cap>IM</Cap>
+
+                           <Status>OPEN</Status>
+
+                           <Contact>he@there.com</Contact>
+
+                           <Note>My IM-application is now online</Note>
+                        </CommC>
+
+                        <CommC>
+                           <Cap>IM</Cap>
+
+                           <Status>OPEN</Status>
+
+                           <Contact>he@there.com</Contact>
+
+                           <Note>My IM-application is now online</Note>
+                        </CommC>
+                     </CommCap>
+
+                     <UserAvailability>
+                        <Qualifier>T</Qualifier>
+
+                        <PresenceValue>AVAILABLE</PresenceValue>
+                     </UserAvailability>
+
+                     <PreferredContacts>
+                        <Qualifier>T</Qualifier>
+
+                        <AddrPref>
+                           <PrefC>CALL</PrefC>
+
+                           <Caddr>+35804123123</Caddr>
+
+                           <Cstatus>OPEN</Cstatus>
+
+                           <Cname>Home Phone</Cname>
+
+                           <Cpriority>10</Cpriority>
+                        </AddrPref>
+
+                        <AddrPref>
+                           <PrefC>SMS</PrefC>
+
+                           <Caddr>+35804123123</Caddr>
+
+                           <Cstatus>OPEN</Cstatus>
+
+                           <Cname>Home Messaging</Cname>
+
+                           <Cpriority>20</Cpriority>
+                        </AddrPref>
+
+                        <AddrPref>
+                           <PrefC>IM</PrefC>
+
+                           <Caddr>ari@im.com</Caddr>
+
+                           <Cstatus>CLOSED</Cstatus>
+
+                           <Cname>Private IM</Cname>
+
+                           <Cpriority>30</Cpriority>
+                        </AddrPref>
+                     </PreferredContacts>
+
+                     <PreferredLanguage>
+                        <Qualifier>T</Qualifier>
+
+                        <PresenceValue>fin</PresenceValue>
+                     </PreferredLanguage>
+
+                     <StatusText>
+                        <Qualifier>T</Qualifier>
+
+                        <PresenceValue>Busy editing a document</PresenceValue>
+                     </StatusText>
+
+                     <StatusMood>
+                        <Qualifier>T</Qualifier>
+
+                        <PresenceValue>SLEEPY</PresenceValue>
+                     </StatusMood>
+
+                     <Alias>
+                        <Qualifier>T</Qualifier>
+
+                        <PresenceValue>He</PresenceValue>
+                     </Alias>
+
+                     <StatusContent>
+                        <Qualifier>T</Qualifier>
+
+                        <PreferredContent>http://www.foo.com/MyLogo</PreferredContent>
+                     </StatusContent>
+
+                     <ContactInfo>
+                        <Qualifier>T</Qualifier>
+
+                        <PreferredvCard>http://www.foo.com/MyCard</PreferredvCard>
+                     </ContactInfo>
+                  </PresenceSubList>
+               </Presence>
+
+               <Presence>
+                  <UserID>wv:she@there.com</UserID>
+
+                  <PresenceSubList>
+                     <OnlineStatus>
+                        <Qualifier>T</Qualifier>
+
+                        <PresenceValue>T</PresenceValue>
+                     </OnlineStatus>
+
+                     <Registration>
+                        <Qualifier>T</Qualifier>
+
+                        <PresenceValue>T</PresenceValue>
+                     </Registration>
+
+                     <ClientInfo>
+                        <Qualifier>T</Qualifier>
+
+                        <ClientType>MOBILE_PHONE</ClientType>
+
+                        <DevManufacturer>ABC Company</DevManufacturer>
+
+                        <Model>xyz200</Model>
+
+                        <Language>fin</Language>
+                     </ClientInfo>
+
+                     <TimeZone>
+                        <Qualifier>T</Qualifier>
+
+                        <Zone>+02</Zone>
+                     </TimeZone>
+
+                     <GeoLocation>
+                        <Qualifier>T</Qualifier>
+
+                        <Longitude>35 24 15.652W</Longitude>
+
+                        <Latitude>12 36 22.5N</Latitude>
+
+                        <Accuracy>200</Accuracy>
+                     </GeoLocation>
+
+                     <Address>
+                        <Qualifier>T</Qualifier>
+
+                        <Country>GB</Country>
+
+                        <City>London</City>
+                     </Address>
+
+                     <FreeTextLocation>
+                        <Qualifier>T</Qualifier>
+
+                        <PresenceValue>At home</PresenceValue>
+                     </FreeTextLocation>
+
+                     <PLMN>
+                        <Qualifier>T</Qualifier>
+
+                        <PresenceValue>Sonera</PresenceValue>
+                     </PLMN>
+
+                     <CommCap>
+                        <Qualifier>T</Qualifier>
+
+                        <CommC>
+                           <Cap>CALL</Cap>
+
+                           <Status>OPEN</Status>
+
+                           <Contact>+35804123123</Contact>
+
+                           <Note>I am using this phone during office hours</Note>
+                        </CommC>
+
+                        <CommC>
+                           <Cap>CALL</Cap>
+
+                           <Status>CLOSED</Status>
+
+                           <Contact>+35805456456</Contact>
+
+                           <Note>I am using this phone outside office hours</Note>
+                        </CommC>
+
+                        <CommC>
+                           <Cap>IM</Cap>
+
+                           <Status>OPEN</Status>
+
+                           <Contact>she@there.com</Contact>
+
+                           <Note>My IM-application is now online</Note>
+                        </CommC>
+                     </CommCap>
+
+                     <UserAvailability>
+                        <Qualifier>T</Qualifier>
+
+                        <PresenceValue>AVAILABLE</PresenceValue>
+                     </UserAvailability>
+
+                     <PreferredContacts>
+                        <Qualifier>T</Qualifier>
+
+                        <AddrPref>
+                           <PrefC>CALL</PrefC>
+
+                           <Caddr>+35804123123</Caddr>
+
+                           <Cstatus>OPEN</Cstatus>
+
+                           <Cname>Business Phone</Cname>
+
+                           <Cpriority>10</Cpriority>
+                        </AddrPref>
+
+                        <AddrPref>
+                           <PrefC>SMS</PrefC>
+
+                           <Caddr>+35804123123</Caddr>
+
+                           <Cstatus>OPEN</Cstatus>
+
+                           <Cname>Business Messaging</Cname>
+
+                           <Cpriority>20</Cpriority>
+                        </AddrPref>
+
+                        <AddrPref>
+                           <PrefC>IM</PrefC>
+
+                           <Caddr>ari@im.com</Caddr>
+
+                           <Cstatus>CLOSED</Cstatus>
+
+                           <Cname>Private IM</Cname>
+
+                           <Cpriority>30</Cpriority>
+                        </AddrPref>
+                     </PreferredContacts>
+
+                     <PreferredLanguage>
+                        <Qualifier>T</Qualifier>
+
+                        <PresenceValue>fin</PresenceValue>
+                     </PreferredLanguage>
+
+                     <StatusText>
+                        <Qualifier>T</Qualifier>
+
+                        <PresenceValue>Busy editing a document</PresenceValue>
+                     </StatusText>
+
+                     <StatusMood>
+                        <Qualifier>T</Qualifier>
+
+                        <PresenceValue>SLEEPY</PresenceValue>
+                     </StatusMood>
+
+                     <Alias>
+                        <Qualifier>T</Qualifier>
+
+                        <PresenceValue>She</PresenceValue>
+                     </Alias>
+
+                     <StatusContent>
+                        <Qualifier>T</Qualifier>
+
+                        <DirectContent>BASE64EncodedDataHere</DirectContent>
+                     </StatusContent>
+
+                     <ContactInfo>
+                        <Qualifier>T</Qualifier>
+
+                        <ContainedvCard>vCardDataHere</ContainedvCard>
+                     </ContactInfo>
+                  </PresenceSubList>
+               </Presence>
+            </GetPresence-Response>
+         </TransactionContent>
+      </Transaction>
+   </Session>
+</WV-CSP-Message>
+

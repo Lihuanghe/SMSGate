@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn292974(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="Search" 
+    targetNamespace="Search" elementFormDefault="qualified" 
+    attributeFormDefault="unqualified">
+  <xs:include schemaLocation="Search.xsd"/>
+  <xs:element name="SearchRequest">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="Store">
+          <xs:complexType>
+            <xs:all>
+              <xs:element ref="Name"/>
+              <xs:element name="Query" type="queryType"/>
+              <xs:element ref="Options" minOccurs="0"/>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

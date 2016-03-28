@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://msdn.microsoft.com/en-us/library/dn292990(v=exchg.80).aspx -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:airsyncbase=
+    "AirSyncBase" xmlns:airsync="AirSync" xmlns:documentlibrary=
+    "DocumentLibrary" xmlns:rm="RightsManagement" xmlns:search="Search" 
+    xmlns="ItemOperations" targetNamespace="ItemOperations" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:include schemaLocation="ItemOperations.xsd"/>
+  <xs:import namespace="AirSync" schemaLocation="AirSync.xsd"/>
+  <xs:import namespace="AirSyncBase" schemaLocation="AirSyncBase.xsd"/>
+  <xs:import namespace="DocumentLibrary" schemaLocation="DocumentLibrary.xsd"/>
+  <xs:import namespace="RightsManagement" schemaLocation=
+      "RightsManagement.xsd"/>
+  <xs:import namespace="Search" schemaLocation="Search.xsd"/>
+  <xs:element name="ItemOperationsRequest">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="EmptyFolderContents">
+          <xs:complexType>
+            <xs:all>
+              <xs:element ref="airsync:CollectionId"/>
+              <xs:element name="Options" minOccurs="0">
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element ref="DeleteSubFolders"/>
+                  </xs:all>
+                </xs:complexType>
+              </xs:element>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Fetch" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:all>
+              <xs:element ref="Store"/>
+              <xs:element ref="airsync:ServerId" minOccurs="0"/>
+              <xs:element ref="airsync:CollectionId" minOccurs="0"/>
+              <xs:element ref="documentlibrary:LinkId" minOccurs="0"/>
+              <xs:element ref="search:LongId" minOccurs="0"/>
+              <xs:element ref="airsyncbase:FileReference" minOccurs="0"/>
+              <xs:element name="Options" minOccurs="0">
+                <xs:complexType>
+                  <xs:choice maxOccurs="unbounded">
+                    <xs:element ref="Schema" minOccurs="0" 
+                        maxOccurs="unbounded"/>
+                    <xs:element ref="Range" minOccurs="0"/>
+                    <xs:element ref="UserName" minOccurs="0"/>
+                    <xs:element ref="Password" minOccurs="0"/>
+                    <xs:element ref="airsync:MIMESupport" minOccurs="0"/>
+                    <xs:element ref="airsyncbase:BodyPreference" minOccurs="0" 
+                        maxOccurs="256"/>
+                    <xs:element ref="airsyncbase:BodyPartPreference" 
+                        minOccurs="0"/>
+                    <xs:element ref="rm:RightsManagementSupport" 
+                        minOccurs="0"/>
+                  </xs:choice>
+                </xs:complexType>
+              </xs:element>
+              <xs:element ref="rm:RemoveRightsManagementProtection" 
+                  minOccurs="0"/>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Move">
+          <xs:complexType>
+            <xs:all>
+              <xs:element ref="ConversationId"/>
+              <xs:element ref="DstFldId"/>
+              <xs:element name="Options" minOccurs="0">
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element ref="MoveAlways" minOccurs="0"/>
+                  </xs:all>
+                </xs:complexType>
+              </xs:element>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
