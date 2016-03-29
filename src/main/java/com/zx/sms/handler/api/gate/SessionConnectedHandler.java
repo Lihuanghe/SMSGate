@@ -6,6 +6,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.math.RandomUtils;
@@ -63,7 +66,10 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 							sb.append('a');
 						}
 					}
-
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("a", 1);
+					map.put("b", "adf");
+					
 					if (finalentity instanceof ServerEndpoint) {
 						CmppDeliverRequestMessage msg = new CmppDeliverRequestMessage();
 						msg.setDestId("13800138000");
@@ -78,6 +84,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						msg.setServiceid("10086");
 						msg.setSrcterminalId(String.valueOf(System.nanoTime()));
 						msg.setSrcterminalType((short) 1);
+						msg.setAttachment((Serializable)map);
 						return msg;
 					} else {
 						CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
@@ -87,7 +94,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						msg.setMsgid(new MsgId());
 						msg.setServiceId("10086");
 						msg.setSrcId("10086");
-
+						msg.setAttachment((Serializable)map);
 						return msg;
 					}
 				}

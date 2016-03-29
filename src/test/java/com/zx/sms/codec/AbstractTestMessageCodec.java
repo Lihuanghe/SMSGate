@@ -13,7 +13,7 @@ import com.zx.sms.connect.manager.cmpp.CMPPCodecChannelInitializer;
 
 public abstract class AbstractTestMessageCodec<T> {
 	
-	private static int version = 0x30;
+	private static int version = 0x20;
 	protected EmbeddedChannel ch = new EmbeddedChannel(new ChannelInitializer<Channel>() {
 
 		@Override
