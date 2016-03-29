@@ -1,18 +1,21 @@
 package com.zx.sms.codec.cmpp7F;
 
-import java.io.ByteArrayInputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.nustaq.serialization.FSTConfiguration;
+import org.nustaq.serialization.FSTObjectInput;
+import org.nustaq.serialization.FSTObjectOutput;
 
 public abstract class AttachObjectSerializeUtil {
+	static FSTConfiguration conf = FSTConfiguration.createDefaultConfiguration(); 
+	
 	public static byte[] write(Serializable obj) throws Exception{
 		ByteArrayOutputStream arroutput = new ByteArrayOutputStream();
-		ObjectOutputStream objoutput = new ObjectOutputStream(arroutput);
+		FSTObjectOutput objoutput = conf.getObjectOutput(arroutput);
 		try{
 			objoutput.writeObject(obj);
+			objoutput.flush();
 			return arroutput.toByteArray();
 		}finally{
 			objoutput.close();
@@ -20,8 +23,7 @@ public abstract class AttachObjectSerializeUtil {
 	}
 	
 	public static Serializable read(byte[] bytes)  throws Exception{
-		ByteArrayInputStream arrinput = new ByteArrayInputStream(bytes);
-		ObjectInputStream objinput = new ObjectInputStream(arrinput);
+		FSTObjectInput objinput = conf.getObjectInput(bytes);
 		try{
 			Object t = objinput.readObject();
 			if(t instanceof Serializable){
