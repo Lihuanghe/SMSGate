@@ -24,7 +24,6 @@ import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.zx.sms.codec.cmpp.msg.Message;
-import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.queue.BdbQueueMap;
 import com.zx.sms.config.PropertiesUtils;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
@@ -38,11 +37,14 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Long, Message> {
 	private final ConcurrentHashMap<String, StoredSortedMap<Long, Message>> sortedstoredMap = new ConcurrentHashMap<String, StoredSortedMap<Long, Message>>();
 	private final ConcurrentHashMap<String, BlockingQueue<Message>> queueMap = new ConcurrentHashMap<String, BlockingQueue<Message>>();
 
+
 	@Override
 	public synchronized Map<Long, Message> buildMap(String storedpath, String name) {
 		QueueEnvironment env = buildBDB(storedpath);
-		SerialBinding<Long> messageKeyBinding = new SerialBinding<Long>(env.getStoredClassCatalog(), Long.class);
-		SerialBinding<Message> messageValueBinding = new SerialBinding<Message>(env.getStoredClassCatalog(), Message.class);
+//		SerialBinding<Long> messageKeyBinding = new SerialBinding<Long>(env.getStoredClassCatalog(), Long.class);
+//		SerialBinding<Message> messageValueBinding = new SerialBinding<Message>(env.getStoredClassCatalog(), Message.class);
+		FstSerialBinding<Long> messageKeyBinding =  new FstSerialBinding<Long>();
+		FstSerialBinding<Message> messageValueBinding =  new FstSerialBinding<Message>();
 		Database db = env.buildDatabase(name);
 
 		String keyName = new StringBuilder().append(storedpath).append(name).toString();
@@ -71,8 +73,10 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Long, Message> {
 
 	private StoredSortedMap<Long, Message> buildStoredSortedMap(String storedpath, String name) {
 		QueueEnvironment env = buildBDB(storedpath);
-		SerialBinding<Long> messageKeyBinding = new SerialBinding<Long>(env.getStoredClassCatalog(), Long.class);
-		SerialBinding<Message> messageValueBinding = new SerialBinding<Message>(env.getStoredClassCatalog(), Message.class);
+//		SerialBinding<Long> messageKeyBinding = new SerialBinding<Long>(env.getStoredClassCatalog(), Long.class);
+//		SerialBinding<Message> messageValueBinding = new SerialBinding<Message>(env.getStoredClassCatalog(), Message.class);
+		FstSerialBinding<Long> messageKeyBinding =  new FstSerialBinding<Long>();
+		FstSerialBinding<Message> messageValueBinding =  new FstSerialBinding<Message>();
 		Database db = env.buildDatabase(name);
 		String keyName = new StringBuilder().append(storedpath).append(name).toString();
 

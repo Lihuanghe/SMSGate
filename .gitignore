@@ -10,7 +10,7 @@
 /.metadata
 /.idea/
 /bin/
-
+/bdb/
 jdbc.properties
 
 *.class
