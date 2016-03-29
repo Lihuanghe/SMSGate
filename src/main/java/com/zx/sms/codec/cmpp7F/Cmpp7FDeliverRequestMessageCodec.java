@@ -31,6 +31,7 @@ import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
+import com.zx.sms.common.util.FstObjectSerializeUtil;
 
 /**
  * @author huzorro(huzorro@gmail.com)
@@ -106,7 +107,7 @@ public class Cmpp7FDeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 			byte[] objbytes = new byte[attach];
 			bodyBuffer.readBytes(objbytes);
 			try{
-				requestMessage.setAttachment(AttachObjectSerializeUtil.read(objbytes));
+				requestMessage.setAttachment(FstObjectSerializeUtil.read(objbytes));
 			}catch(Exception ex){
 				logger.warn("Attachment decode error",ex);
 			}
@@ -206,7 +207,7 @@ public class Cmpp7FDeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 			//在线公司自定义的字段
 			if(requestMessage.getAttachment()!=null){
 				try{
-					byte[] attach =AttachObjectSerializeUtil.write(requestMessage.getAttachment());
+					byte[] attach =FstObjectSerializeUtil.write(requestMessage.getAttachment());
 					bodyBuffer.writeInt(attach.length);
 					bodyBuffer.writeBytes(attach);
 				}catch(Exception ex){

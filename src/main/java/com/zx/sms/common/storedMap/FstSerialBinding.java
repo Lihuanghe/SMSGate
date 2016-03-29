@@ -1,35 +1,23 @@
 package com.zx.sms.common.storedMap;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
-import org.nustaq.serialization.FSTConfiguration;
-import org.nustaq.serialization.FSTObjectInput;
-import org.nustaq.serialization.FSTObjectOutput;
+import java.io.Serializable;
 
 import com.sleepycat.bind.ByteArrayBinding;
 import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.util.RuntimeExceptionWrapper;
+import com.zx.sms.common.util.FstObjectSerializeUtil;
 
-public class FstSerialBinding<E> implements EntryBinding<E> {
-
+public class FstSerialBinding<E extends Serializable> implements EntryBinding<E> {
+	private final static byte[] ZERO_LENGTH_BYTE_ARRAY = new byte[0];
 	private ByteArrayBinding bb = new ByteArrayBinding();
 	
-	private static ThreadLocal<FSTConfiguration> conf = new ThreadLocal<FSTConfiguration>() { 
-	    public FSTConfiguration initialValue() {
-	        return FSTConfiguration.createDefaultConfiguration();
-	    }
-	};
-	
-	@Override
+		@Override
 	public E entryToObject(DatabaseEntry entry) {
 		byte[] data = bb.entryToObject(entry);
-		if(data.length ==0) return null;
-		
-		FSTObjectInput input = conf.get().getObjectInput(data);
+		if(data ==null || data.length ==0) return null;
 		try{
-			return (E)input.readObject();
+			return (E)FstObjectSerializeUtil.read(data);
 		}catch(Exception ex){
 			throw RuntimeExceptionWrapper.wrapIfNeeded(ex);
 		}
@@ -37,18 +25,14 @@ public class FstSerialBinding<E> implements EntryBinding<E> {
 
 	@Override
 	public void objectToEntry(E object, DatabaseEntry entry) {
-		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		FSTObjectOutput output = conf.get().getObjectOutput(bytes);
-		try{
-			output.writeObject(object);
-			output.flush();
-			bb.objectToEntry(bytes.toByteArray(), entry);
-		}catch(Exception ex){
-			throw RuntimeExceptionWrapper.wrapIfNeeded(ex);
-		}finally{
-			try {
-				bytes.close();
-			} catch (IOException e) {}
+		if(object==null){
+			bb.objectToEntry(ZERO_LENGTH_BYTE_ARRAY, entry);
+		}else{
+			try{
+				bb.objectToEntry(FstObjectSerializeUtil.write(object), entry);
+			}catch(Exception ex){
+				throw RuntimeExceptionWrapper.wrapIfNeeded(ex);
+			}
 		}
 	}
 }
