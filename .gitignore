@@ -12,7 +12,6 @@
 /bin/
 /bdb
 /logs
-
 jdbc.properties
 
 *.class
