@@ -126,19 +126,26 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	}
 
 	public void addChannel(Channel ch) {
-
+		EndpointEntity endpoint = getEndpointEntity();
 		// 标识连接已建立
 		ch.attr(GlobalConstance.attributeKey).set(SessionState.Connect);
 		getChannels().add(ch);
 		int cnt = incrementConn();
 		// 如果是CMPP端口
-		if (getEndpointEntity() instanceof CMPPEndpointEntity) {
-			// 创建持久化Map用于存储发送的message
-			Map<Long, Message> storedMap = BDBStoredMapFactoryImpl.INS.buildMap(getEndpointEntity().getId(), "Session_" + getEndpointEntity().getId());
+		if (endpoint instanceof CMPPEndpointEntity) {
+			CMPPEndpointEntity cmppentity = (CMPPEndpointEntity)endpoint;
+			Map<Long, Message> storedMap = null;
+			if( cmppentity.isReSendFailMsg()){
+				// 如果上次发送失败的消息要重发一次，则要创建持久化Map用于存储发送的message
+				 storedMap = BDBStoredMapFactoryImpl.INS.buildMap(endpoint.getId(), "Session_" +endpoint.getId());
+			}else{
+				 storedMap = new HashMap<Long, Message>();
+			}
+			
 			Map<Long, Message> preSendMap = new HashMap<Long, Message>();
 
 			logger.debug("Channel added To Endpoint {} .totalCnt:{} ,Channel.ID: {}", endpoint, cnt, ch.id());
-			if (cnt == 1) {
+			if (cnt == 1 && cmppentity.isReSendFailMsg()) {
 				// 如果是第一个连接。要把上次发送失败的消息取出，再次发送一次
 
 				if (storedMap != null && storedMap.size() > 0) {
@@ -152,12 +159,12 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 					}
 				}
 			}
-			CMPPEndpointEntity cmppentity = (CMPPEndpointEntity) getEndpointEntity();
+			
 
 			// 增加流量整形 ，每个连接每秒发送，接收消息数不超过配置的值
 			// 这个放在前边，保证真实发送到连接上的速率。可以避免网关抖动造成的发送超速。
 			// 网关抖动时，网关会先积压大量response，然后突然发送大量response给SessionManager,
-			// 造成在Session里等待的消息集中发送。
+			// 造成在Session里等待的消息集中发送,因此造成超速。
 			ch.pipeline().addBefore(CMPPCodecChannelInitializer.codecName, "CMPPChannelTrafficBefore",
 					new CMPPChannelTrafficShapingHandler(cmppentity.getWriteLimit(), cmppentity.getReadLimit(), 250));
 
