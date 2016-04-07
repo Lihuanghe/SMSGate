@@ -80,7 +80,7 @@ public class TestCmppDeliverRequestMessageCodec extends AbstractTestMessageCodec
 		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
 		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readUnsignedInt());
 
-
+		buf.release();
 		CmppDeliverRequestMessage result = decode(newbuf);
 
 		Assert.assertEquals(msg.getHeader().getSequenceId(), result.getHeader().getSequenceId());
