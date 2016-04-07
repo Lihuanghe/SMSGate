@@ -1,8 +1,8 @@
 package com.zx.sms.codec.cmpp20;
 
 
+import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler.Sharable;
-import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.MessageToMessageCodec;
@@ -17,7 +17,7 @@ import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20PacketType;
 
 @Sharable
-public class CMPP20MessageCodecAggregator extends ChannelHandlerAdapter {
+public class CMPP20MessageCodecAggregator extends ChannelDuplexHandler {
 	private static final Logger logger = LoggerFactory.getLogger(CMPP20MessageCodecAggregator.class);
 	
 	private static class CMPP20MessageCodecAggregatorHolder{

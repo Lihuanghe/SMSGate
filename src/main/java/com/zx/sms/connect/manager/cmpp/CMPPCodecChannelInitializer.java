@@ -1,13 +1,10 @@
 package com.zx.sms.connect.manager.cmpp;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerAdapter;
+import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.timeout.IdleStateHandler;
-
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +14,6 @@ import com.zx.sms.codec.cmpp.CmppHeaderCodec;
 import com.zx.sms.codec.cmpp10.CMPP10MessageCodecAggregator;
 import com.zx.sms.codec.cmpp20.CMPP20MessageCodecAggregator;
 import com.zx.sms.common.NotSupportedException;
-import com.zx.sms.handler.cmpp.CmppServerIdleStateHandler;
 
 /**
  * @author Lihuanghe(18852780@qq.com)
@@ -56,7 +52,7 @@ public class CMPPCodecChannelInitializer extends ChannelInitializer<Channel> {
 
 	}
 
-	public static ChannelHandlerAdapter getCodecHandler(int version) throws Exception {
+	public static ChannelDuplexHandler getCodecHandler(int version) throws Exception {
 		if (version == 0x30L) {
 			return CMPPMessageCodecAggregator.getInstance();
 		} else if (version == 0x20L) {

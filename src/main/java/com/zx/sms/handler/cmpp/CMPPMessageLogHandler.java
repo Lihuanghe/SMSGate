@@ -1,6 +1,6 @@
 package com.zx.sms.handler.cmpp;
 
-import io.netty.channel.ChannelHandlerAdapter;
+import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 
@@ -17,7 +17,7 @@ import com.zx.sms.connect.manager.EndpointEntity;
  *
  */
 
-public class CMPPMessageLogHandler extends ChannelHandlerAdapter {
+public class CMPPMessageLogHandler extends ChannelDuplexHandler {
 	private final Logger logger;
 	private EndpointEntity entity;
 

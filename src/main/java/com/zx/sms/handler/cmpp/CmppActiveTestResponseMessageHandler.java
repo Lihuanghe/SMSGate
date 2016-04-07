@@ -32,8 +32,8 @@ public class CmppActiveTestResponseMessageHandler extends SimpleChannelInboundHa
 	}
 
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, CmppActiveTestResponseMessage e) throws Exception {
-
+	protected void channelRead0(ChannelHandlerContext paramChannelHandlerContext, CmppActiveTestResponseMessage paramI) throws Exception {
+				
 	}
 
 }

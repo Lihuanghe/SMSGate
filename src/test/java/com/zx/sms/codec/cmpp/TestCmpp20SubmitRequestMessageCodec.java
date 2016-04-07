@@ -79,7 +79,7 @@ public class TestCmpp20SubmitRequestMessageCodec extends AbstractTestMessageCode
 		msg.setSrcId("10086");
 		msg.setSupportLongMsg(true);
 		channel().writeOutbound(msg);
-		ByteBuf buf =channel().readOutbound();
+		ByteBuf buf =(ByteBuf)channel().readOutbound();
 		ByteBuf copybuf = Unpooled.buffer();
 	    while(buf!=null){
 			
@@ -91,7 +91,7 @@ public class TestCmpp20SubmitRequestMessageCodec extends AbstractTestMessageCode
 			Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
 			
 
-			buf =channel().readOutbound();
+			buf =(ByteBuf)channel().readOutbound();
 	    }
 	    
 		CmppSubmitRequestMessage result = decode(copybuf);

@@ -33,7 +33,7 @@ public class CmppSubmitRequestMessageHandler extends SimpleChannelInboundHandler
 
 
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, CmppSubmitRequestMessage e) throws Exception {
+	public void channelRead0(ChannelHandlerContext ctx, CmppSubmitRequestMessage e) throws Exception {
 	
 		CmppSubmitResponseMessage responseMessage = new CmppSubmitResponseMessage(e.getHeader().getSequenceId());
 

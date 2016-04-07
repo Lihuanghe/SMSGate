@@ -13,7 +13,7 @@ import org.junit.Test;
 
 public class TestNettyEventLoopTaskCancel {
 
-	private NioEventLoopGroup ins = new NioEventLoopGroup(1,Executors.newCachedThreadPool());
+	private NioEventLoopGroup ins = new NioEventLoopGroup(1);
 	@Test
 	public void testcancel() throws Exception
 	{

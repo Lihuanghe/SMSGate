@@ -35,7 +35,7 @@ public class CmppQueryRequestMessageHandler extends SimpleChannelInboundHandler<
 	 * org.jboss.netty.channel.MessageEvent)
 	 */
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, CmppQueryRequestMessage e) throws Exception {
+	public void channelRead0(ChannelHandlerContext ctx, CmppQueryRequestMessage e) throws Exception {
 
 		CmppQueryResponseMessage responseMessage = new CmppQueryResponseMessage(e.getHeader().getSequenceId());
 

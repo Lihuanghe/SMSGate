@@ -144,7 +144,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			
 			Map<Long, Message> preSendMap = new HashMap<Long, Message>();
 
-			logger.debug("Channel added To Endpoint {} .totalCnt:{} ,Channel.ID: {}", endpoint, cnt, ch.id());
+			logger.debug("Channel added To Endpoint {} .totalCnt:{} ,remoteAddress: {}", endpoint, cnt, ch.remoteAddress());
 			if (cnt == 1 && cmppentity.isReSendFailMsg()) {
 				// 如果是第一个连接。要把上次发送失败的消息取出，再次发送一次
 

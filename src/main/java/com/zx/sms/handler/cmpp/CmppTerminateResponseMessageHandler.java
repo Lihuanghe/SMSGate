@@ -31,7 +31,7 @@ public class CmppTerminateResponseMessageHandler extends SimpleChannelInboundHan
 	}
 
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, CmppTerminateResponseMessage e) throws Exception {
+	public void channelRead0(ChannelHandlerContext ctx, CmppTerminateResponseMessage e) throws Exception {
 		ctx.channel().close();
 	}
 

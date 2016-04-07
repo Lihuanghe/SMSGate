@@ -3,17 +3,14 @@ package com.zx.sms.connect.manager.tcp;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufHolder;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandler.Sharable;
-import io.netty.channel.ChannelHandlerAdapter;
+import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.zx.sms.connect.manager.EndpointConnector;
-
-public class TCPServerEchoHandler extends ChannelHandlerAdapter {
+public class TCPServerEchoHandler extends ChannelDuplexHandler {
 	private static final Logger logger = LoggerFactory.getLogger(TCPServerEchoHandler.class);
 
 

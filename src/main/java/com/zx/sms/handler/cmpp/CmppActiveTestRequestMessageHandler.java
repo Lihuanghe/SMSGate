@@ -33,7 +33,7 @@ public class CmppActiveTestRequestMessageHandler extends SimpleChannelInboundHan
 	}
 
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, CmppActiveTestRequestMessage e) throws Exception {
+	protected void channelRead0(ChannelHandlerContext ctx, CmppActiveTestRequestMessage e) throws Exception {
 		CmppActiveTestResponseMessage resp = new CmppActiveTestResponseMessage(e.getHeader().getSequenceId());
 		ctx.writeAndFlush(resp);
 	}

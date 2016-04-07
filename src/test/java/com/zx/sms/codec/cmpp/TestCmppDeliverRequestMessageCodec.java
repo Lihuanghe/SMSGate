@@ -170,7 +170,7 @@ public class TestCmppDeliverRequestMessageCodec extends AbstractTestMessageCodec
 	{
 		msg.setSupportLongMsg(true);
 		channel().writeOutbound(msg);
-		ByteBuf buf =channel().readOutbound();
+		ByteBuf buf =(ByteBuf)channel().readOutbound();
 		ByteBuf copybuf = Unpooled.buffer();
 	    while(buf!=null){
 			
@@ -182,7 +182,7 @@ public class TestCmppDeliverRequestMessageCodec extends AbstractTestMessageCodec
 			Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
 			
 
-			buf =channel().readOutbound();
+			buf =(ByteBuf)channel().readOutbound();
 	    }
 	    
 	    CmppDeliverRequestMessage result = decode(copybuf);
@@ -197,7 +197,7 @@ public class TestCmppDeliverRequestMessageCodec extends AbstractTestMessageCodec
 		
 		msg.setSupportLongMsg(true);
 		channel().writeOutbound(msg);
-		ByteBuf buf =channel().readOutbound();
+		ByteBuf buf =(ByteBuf)channel().readOutbound();
 		ByteBuf copybuf = Unpooled.buffer();
 	    while(buf!=null){
 			
@@ -209,7 +209,7 @@ public class TestCmppDeliverRequestMessageCodec extends AbstractTestMessageCodec
 			Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
 			
 
-			buf =channel().readOutbound();
+			buf =(ByteBuf)channel().readOutbound();
 	    }
 	    
 	    CmppDeliverRequestMessage result = decode(copybuf);

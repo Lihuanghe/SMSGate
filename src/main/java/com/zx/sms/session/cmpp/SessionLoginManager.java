@@ -1,7 +1,7 @@
 package com.zx.sms.session.cmpp;
 
+import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -33,7 +33,7 @@ import com.zx.sms.connect.manager.cmpp.CMPPServerEndpointEntity;
 /**
  * 处理客户端或者服务端登陆，密码校验。协议协商 建立连接前，不会启动消息重试和消息可靠性保证
  */
-public class SessionLoginManager extends ChannelHandlerAdapter {
+public class SessionLoginManager extends ChannelDuplexHandler {
 	private static final Logger logger = LoggerFactory.getLogger(SessionLoginManager.class);
 
 	private EndpointEntity entity;
@@ -58,7 +58,7 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
     		ctx.fireExceptionCaught(cause);
     	}
     }
-
+    @Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		// 如果是服务端，收到的第一个消息必须是Connect消息
 		if (state == SessionState.DisConnect) {
@@ -93,7 +93,7 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 		ctx.fireChannelRead(msg);
 
 	}
-	
+    @Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {	
 		if(serverchildentity!=null){
 			logger.warn("connection closed . {}" ,serverchildentity);
@@ -109,7 +109,7 @@ public class SessionLoginManager extends ChannelHandlerAdapter {
 		}
 		ctx.fireChannelInactive();
 	}
-	
+    @Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		if (state == SessionState.DisConnect) {
 			// 客户端必须先发起Connect消息

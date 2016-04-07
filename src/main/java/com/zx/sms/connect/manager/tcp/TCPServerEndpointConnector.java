@@ -2,21 +2,16 @@ package com.zx.sms.connect.manager.tcp;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
-import io.netty.channel.group.ChannelGroup;
-import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
-import io.netty.util.concurrent.GlobalEventExecutor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +63,7 @@ public class TCPServerEndpointConnector extends AbstractEndpointConnector {
 	}
 
 
-	private class ChannelCollector extends ChannelHandlerAdapter {
+	private class ChannelCollector extends ChannelDuplexHandler {
 		public void channelActive(ChannelHandlerContext ctx) throws Exception {
 			// 把连接加入数组
 			addChannel(ctx.channel());

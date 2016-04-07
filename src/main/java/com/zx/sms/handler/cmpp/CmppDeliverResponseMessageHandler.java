@@ -43,7 +43,7 @@ public class CmppDeliverResponseMessageHandler extends SimpleChannelInboundHandl
 	}
 
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, CmppDeliverResponseMessage e) throws Exception {
+	public void channelRead0(ChannelHandlerContext ctx, CmppDeliverResponseMessage e) throws Exception {
 
 	}
 

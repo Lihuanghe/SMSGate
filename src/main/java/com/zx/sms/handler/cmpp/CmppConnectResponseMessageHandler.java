@@ -32,7 +32,7 @@ public class CmppConnectResponseMessageHandler extends SimpleChannelInboundHandl
 
 
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, CmppConnectResponseMessage message) throws Exception {
+	public void channelRead0(ChannelHandlerContext ctx, CmppConnectResponseMessage message) throws Exception {
 
 		logger.info(message.toString());
 

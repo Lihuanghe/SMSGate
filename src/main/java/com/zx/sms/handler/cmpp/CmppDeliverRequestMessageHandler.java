@@ -35,7 +35,7 @@ public class CmppDeliverRequestMessageHandler extends SimpleChannelInboundHandle
 
 
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, CmppDeliverRequestMessage e) throws Exception {
+	public void channelRead0(ChannelHandlerContext ctx, CmppDeliverRequestMessage e) throws Exception {
 
 		CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(e.getHeader().getSequenceId());
 		responseMessage.setMsgId(e.getMsgId());

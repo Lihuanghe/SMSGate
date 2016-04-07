@@ -29,7 +29,7 @@ public class Test10085MsgDataSubmitRequestDecoder extends AbstractTestMessageCod
 		
 		
 		ByteBuf bufread;
-		while(( bufread = ch.readOutbound())!=null){
+		while(( bufread = (ByteBuf)ch.readOutbound())!=null){
 			
 		}
 	}

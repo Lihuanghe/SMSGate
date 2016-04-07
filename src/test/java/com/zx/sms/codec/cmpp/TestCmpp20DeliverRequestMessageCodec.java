@@ -102,7 +102,7 @@ public class TestCmpp20DeliverRequestMessageCodec extends AbstractTestMessageCod
 		
 		msg.setSupportLongMsg(false);
 		channel().writeOutbound(msg);
-		ByteBuf buf =channel().readOutbound();
+		ByteBuf buf =(ByteBuf)channel().readOutbound();
 		ByteBuf copybuf = Unpooled.buffer();
 	    while(buf!=null){
 			
@@ -114,16 +114,16 @@ public class TestCmpp20DeliverRequestMessageCodec extends AbstractTestMessageCod
 			Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
 			
 
-			buf =channel().readOutbound();
+			buf =(ByteBuf)channel().readOutbound();
 	    }
 		ch.writeInbound(copybuf);
 	
-	    CmppDeliverRequestMessage result = ch.readInbound();
+	    CmppDeliverRequestMessage result = (CmppDeliverRequestMessage)ch.readInbound();
 	    StringBuilder sb = new StringBuilder();
 	    while(result!=null){
 	    	System.out.println(result.getMsgContent());
 	    	sb.append(result.getMsgContent().substring(5));
-	    	result = ch.readInbound();
+	    	result = (CmppDeliverRequestMessage)ch.readInbound();
 	    }
 	    Assert.assertEquals(msg.getMsgContent(), sb.toString());
 	}
@@ -134,7 +134,7 @@ public class TestCmpp20DeliverRequestMessageCodec extends AbstractTestMessageCod
 		
 		msg.setSupportLongMsg(true);
 		channel().writeOutbound(msg);
-		ByteBuf buf =channel().readOutbound();
+		ByteBuf buf =(ByteBuf)channel().readOutbound();
 		ByteBuf copybuf = Unpooled.buffer();
 	    while(buf!=null){
 			
@@ -146,7 +146,7 @@ public class TestCmpp20DeliverRequestMessageCodec extends AbstractTestMessageCod
 			Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
 			
 
-			buf =channel().readOutbound();
+			buf =(ByteBuf)channel().readOutbound();
 	    }
 	    
 	    CmppDeliverRequestMessage result = decode(copybuf);

@@ -1,7 +1,7 @@
 package com.zx.sms.session.cmpp;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerAdapter;
+import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOutboundBuffer;
 import io.netty.channel.ChannelPromise;
@@ -34,7 +34,7 @@ import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 /**
  * @author Lihuanghe(18852780@qq.com) 消息发送窗口拜你控制和消息重发 ，消息持久化
  */
-public class SessionStateManager extends ChannelHandlerAdapter {
+public class SessionStateManager extends ChannelDuplexHandler {
 	private static final Logger logger = LoggerFactory.getLogger(SessionStateManager.class);
 	// 用来记录连接上的错误消息
 	private final Logger errlogger;

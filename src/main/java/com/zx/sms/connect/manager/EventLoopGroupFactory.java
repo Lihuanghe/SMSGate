@@ -2,13 +2,11 @@ package com.zx.sms.connect.manager;
 
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.util.concurrent.DefaultExecutorServiceFactory;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -32,8 +30,8 @@ public enum EventLoopGroupFactory {
 			
 		}
 	};
-	private  final static EventLoopGroup bossGroup = new NioEventLoopGroup(1,new DefaultExecutorServiceFactory("bossGroup"));
-	private  final static EventLoopGroup workgroup = new NioEventLoopGroup(0,new DefaultExecutorServiceFactory("workGroup"));
+	private  final static EventLoopGroup bossGroup = new NioEventLoopGroup(1, newThreadFactory("bossGroup"));
+	private  final static EventLoopGroup workgroup = new NioEventLoopGroup(0, newThreadFactory("workGroup"));
 	
 	private  final static ScheduledExecutorService msgResend = new ScheduledThreadPoolExecutor(Integer.valueOf(PropertiesUtils.getproperties("GlobalMsgResendThreadCount","4")),newThreadFactory("msgResend-"),rejected);
 			//new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalMsgResendThreadCount","4")),new DefaultExecutorServiceFactory("msgResend"));

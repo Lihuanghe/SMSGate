@@ -35,7 +35,7 @@ public class CmppConnectRequestMessageHandler extends SimpleChannelInboundHandle
 	}
 
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, CmppConnectRequestMessage message) throws Exception {
+	public void channelRead0(ChannelHandlerContext ctx, CmppConnectRequestMessage message) throws Exception {
 		long commandId = ((Long) message.getHeader().getCommandId()).longValue();
 
 		CmppConnectRequestMessage connectRequestMessage = (CmppConnectRequestMessage) message;

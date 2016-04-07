@@ -27,7 +27,7 @@ public class CmppQueryResponseMessageHandler extends SimpleChannelInboundHandler
 
 
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, CmppQueryResponseMessage e) throws Exception {
+	public void channelRead0(ChannelHandlerContext ctx, CmppQueryResponseMessage e) throws Exception {
 
 	}
 

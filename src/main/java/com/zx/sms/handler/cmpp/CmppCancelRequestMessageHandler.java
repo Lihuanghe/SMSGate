@@ -30,7 +30,7 @@ SimpleChannelInboundHandler<CmppCancelRequestMessage> {
 
 
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, CmppCancelRequestMessage e)
+	public void channelRead0(ChannelHandlerContext ctx, CmppCancelRequestMessage e)
 			throws Exception {
 		CmppCancelResponseMessage responseMessage = new CmppCancelResponseMessage(e.getHeader().getSequenceId());
 		

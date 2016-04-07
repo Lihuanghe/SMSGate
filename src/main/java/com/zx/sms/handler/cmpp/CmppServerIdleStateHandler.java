@@ -1,13 +1,13 @@
 package com.zx.sms.handler.cmpp;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.netty.channel.ChannelHandlerAdapter;
-import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.zx.sms.codec.cmpp.msg.CmppActiveTestRequestMessage;
 import com.zx.sms.common.GlobalConstance;
@@ -19,7 +19,7 @@ import com.zx.sms.session.cmpp.SessionState;
  *
  */
 @Sharable
-public class CmppServerIdleStateHandler extends ChannelHandlerAdapter {
+public class CmppServerIdleStateHandler extends ChannelDuplexHandler {
 	private static final Logger logger = LoggerFactory.getLogger(CmppServerIdleStateHandler.class);
 	@Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {

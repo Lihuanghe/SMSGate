@@ -40,7 +40,7 @@ public class CmppTerminateRequestMessageHandler extends SimpleChannelInboundHand
 	 * org.jboss.netty.channel.MessageEvent)
 	 */
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, CmppTerminateRequestMessage e) throws Exception {
+	public void channelRead0(ChannelHandlerContext ctx, CmppTerminateRequestMessage e) throws Exception {
 
 		CmppTerminateResponseMessage responseMessage = new CmppTerminateResponseMessage(e.getHeader().getSequenceId());
 		ChannelFuture future = ctx.channel().writeAndFlush(responseMessage);

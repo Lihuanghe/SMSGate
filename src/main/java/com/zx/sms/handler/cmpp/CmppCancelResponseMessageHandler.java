@@ -29,7 +29,7 @@ SimpleChannelInboundHandler<CmppCancelResponseMessage> {
 
 
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, CmppCancelResponseMessage e)
+	public void channelRead0(ChannelHandlerContext ctx, CmppCancelResponseMessage e)
 			throws Exception {
 
         

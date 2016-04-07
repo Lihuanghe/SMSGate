@@ -31,7 +31,7 @@ public abstract class AbstractTestMessageCodec<T> {
 
 	protected ByteBuf encode(T msg){
 		ch.writeOutbound(msg);
-		ByteBuf buf = ch.readOutbound();
+		ByteBuf buf = (ByteBuf)ch.readOutbound();
 		return buf;
 	}
 	

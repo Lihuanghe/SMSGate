@@ -1,10 +1,10 @@
 package com.zx.sms.handler.api;
 
-import io.netty.channel.ChannelHandlerAdapter;
+import io.netty.channel.ChannelDuplexHandler;
 
 import com.zx.sms.connect.manager.EndpointEntity;
 
-public abstract class AbstractBusinessHandler extends ChannelHandlerAdapter implements BusinessHandlerInterface, Cloneable {
+public abstract class AbstractBusinessHandler extends ChannelDuplexHandler implements BusinessHandlerInterface, Cloneable {
 
 	private EndpointEntity entity;
 
