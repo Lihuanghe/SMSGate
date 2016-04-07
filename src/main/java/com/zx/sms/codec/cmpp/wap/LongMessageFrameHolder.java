@@ -383,7 +383,7 @@ public enum LongMessageFrameHolder {
 		return (int) Math.ceil((septetLength * 7) / 8.0);
 	}
 
-	public SmsMessage parseWapPdu(byte[] pdu) {
+	private SmsMessage parseWapPdu(byte[] pdu) {
 
 		int index = 0;
 		int transactionId = pdu[index++] & 0xFF;

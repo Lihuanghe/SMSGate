@@ -1,16 +1,18 @@
 # CMPPGate
 中移短信cmpp协议netty实现编解码
 
-这是一个在netty5框架下实现的cmpp3.0/cmpp2.0短信协议解析及网关端口管理。
+这是一个在netty4框架下实现的cmpp3.0/cmpp2.0短信协议解析及网关端口管理 (master分支是依赖于netty5的)。
 代码copy了 `huzorro@gmail.com` 基于netty3.7的cmpp协议解析 [huzorro@gmail.com 的代码 ](https://github.com/huzorro/netty3ext)
 
-最新的提交支持发送和解析`长文本短们拆分合并`，`WapPush短信`，以及`彩信通知`短信。可以实现对彩信或者wap-push短信的拦截和加工处理。wap短信的解析使用 [smsj] (https://github.com/marre/smsj)的短信库
+目前已支持发送和解析`长文本短们拆分合并`，`WapPush短信`，以及`彩信通知`类型的短信。可以实现对彩信或者wap-push短信的拦截和加工处理。wap短信的解析使用 [smsj] (https://github.com/marre/smsj)的短信库
+
+代码已经跟华为，东软，亚信的短信网关都做过联调测试，兼容了不同厂家的错误和异常，如果跟网关通信出错，可以打开trace日志查看二进制数据。
 
 ##性能测试
 在48core，128G内存的物理服务器上测试协议解析效率：35K条/s, cpu使用率25%. 
 
 ## Build
-执行mvn package . 建设使用jdk1.7.
+执行mvn package . 建议使用jdk1.7.
 
 ## 增加了业务处理API
 业务层实现接口：BusinessHandlerInterface，或者继承AbstractBusinessHandler抽象类实现业务即可。 连接保活，消息重发，消息持久化，连接鉴权都已封装，不须要业务层再实现。
@@ -55,7 +57,7 @@ SessionState.Connect事件，通知业务处理Handler连接已建立成功。
 
 ## CMPP的连接状态管理器
 `com.zx.sms.session.cmpp.SessionStateManager`
-这是一个netty的ChannelHandler实现。集中负责每个连接上CMPP消息的存储，短信重发，流量窗口控制，过期短信的处理
+这是一个netty的ChannelHandler实现。负责每个连接上CMPP消息的存储，短信重发，流量窗口控制，过期短信的处理
 
 ## CMPP协议解析器
 CMPP20MessageCodecAggregator [2.0协议]
