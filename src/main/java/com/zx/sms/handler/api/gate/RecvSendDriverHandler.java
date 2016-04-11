@@ -37,7 +37,7 @@ import com.zx.sms.session.cmpp.SessionState;
 public class RecvSendDriverHandler extends AbstractBusinessHandler {
 	private static final Logger logger = LoggerFactory.getLogger(RecvSendDriverHandler.class);
 	//发送多少条
-	private int totleCnt = 20;
+	private int totleCnt = 3000;
 	
 	
 	public int getTotleCnt() {
@@ -58,14 +58,14 @@ public class RecvSendDriverHandler extends AbstractBusinessHandler {
 				private Message createTestReq() {
 					
 					Map<String, Object> map = new HashMap<String, Object>();
-					map.put("chanid", "Z005");
+					map.put("chanid", "Z001");
 					map.put("b", "adf");
 					
 					if (finalentity instanceof ServerEndpoint) {
 						CmppDeliverRequestMessage msg = new CmppDeliverRequestMessage();
-						msg.setDestId("10085101");
+						msg.setDestId("10085");
 						msg.setLinkid("0000");
-						msg.setMsgContent("smrz");
+						msg.setMsgContent("SMRZ");
 
 						msg.setMsgId(new MsgId());
 						msg.setRegisteredDelivery((short) 0);
@@ -103,19 +103,10 @@ public class RecvSendDriverHandler extends AbstractBusinessHandler {
 			}, new ExitUnlimitCirclePolicy() {
 				@Override
 				public boolean notOver(Future future) {
-					boolean ret = ch.isActive() && totleCnt > 0;
-					if(!ret){
-						ChannelFuture promise =	ch.writeAndFlush(new CmppTerminateRequestMessage());
-						promise.addListener(new GenericFutureListener<ChannelFuture>(){
-							@Override
-							public void operationComplete(ChannelFuture future) throws Exception {
-								ch.close();
-							}
-						});
-					}
-					return ret;
+					
+					return true;
 				}
-			},0);
+			},1000);
 		}
 		ctx.fireUserEventTriggered(evt);
 
