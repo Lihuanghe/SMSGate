@@ -33,6 +33,11 @@ import java.nio.charset.StandardCharsets;
 public class NokiaPictureMessage extends NokiaMultipartMessage
 {
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4494512073470660074L;
+
+	/**
      * Creates a Nokia Picture Message
      *
      * @param otaBitmap

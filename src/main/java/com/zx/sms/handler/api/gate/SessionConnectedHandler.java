@@ -9,6 +9,7 @@ import io.netty.util.concurrent.GenericFutureListener;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.math.RandomUtils;
+import org.marre.wap.push.SmsMmsNotificationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,6 +79,8 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						msg.setServiceid("10086");
 						msg.setSrcterminalId(String.valueOf(System.nanoTime()));
 						msg.setSrcterminalType((short) 1);
+						msg.setMsgContent(new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd",50*1024));
+						
 						return msg;
 					} else {
 						CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
@@ -87,7 +90,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						msg.setMsgid(new MsgId());
 						msg.setServiceId("10086");
 						msg.setSrcId("10086");
-
+						msg.setMsgContent(new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd",50*1024));
 						return msg;
 					}
 				}

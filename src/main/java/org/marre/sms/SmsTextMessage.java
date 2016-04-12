@@ -34,8 +34,7 @@
  * ***** END LICENSE BLOCK ***** */
 package org.marre.sms;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+import java.io.Serializable;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -50,9 +49,13 @@ import com.zx.sms.common.util.CMPPCommonUtil;
  * @author Markus Eriksson
  * @version $Id$
  */
-public class SmsTextMessage extends SmsConcatMessage
+public class SmsTextMessage extends SmsConcatMessage implements Serializable
 {
-    private String text_;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -2655575183111164853L;
+	private String text_;
     private SmsDcs dcs_;
     
     /**

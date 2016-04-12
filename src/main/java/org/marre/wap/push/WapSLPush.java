@@ -36,6 +36,7 @@ package org.marre.wap.push;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 
 import org.marre.wap.wbxml.WbxmlDocument;
 import org.marre.wap.wbxml.WbxmlWriter;
@@ -48,9 +49,13 @@ import org.marre.xml.XmlWriter;
  * @author Markus
  * @version $Id$
  */
-public class WapSLPush implements WbxmlDocument
+public class WapSLPush implements WbxmlDocument  , Serializable
 {
-    /** WBXML content type */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4910900065381822065L;
+	/** WBXML content type */
     public static final String WBXML_CONTENT_TYPE = "application/vnd.wap.slc";
     /** XML content type */
     public static final String XML_CONTENT_TYPE = "text/vnd.wap.sl";

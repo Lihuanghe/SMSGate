@@ -36,7 +36,7 @@ package org.marre.wap.nokia;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,9 +44,13 @@ import org.marre.wap.wbxml.WbxmlDocument;
 import org.marre.wap.wbxml.WbxmlWriter;
 import org.marre.xml.XmlWriter;
 
-public class NokiaOtaBrowserSettings implements WbxmlDocument
+public class NokiaOtaBrowserSettings implements WbxmlDocument ,	 Serializable
 {    
-    public static final String WBXML_SETTINGS_CONTENT_TYPE = "application/x-wap-prov.browser-settings";
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 2912925345836104645L;
+	public static final String WBXML_SETTINGS_CONTENT_TYPE = "application/x-wap-prov.browser-settings";
     public static final String XML_SETTINGS_CONTENT_TYPE = "application/x-wap-prov.browser-settings";
     public static final String XML_BOOKMARKS_CONTENT_TYPE = "application/x-wap-prov.browser-bookmarks";
         

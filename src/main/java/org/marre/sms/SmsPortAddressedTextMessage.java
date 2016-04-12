@@ -34,15 +34,21 @@
  * ***** END LICENSE BLOCK ***** */
 package org.marre.sms;
 
+import java.io.Serializable;
+
 /**
  * A port addressed message that delegates the text part to SmsTextMessage.
  *   
  * @author Markus
  * @version $Id$
  */
-public class SmsPortAddressedTextMessage extends SmsPortAddressedMessage
+public class SmsPortAddressedTextMessage extends SmsPortAddressedMessage implements Serializable
 {
-    /** The text message part. */ 
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5122972699556731923L;
+	/** The text message part. */ 
     protected final SmsTextMessage smsTextMessage_;
     
     public SmsPortAddressedTextMessage(SmsPort destPort, SmsPort origPort, SmsTextMessage msg)
