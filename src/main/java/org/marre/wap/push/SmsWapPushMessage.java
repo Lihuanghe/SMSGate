@@ -36,6 +36,7 @@ package org.marre.wap.push;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 
 import org.marre.mime.MimeBodyPart;
 import org.marre.mime.MimeContentType;
@@ -56,10 +57,14 @@ import org.marre.wap.wbxml.WbxmlDocument;
  * @author Markus Eriksson
  * @version 1.0
  */
-public class SmsWapPushMessage extends SmsPortAddressedMessage
+public class SmsWapPushMessage extends SmsPortAddressedMessage implements Serializable
 {
-    protected WspEncodingVersion wspEncodingVersion_ = WspEncodingVersion.VERSION_1_2;
-    protected MimeBodyPart pushMsg_;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 3377585301993184604L;
+	protected WspEncodingVersion wspEncodingVersion_ = WspEncodingVersion.VERSION_1_2;
+    protected transient MimeBodyPart pushMsg_;
     private WbxmlDocument wbxml;
         
     protected SmsWapPushMessage()

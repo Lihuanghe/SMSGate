@@ -1,10 +1,16 @@
 package org.marre.sms.nokia;
 
+import java.io.Serializable;
+
 /**
  * Represents the know nokia item types used in a NokiaMultipartMessage.
  */
-public final class NokiaItemType {
-    public static final NokiaItemType TEXT_ISO_8859_1 = new NokiaItemType((byte)0x00, "TEXT_ISO_8859_1");
+public final class NokiaItemType implements Serializable {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -1244183223843141668L;
+	public static final NokiaItemType TEXT_ISO_8859_1 = new NokiaItemType((byte)0x00, "TEXT_ISO_8859_1");
     public static final NokiaItemType TEXT_UNICODE = new NokiaItemType((byte)0x01, "TEXT_UNICODE");
     public static final NokiaItemType OTA_BITMAP = new NokiaItemType((byte)0x02, "OTA_BITMAP");
     public static final NokiaItemType RINGTONE = new NokiaItemType((byte)0x03, "RINGTONE");

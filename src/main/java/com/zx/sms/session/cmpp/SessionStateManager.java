@@ -458,20 +458,18 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 			return CmppSubmitResponseMessageCodec.decode(message);
 		} else if (version == 0x20L) {
 			return Cmpp20SubmitResponseMessageCodec.decode(message);
-		} else if (version == 0x10L) {
+		} else  {
 			return CmppSubmitResponseMessageCodec.decode(message);
 		}
-		return null;
 	} 
 	private CmppDeliverResponseMessage deliverRespdecode(Message message , short version){
 		if (version == 0x30L) {
 			return CmppDeliverResponseMessageCodec.decode(message);
 		} else if (version == 0x20L) {
 			return Cmpp20DeliverResponseMessageCodec.decode(message);
-		} else if (version == 0x10L) {
+		} else {
 			return CmppDeliverResponseMessageCodec.decode(message);
 		}
-		return null;
 	} 
 	private class Entry {
 		// 保证future的可见性，

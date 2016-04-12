@@ -36,6 +36,7 @@ package org.marre.wap.push;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.Date;
 
 import org.marre.wap.wbxml.WbxmlDocument;
@@ -43,9 +44,13 @@ import org.marre.wap.wbxml.WbxmlWriter;
 import org.marre.xml.XmlAttribute;
 import org.marre.xml.XmlWriter;
 
-public class WapSIPush implements WbxmlDocument
+public class WapSIPush implements WbxmlDocument , Serializable
 {
-    public static final String WBXML_CONTENT_TYPE = "application/vnd.wap.sic";
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -4283785673451164221L;
+	public static final String WBXML_CONTENT_TYPE = "application/vnd.wap.sic";
     public static final String XML_CONTENT_TYPE = "text/vnd.wap.si";
         
     public static final String[] SI_TAG_TOKENS = {

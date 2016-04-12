@@ -1,8 +1,9 @@
-package com.zx.sms.codec.cmpp10;
+package com.zx.sms.codec.cmpp7F;
 
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.handler.codec.MessageToMessageCodec;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,25 +13,25 @@ import org.slf4j.LoggerFactory;
 
 import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.codec.cmpp.packet.PacketType;
-import com.zx.sms.codec.cmpp10.packet.Cmpp10PacketType;
-
-public class CMPP10MessageCodecAggregator extends ChannelHandlerAdapter {
-	private static final Logger logger = LoggerFactory.getLogger(CMPP10MessageCodecAggregator.class);
+import com.zx.sms.codec.cmpp7F.packet.Cmpp7FPacketType;
+@Sharable
+public class CMPP7FMessageCodecAggregator extends ChannelHandlerAdapter {
+	private static final Logger logger = LoggerFactory.getLogger(CMPP7FMessageCodecAggregator.class);
 	
-	private static class CMPP10MessageCodecAggregatorHolder{
-		private final static  CMPP10MessageCodecAggregator instance = new CMPP10MessageCodecAggregator();
+	private static class CMPP7FMessageCodecAggregatorHolder{
+		private final static  CMPP7FMessageCodecAggregator instance = new CMPP7FMessageCodecAggregator();
 	}
 	
 	private ConcurrentHashMap<Long, MessageToMessageCodec> codecMap = new ConcurrentHashMap<Long, MessageToMessageCodec>();
 
-	private CMPP10MessageCodecAggregator() {
-		for (PacketType packetType : Cmpp10PacketType.values()) {
+	private CMPP7FMessageCodecAggregator() {
+		for (PacketType packetType : Cmpp7FPacketType.values()) {
 			codecMap.put(packetType.getCommandId(), packetType.getCodec());
 		}
 	}
 	
-	public static CMPP10MessageCodecAggregator getInstance(){
-		return CMPP10MessageCodecAggregatorHolder.instance;
+	public static CMPP7FMessageCodecAggregator getInstance(){
+		return CMPP7FMessageCodecAggregatorHolder.instance;
 	}
 	
 	@Override

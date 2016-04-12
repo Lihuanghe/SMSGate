@@ -34,6 +34,8 @@
  * ***** END LICENSE BLOCK ***** */
 package org.marre.sms;
 
+import java.io.Serializable;
+
 /**
  * Base class for all port adressed messages.
  * 
@@ -42,9 +44,13 @@ package org.marre.sms;
  * @author Markus
  * @version $Id$
  */
-public abstract class SmsPortAddressedMessage extends SmsConcatMessage
+public abstract class SmsPortAddressedMessage extends SmsConcatMessage implements Serializable
 {
-    protected SmsPort destPort_;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 2836960661981730324L;
+	protected SmsPort destPort_;
     protected SmsPort origPort_;
     
     /**

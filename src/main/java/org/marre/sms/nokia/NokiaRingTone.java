@@ -33,7 +33,11 @@ import org.marre.sms.SmsUserData;
  */
 public class NokiaRingTone extends SmsPortAddressedMessage
 {
-    protected final byte[] ringToneData_;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5021440309527738820L;
+	protected final byte[] ringToneData_;
     
     /**
      * Creates a ring tone

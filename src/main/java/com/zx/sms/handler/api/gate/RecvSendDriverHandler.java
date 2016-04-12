@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.math.RandomUtils;
-import org.marre.wap.push.SmsMmsNotificationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,12 +31,13 @@ import com.zx.sms.session.cmpp.SessionState;
 
 /**
  * 
- * @author Lihuanghe(18852780@qq.com)
+ * @author kangyufeng(18852780@qq.com)
  *
  */
-public class SessionConnectedHandler extends AbstractBusinessHandler {
-	private static final Logger logger = LoggerFactory.getLogger(SessionConnectedHandler.class);
-	private int totleCnt = 100000000;
+public class RecvSendDriverHandler extends AbstractBusinessHandler {
+	private static final Logger logger = LoggerFactory.getLogger(RecvSendDriverHandler.class);
+	//发送多少条
+	private int totleCnt = 3000;
 	
 	
 	public int getTotleCnt() {
@@ -56,63 +56,45 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 			final Channel ch = ctx.channel();
 			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>() {
 				private Message createTestReq() {
-					int contentLength = RandomUtils.nextInt() & 0x0f;
-					StringBuilder sb = new StringBuilder();
-					if (contentLength % 2 == 0) {
-						while (contentLength-- > 0) {
-							sb.append('中');
-						}
-					} else {
-						while (contentLength-- > 0) {
-							sb.append('a');
-						}
-					}
+					
 					Map<String, Object> map = new HashMap<String, Object>();
-					map.put("a", 1);
+					map.put("chanid", "Z001");
 					map.put("b", "adf");
 					
 					if (finalentity instanceof ServerEndpoint) {
 						CmppDeliverRequestMessage msg = new CmppDeliverRequestMessage();
-						msg.setDestId("13800138000");
+						msg.setDestId("10085");
 						msg.setLinkid("0000");
-						msg.setMsgContent(sb.toString());
+						msg.setMsgContent("SMRZ");
 
 						msg.setMsgId(new MsgId());
 						msg.setRegisteredDelivery((short) 0);
 						if (msg.getRegisteredDelivery() == 1) {
 							msg.setReportRequestMessage(new CmppReportRequestMessage());
 						}
-						msg.setServiceid("10086");
-						msg.setSrcterminalId(String.valueOf(System.nanoTime()));
+						//msg.setServiceid("10085101");
+						msg.setSrcterminalId("13800138000");
 						msg.setSrcterminalType((short) 1);
 						msg.setAttachment((Serializable)map);
-						msg.setMsgContent(new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd",50*1024));
-						
 						return msg;
 					} else {
 						CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
 						msg.setDestterminalId(String.valueOf(System.nanoTime()));
 						msg.setLinkID("0000");
-						msg.setMsgContent(sb.toString());
+						msg.setMsgContent("下行测试");
 						msg.setMsgid(new MsgId());
 						msg.setServiceId("10086");
 						msg.setSrcId("10086");
 						msg.setAttachment((Serializable)map);
-						msg.setMsgContent(new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd",50*1024));
 						return msg;
 					}
 				}
 
 				@Override
-				public Boolean call() throws Exception{
-					int cnt = RandomUtils.nextInt() & 0x1ff;
-					totleCnt -= cnt;					
-					if(totleCnt<0){
-						cnt = totleCnt + cnt;
-					}
+				public Boolean call() throws Exception{			
 					
 				//	logger.info("last msg cnt : {}" ,totleCnt<0?0:totleCnt);
-					while(cnt-->0) {
+					while(totleCnt-->0) {
 						ChannelFuture future =ChannelUtil.asyncWriteToEntity(getEndpointEntity(), createTestReq());
 						future.sync();
 					}
@@ -121,19 +103,10 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 			}, new ExitUnlimitCirclePolicy() {
 				@Override
 				public boolean notOver(Future future) {
-					boolean ret = ch.isActive() && totleCnt > 0;
-					if(!ret){
-						ChannelFuture promise =	ch.writeAndFlush(new CmppTerminateRequestMessage());
-						promise.addListener(new GenericFutureListener<ChannelFuture>(){
-							@Override
-							public void operationComplete(ChannelFuture future) throws Exception {
-								ch.close();
-							}
-						});
-					}
-					return ret;
+					
+					return true;
 				}
-			},0);
+			},1000);
 		}
 		ctx.fireUserEventTriggered(evt);
 
