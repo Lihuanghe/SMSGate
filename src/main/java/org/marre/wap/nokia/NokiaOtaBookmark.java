@@ -23,14 +23,19 @@
 package org.marre.wap.nokia;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import org.marre.xml.XmlAttribute;
 import org.marre.xml.XmlWriter;
 
 
-public class NokiaOtaBookmark
+public class NokiaOtaBookmark implements Serializable
 {
-    protected final String name_;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7944262195956211790L;
+	protected final String name_;
     protected final String url_;
     
     /**

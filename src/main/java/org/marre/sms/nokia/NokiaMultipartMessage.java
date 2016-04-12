@@ -40,7 +40,11 @@ import org.marre.sms.SmsUserData;
  */
 abstract class NokiaMultipartMessage extends SmsPortAddressedMessage
 {
-    private final LinkedList<NokiaPart> parts_ = new LinkedList<NokiaPart>();
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8558015655242719292L;
+	private final LinkedList<NokiaPart> parts_ = new LinkedList<NokiaPart>();
 
     /**
      * Creates a Nokia Multipart Message

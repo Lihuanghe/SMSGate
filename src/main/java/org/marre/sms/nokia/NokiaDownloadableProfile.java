@@ -34,7 +34,11 @@ import java.nio.charset.StandardCharsets;
  */
 public class NokiaDownloadableProfile extends NokiaMultipartMessage
 {
-    private String profileName_;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 6796572895718593625L;
+	private String profileName_;
     private byte[] screenSaver_;
     private byte[] ringingTone_;
 

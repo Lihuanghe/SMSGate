@@ -24,6 +24,7 @@ package org.marre.sms.nokia;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
+import java.io.Serializable;
 
 /**
  * Nokia OTA Bitmap format
@@ -44,9 +45,13 @@ import java.awt.image.Raster;
  * 
  * @author Markus Eriksson
  */
-public class OtaBitmap
+public class OtaBitmap implements Serializable
 {
-    private int width_;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -2466133864013197366L;
+	private int width_;
     private int height_;
 
     private byte[] otaImgData_;

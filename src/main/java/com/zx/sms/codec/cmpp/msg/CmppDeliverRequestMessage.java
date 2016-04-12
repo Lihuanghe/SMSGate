@@ -41,7 +41,7 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 
 	private String msgContent;
 	
-	private transient SmsMessage msg;
+	private SmsMessage msg;
 
 	private boolean supportLongMsg = true;
 

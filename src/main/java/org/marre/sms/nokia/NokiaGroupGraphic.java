@@ -39,7 +39,11 @@ import org.marre.sms.SmsUserData;
  */
 public class NokiaGroupGraphic extends SmsPortAddressedMessage
 {
-    protected final byte[] bitmapData_;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7879633793031802695L;
+	protected final byte[] bitmapData_;
     
     /**
      * Creates a group graphic SMS message
