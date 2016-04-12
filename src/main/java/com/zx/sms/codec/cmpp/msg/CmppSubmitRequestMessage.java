@@ -52,7 +52,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 	private String reserve = GlobalConstance.emptyString;
 
 	private String msgContent;
-	private transient SmsMessage msg;
+	private SmsMessage msg;
 	
 	private boolean supportLongMsg =  true;
 	

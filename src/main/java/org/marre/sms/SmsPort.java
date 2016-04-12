@@ -1,10 +1,17 @@
 package org.marre.sms;
 
+import java.io.Serializable;
+
 /**
  * Collection of some known Sms port numbers.
  */
-public final class SmsPort {
-    /** Port 0, often used as originator port. */
+public final class SmsPort implements Serializable {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -5328952526114005361L;
+
+	/** Port 0, often used as originator port. */
     public static final SmsPort ZERO = new SmsPort(0, "ZERO");
 
     /** WAP Push. */

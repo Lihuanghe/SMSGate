@@ -37,6 +37,7 @@ package org.marre.wap.push;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 
 import org.marre.mime.MimeBodyPart;
 import org.marre.sms.SmsUserData;
@@ -49,9 +50,13 @@ import org.marre.wap.mms.MmsHeaderEncoder;
  * 
  * @version $Id$
  */
-public class SmsMmsNotificationMessage extends SmsWapPushMessage
+public class SmsMmsNotificationMessage extends SmsWapPushMessage implements Serializable
 {
-    private static final int DEFAULT_TRANSACTION_ID_LENGTH = 5;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 3659719878719271285L;
+	private static final int DEFAULT_TRANSACTION_ID_LENGTH = 5;
     private static final long DEFAULT_EXPIRY = 3 * 24 * 60 * 60; // 3 days
 
     protected String transactionId_="";

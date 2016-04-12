@@ -33,9 +33,14 @@ import org.marre.sms.*;
  * @author Markus Eriksson
  * @version $Id$
  */
-public class NokiaOperatorLogo extends SmsPortAddressedMessage
+public class NokiaOperatorLogo extends SmsPortAddressedMessage 
 {
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8655813384081384243L;
+
+	/**
      * If set to true it will make the message two bytes shorter to make it
      * possible to fit a 72x14 pixel image in one SMS instead of two. <br>
      * <b>Note! </b> This will probably only work on Nokia phones...
