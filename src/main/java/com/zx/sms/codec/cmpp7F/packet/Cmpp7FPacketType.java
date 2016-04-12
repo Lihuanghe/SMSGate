@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.zx.sms.codec.cmpp10.packet;
+package com.zx.sms.codec.cmpp7F.packet;
 
 import io.netty.handler.codec.MessageToMessageCodec;
 
@@ -11,11 +11,9 @@ import com.zx.sms.codec.cmpp.CmppCancelRequestMessageCodec;
 import com.zx.sms.codec.cmpp.CmppCancelResponseMessageCodec;
 import com.zx.sms.codec.cmpp.CmppConnectRequestMessageCodec;
 import com.zx.sms.codec.cmpp.CmppConnectResponseMessageCodec;
-import com.zx.sms.codec.cmpp.CmppDeliverRequestMessageCodec;
 import com.zx.sms.codec.cmpp.CmppDeliverResponseMessageCodec;
 import com.zx.sms.codec.cmpp.CmppQueryRequestMessageCodec;
 import com.zx.sms.codec.cmpp.CmppQueryResponseMessageCodec;
-import com.zx.sms.codec.cmpp.CmppSubmitRequestMessageCodec;
 import com.zx.sms.codec.cmpp.CmppSubmitResponseMessageCodec;
 import com.zx.sms.codec.cmpp.CmppTerminateRequestMessageCodec;
 import com.zx.sms.codec.cmpp.CmppTerminateResponseMessageCodec;
@@ -35,20 +33,22 @@ import com.zx.sms.codec.cmpp.packet.CmppTerminateRequest;
 import com.zx.sms.codec.cmpp.packet.CmppTerminateResponse;
 import com.zx.sms.codec.cmpp.packet.PacketStructure;
 import com.zx.sms.codec.cmpp.packet.PacketType;
+import com.zx.sms.codec.cmpp7F.Cmpp7FDeliverRequestMessageCodec;
+import com.zx.sms.codec.cmpp7F.Cmpp7FSubmitRequestMessageCodec;
 
 
 /**
  * @author huzorro(huzorro@gmail.com)
  *
  */
-public enum Cmpp10PacketType implements PacketType {
+public enum Cmpp7FPacketType implements PacketType {
     CMPPCONNECTREQUEST(0x00000001L, CmppConnectRequest.class,CmppConnectRequestMessageCodec.class),
     CMPPCONNECTRESPONSE(0x80000001L, CmppConnectResponse.class,CmppConnectResponseMessageCodec.class),
     CMPPTERMINATEREQUEST(0x00000002L, CmppTerminateRequest.class,CmppTerminateRequestMessageCodec.class),
     CMPPTERMINATERESPONSE(0x80000002L, CmppTerminateResponse.class,CmppTerminateResponseMessageCodec.class),    
-    CMPPSUBMITREQUEST(0x00000004L, CmppSubmitRequest.class,CmppSubmitRequestMessageCodec.class), 
+    CMPPSUBMITREQUEST(0x00000004L, CmppSubmitRequest.class,Cmpp7FSubmitRequestMessageCodec.class), 
     CMPPSUBMITRESPONSE(0x80000004L, CmppSubmitResponse.class,CmppSubmitResponseMessageCodec.class),
-    CMPPDELIVERREQUEST(0x00000005L, CmppDeliverRequest.class,CmppDeliverRequestMessageCodec.class),
+    CMPPDELIVERREQUEST(0x00000005L, CmppDeliverRequest.class,Cmpp7FDeliverRequestMessageCodec.class),
     CMPPDELIVERRESPONSE(0x80000005L, CmppDeliverResponse.class,CmppDeliverResponseMessageCodec.class),    
     CMPPQUERYREQUEST(0x00000006L, CmppQueryRequest.class,CmppQueryRequestMessageCodec.class),
     CMPPQUERYRESPONSE(0x80000006L, CmppQueryResponse.class,CmppQueryResponseMessageCodec.class),
@@ -61,7 +61,7 @@ public enum Cmpp10PacketType implements PacketType {
     private Class<? extends PacketStructure> packetStructure;
     private Class<? extends MessageToMessageCodec> codec;
     
-    private Cmpp10PacketType(long commandId, Class<? extends PacketStructure> packetStructure,Class<? extends MessageToMessageCodec> codec) {
+    private Cmpp7FPacketType(long commandId, Class<? extends PacketStructure> packetStructure,Class<? extends MessageToMessageCodec> codec) {
         this.commandId = commandId;
         this.packetStructure = packetStructure;
         this.codec = codec;
@@ -76,7 +76,7 @@ public enum Cmpp10PacketType implements PacketType {
     public long getAllCommandId() {
         long defaultId = 0x0;
         long allCommandId = 0x0;
-        for(Cmpp10PacketType packetType : Cmpp10PacketType.values()) {
+        for(Cmpp7FPacketType packetType : Cmpp7FPacketType.values()) {
             allCommandId |= packetType.commandId;
         }
         return allCommandId ^ defaultId;

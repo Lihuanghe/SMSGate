@@ -11,20 +11,17 @@ import org.slf4j.LoggerFactory;
 
 import com.zx.sms.connect.manager.CMPPEndpointManager;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
-import com.zx.sms.handler.api.gate.SessionConnectedHandler;
+import com.zx.sms.handler.api.gate.RecvSendDriverHandler;
 import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
 /**
- *经测试，35个连接，每个连接每200/s条消息
- *lenovoX250能承担7000/s消息编码解析无压力。
- *10000/s的消息服务不稳定，开个网页，或者打开其它程序导致系统抖动，会有大量消息延迟 (超过500ms)
- *
- *低负载时消息编码解码可控制在10ms以内。
+ *为业务平台编写测试驱动，实现发送多少条，短信端口，短信渠道，短信内容配置化
+ *实现速率配置化
  *
  */
 
 
-public class TestCMPPEndPoint {
-	private static final Logger logger = LoggerFactory.getLogger(TestCMPPEndPoint.class);
+public class TestCMPPEndPointDemo {
+	private static final Logger logger = LoggerFactory.getLogger(TestCMPPEndPointDemo.class);
 
 	@Test
 	public void testCMPPEndpoint() throws Exception {
@@ -34,15 +31,15 @@ public class TestCMPPEndPoint {
 		CMPPServerEndpointEntity server = new CMPPServerEndpointEntity();
 		server.setId("server");
 		server.setHost("127.0.0.1");
-		server.setPort(7891);
+		server.setPort(7911);
 		server.setValid(true);
 		//使用ssl加密数据流
 		server.setUseSSL(false);
 		
 		CMPPServerChildEndpointEntity child = new CMPPServerChildEndpointEntity();
-		child.setId("child");
+		child.setId("10085-s1");
 		child.setChartset(Charset.forName("utf-8"));
-		child.setGroupName("test");
+		child.setGroupName("HENAN");
 		child.setUserName("901782");
 		child.setPassword("ICP");
 		child.setValid(true);
@@ -54,34 +51,36 @@ public class TestCMPPEndPoint {
 		child.setMaxRetryCnt((short)3);
 		child.setReSendFailMsg(true);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new SessionConnectedHandler());
+		serverhandlers.add(new RecvSendDriverHandler());
+		serverhandlers.add(new MessageReceiveHandler());
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
+		CMPPServerChildEndpointEntity child1 = new CMPPServerChildEndpointEntity();
+		child1.setId("10085-s2");
+		child1.setChartset(Charset.forName("utf-8"));
+		child1.setGroupName("HENAN");
+		child1.setUserName("901781");
+		child1.setPassword("ICP");
+		child1.setValid(true);
+		
+		child1.setWindows((short)16);
+		child1.setVersion((short)0x7F);
+		child1.setMaxChannels((short)20);
+		child1.setRetryWaitTimeSec((short)100);
+		child1.setMaxRetryCnt((short)3);
+		child1.setReSendFailMsg(true);
+		List<BusinessHandlerInterface> serverhandlers1 = new ArrayList<BusinessHandlerInterface>();
+		serverhandlers1.add(new MessageReceiveHandler());
+		child1.setBusinessHandlerSet(serverhandlers1);
+		server.addchild(child1);
+
 		
 		manager.addEndpointEntity(server);
-	
-		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
-		client.setId("client");
-		client.setHost("127.0.0.1");
-		client.setPort(7891);
-		client.setChartset(Charset.forName("utf-8"));
-		client.setGroupName("test");
-		client.setUserName("901782");
-		client.setPassword("ICP");
-		client.setWindows((short)16);
-		client.setVersion((short)0x7F);
-		client.setRetryWaitTimeSec((short)100);
-		client.setUseSSL(false);
-		client.setReSendFailMsg(true);
-		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add(new MessageReceiveHandler());
-		client.setBusinessHandlerSet(clienthandlers);
-		manager.addEndpointEntity(client);
 		
 		manager.openAll();
-		//LockSupport.park();
-		Thread.sleep(300000);
+		LockSupport.park();
+		//Thread.sleep(300000);
 		CMPPEndpointManager.INS.close();
 	}
 }

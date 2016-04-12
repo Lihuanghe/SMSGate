@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import com.zx.sms.codec.cmpp.CMPPMessageCodecAggregator;
 import com.zx.sms.codec.cmpp.CmppHeaderCodec;
-import com.zx.sms.codec.cmpp10.CMPP10MessageCodecAggregator;
 import com.zx.sms.codec.cmpp20.CMPP20MessageCodecAggregator;
+import com.zx.sms.codec.cmpp7F.CMPP7FMessageCodecAggregator;
 import com.zx.sms.common.NotSupportedException;
 
 /**
@@ -57,8 +57,8 @@ public class CMPPCodecChannelInitializer extends ChannelInitializer<Channel> {
 			return CMPPMessageCodecAggregator.getInstance();
 		} else if (version == 0x20L) {
 			return CMPP20MessageCodecAggregator.getInstance();
-		} else if (version == 0x10L) {
-			return CMPP10MessageCodecAggregator.getInstance();
+		} else if (version == 0x7FL) {
+			return CMPP7FMessageCodecAggregator.getInstance();
 		}
 		logger.error("not supported protocol version: {}", version);
 		throw new NotSupportedException("not supported protocol version.");
