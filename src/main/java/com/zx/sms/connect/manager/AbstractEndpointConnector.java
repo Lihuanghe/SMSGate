@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.codec.cmpp.msg.Message;
+import com.zx.sms.codec.cmpp.packet.CmppPacketType;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.storedMap.BDBStoredMapFactoryImpl;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
@@ -151,7 +152,17 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 				if (storedMap != null && storedMap.size() > 0) {
 					try {
 						for (Map.Entry<Long, Message> entry : storedMap.entrySet()) {
-							preSendMap.put(entry.getKey(), entry.getValue());
+							Message msg = entry.getValue();
+							//不能重发Term消息。
+							//如果上次连接关闭时Term消息未收到响应，重发会导致本次连接关闭
+							if(msg.getHeader().getCommandId()!= CmppPacketType.CMPPTERMINATEREQUEST.getCommandId()&&
+									msg.getHeader().getCommandId()!= CmppPacketType.CMPPTERMINATERESPONSE.getCommandId())
+							{
+								preSendMap.put(entry.getKey(), entry.getValue());
+							}else{
+								logger.warn("last CMPPTERMINATE msg may not success.");
+							}
+							
 						}
 					} catch (Exception e) {
 						logger.warn("get storedMessage err ", e);

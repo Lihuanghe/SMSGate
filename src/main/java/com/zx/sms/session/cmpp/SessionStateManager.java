@@ -9,7 +9,6 @@ import io.netty.channel.ChannelPromise;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -88,10 +87,7 @@ public class SessionStateManager extends ChannelDuplexHandler {
 	 * 会话刚建立时要发送的数据
 	 */
 	private Map<Long, Message> preSend;
-	/**
-	 * 异步等待发送窗口的队列
-	 */
-	private ConcurrentLinkedQueue<Runnable> waitWindowQueue = new ConcurrentLinkedQueue<Runnable>();
+
 
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		logger.warn("Connection closed. channel:{}", ctx.channel());
@@ -121,13 +117,6 @@ public class SessionStateManager extends ChannelDuplexHandler {
 			cancelRetry(requestmsg, ctx.channel());
 		}
 
-		// 如果等待窗口的队列里有未发送的消息，取消发送，并设置发送失败
-		Runnable task = waitWindowQueue.poll();
-		while (task != null) {
-			// 直接执行task，会判断如果连接关闭则设置发送失败。
-			EventLoopGroupFactory.INS.getWaitWindow().submit(task);
-			task = waitWindowQueue.poll();
-		}
 		//设置连接为可写
 		setUserDefinedWritability(ctx.channel(), true);
 		ctx.fireChannelInactive();
@@ -245,12 +234,7 @@ public class SessionStateManager extends ChannelDuplexHandler {
 				safewrite(ctx, message, promise);
 			} else {
 				// 加入等待队列
-				waitWindowQueue.offer(new Runnable() {
-					@Override
-					public void run() {
-						safewrite(ctx, message, promise);
-					}
-				});
+				promise.setFailure(new RuntimeException("send window not enough"));
 				//设置channel为不可写
 				setUserDefinedWritability(ctx.channel(),false);
 			}
@@ -344,14 +328,11 @@ public class SessionStateManager extends ChannelDuplexHandler {
 			// 如果等窗口的队列里有任务，先发送等待的消息
 			if (channel != null && channel.isActive()) {
 
-				Runnable task = waitWindowQueue.poll();
-				if (task != null) {
-					EventLoopGroupFactory.INS.getWaitWindow().submit(task);
-				}else{
-					if(windows.decrementAndGet()<0){
-						windows.set(0);
-					};
-				}
+			
+				if(windows.decrementAndGet()<0){
+					windows.set(0);
+				};
+				
 				//设置连接为可写状态
 				setUserDefinedWritability(channel, true);
 			} 

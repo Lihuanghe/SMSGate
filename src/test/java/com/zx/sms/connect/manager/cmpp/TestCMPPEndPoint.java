@@ -47,8 +47,8 @@ public class TestCMPPEndPoint {
 		child.setPassword("ICP");
 		child.setValid(true);
 		
-		child.setWindows((short)16);
-		child.setVersion((short)0x7F);
+		child.setWindows((short)1);
+		child.setVersion((short)0x30);
 		child.setMaxChannels((short)20);
 		child.setRetryWaitTimeSec((short)100);
 		child.setMaxRetryCnt((short)3);
@@ -69,11 +69,13 @@ public class TestCMPPEndPoint {
 		client.setGroupName("test");
 		client.setUserName("901782");
 		client.setPassword("ICP");
-		client.setWindows((short)16);
-		client.setVersion((short)0x7F);
+		client.setWindows((short)1);
+		client.setVersion((short)0x30);
 		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);
 		client.setReSendFailMsg(true);
+		client.setReadLimit(300);
+
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new MessageReceiveHandler());
 		client.setBusinessHandlerSet(clienthandlers);

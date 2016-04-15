@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.math.RandomUtils;
 import org.marre.wap.push.SmsMmsNotificationMessage;
@@ -37,8 +38,9 @@ import com.zx.sms.session.cmpp.SessionState;
  */
 public class SessionConnectedHandler extends AbstractBusinessHandler {
 	private static final Logger logger = LoggerFactory.getLogger(SessionConnectedHandler.class);
-	private int totleCnt = 100000000;
-	
+	private int totleCnt = 100;
+
+	private int failcnt = 0;
 	
 	public int getTotleCnt() {
 		return totleCnt;
@@ -48,10 +50,10 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 	}
 	
 	@Override
-	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+	public void userEventTriggered(final ChannelHandlerContext ctx, Object evt) throws Exception {
 
 		if (evt == SessionState.Connect) {
-			
+			logger.info("{}dddd",ctx.channel().isActive());
 			final CMPPEndpointEntity finalentity = (CMPPEndpointEntity) getEndpointEntity();
 			final Channel ch = ctx.channel();
 			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>() {
@@ -106,15 +108,20 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 				@Override
 				public Boolean call() throws Exception{
 					int cnt = RandomUtils.nextInt() & 0x1ff;
-					totleCnt -= cnt;					
-					if(totleCnt<0){
-						cnt = totleCnt + cnt;
-					}
-					
-				//	logger.info("last msg cnt : {}" ,totleCnt<0?0:totleCnt);
-					while(cnt-->0) {
-						ChannelFuture future =ChannelUtil.asyncWriteToEntity(getEndpointEntity(), createTestReq());
-						future.sync();
+					while(cnt-->0 && totleCnt>0) {
+						ChannelFuture future =ChannelUtil.asyncWriteToEntity(getEndpointEntity(), createTestReq(),new GenericFutureListener<ChannelFuture>() {
+							@Override
+							public void operationComplete(ChannelFuture future) throws Exception {
+								
+							}
+						});
+						
+						try{
+							future.sync();
+							totleCnt--;
+						}catch(Exception e){
+							break;
+						}
 					}
 					return true;
 				}
@@ -123,6 +130,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 				public boolean notOver(Future future) {
 					boolean ret = ch.isActive() && totleCnt > 0;
 					if(!ret){
+						
 						ChannelFuture promise =	ch.writeAndFlush(new CmppTerminateRequestMessage());
 						promise.addListener(new GenericFutureListener<ChannelFuture>(){
 							@Override
