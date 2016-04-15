@@ -34,7 +34,7 @@
 	
 	<logger name="entity" additivity="false">
 		<level value="info" />
-		<appender-ref ref="SIFT" />
+		<appender-ref ref="STDOUT" />
 	</logger>
 
 	<logger name="com.zx.sms.dao" additivity="false">

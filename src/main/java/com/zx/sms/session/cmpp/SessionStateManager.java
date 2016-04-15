@@ -234,7 +234,6 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 				safewrite(ctx, message, promise);
 			} else {
 				// 加入等待队列
-			
 				promise.setFailure(new RuntimeException("send window not enough"));
 				//设置channel为不可写
 				setUserDefinedWritability(ctx.channel(),false);

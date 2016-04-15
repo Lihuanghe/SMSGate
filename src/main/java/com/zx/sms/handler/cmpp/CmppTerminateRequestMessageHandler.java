@@ -3,6 +3,8 @@
  */
 package com.zx.sms.handler.cmpp;
 
+import java.util.concurrent.TimeUnit;
+
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -40,7 +42,7 @@ public class CmppTerminateRequestMessageHandler extends SimpleChannelInboundHand
 	 * org.jboss.netty.channel.MessageEvent)
 	 */
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, CmppTerminateRequestMessage e) throws Exception {
+	public void messageReceived(final ChannelHandlerContext ctx, CmppTerminateRequestMessage e) throws Exception {
 
 		CmppTerminateResponseMessage responseMessage = new CmppTerminateResponseMessage(e.getHeader().getSequenceId());
 		ChannelFuture future = ctx.channel().writeAndFlush(responseMessage);
@@ -48,7 +50,16 @@ public class CmppTerminateRequestMessageHandler extends SimpleChannelInboundHand
 		future.addListeners(new GenericFutureListener(){
 			@Override
 			public void operationComplete(Future future) throws Exception {
-				finalctx.channel().close();
+				ctx.executor().schedule(new Runnable(){
+
+					@Override
+					public void run() {
+						finalctx.channel().close();
+					}
+					
+					
+				},500,TimeUnit.MILLISECONDS);
+				
 			}
 		});
 		

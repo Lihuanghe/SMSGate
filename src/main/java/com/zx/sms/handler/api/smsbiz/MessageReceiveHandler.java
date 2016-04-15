@@ -21,7 +21,7 @@ import com.zx.sms.session.cmpp.SessionState;
 
 public class MessageReceiveHandler extends AbstractBusinessHandler {
 	private static final Logger logger = LoggerFactory.getLogger(MessageReceiveHandler.class);
-	private int rate = 5;
+	private int rate = 2;
 
 	private AtomicLong cnt = new AtomicLong();
 	private long lastNum = 0;
