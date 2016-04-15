@@ -106,15 +106,18 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 				@Override
 				public Boolean call() throws Exception{
 					int cnt = RandomUtils.nextInt() & 0x1ff;
-					totleCnt -= cnt;					
-					if(totleCnt<0){
-						cnt = totleCnt + cnt;
-					}
-					
-				//	logger.info("last msg cnt : {}" ,totleCnt<0?0:totleCnt);
-					while(cnt-->0) {
-						ChannelFuture future =ChannelUtil.asyncWriteToEntity(getEndpointEntity(), createTestReq());
+					while(cnt-->0 && totleCnt>0) {
+						ChannelFuture future =ChannelUtil.asyncWriteToEntity(getEndpointEntity(), createTestReq(),new GenericFutureListener<ChannelFuture>() {
+							@Override
+							public void operationComplete(ChannelFuture future) throws Exception {
+								
+							}
+						});
 						future.sync();
+						if(!future.isSuccess()){
+							break;
+						}
+						totleCnt--;
 					}
 					return true;
 				}
