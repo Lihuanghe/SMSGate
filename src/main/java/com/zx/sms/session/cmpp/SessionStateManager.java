@@ -268,7 +268,7 @@ public class SessionStateManager extends ChannelHandlerAdapter {
 				public void run() {
 					try {
 						int times = message.incrementAndGetRequests();
-						logger.debug("retry Send Msg : {}", message);
+						logger.warn("retry Send Msg : {}", message);
 						if (times > entity.getMaxRetryCnt()) {
 
 							//会有future泄漏的情况发生，这里cancel掉自己，来规避泄漏
