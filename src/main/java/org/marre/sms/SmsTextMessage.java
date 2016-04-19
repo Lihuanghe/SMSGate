@@ -127,7 +127,7 @@ public class SmsTextMessage extends SmsConcatMessage implements Serializable
         // Check input for null
         if (text == null)
         {
-            throw new IllegalArgumentException("text cannot be null, use an empty string instead.");
+        	 text_ = "";
         }
         
         if (dcs == null)

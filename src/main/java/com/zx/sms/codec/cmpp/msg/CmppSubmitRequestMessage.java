@@ -51,7 +51,6 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 
 	private String reserve = GlobalConstance.emptyString;
 
-	private String msgContent;
 	private SmsMessage msg;
 	
 	private boolean supportLongMsg =  true;
@@ -344,7 +343,25 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 
 	
 	public String getMsgContent() {
-		return msgContent;
+		if(msg instanceof SmsTextMessage){
+			SmsTextMessage textMsg = (SmsTextMessage) msg;
+			return textMsg.getText();
+		}else if(msg instanceof SmsPortAddressedTextMessage){
+			SmsPortAddressedTextMessage textMsg = (SmsPortAddressedTextMessage) msg;
+			return textMsg.getText();
+		}else if(msg instanceof SmsMmsNotificationMessage){
+			SmsMmsNotificationMessage mms = (SmsMmsNotificationMessage) msg;
+			return mms.getContentLocation_();
+		}else if(msg instanceof SmsWapPushMessage){
+			SmsWapPushMessage wap = (SmsWapPushMessage) msg;
+			WbxmlDocument wbxml = wap.getWbxml();
+			if(wbxml instanceof WapSIPush){
+				return ((WapSIPush)wbxml).getUri();
+			}else if(wbxml instanceof WapSLPush){
+				return ((WapSLPush)wbxml).getUri();
+			}
+		}
+		return "";
 	}
 	public SmsMessage getMsg() {
 		return msg;
@@ -353,35 +370,11 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 	 * @return the msgContent
 	 */
 	public void setMsgContent(String msgContent) {
-		if (msgContent == null){
-			this.msgContent = GlobalConstance.emptyString;
-		}else{
-			this.msgContent = msgContent;
-		}
-		this.msg = CMPPCommonUtil.buildTextMessage(this.msgContent);
+		this.msg = CMPPCommonUtil.buildTextMessage(msgContent);
 	}
 	
 	public void setMsgContent(SmsMessage msg){
 		this.msg = msg;
-		if(msg instanceof SmsTextMessage){
-			SmsTextMessage textMsg = (SmsTextMessage) msg;
-			this.msgContent=textMsg.getText();
-		}else if(msg instanceof SmsPortAddressedTextMessage){
-			SmsPortAddressedTextMessage textMsg = (SmsPortAddressedTextMessage) msg;
-			this.msgContent=textMsg.getText();
-		}else if(msg instanceof SmsMmsNotificationMessage){
-			SmsMmsNotificationMessage mms = (SmsMmsNotificationMessage) msg;
-			this.msgContent=mms.getContentLocation_();
-		}else if(msg instanceof SmsWapPushMessage){
-			SmsWapPushMessage wap = (SmsWapPushMessage) msg;
-			WbxmlDocument wbxml = wap.getWbxml();
-			if(wbxml instanceof WapSIPush){
-				this.msgContent=((WapSIPush)wbxml).getUri();
-			}else if(wbxml instanceof WapSLPush){
-				this.msgContent=((WapSLPush)wbxml).getUri();
-			}
-		}
-		
 	}
 
 	public boolean isSupportLongMsg() {
@@ -409,7 +402,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("CmppSubmitRequestMessage [msgid=").append(msgid).append(", destterminalId=").append(Arrays.toString(destterminalId)).append(", msgContent=")
-		.append(msgContent).append(", SmsMessageType=").append(msg==null?"":msg.getClass().getSimpleName()).append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
+		.append(getMsgContent()).append(", SmsMessageType=").append(msg==null?"":msg.getClass().getSimpleName()).append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
 		return sb.toString();
 	}
 }

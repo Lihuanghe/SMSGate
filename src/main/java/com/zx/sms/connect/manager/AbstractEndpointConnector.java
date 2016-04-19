@@ -166,6 +166,8 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 						}
 					} catch (Exception e) {
 						logger.warn("get storedMessage err ", e);
+					}finally{
+						//删除所有积压的消息
 						storedMap.clear();
 					}
 				}
