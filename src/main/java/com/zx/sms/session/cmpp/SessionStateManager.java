@@ -320,9 +320,10 @@ public class SessionStateManager extends ChannelDuplexHandler {
 
 	private Entry cancelRetry(Message requestMsg, Channel channel) {
 		Entry entry = msgRetryMap.remove(requestMsg.getHeader().getSequenceId());
-
+	
 		if (entry != null && entry.future != null) {
 			entry.future.cancel(false);
+			
 		}
 		if (windows != null) {
 			// 如果等窗口的队列里有任务，先发送等待的消息

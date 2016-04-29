@@ -37,7 +37,7 @@ import com.zx.sms.session.cmpp.SessionState;
 public class RecvSendDriverHandler extends AbstractBusinessHandler {
 	private static final Logger logger = LoggerFactory.getLogger(RecvSendDriverHandler.class);
 	//发送多少条
-	private int totleCnt = 3000;
+	private int totleCnt = 3000000;
 	
 	
 	public int getTotleCnt() {
@@ -60,7 +60,7 @@ public class RecvSendDriverHandler extends AbstractBusinessHandler {
 					Map<String, Object> map = new HashMap<String, Object>();
 					map.put("chanid", "Z001");
 					map.put("b", "adf");
-					
+					map.put("nano", System.nanoTime());
 					if (finalentity instanceof ServerEndpoint) {
 						CmppDeliverRequestMessage msg = new CmppDeliverRequestMessage();
 						msg.setDestId("10085");
@@ -93,10 +93,20 @@ public class RecvSendDriverHandler extends AbstractBusinessHandler {
 				@Override
 				public Boolean call() throws Exception{			
 					
-				//	logger.info("last msg cnt : {}" ,totleCnt<0?0:totleCnt);
-					while(totleCnt-->0) {
-						ChannelFuture future =ChannelUtil.asyncWriteToEntity(getEndpointEntity(), createTestReq());
-						future.sync();
+					int cnt = RandomUtils.nextInt() & 0x1fff;
+					while(cnt-->0 && totleCnt>0) {
+						ChannelFuture future =ChannelUtil.asyncWriteToEntity(getEndpointEntity(), createTestReq(),new GenericFutureListener<ChannelFuture>() {
+							@Override
+							public void operationComplete(ChannelFuture future) throws Exception {
+								
+							}
+						});
+						try{
+							future.sync();
+							totleCnt--;
+						}catch(Exception e){
+							
+						}
 					}
 					return true;
 				}

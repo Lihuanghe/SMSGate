@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.connect.manager.CMPPEndpointManager;
+import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 import com.zx.sms.handler.api.gate.RecvSendDriverHandler;
 import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
@@ -43,15 +44,15 @@ public class TestCMPPEndPointDemo {
 		child.setUserName("901782");
 		child.setPassword("ICP");
 		child.setValid(true);
-		
-		child.setWindows((short)16);
+		child.setChannelType(ChannelType.DUPLEX);
+		child.setWindows((short)1600);
 		child.setVersion((short)0x7F);
 		child.setMaxChannels((short)20);
 		child.setRetryWaitTimeSec((short)100);
 		child.setMaxRetryCnt((short)3);
-		child.setReSendFailMsg(true);
+		child.setReSendFailMsg(false);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new RecvSendDriverHandler());
+//		serverhandlers.add(new RecvSendDriverHandler());
 		serverhandlers.add(new MessageReceiveHandler());
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);

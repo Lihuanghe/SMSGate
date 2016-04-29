@@ -7,7 +7,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -50,6 +49,7 @@ import PduParser.PduParser;
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.util.CMPPCommonUtil;
+import com.zx.sms.common.util.StandardCharsets;
 
 import es.rickyepoderi.wbxml.definition.WbXmlInitialization;
 import es.rickyepoderi.wbxml.stream.WbXmlInputFactory;

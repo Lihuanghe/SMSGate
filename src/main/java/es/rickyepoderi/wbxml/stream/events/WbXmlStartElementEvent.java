@@ -136,7 +136,7 @@ public class WbXmlStartElementEvent extends WbXmlEvent implements StartElement {
      */
     @Override
     public Iterator getNamespaces() {
-        return Collections.emptyIterator();
+        return emptyIterator();
     }
 
     /**

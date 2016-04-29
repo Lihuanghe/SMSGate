@@ -37,12 +37,13 @@ package org.marre.wap;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.marre.mime.MimeHeader;
 import org.marre.mime.MimeHeaderParameter;
+
+import com.zx.sms.common.util.StandardCharsets;
 
 /**
  * 

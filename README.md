@@ -12,7 +12,7 @@
 在48core，128G内存的物理服务器上测试协议解析效率：35K条/s, cpu使用率25%. 
 
 ## Build
-执行mvn package . 建议使用jdk1.7.
+执行mvn package . jdk1.6以上. (如果用netty5则必须使用jdk1.7)
 
 ## 增加了业务处理API
 业务层实现接口：BusinessHandlerInterface，或者继承AbstractBusinessHandler抽象类实现业务即可。 连接保活，消息重发，消息持久化，连接鉴权都已封装，不须要业务层再实现。

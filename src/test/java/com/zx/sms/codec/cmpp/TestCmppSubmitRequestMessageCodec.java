@@ -1,17 +1,13 @@
 package com.zx.sms.codec.cmpp;
 
-import java.io.ByteArrayOutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Random;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
+import java.util.Random;
+
 import org.junit.Assert;
 import org.junit.Test;
-import org.marre.sms.SmsAlphabet;
 import org.marre.sms.SmsMessage;
-import org.marre.sms.SmsMsgClass;
 import org.marre.sms.SmsPort;
 import org.marre.sms.SmsPortAddressedTextMessage;
 import org.marre.sms.SmsTextMessage;
@@ -21,13 +17,7 @@ import org.marre.wap.push.WapSIPush;
 import org.marre.wap.push.WapSLPush;
 
 import com.zx.sms.codec.AbstractTestMessageCodec;
-import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
-import com.zx.sms.codec.cmpp.msg.DefaultHeader;
-import com.zx.sms.codec.cmpp.msg.Header;
-import com.zx.sms.codec.cmpp.packet.CmppDeliverRequest;
-import com.zx.sms.codec.cmpp.packet.CmppHead;
-import com.zx.sms.codec.cmpp.packet.CmppSubmitRequest;
 import com.zx.sms.common.util.MsgId;
 
 public class TestCmppSubmitRequestMessageCodec  extends AbstractTestMessageCodec<CmppSubmitRequestMessage>{
