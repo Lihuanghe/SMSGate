@@ -10,6 +10,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import io.netty.util.ReferenceCountUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.marre.sms.SmsDcs;
@@ -86,6 +87,9 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 			frame.setMsgContentBytes(contentbytes);
 			frame.setMsgLength((short)frameLength);
 		} else {
+			if(frameLength != CmppReportRequest.DESTTERMINALID.getBodyLength()){
+				logger.warn("CmppDeliverRequestMessage - MsgContent length is {}. should be {}.",frameLength,CmppReportRequest.DESTTERMINALID.getBodyLength());
+			};
 			requestMessage.setReportRequestMessage(new CmppReportRequestMessage());
 			requestMessage.getReportRequestMessage().setMsgId(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer.readBytes(CmppReportRequest.MSGID.getLength()).array()));
 			requestMessage.getReportRequestMessage().setStat(
@@ -144,8 +148,14 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 		
 		//clone一个消息，防止业务层对msg进行修改
 		CmppDeliverRequestMessage requestMessage = oldMsg.clone();
-		
-		List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(requestMessage.getMsg(), requestMessage.isSupportLongMsg());
+		List<LongMessageFrame> frameList = null;
+		if(requestMessage.isReport()){
+			LongMessageFrame frame = new LongMessageFrame();
+			frameList = new ArrayList<LongMessageFrame>();
+			frameList.add(frame);
+		}else{
+			frameList = LongMessageFrameHolder.INS.splitmsgcontent(requestMessage.getMsg(), requestMessage.isSupportLongMsg());
+		}
 		
 		boolean first = true;
 		for (LongMessageFrame frame : frameList) {
