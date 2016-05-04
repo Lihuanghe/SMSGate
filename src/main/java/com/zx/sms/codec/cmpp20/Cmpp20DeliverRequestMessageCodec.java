@@ -105,11 +105,7 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 			requestMessage.getReportRequestMessage().setSmscSequence(bodyBuffer.readUnsignedInt());
 		}
 
-		/** CMPP2.0 LINKID 不进行编解码 */
-		// requestMessage.setLinkid(bodyBuffer.readBytes(
-		// Cmpp20DeliverRequest.LINKID.getLength()).toString(
-		// GlobalConstance.defaultTransportCharset));
-
+		//剩下的字节全部读取
 		requestMessage.setReserved(bodyBuffer.readBytes(Cmpp20DeliverRequest.RESERVED.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 
 		ReferenceCountUtil.release(bodyBuffer);

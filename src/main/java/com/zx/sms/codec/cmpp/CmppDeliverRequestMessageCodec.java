@@ -102,11 +102,8 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 					bodyBuffer.readBytes(CmppReportRequest.DESTTERMINALID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 			requestMessage.getReportRequestMessage().setSmscSequence(bodyBuffer.readUnsignedInt());
 		}
-
-		requestMessage.setLinkid(bodyBuffer.readBytes(CmppDeliverRequest.LINKID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
-		// requestMessage.setReserved(bodyBuffer
-		// .readBytes(CmppDeliverRequest.RESERVED.getLength())
-		// .toString(GlobalConstance.defaultTransportCharset).trim());
+		//卓望发送的状态报告 少了11个字节， 剩下的字节全部读取
+			requestMessage.setLinkid(bodyBuffer.readBytes(bodyBuffer.readableBytes()).toString(GlobalConstance.defaultTransportCharset).trim());
 		
 		if (requestMessage.getRegisteredDelivery() == 0) {
 			try {
