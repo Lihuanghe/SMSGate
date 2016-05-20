@@ -64,7 +64,7 @@ public class CMPPClientEndpointConnector extends AbstractEndpointConnector {
 						logger.info("retry next host {}",hosts[idx+1]);
 						doConnect(hosts,idx+1, port);
 					}else{
-						logger.error("Connect to {} failed.",getEndpointEntity().getHost());
+						logger.error("Connect to {}:{} failed.",getEndpointEntity().getHost(),port);
 					}
 				}
 		}});

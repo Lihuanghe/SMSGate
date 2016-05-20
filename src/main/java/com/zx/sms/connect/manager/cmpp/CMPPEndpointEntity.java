@@ -104,10 +104,11 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 		this.retryWaitTimeSec = retryWaitTimeSec;
 	}
 
+	@Deprecated
 	public short getWindows() {
 		return windows;
 	}
-
+	@Deprecated
 	public void setWindows(short windows) {
 		this.windows = windows;
 	}
