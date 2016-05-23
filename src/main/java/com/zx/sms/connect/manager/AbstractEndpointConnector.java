@@ -55,7 +55,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	 */
 	private EndpointEntity endpoint;
 
-	private CircularList<Channel> channels = new CircularList<Channel>();
+	private CircularList channels = new CircularList();
 
 	public AbstractEndpointConnector(EndpointEntity endpoint) {
 		this.endpoint = endpoint;
@@ -122,7 +122,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		return conCnt.decrementAndGet();
 	}
 
-	private CircularList<Channel> getChannels() {
+	private CircularList getChannels() {
 		return channels;
 	}
 
@@ -285,15 +285,23 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			}
 		};
 	}
+	
+	public Channel[] getallChannel(){
+		return channels.getall();
+	}
 
 	/**
 	 * 循环列表，用于实现轮循算法
 	 */
-	private class CircularList<T> {
+	private class CircularList {
 		private ReadWriteLock lock = new ReentrantReadWriteLock();
-		private List<T> collection = new ArrayList<T>();
+		private List<Channel> collection = new ArrayList<Channel>();
+		
+		public Channel[] getall(){
+			return collection.toArray(new Channel[0]);
+		}
 
-		public T fetch() {
+		public Channel fetch() {
 
 			try {
 				lock.readLock().lock();
@@ -302,7 +310,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 					return null;
 
 				int idx = (int) DefaultSequenceNumberUtil.getNextAtomicValue(indexSeq, Limited);
-				T ret = collection.get(idx % size);
+				Channel ret = collection.get(idx % size);
 				// 超过65535归0
 				return ret;
 			} finally {
@@ -310,7 +318,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			}
 		}
 
-		public boolean add(T ele) {
+		public boolean add(Channel ele) {
 
 			boolean r = false;
 			try {
@@ -322,7 +330,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			return r;
 		}
 
-		public boolean remove(T ele) {
+		public boolean remove(Channel ele) {
 
 			boolean r = false;
 			try {

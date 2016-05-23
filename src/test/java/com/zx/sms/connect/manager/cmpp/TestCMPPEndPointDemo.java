@@ -31,7 +31,7 @@ public class TestCMPPEndPointDemo {
 		CMPPServerEndpointEntity server = new CMPPServerEndpointEntity();
 		server.setId("server");
 		server.setHost("127.0.0.1");
-		server.setPort(7911);
+		server.setPort(7918);
 		server.setValid(true);
 		//使用ssl加密数据流
 		server.setUseSSL(false);
@@ -43,6 +43,7 @@ public class TestCMPPEndPointDemo {
 		child.setUserName("901782");
 		child.setPassword("ICP");
 		child.setValid(true);
+
 		
 		child.setWindows((short)16);
 		child.setVersion((short)0x7F);
@@ -50,30 +51,12 @@ public class TestCMPPEndPointDemo {
 		child.setRetryWaitTimeSec((short)100);
 		child.setMaxRetryCnt((short)3);
 		child.setReSendFailMsg(true);
+
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
 		serverhandlers.add(new RecvSendDriverHandler());
 		serverhandlers.add(new MessageReceiveHandler());
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
-		
-		CMPPServerChildEndpointEntity child1 = new CMPPServerChildEndpointEntity();
-		child1.setId("10085-s2");
-		child1.setChartset(Charset.forName("utf-8"));
-		child1.setGroupName("HENAN");
-		child1.setUserName("901781");
-		child1.setPassword("ICP");
-		child1.setValid(true);
-		
-		child1.setWindows((short)16);
-		child1.setVersion((short)0x7F);
-		child1.setMaxChannels((short)20);
-		child1.setRetryWaitTimeSec((short)100);
-		child1.setMaxRetryCnt((short)3);
-		child1.setReSendFailMsg(true);
-		List<BusinessHandlerInterface> serverhandlers1 = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers1.add(new MessageReceiveHandler());
-		child1.setBusinessHandlerSet(serverhandlers1);
-		server.addchild(child1);
 
 		
 		manager.addEndpointEntity(server);

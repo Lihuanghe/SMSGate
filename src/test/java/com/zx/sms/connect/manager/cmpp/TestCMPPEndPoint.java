@@ -1,9 +1,12 @@
 package com.zx.sms.connect.manager.cmpp;
 
+import java.lang.management.ManagementFactory;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.LockSupport;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -13,6 +16,7 @@ import com.zx.sms.connect.manager.CMPPEndpointManager;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 import com.zx.sms.handler.api.gate.SessionConnectedHandler;
 import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
+import com.zx.sms.mbean.ConnState;
 /**
  *经测试，35个连接，每个连接每200/s条消息
  *lenovoX250能承担7000/s消息编码解析无压力。
@@ -53,6 +57,7 @@ public class TestCMPPEndPoint {
 		child.setRetryWaitTimeSec((short)100);
 		child.setMaxRetryCnt((short)3);
 		child.setReSendFailMsg(true);
+	
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
 		serverhandlers.add(new SessionConnectedHandler());
 		child.setBusinessHandlerSet(serverhandlers);
@@ -74,7 +79,6 @@ public class TestCMPPEndPoint {
 		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);
 		client.setReSendFailMsg(true);
-		client.setReadLimit(300);
 
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new MessageReceiveHandler());
@@ -83,6 +87,11 @@ public class TestCMPPEndPoint {
 		
 		manager.openAll();
 		//LockSupport.park();
+		 MBeanServer mserver = ManagementFactory.getPlatformMBeanServer();  
+
+        ObjectName stat = new ObjectName("com.zx.sms:name=ConnState");
+        mserver.registerMBean(new ConnState(), stat);
+        System.out.println("start.....");
 		Thread.sleep(300000);
 		CMPPEndpointManager.INS.close();
 	}

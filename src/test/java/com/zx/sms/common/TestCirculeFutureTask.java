@@ -3,10 +3,13 @@ package com.zx.sms.common;
 import io.netty.util.concurrent.Future;
 
 import java.lang.management.ManagementFactory;
+import java.util.Calendar;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.junit.Test;
 
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
@@ -14,6 +17,43 @@ import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
 
 public class TestCirculeFutureTask {
 	int cnt = 0;
+	
+	private void throwsexp(){
+		System.out.println("==" + System.currentTimeMillis());
+		int s = 3/1;
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testexp(){
+		EventLoopGroupFactory.INS.getBusiWork().scheduleWithFixedDelay(new Runnable(){
+
+			@Override
+			public void run() {
+				
+				throwsexp();
+				
+			}
+		}, 2,1, TimeUnit.SECONDS);
+		
+		EventLoopGroupFactory.INS.getBusiWork().scheduleWithFixedDelay(new Runnable(){
+
+			@Override
+			public void run() {
+				
+				System.out.println(DateFormatUtils.format(Calendar.getInstance(), "MMdd"));
+				
+			}
+		}, 2,2, TimeUnit.SECONDS);
+		
+		LockSupport.park();
+	}
+	
 	@Test
 	public void test() {
 		final Thread th = Thread.currentThread();

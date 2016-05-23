@@ -38,7 +38,7 @@ import com.zx.sms.session.cmpp.SessionState;
  */
 public class SessionConnectedHandler extends AbstractBusinessHandler {
 	private static final Logger logger = LoggerFactory.getLogger(SessionConnectedHandler.class);
-	private int totleCnt = 100;
+	private int totleCnt = 200000;
 
 	private int failcnt = 0;
 	
