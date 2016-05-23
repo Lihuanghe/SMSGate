@@ -76,8 +76,19 @@ public class SessionStateManager extends ChannelDuplexHandler {
 	 * 会话刚建立时要发送的数据
 	 */
 	private Map<Long, Message> preSend;
+	
+	public int getWaittingResp(){
+		return storeMap.size();
+	}
 
-
+	public long getReadCount(){
+		return msgReadCount;
+	}
+	
+	public long getWriteCount(){
+		return msgWriteCount;
+	}
+	
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		logger.warn("Connection closed. channel:{}", ctx.channel());
 		// 取消重试队列里的任务

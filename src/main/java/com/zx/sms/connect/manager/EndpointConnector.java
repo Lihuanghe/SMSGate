@@ -51,4 +51,5 @@ public interface EndpointConnector<T extends EndpointEntity> {
 	 */
 	public void addChannel(Channel ch);
 	public void removeChannel(Channel ch);
+	public Channel[] getallChannel();
 }
