@@ -51,7 +51,9 @@ public class ConnState implements ConnStateMBean {
 					 sb.append("->");
 				 }
 				 sb.append(ch.remoteAddress().toString() +"]");
-				 sb.append("\twaitting-resp=").append(ssm.getWaittingResp());
+				 sb.append("\tWaitting-resp=").append(ssm.getWaittingResp());
+				 sb.append("\tWriteCount=").append(ssm.getWriteCount());
+				 sb.append("\tReadCount=").append(ssm.getReadCount());
 				 sb.append("\n");
 			 }
 		 }
