@@ -3,6 +3,7 @@ package com.zx.sms.mbean;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
@@ -16,13 +17,136 @@ import javax.management.remote.JMXServiceURL;
 public abstract class AbstractJmxCommand {
 	private static final String CONNECTOR_ADDRESS = "com.sun.management.jmxremote.localConnectorAddress";
 
-	public static String getJVM() {
-		return System.getProperty("java.vm.specification.vendor");
+	private static String JAVA_HOME = System.getProperty("java.home");
+	
+	private static String JVM_SUPPLIER = System.getProperty("java.vm.specification.vendor");
+
+	private static final String CLASS_VIRTUAL_MACHINE = "com.sun.tools.attach.VirtualMachine";
+
+	private static final String CLASS_VIRTUAL_MACHINE_DESCRIPTOR = "com.sun.tools.attach.VirtualMachineDescriptor";
+
+	private static final String CLASS_JMX_REMOTE = "com.sun.management.jmxremote";
+		
+	private static  URLClassLoader classLoader;
+	
+	static {
+		
+		try {
+			classLoader = new URLClassLoader(new URL[] { getToolsJar().toURI().toURL() });
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public static boolean isSunJVM() {
-		// need to check for Oracle as that is the name for Java7 onwards.
-		return getJVM().equals("Sun Microsystems Inc.") || getJVM().startsWith("Oracle");
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static String findJMXUrlByProcessId(int pid) {
+
+		if (!isSunJVM() || null == classLoader) {
+			return "";
+		}
+
+		String connectorAddress = "";
+		
+		Object targetVm = null;
+		Method attachToVM = null;
+		Method detach = null;
+
+		try {
+
+			Class virtualMachine = Class.forName(CLASS_VIRTUAL_MACHINE, true, classLoader);
+			Class virtualMachineDescriptor = Class.forName(CLASS_VIRTUAL_MACHINE_DESCRIPTOR, true, classLoader);
+
+			Method getVMList = virtualMachine.getMethod("list", (Class[]) null);
+			attachToVM = virtualMachine.getMethod("attach", String.class);
+			detach = virtualMachine.getMethod("detach", (Class[]) null);
+			Method getAgentProperties = virtualMachine.getMethod("getAgentProperties", (Class[]) null);
+			Method getVMId = virtualMachineDescriptor.getMethod("id", (Class[]) null);
+			
+
+			List allVMs = (List) getVMList.invoke(null, (Object[]) null);
+
+			for (Object vmInstance : allVMs) {
+				String id = (String) getVMId.invoke(vmInstance, (Object[]) null);
+				if (id.equals(Integer.toString(pid))) {
+
+					try {
+                        targetVm = attachToVM.invoke(null, id);
+                    } catch (Exception e) {
+                    	e.printStackTrace();
+                    }
+
+					Properties agentProperties = (Properties) getAgentProperties.invoke(targetVm, (Object[]) null);
+					connectorAddress = agentProperties.getProperty(CONNECTOR_ADDRESS);
+					break;
+				}
+			}
+
+			if (connectorAddress == null ||"".equals(connectorAddress)) {
+				// 尝试让agent加载management-agent.jar
+				Method loadAgent = virtualMachine.getMethod("loadAgent", String.class, String.class);
+				
+				for (Object vmInstance : allVMs) {
+					String id = (String) getVMId.invoke(vmInstance, (Object[]) null);
+					if (id.equals(Integer.toString(pid))) {
+
+						targetVm = attachToVM.invoke(null, id);
+
+						File agentJar = getAgentJar();
+						if (null == agentJar) {
+							throw new IOException("Management agent Jar not found");
+						}
+
+						String agent = agentJar.getCanonicalPath();
+						loadAgent.invoke(targetVm, agent, CLASS_JMX_REMOTE);
+
+						Properties agentProperties = (Properties) getAgentProperties.invoke(targetVm, (Object[]) null);
+						connectorAddress = agentProperties.getProperty(CONNECTOR_ADDRESS);
+
+						break;
+					}
+				}
+			}
+
+		} catch (Exception ignore) {
+			System.err.println(ignore);
+		}finally {
+			if (null != targetVm && null != detach) {
+				try {
+					detach.invoke(targetVm, (Object[]) null);
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+			}
+		}
+
+		return connectorAddress;
+	}
+
+	private static File getToolsJar() {
+		String tools = JAVA_HOME + File.separator + "lib" + File.separator + "tools.jar";
+		File f = new File(tools);
+		if (!f.exists()) {
+			tools = JAVA_HOME + File.separator + ".." + File.separator + "lib" + File.separator + "tools.jar";
+			f = new File(tools);
+		}
+		return f;
+	}
+
+	private static File getAgentJar() {
+		String agent = JAVA_HOME + File.separator + "jre" + File.separator + "lib" + File.separator + "management-agent.jar";
+		File f = new File(agent);
+		if (!f.exists()) {
+			agent = JAVA_HOME + File.separator + "lib" + File.separator + "management-agent.jar";
+			f = new File(agent);
+			if (!f.exists()) {
+				return null;
+			}
+		}
+		return f;
+	}
+
+	private static boolean isSunJVM() {
+		return JVM_SUPPLIER.equals("Sun Microsystems Inc.") || JVM_SUPPLIER.startsWith("Oracle");
 	}
 
 	abstract protected void invoke(MBeanServerConnection mconn, String[] args);
@@ -30,7 +154,8 @@ public abstract class AbstractJmxCommand {
 	public void main0(String[] args) throws IOException {
 		int pid = Integer.valueOf(args[0]);
 		String connstr = findJMXUrlByProcessId(pid);
-		if (connstr != null) {
+		System.out.println("Connect to JMXUrl :"+ connstr+"\n");
+		if (connstr != null && (!"".equals(connstr))) {
 			JMXServiceURL url = new JMXServiceURL(connstr);
 			JMXConnector connector = JMXConnectorFactory.connect(url);
 			try {
@@ -42,7 +167,6 @@ public abstract class AbstractJmxCommand {
 				}else{
 					invoke(mbeanConn, new String[]{""});
 				}
-
 			} finally {
 				connector.close();
 			}
@@ -52,61 +176,4 @@ public abstract class AbstractJmxCommand {
 
 	}
 
-	/**
-	 * Finds the JMX Url for a VM by its process id
-	 *
-	 * @param pid
-	 *            The process id value of the VM to search for.
-	 *
-	 * @return the JMX Url of the VM with the given pid or null if not found.
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	protected String findJMXUrlByProcessId(int pid) {
-
-		if (isSunJVM()) {
-			try {
-				// Classes are all dynamically loaded, since they are specific
-				// to Sun VM
-				// if it fails for any reason default jmx url will be used
-
-				// tools.jar are not always included used by default class
-				// loader, so we
-				// will try to use custom loader that will try to load tools.jar
-
-				String javaHome = System.getProperty("java.home");
-				String tools = javaHome + File.separator + ".." + File.separator + "lib" + File.separator + "tools.jar";
-				URLClassLoader loader = new URLClassLoader(new URL[] { new File(tools).toURI().toURL() });
-
-				Class virtualMachine = Class.forName("com.sun.tools.attach.VirtualMachine", true, loader);
-				Class virtualMachineDescriptor = Class.forName("com.sun.tools.attach.VirtualMachineDescriptor", true, loader);
-
-				Method getVMList = virtualMachine.getMethod("list", (Class[]) null);
-				Method attachToVM = virtualMachine.getMethod("attach", String.class);
-				Method getAgentProperties = virtualMachine.getMethod("getAgentProperties", (Class[]) null);
-				Method getVMId = virtualMachineDescriptor.getMethod("id", (Class[]) null);
-
-				List allVMs = (List) getVMList.invoke(null, (Object[]) null);
-
-				for (Object vmInstance : allVMs) {
-					String id = (String) getVMId.invoke(vmInstance, (Object[]) null);
-					if (id.equals(Integer.toString(pid))) {
-
-						Object vm = attachToVM.invoke(null, id);
-
-						Properties agentProperties = (Properties) getAgentProperties.invoke(vm, (Object[]) null);
-						String connectorAddress = agentProperties.getProperty(CONNECTOR_ADDRESS);
-
-						if (connectorAddress != null) {
-							return connectorAddress;
-						} else {
-							break;
-						}
-					}
-				}
-			} catch (Exception ignore) {
-			}
-		}
-
-		return null;
-	}
 }

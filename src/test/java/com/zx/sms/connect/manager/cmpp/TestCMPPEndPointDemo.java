@@ -49,7 +49,8 @@ public class TestCMPPEndPointDemo {
 		
 		child.setWindows((short)16);
 
-		child.setVersion((short)0x7F);
+		child.setVersion((short)0x30);
+
 		child.setMaxChannels((short)20);
 		child.setRetryWaitTimeSec((short)100);
 		child.setMaxRetryCnt((short)3);
