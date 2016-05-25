@@ -36,6 +36,9 @@ public class ConnState implements ConnStateMBean {
 	private String printOne(EndpointEntity e){
 		 StringBuilder sb = new StringBuilder();
 		EndpointConnector econn = EndpointManager.INS.getEndpointConnector(e);
+		
+		if(econn == null) return ""; 
+			
 		 Channel[] carr = econn.getallChannel();
 		 if(carr!=null && carr.length>0){
 			 
