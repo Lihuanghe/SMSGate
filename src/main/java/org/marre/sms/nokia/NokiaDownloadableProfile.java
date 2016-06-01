@@ -24,7 +24,7 @@ package org.marre.sms.nokia;
 
 import org.marre.sms.SmsUserData;
 
-import java.nio.charset.StandardCharsets;
+import com.zx.sms.common.util.StandardCharsets;
 
 /**
  * Nokia Downloadable Profile

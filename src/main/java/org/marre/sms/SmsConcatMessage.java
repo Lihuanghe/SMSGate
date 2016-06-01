@@ -35,6 +35,7 @@
 package org.marre.sms;
 
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Baseclass for messages that needs to be concatenated.
@@ -48,7 +49,7 @@ import java.util.Random;
  */
 public abstract class SmsConcatMessage implements SmsMessage
 {
-    private static final Random rnd_ = new Random();
+    private static final AtomicInteger rnd_  = new AtomicInteger((new Random()).nextInt(0xffff));
 
     /**
      * Creates an empty SmsConcatMessage.
@@ -75,6 +76,10 @@ public abstract class SmsConcatMessage implements SmsMessage
      */
     public abstract SmsUdhElement[] getUdhElements();
 
+    private int nextRandom(){
+    	return rnd_.incrementAndGet()&0xff;
+    }
+    
     private SmsPdu[] createOctalPdus(SmsUdhElement[] udhElements, SmsUserData ud, int maxBytes)
     {
         int nMaxChars;
@@ -91,7 +96,7 @@ public abstract class SmsConcatMessage implements SmsMessage
         }
         else
         {
-            int refno = rnd_.nextInt(256);
+            int refno = nextRandom();
 
             // Calculate number of SMS needed
             int nSms = ud.getLength() / nMaxConcatChars;
@@ -159,7 +164,7 @@ public abstract class SmsConcatMessage implements SmsMessage
         }
         else
         {
-            int refno = rnd_.nextInt(256);
+            int refno = nextRandom();
 
             // Calculate number of SMS needed
             int nSms = (ud.getLength() / 2) / nMaxConcatChars;
@@ -229,7 +234,7 @@ public abstract class SmsConcatMessage implements SmsMessage
         }
         else
         {
-            int refno = rnd_.nextInt(256);
+            int refno = nextRandom();
             // Convert septets into a string...
             String msg = SmsPduUtil.readSeptets(ud.getData());
             

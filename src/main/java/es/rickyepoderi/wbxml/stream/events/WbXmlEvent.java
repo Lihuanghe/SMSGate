@@ -35,9 +35,10 @@
  */
 package es.rickyepoderi.wbxml.stream.events;
 
-import es.rickyepoderi.wbxml.definition.WbXmlDefinition;
-import es.rickyepoderi.wbxml.stream.WbXmlStreamReader;
 import java.io.Writer;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 import javax.xml.namespace.QName;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamConstants;
@@ -46,6 +47,9 @@ import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+
+import es.rickyepoderi.wbxml.definition.WbXmlDefinition;
+import es.rickyepoderi.wbxml.stream.WbXmlStreamReader;
 
 /**
  * <p>WbXml-Stream implementation for the XMLEvent interface. This class
@@ -257,6 +261,19 @@ public class WbXmlEvent implements XMLEvent {
     @Override
     public void writeAsEncodedUnicode(Writer writer) throws XMLStreamException {
         // nothing
+    }
+    
+    private static class EmptyIterator<E> implements Iterator<E> {
+        static final EmptyIterator<Object> EMPTY_ITERATOR
+            = new EmptyIterator();
+
+        public boolean hasNext() { return false; }
+        public E next() { throw new NoSuchElementException(); }
+        public void remove() { throw new IllegalStateException(); }
+    }
+    
+    public Iterator emptyIterator(){
+    	return EmptyIterator.EMPTY_ITERATOR;
     }
     
 }

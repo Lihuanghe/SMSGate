@@ -38,7 +38,9 @@ import com.zx.sms.session.cmpp.SessionState;
  */
 public class SessionConnectedHandler extends AbstractBusinessHandler {
 	private static final Logger logger = LoggerFactory.getLogger(SessionConnectedHandler.class);
-	private int totleCnt = 100;
+
+	private int totleCnt = 200000;
+
 
 	private int failcnt = 0;
 	
@@ -53,7 +55,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 	public void userEventTriggered(final ChannelHandlerContext ctx, Object evt) throws Exception {
 
 		if (evt == SessionState.Connect) {
-			logger.info("{}dddd",ctx.channel().isActive());
+			
 			final CMPPEndpointEntity finalentity = (CMPPEndpointEntity) getEndpointEntity();
 			final Channel ch = ctx.channel();
 			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>() {
@@ -107,7 +109,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 
 				@Override
 				public Boolean call() throws Exception{
-					int cnt = RandomUtils.nextInt() & 0x1ff;
+					int cnt = RandomUtils.nextInt() & 0x1f;
 					while(cnt-->0 && totleCnt>0) {
 						ChannelFuture future =ChannelUtil.asyncWriteToEntity(getEndpointEntity(), createTestReq(),new GenericFutureListener<ChannelFuture>() {
 							@Override
@@ -115,7 +117,9 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 								
 							}
 						});
-						
+						if(future == null){
+							break;
+						}
 						try{
 							future.sync();
 							totleCnt--;
@@ -141,7 +145,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 					}
 					return ret;
 				}
-			},0);
+			},1);
 		}
 		ctx.fireUserEventTriggered(evt);
 

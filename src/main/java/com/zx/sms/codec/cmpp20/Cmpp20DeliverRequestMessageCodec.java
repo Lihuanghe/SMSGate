@@ -10,6 +10,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import io.netty.util.ReferenceCountUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.marre.sms.SmsDcs;
@@ -87,6 +88,9 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 			frame.setMsgContentBytes(contentbytes);
 			frame.setMsgLength((short)frameLength);
 		} else {
+			if(frameLength != Cmpp20ReportRequest.DESTTERMINALID.getBodyLength()){
+				logger.warn("CmppDeliverRequestMessage20 - MsgContent length is {}. should be {}.",frameLength ,Cmpp20ReportRequest.DESTTERMINALID.getBodyLength());
+			};
 			requestMessage.setReportRequestMessage(new CmppReportRequestMessage());
 			requestMessage.getReportRequestMessage()
 					.setMsgId(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer.readBytes(Cmpp20ReportRequest.MSGID.getLength()).array()));
@@ -101,11 +105,7 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 			requestMessage.getReportRequestMessage().setSmscSequence(bodyBuffer.readUnsignedInt());
 		}
 
-		/** CMPP2.0 LINKID 不进行编解码 */
-		// requestMessage.setLinkid(bodyBuffer.readBytes(
-		// Cmpp20DeliverRequest.LINKID.getLength()).toString(
-		// GlobalConstance.defaultTransportCharset));
-
+		//剩下的字节全部读取
 		requestMessage.setReserved(bodyBuffer.readBytes(Cmpp20DeliverRequest.RESERVED.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 
 		ReferenceCountUtil.release(bodyBuffer);
@@ -147,7 +147,16 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 		}
 
 		CmppDeliverRequestMessage requestMessage = oldMsg.clone();
-		List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(requestMessage.getMsg(), requestMessage.isSupportLongMsg());
+		
+		List<LongMessageFrame> frameList = null;
+		if(requestMessage.isReport()){
+			LongMessageFrame frame = new LongMessageFrame();
+			frameList = new ArrayList<LongMessageFrame>();
+			frameList.add(frame);
+		}else{
+			frameList = LongMessageFrameHolder.INS.splitmsgcontent(requestMessage.getMsg(), requestMessage.isSupportLongMsg());
+		}
+		
 		boolean first = true;
 		for (LongMessageFrame frame : frameList) {
 			// bodyBuffer 会在CmppHeaderCodec.encode里释放

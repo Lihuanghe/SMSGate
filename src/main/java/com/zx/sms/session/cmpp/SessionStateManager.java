@@ -51,12 +51,6 @@ public class SessionStateManager extends ChannelDuplexHandler {
 	 */
 	public SessionStateManager(CMPPEndpointEntity entity, Map<Long, Message> storeMap, Map<Long, Message> preSend) {
 		this.entity = entity;
-		windowSize = entity.getWindows()<0?0:entity.getWindows();
-		if (windowSize == 0) {
-			windows = null;
-		} else {
-			windows = new AtomicInteger();
-		}
 		errlogger = LoggerFactory.getLogger("error."+entity.getId());
 		this.storeMap = storeMap;
 		this.preSend = preSend;
@@ -70,11 +64,6 @@ public class SessionStateManager extends ChannelDuplexHandler {
 	private CMPPEndpointEntity entity;
 
 	/**
-	 * 消息窗口，默认16
-	 **/
-	private final int windowSize;
-	private final AtomicInteger windows ;
-	/**
 	 * 重发队列
 	 **/
 	private final ConcurrentHashMap<Long, Entry> msgRetryMap = new ConcurrentHashMap<Long, Entry>();
@@ -87,8 +76,19 @@ public class SessionStateManager extends ChannelDuplexHandler {
 	 * 会话刚建立时要发送的数据
 	 */
 	private Map<Long, Message> preSend;
+	
+	public int getWaittingResp(){
+		return storeMap.size();
+	}
 
-
+	public long getReadCount(){
+		return msgReadCount;
+	}
+	
+	public long getWriteCount(){
+		return msgWriteCount;
+	}
+	
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		logger.warn("Connection closed. channel:{}", ctx.channel());
 		// 取消重试队列里的任务
@@ -218,32 +218,14 @@ public class SessionStateManager extends ChannelDuplexHandler {
 	 * 获取发送窗口，并且注册重试任务
 	 **/
 	private boolean writeWithWindow(final ChannelHandlerContext ctx, final Message message, final ChannelPromise promise) {
-		int acquired = 0;
+		
 		try {
-			// 获取发送窗口
-			acquired = (windows == null ? -1 : windows.get());
-			// 防止一个连接死掉，把服务挂死，这里要处理窗口不够用的情况
-			if (acquired < windowSize) {
-				//设置channel为可写
-				if(windows != null){
-					//窗口占用增加1
-					windows.getAndIncrement();
-				}
-				setUserDefinedWritability(ctx.channel(),true);
-				
-				safewrite(ctx, message, promise);
-			} else {
-				// 加入等待队列
-				promise.setFailure(new RuntimeException("send window not enough"));
-				//设置channel为不可写
-				setUserDefinedWritability(ctx.channel(),false);
-			}
-
+			safewrite(ctx, message, promise);
 		} catch (Exception e) {
 			promise.setFailure(e);
-			logger.error("windows acquire exception: ", e.getCause() != null ? e.getCause() : e);
+			logger.error("writeWithWindow: ", e.getCause() != null ? e.getCause() : e);
 		}
-		return acquired< windowSize;
+		return true;
 	}
 
 	private void scheduleRetryMsg(final ChannelHandlerContext ctx, final Message message, final ChannelPromise promise) {
@@ -320,24 +302,10 @@ public class SessionStateManager extends ChannelDuplexHandler {
 
 	private Entry cancelRetry(Message requestMsg, Channel channel) {
 		Entry entry = msgRetryMap.remove(requestMsg.getHeader().getSequenceId());
-
+	
 		if (entry != null && entry.future != null) {
 			entry.future.cancel(false);
 		}
-		if (windows != null) {
-			// 如果等窗口的队列里有任务，先发送等待的消息
-			if (channel != null && channel.isActive()) {
-
-			
-				if(windows.decrementAndGet()<0){
-					windows.set(0);
-				};
-				
-				//设置连接为可写状态
-				setUserDefinedWritability(channel, true);
-			} 
-		}
-
 		return entry;
 	}
 

@@ -34,7 +34,7 @@
  * ***** END LICENSE BLOCK ***** */
 package org.marre.mime;
 
-import java.nio.charset.StandardCharsets;
+import com.zx.sms.common.util.StandardCharsets;
 
 public final class MimeFactory
 {    

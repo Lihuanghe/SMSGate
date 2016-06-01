@@ -56,6 +56,7 @@ public class TestCmppDeliverRequestMessageCodec extends AbstractTestMessageCodec
 	@Test
 	public void testReportCodec() {
 		CmppDeliverRequestMessage msg = createTestReq("k k k ");
+		msg.setMsgContent((SmsMessage)null);
 		CmppReportRequestMessage reportRequestMessage = new CmppReportRequestMessage();
 		reportRequestMessage.setSmscSequence(0x1234L);
 		reportRequestMessage.setMsgId(new MsgId());
@@ -63,9 +64,7 @@ public class TestCmppDeliverRequestMessageCodec extends AbstractTestMessageCodec
 		reportRequestMessage.setStat("9876");
 		msg.setReportRequestMessage(reportRequestMessage);
 		msg.setRegisteredDelivery((short) 1);
-
 		test0(msg);
-
 	}
 
 	private void test0(CmppDeliverRequestMessage msg) {

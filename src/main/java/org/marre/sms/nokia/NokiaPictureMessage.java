@@ -22,7 +22,7 @@
  * ***** END LICENSE BLOCK ***** */
 package org.marre.sms.nokia;
 
-import java.nio.charset.StandardCharsets;
+import com.zx.sms.common.util.StandardCharsets;
 
 /**
  * Nokia Picture message

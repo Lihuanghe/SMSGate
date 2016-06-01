@@ -35,13 +35,15 @@
  */
 package es.rickyepoderi.wbxml.stream.events;
 
-import es.rickyepoderi.wbxml.document.WbXmlElement;
-import es.rickyepoderi.wbxml.stream.WbXmlStreamReader;
-import java.util.Collections;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.events.EndElement;
+
+import es.rickyepoderi.wbxml.document.WbXmlElement;
+import es.rickyepoderi.wbxml.stream.WbXmlStreamReader;
 
 /**
  * <p>Implementation of the EndElement event in the wbxml-stream library.</p>
@@ -88,9 +90,10 @@ public class WbXmlEndElementEvent extends WbXmlEvent implements EndElement {
      * return the empty list.
      * @return an Iterator over Namespace interfaces, or an empty iterator
      */
+    
     @Override
     public Iterator getNamespaces() {
-        return Collections.emptyIterator();
+        return emptyIterator();
     }
     
     /**

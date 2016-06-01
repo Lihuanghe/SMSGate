@@ -1,12 +1,9 @@
 package com.zx.sms.common.util;
 
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.lang.StringUtils;
 import org.marre.sms.SmsAlphabet;
 import org.marre.sms.SmsDcs;
-import org.marre.sms.SmsMsgClass;
 import org.marre.sms.SmsPduUtil;
 import org.marre.sms.SmsTextMessage;
 
