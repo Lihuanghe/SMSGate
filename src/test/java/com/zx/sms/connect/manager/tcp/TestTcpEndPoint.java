@@ -2,7 +2,7 @@ package com.zx.sms.connect.manager.tcp;
 
 import io.netty.buffer.Unpooled;
 
-import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -45,7 +45,7 @@ public class TestTcpEndPoint {
 		Thread.sleep(5000);
 		manager.getEndpointConnector(client).fetch().writeAndFlush(Unpooled.wrappedBuffer(new byte[]{1}));
 		Thread.sleep(10000);
-		 List<EndpointEntity> entities =  CMPPEndpointManager.INS.allEndPointEntity();
+		 Set<EndpointEntity> entities =  CMPPEndpointManager.INS.allEndPointEntity();
 		 for(EndpointEntity en : entities)
 		 {
 			 CMPPEndpointManager.INS.close(en);

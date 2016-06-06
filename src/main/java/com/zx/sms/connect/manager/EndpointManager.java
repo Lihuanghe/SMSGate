@@ -1,11 +1,11 @@
 package com.zx.sms.connect.manager;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +16,7 @@ public enum EndpointManager implements EndpointManagerInterface {
 	INS;
 	private static final Logger logger = LoggerFactory.getLogger(EndpointManager.class);
 
-	private List<EndpointEntity> endpoints = Collections.synchronizedList(new ArrayList<EndpointEntity>());
+	private Set<EndpointEntity> endpoints = Collections.synchronizedSet(new HashSet<EndpointEntity>());
 	
 	private ConcurrentHashMap<String, EndpointEntity> idMap = new ConcurrentHashMap<String, EndpointEntity>();
 
@@ -84,7 +84,7 @@ public enum EndpointManager implements EndpointManagerInterface {
 		}
 	}
 
-	public List<EndpointEntity> allEndPointEntity() {
+	public Set<EndpointEntity> allEndPointEntity() {
 		return endpoints;
 	}
 

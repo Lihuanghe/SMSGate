@@ -2,6 +2,7 @@ package com.zx.sms.connect.manager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
@@ -66,7 +67,7 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 	}
 
 	@Override
-	public List<EndpointEntity> allEndPointEntity() {
+	public Set<EndpointEntity> allEndPointEntity() {
 		return manager.allEndPointEntity();
 	}
 
