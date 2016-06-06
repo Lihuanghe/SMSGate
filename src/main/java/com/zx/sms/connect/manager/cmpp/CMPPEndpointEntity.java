@@ -144,37 +144,6 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((groupName == null) ? 0 : groupName.hashCode());
-		result = prime * result + ((userName == null) ? 0 : userName.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		CMPPEndpointEntity other = (CMPPEndpointEntity) obj;
-		if (groupName == null) {
-			if (other.groupName != null)
-				return false;
-		} else if (!groupName.equals(other.groupName))
-			return false;
-		if (userName == null) {
-			if (other.userName != null)
-				return false;
-		} else if (!userName.equals(other.userName))
-			return false;
-		return true;
-	}
-
-	@Override
 	public String toString() {
 		return "CMPPEndpointEntity [groupName=" + groupName + ", userName=" + userName + ", chartset=" + chartset + ", getId()=" + getId() + ", getDesc()="
 				+ getDesc() + ", getChannelType()=" + getChannelType() + ", getHost()=" + getHost() + ", getPort()=" + getPort() + ", getMaxChannels()="
