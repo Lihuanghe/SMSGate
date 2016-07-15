@@ -133,7 +133,7 @@ public class SmsDcs implements Serializable
             case 0x04: return SmsAlphabet.LATIN1;
             case 0x08: return SmsAlphabet.UCS2;
             case 0x0C: return SmsAlphabet.RESERVED;
-            default:   return null;
+            default:   return SmsAlphabet.UCS2;
             }
             
         case MESSAGE_WAITING_STORE_GSM:
@@ -147,11 +147,11 @@ public class SmsDcs implements Serializable
             {
             case 0x00: return SmsAlphabet.ASCII;
             case 0x04: return SmsAlphabet.LATIN1;
-            default:   return null;
+            default:   return SmsAlphabet.UCS2;
             }
         
         default:
-            return null;
+            return SmsAlphabet.UCS2;
         }                
     }
     
@@ -173,7 +173,7 @@ public class SmsDcs implements Serializable
         case 0xD0: return DcsGroup.MESSAGE_WAITING_STORE_GSM;
         case 0xE0: return DcsGroup.MESSAGE_WAITING_STORE_UCS2;
         case 0xF0: return DcsGroup.DATA_CODING_MESSAGE;
-        default:   return null;
+        default:   return DcsGroup.GENERAL_DATA_CODING;
         }
     }
     

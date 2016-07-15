@@ -5,6 +5,7 @@ import io.netty.buffer.Unpooled;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.marre.sms.DcsGroup;
 
 import com.zx.sms.codec.AbstractTestMessageCodec;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
@@ -14,8 +15,27 @@ public class TestMsgDataSubmitRequestDecoder2 extends AbstractTestMessageCodec<C
 	protected int getVersion() {
 		return 0x20;
 	}
-
 	@Test
+	public void testDecodedcsErr() {
+		byte[] expected = prepareMsgData();
+		//使fmt字段值
+		expected[58] = (byte)0xA8;
+		
+		byte[] actuals = new byte[expected.length];
+		ByteBuf buf = Unpooled.wrappedBuffer(expected);
+		int index = 0;
+		ch.writeInbound(buf);
+		CmppSubmitRequestMessage result = null;
+		while (null != (result = (CmppSubmitRequestMessage) ch.readInbound())) {
+			System.out.println(result);
+			ByteBuf bytebuf = Unpooled.copiedBuffer(encode(result));
+			int lenght = bytebuf.readableBytes();
+			System.arraycopy(bytebuf.array(), 0, actuals, index,lenght );
+			index = lenght;
+		}
+		Assert.assertArrayEquals(expected, actuals);
+	}
+	//@Test
 	public void testDecode() {
 		byte[] expected = prepareMsgData();
 		byte[] actuals = new byte[expected.length];
