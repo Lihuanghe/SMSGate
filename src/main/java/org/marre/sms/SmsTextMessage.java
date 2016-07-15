@@ -163,15 +163,15 @@ public class SmsTextMessage extends SmsConcatMessage implements Serializable
             break;
         case ASCII:
         case LATIN1:
-            ud = new SmsUserData(text_.getBytes(CMPPCommonUtil.switchCharset(dcs_.getAlphabet())), text_.length(), dcs_);
+            ud = new SmsUserData(text_.getBytes(CMPPCommonUtil.switchCharset(SmsAlphabet.LATIN1)), text_.length(), dcs_);
             break;
 
         case UCS2:
-            ud = new SmsUserData(text_.getBytes(CMPPCommonUtil.switchCharset(dcs_.getAlphabet())), text_.length() * 2, dcs_);
+            ud = new SmsUserData(text_.getBytes(CMPPCommonUtil.switchCharset(SmsAlphabet.UCS2)), text_.length() * 2, dcs_);
             break;
 
         default:
-            ud = null;
+            ud = new SmsUserData(text_.getBytes(CMPPCommonUtil.switchCharset(SmsAlphabet.UCS2)), text_.length() * 2, SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.UCS2, SmsMsgClass.CLASS_UNKNOWN));
             break;
         }
 
