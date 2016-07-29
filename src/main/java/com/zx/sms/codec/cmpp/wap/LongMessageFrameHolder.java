@@ -11,7 +11,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -47,6 +48,8 @@ import PduParser.NotificationInd;
 import PduParser.PduHeaders;
 import PduParser.PduParser;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.util.CMPPCommonUtil;
@@ -62,8 +65,11 @@ public enum LongMessageFrameHolder {
 
 	/**
 	 * 以服务号码+帧唯一码为key
+	 *  注意：这里使用的jvm缓存保证长短信的分片。如果是集群部署，从网关过来的长短信会随机发送到不同的主机，需要使用集群缓存，如redis,memcached来保存长短信分片。
+	 *  由于可能有短信分片丢失，造成一直不能组装完成，为防止内存泄漏，这里要使用支持过期失效的缓存。
 	 */
-	private ConcurrentHashMap<String, FrameHolder> map = new ConcurrentHashMap<String, FrameHolder>();
+	private static Cache<String, FrameHolder> cache =CacheBuilder.newBuilder().expireAfterAccess(7200, TimeUnit.SECONDS).build();
+	private static ConcurrentMap<String, FrameHolder> map = cache.asMap();
 
 	private SmsMessage generatorSmsMessage(FrameHolder fh, LongMessageFrame frame) throws NotSupportedException {
 		byte[] contents = fh.mergeAllcontent();
@@ -114,6 +120,7 @@ public enum LongMessageFrameHolder {
 		} else if ((frame.getTpudhi() & 0x01) == 1 || (frame.getTpudhi()&0x40)==0x40) {
 
 			FrameHolder fh = createFrameHolder(frame);
+			
 			// 判断是否只有一帧
 			if (fh.isComplete()) {
 
@@ -191,6 +198,10 @@ public enum LongMessageFrameHolder {
 
 		throw new NotSupportedException("Not Support LongMsg");
 	}
+	
+	private int byteToint(byte b){
+		return (int)(b&0x0ff);
+	}
 
 	private FrameHolder createFrameHolder(LongMessageFrame frame) throws NotSupportedException {
 
@@ -207,12 +218,12 @@ public enum LongMessageFrameHolder {
 				if (SmsUdhIei.CONCATENATED_8BIT.equals(udhi.udhIei)) {
 					frameKey = udhi.infoEleData[i];
 					i++;
-					frameholder = new FrameHolder(frameKey, udhi.infoEleData[i], frame.getPayloadbytes(header.headerlength), udhi.infoEleData[i + 1] - 1);
+					frameholder = new FrameHolder(frameKey, byteToint(udhi.infoEleData[i]), frame.getPayloadbytes(header.headerlength), byteToint(udhi.infoEleData[i + 1]) - 1);
 
 				} else if (SmsUdhIei.CONCATENATED_16BIT.equals(udhi.udhIei)) {
 					frameKey = (((udhi.infoEleData[i] & 0xff) << 8) | (udhi.infoEleData[i + 1] & 0xff) & 0x0ffff);
 					i += 2;
-					frameholder = new FrameHolder(frameKey, udhi.infoEleData[i], frame.getPayloadbytes(header.headerlength), udhi.infoEleData[i + 1] - 1);
+					frameholder = new FrameHolder(frameKey,byteToint( udhi.infoEleData[i]), frame.getPayloadbytes(header.headerlength), byteToint(udhi.infoEleData[i + 1]) - 1);
 				} else {
 					appudhinfo = udhi;
 				}
