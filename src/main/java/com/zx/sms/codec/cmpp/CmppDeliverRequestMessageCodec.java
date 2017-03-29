@@ -38,7 +38,7 @@ import com.zx.sms.common.util.DefaultSequenceNumberUtil;
  * @author Lihuanghe(18852780@qq.com)
  */
 public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Message, CmppDeliverRequestMessage> {
-	private final Logger logger = LoggerFactory.getLogger(CmppDeliverRequestMessageCodec.class);
+	private static final Logger logger = LoggerFactory.getLogger(CmppDeliverRequestMessageCodec.class);
 	private PacketType packetType;
 
 	/**

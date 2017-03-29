@@ -101,14 +101,21 @@ public final class Mm1Encoder
         MmsHeaderEncoder.writeHeaderXMmsTransactionId(out, headers.getTransactionId());
         MmsHeaderEncoder.writeHeaderXMmsMmsVersion(out, headers.getVersion());
 
-        if (headers.getTo() != null)
+        if(headers.getMessageId()!=null)
         {
-            MmsHeaderEncoder.writeHeaderTo(out, headers.getTo());
+        	MmsHeaderEncoder.writeHeaderMessageId(out, headers.getMessageId());
         }
+        
+        MmsHeaderEncoder.writeHeaderDate(out, headers.getDate());
         
         if (headers.getFrom() != null)
         {
             MmsHeaderEncoder.writeHeaderFrom(out, headers.getFrom());
+        }
+        
+        if (headers.getTo() != null)
+        {
+            MmsHeaderEncoder.writeHeaderTo(out, headers.getTo());
         }
         
         if (headers.getSubject() != null)

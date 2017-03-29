@@ -134,7 +134,7 @@ public final class MmsHeaderEncoder
     public static void writeHeaderDate(OutputStream os, Date date) throws IOException
     {
         WspUtil.writeShortInteger(os, MmsConstants.HEADER_ID_DATE);
-        long time = date.getTime();
+        long time = date.getTime()/1000;
         WspUtil.writeLongInteger(os, time);
     }
 
@@ -166,6 +166,12 @@ public final class MmsHeaderEncoder
     {
         WspUtil.writeShortInteger(os, MmsConstants.HEADER_ID_SUBJECT);
         MmsHeaderEncoder.writeEncodedStringValue(os, subject);
+    }
+    
+    public static void writeHeaderMessageId(OutputStream os, String message) throws IOException
+    {
+        WspUtil.writeShortInteger(os, MmsConstants.HEADER_ID_MESSAGE_ID);
+        MmsHeaderEncoder.writeEncodedStringValue(os, message);
     }
 
     public static void writeHeaderTo(OutputStream os, String receiver) throws IOException

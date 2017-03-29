@@ -700,4 +700,6 @@ public class PduHeaders {
         }
         mHeaderMap.put(field, value);
     }
+    /// M: add for saving sent time of received messages.
+    public static final int DATE_SENT                   = 0xC9;
 }
