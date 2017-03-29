@@ -3,8 +3,12 @@ package com.zx.sms.codec.mms;
 import io.netty.buffer.ByteBufUtil;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.math.RandomUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.marre.mime.MimeFactory;
@@ -34,7 +38,8 @@ public class TestMMS1RetrieveConfCodec {
 		header.setMessageId("abcdefg");
 		header.setDate(new Date());
 		MimeMultipartMixed mixedpart = new MimeMultipartMixed();
-		mixedpart.addBodyPart(MimeFactory.createTextBodyPart("abc123"));
+		long random = RandomUtils.nextLong();
+		mixedpart.addBodyPart(MimeFactory.createTextBodyPart(String.valueOf(random)));
 		
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		Mm1Encoder.writeMessageToStream(out, mixedpart, header);
@@ -43,7 +48,6 @@ public class TestMMS1RetrieveConfCodec {
 		
 		PduParser pduparser = new PduParser(out.toByteArray());
 		GenericPdu pdu = pduparser.parse();
-		System.out.println(pdu.getClass());
 		
 		RetrieveConf rc = (RetrieveConf)pdu;
 		Assert.assertEquals(rc.getDate(),header.getDate().getTime()/1000);
@@ -51,6 +55,24 @@ public class TestMMS1RetrieveConfCodec {
 		Assert.assertEquals(rc.getTo()[0].getString(),"13800138000");
 		Assert.assertEquals(new String(rc.getMessageId()),header.getMessageId());
 		Assert.assertEquals(new String(rc.getTransactionId()),header.getTransactionId());
-		Assert.assertEquals(new String(rc.getBody().getPart(0).getData()),"abc123");
+		Assert.assertEquals(new String(rc.getBody().getPart(0).getData()),String.valueOf(random));
+	}
+	@Test
+	public void testMMSFromNowSMSFile() throws IOException
+	{
+		//1.MMS是用NowSMS软件生成的MM1彩信内容。
+		InputStream in = this.getClass().getClassLoader().getResourceAsStream("1.MMS");
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		IOUtils.copy(in,out);
+		System.out.println(ByteBufUtil.hexDump(out.toByteArray()));
+		PduParser pduparser = new PduParser(out.toByteArray());
+		GenericPdu pdu = pduparser.parse();
+		RetrieveConf rc = (RetrieveConf)pdu;
+	
+		Assert.assertEquals(rc.getFrom().getString(),"100851");
+		Assert.assertEquals(new String(rc.getMessageId()),"123124411224");
+		Assert.assertEquals(new String(rc.getTransactionId()),"sdfdf");
+		Assert.assertEquals(rc.getSubject().getString(),"MMS MSG");
+		Assert.assertEquals(rc.getBody().getPartsNum(),2);
 	}
 }

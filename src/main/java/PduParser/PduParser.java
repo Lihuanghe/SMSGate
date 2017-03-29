@@ -133,7 +133,7 @@ public class PduParser {
                     && !contentTypeStr.equals(ContentType.MULTIPART_ALTERNATIVE)) {
 
                 if (contentTypeStr.equals(ContentType.TEXT_PLAIN)) {
-                    logger.warn( "Content Type is text/plain");
+                    logger.debug( "Content Type is text/plain");
 
                     PduPart theOnlyPart = new PduPart();
                     theOnlyPart.setContentType(contentType);
@@ -149,14 +149,14 @@ public class PduParser {
                     }
 
                     byte[] partData = new byte[partDataLen];
-                    logger.warn( "got part length: " + partDataLen);
+                    logger.debug( "got part length: " + partDataLen);
                     mPduDataStream.reset();
                     mPduDataStream.read(partData, 0, partDataLen);
                     String showData = new String(partData);
-                    logger.warn( "show data: " + showData);
+                    logger.debug( "show data: " + showData);
 
                     theOnlyPart.setData(partData);
-                    logger.warn( "setData finish");
+                    logger.debug( "setData finish");
                     PduBody onlyPartBody = new PduBody();
                     onlyPartBody.addPart(theOnlyPart);
                     RetrieveConf retrieveConf = null;
@@ -187,26 +187,26 @@ public class PduParser {
 	      switch (messageType) {
           case PduHeaders.MESSAGE_TYPE_SEND_REQ:
             
-        	  logger.warn( "parse: MESSAGE_TYPE_SEND_REQ");
+        	  logger.debug( "parse: MESSAGE_TYPE_SEND_REQ");
               
               SendReq sendReq = new SendReq(mHeaders, mBody);
               return sendReq;
           case PduHeaders.MESSAGE_TYPE_SEND_CONF:
-                  logger.warn( "parse: MESSAGE_TYPE_SEND_CONF");
+                  logger.debug( "parse: MESSAGE_TYPE_SEND_CONF");
               SendConf sendConf = new SendConf(mHeaders);
               return sendConf;
           case PduHeaders.MESSAGE_TYPE_NOTIFICATION_IND:
-                  logger.warn( "parse: MESSAGE_TYPE_NOTIFICATION_IND");
+                  logger.debug( "parse: MESSAGE_TYPE_NOTIFICATION_IND");
               NotificationInd notificationInd =
                   new NotificationInd(mHeaders);
               return notificationInd;
           case PduHeaders.MESSAGE_TYPE_NOTIFYRESP_IND:
-                  logger.warn( "parse: MESSAGE_TYPE_NOTIFYRESP_IND");
+                  logger.debug( "parse: MESSAGE_TYPE_NOTIFYRESP_IND");
               NotifyRespInd notifyRespInd =
                   new NotifyRespInd(mHeaders);
               return notifyRespInd;
           case PduHeaders.MESSAGE_TYPE_RETRIEVE_CONF:
-                  logger.warn( "parse: MESSAGE_TYPE_RETRIEVE_CONF");
+                  logger.debug( "parse: MESSAGE_TYPE_RETRIEVE_CONF");
               RetrieveConf retrieveConf =
                   new RetrieveConf(mHeaders, mBody);
 
@@ -239,22 +239,22 @@ public class PduParser {
               logger.warn( "Parse MESSAGE_TYPE_RETRIEVE_CONF Failed: content Type is null _2");
               return null;
           case PduHeaders.MESSAGE_TYPE_DELIVERY_IND:
-                  logger.warn( "parse: MESSAGE_TYPE_DELIVERY_IND");
+                  logger.debug( "parse: MESSAGE_TYPE_DELIVERY_IND");
               DeliveryInd deliveryInd =
                   new DeliveryInd(mHeaders);
               return deliveryInd;
           case PduHeaders.MESSAGE_TYPE_ACKNOWLEDGE_IND:
-                  logger.warn( "parse: MESSAGE_TYPE_ACKNOWLEDGE_IND");
+                  logger.debug( "parse: MESSAGE_TYPE_ACKNOWLEDGE_IND");
               AcknowledgeInd acknowledgeInd =
                   new AcknowledgeInd(mHeaders);
               return acknowledgeInd;
           case PduHeaders.MESSAGE_TYPE_READ_ORIG_IND:
-                  logger.warn( "parse: MESSAGE_TYPE_READ_ORIG_IND");
+                  logger.debug( "parse: MESSAGE_TYPE_READ_ORIG_IND");
               ReadOrigInd readOrigInd =
                   new ReadOrigInd(mHeaders);
               return readOrigInd;
           case PduHeaders.MESSAGE_TYPE_READ_REC_IND:
-                  logger.warn( "parse: MESSAGE_TYPE_READ_REC_IND");
+                  logger.debug( "parse: MESSAGE_TYPE_READ_REC_IND");
               ReadRecInd readRecInd =
                   new ReadRecInd(mHeaders);
               return readRecInd;
