@@ -34,6 +34,8 @@
  * ***** END LICENSE BLOCK ***** */
 package org.marre.mms;
 
+import java.util.Date;
+
 import org.marre.util.StringUtil;
 import org.marre.wap.mms.MmsConstants;
 
@@ -47,6 +49,8 @@ public class MmsHeaders
     protected String subject_;
     protected String from_;
     protected String to_;
+    protected String messageId_;
+    protected Date date;
     
     public MmsHeaders()
     {
@@ -111,5 +115,23 @@ public class MmsHeaders
     public void setTo(String to)
     {
         to_ = to;
-    }    
+    }
+
+	public String getMessageId() {
+		return messageId_;
+	}
+
+	public void setMessageId(String messageId_) {
+		this.messageId_ = messageId_;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}    
+    
+	
 }

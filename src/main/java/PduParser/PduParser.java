@@ -7,8 +7,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PduParser {
+	private static final Logger logger = LoggerFactory.getLogger(PduParser.class);
 	/**
 	 * The next are WAP values defined in WSP specification.
 	 */
@@ -63,7 +66,18 @@ public class PduParser {
 	 */
 	private static final String LOG_TAG = "PduParser";
 	private static final boolean DEBUG = false;
-
+    /// M: For fix bug, parse read report failed.
+    private static final int UNSIGNED_INT_LIMIT = 2;
+    /**
+	 * Log status.
+	 *
+	 * @param text
+	 *            log information
+	 */
+	private static void log(String text) {
+		logger.warn(text);
+	}
+	 
 	/**
 	 * Constructor.
 	 *
@@ -97,9 +111,69 @@ public class PduParser {
 
 		/* check mandatory header fields */
 		if (false == checkMandatoryHeader(mHeaders)) {
-			log("check mandatory headers failed!");
+			logger.warn("check mandatory headers failed!");
 			return null;
 		}
+		
+        /// M:Code analyze 003,parse mPduDataStream,if the unsigned integer is more than 2
+        /// reconstruct retrieveConf @{
+        mPduDataStream.mark(1);
+        int count = parseUnsignedInt(mPduDataStream);
+        mPduDataStream.reset();
+        if (PduHeaders.MESSAGE_TYPE_RETRIEVE_CONF == messageType && count >= UNSIGNED_INT_LIMIT) {
+            byte[] contentType = mHeaders.getTextString(PduHeaders.CONTENT_TYPE);
+            if (null == contentType) {
+            	logger.warn("Parse MESSAGE_TYPE_RETRIEVE_CONF Failed: content Type is null _0");
+                return null;
+            }
+            String contentTypeStr = new String(contentType);
+            contentTypeStr = contentTypeStr.toLowerCase();
+            if (!contentTypeStr.equals(ContentType.MULTIPART_MIXED)
+                    && !contentTypeStr.equals(ContentType.MULTIPART_RELATED)
+                    && !contentTypeStr.equals(ContentType.MULTIPART_ALTERNATIVE)) {
+
+                if (contentTypeStr.equals(ContentType.TEXT_PLAIN)) {
+                    logger.debug( "Content Type is text/plain");
+
+                    PduPart theOnlyPart = new PduPart();
+                    theOnlyPart.setContentType(contentType);
+                    theOnlyPart.setContentLocation(Long.toOctalString(
+                            System.currentTimeMillis()).getBytes());
+                    theOnlyPart.setContentId("<part1>".getBytes());
+
+                    mPduDataStream.mark(1);
+
+                    int partDataLen = 0;
+                    while (mPduDataStream.read() != -1) {
+                        partDataLen++;
+                    }
+
+                    byte[] partData = new byte[partDataLen];
+                    logger.debug( "got part length: " + partDataLen);
+                    mPduDataStream.reset();
+                    mPduDataStream.read(partData, 0, partDataLen);
+                    String showData = new String(partData);
+                    logger.debug( "show data: " + showData);
+
+                    theOnlyPart.setData(partData);
+                    logger.debug( "setData finish");
+                    PduBody onlyPartBody = new PduBody();
+                    onlyPartBody.addPart(theOnlyPart);
+                    RetrieveConf retrieveConf = null;
+                    try {
+                        retrieveConf = new RetrieveConf(mHeaders, onlyPartBody);
+                    } catch (Exception e) {
+                        logger.warn( "new RetrieveConf has exception");
+                    }
+                    if (retrieveConf == null) {
+                        logger.warn( "retrieveConf is null");
+                    }
+                    return retrieveConf;
+                }
+
+                // Here maybe we can add other content type support.
+            }
+        }
 
 		if ((PduHeaders.MESSAGE_TYPE_SEND_REQ == messageType) || (PduHeaders.MESSAGE_TYPE_RETRIEVE_CONF == messageType)) {
 			/* need to parse the parts */
@@ -110,16 +184,84 @@ public class PduParser {
 			}
 		}
 
-		switch (messageType) {
+	      switch (messageType) {
+          case PduHeaders.MESSAGE_TYPE_SEND_REQ:
+            
+        	  logger.debug( "parse: MESSAGE_TYPE_SEND_REQ");
+              
+              SendReq sendReq = new SendReq(mHeaders, mBody);
+              return sendReq;
+          case PduHeaders.MESSAGE_TYPE_SEND_CONF:
+                  logger.debug( "parse: MESSAGE_TYPE_SEND_CONF");
+              SendConf sendConf = new SendConf(mHeaders);
+              return sendConf;
+          case PduHeaders.MESSAGE_TYPE_NOTIFICATION_IND:
+                  logger.debug( "parse: MESSAGE_TYPE_NOTIFICATION_IND");
+              NotificationInd notificationInd =
+                  new NotificationInd(mHeaders);
+              return notificationInd;
+          case PduHeaders.MESSAGE_TYPE_NOTIFYRESP_IND:
+                  logger.debug( "parse: MESSAGE_TYPE_NOTIFYRESP_IND");
+              NotifyRespInd notifyRespInd =
+                  new NotifyRespInd(mHeaders);
+              return notifyRespInd;
+          case PduHeaders.MESSAGE_TYPE_RETRIEVE_CONF:
+                  logger.debug( "parse: MESSAGE_TYPE_RETRIEVE_CONF");
+              RetrieveConf retrieveConf =
+                  new RetrieveConf(mHeaders, mBody);
 
-		case PduHeaders.MESSAGE_TYPE_NOTIFICATION_IND:
-			NotificationInd notificationInd = new NotificationInd(mHeaders);
-			return notificationInd;
-
-		default:
-			;
-			return null;
-		}
+              byte[] contentType = retrieveConf.getContentType();
+              if (null == contentType) {
+                  logger.warn( "Parse MESSAGE_TYPE_RETRIEVE_CONF Failed: content Type is null _1");
+                  return null;
+              }
+              String ctTypeStr = new String(contentType);
+              /// M:Code analyze 004,make the string into lowercase,matching the content type @{
+              ctTypeStr = ctTypeStr.toLowerCase();
+              /// @}
+              if (ctTypeStr.equals(ContentType.MULTIPART_MIXED)
+                      || ctTypeStr.equals(ContentType.MULTIPART_RELATED)
+                      || ctTypeStr.equals(ContentType.MULTIPART_ALTERNATIVE)
+                      /// M:Code analyze 005,add a new content type text/plain
+                      || ctTypeStr.equals(ContentType.TEXT_PLAIN)) {
+                  // The MMS content type must be "application/vnd.wap.multipart.mixed"
+                  // or "application/vnd.wap.multipart.related"
+                  // or "application/vnd.wap.multipart.alternative"
+                  return retrieveConf;
+              } else if (ctTypeStr.equals(ContentType.MULTIPART_ALTERNATIVE)) {
+                  // "application/vnd.wap.multipart.alternative"
+                  // should take only the first part.
+                  PduPart firstPart = mBody.getPart(0);
+                  mBody.removeAll();
+                  mBody.addPart(0, firstPart);
+                  return retrieveConf;
+              }
+              logger.warn( "Parse MESSAGE_TYPE_RETRIEVE_CONF Failed: content Type is null _2");
+              return null;
+          case PduHeaders.MESSAGE_TYPE_DELIVERY_IND:
+                  logger.debug( "parse: MESSAGE_TYPE_DELIVERY_IND");
+              DeliveryInd deliveryInd =
+                  new DeliveryInd(mHeaders);
+              return deliveryInd;
+          case PduHeaders.MESSAGE_TYPE_ACKNOWLEDGE_IND:
+                  logger.debug( "parse: MESSAGE_TYPE_ACKNOWLEDGE_IND");
+              AcknowledgeInd acknowledgeInd =
+                  new AcknowledgeInd(mHeaders);
+              return acknowledgeInd;
+          case PduHeaders.MESSAGE_TYPE_READ_ORIG_IND:
+                  logger.debug( "parse: MESSAGE_TYPE_READ_ORIG_IND");
+              ReadOrigInd readOrigInd =
+                  new ReadOrigInd(mHeaders);
+              return readOrigInd;
+          case PduHeaders.MESSAGE_TYPE_READ_REC_IND:
+                  logger.debug( "parse: MESSAGE_TYPE_READ_REC_IND");
+              ReadRecInd readRecInd =
+                  new ReadRecInd(mHeaders);
+              return readRecInd;
+          default:
+        	  logger.warn("Parser doesn't support this message type in this version!");
+          return null;
+      }
 	}
 
 	/**
@@ -732,7 +874,7 @@ public class PduParser {
 						}
 					}
 					if (null == partData) {
-						log("Decode part data error!");
+						logger.warn("Decode part data error!");
 						return null;
 					}
 					part.setData(partData);
@@ -750,16 +892,6 @@ public class PduParser {
 		}
 
 		return body;
-	}
-
-	/**
-	 * Log status.
-	 *
-	 * @param text
-	 *            log information
-	 */
-	private static void log(String text) {
-
 	}
 
 	/**

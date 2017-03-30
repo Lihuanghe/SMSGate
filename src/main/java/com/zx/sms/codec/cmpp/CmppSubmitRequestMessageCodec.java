@@ -37,7 +37,7 @@ import com.zx.sms.common.util.MsgId;
  * @author Lihuanghe(18852780@qq.com)
  */
 public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message, CmppSubmitRequestMessage> {
-	private final Logger logger = LoggerFactory.getLogger(CmppSubmitRequestMessageCodec.class);
+	private final static Logger logger = LoggerFactory.getLogger(CmppSubmitRequestMessageCodec.class);
 	private PacketType packetType;
 
 	/**
