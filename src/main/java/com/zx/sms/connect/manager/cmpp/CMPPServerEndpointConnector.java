@@ -3,28 +3,22 @@ package com.zx.sms.connect.manager.cmpp;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
-import io.netty.handler.timeout.IdleStateHandler;
-
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.AbstractEndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.connect.manager.ServerEndpoint;
-import com.zx.sms.session.cmpp.SessionLoginManager;
 /**
  *@author Lihuanghe(18852780@qq.com)
  */
@@ -41,7 +35,7 @@ public class CMPPServerEndpointConnector extends AbstractEndpointConnector {
 	}
 
 	@Override
-	public void open() throws Exception {
+	public ChannelFuture open() throws Exception {
 		logger.debug("Open Entity {}" ,getEndpointEntity() );
 		ChannelFuture future = null;
 
@@ -51,7 +45,7 @@ public class CMPPServerEndpointConnector extends AbstractEndpointConnector {
 			future = bootstrap.bind(getEndpointEntity().getHost(), getEndpointEntity().getPort()).sync();
 
 		acceptorChannel = future.channel();
-
+		return future;
 	}
 
 	@Override
@@ -66,7 +60,7 @@ public class CMPPServerEndpointConnector extends AbstractEndpointConnector {
 	protected SslContext createSslCtx() {
 		try{
 			 SelfSignedCertificate ssc = new SelfSignedCertificate();
-			 return SslContext.newServerContext(ssc.certificate(), ssc.privateKey());
+			return SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
 		}catch(Exception ex){
 			ex.printStackTrace();
 			return null;

@@ -1,14 +1,7 @@
 package com.zx.sms.connect.manager;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.socket.SocketChannel;
-
-import java.util.Map;
-import java.util.Queue;
-
-import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
+import io.netty.channel.ChannelFuture;
 
 /**
  * @author Lihuanghe(18852780@qq.com)
@@ -25,7 +18,7 @@ public interface EndpointConnector<T extends EndpointEntity> {
 	/**
 	 *打开一个端口 
 	 */
-	public void open() throws Exception;
+	public ChannelFuture open() throws Exception;
 	
 	/**
 	 * 关闭一个连接
