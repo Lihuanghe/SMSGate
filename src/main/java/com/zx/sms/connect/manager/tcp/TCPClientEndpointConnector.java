@@ -42,7 +42,7 @@ public class TCPClientEndpointConnector extends AbstractEndpointConnector  {
 	}
 
 	@Override
-	public void open() throws Exception {
+	public ChannelFuture open() throws Exception {
 
 		ChannelFuture future = bootstrap.connect(getEndpointEntity().getHost(), getEndpointEntity().getPort());
 
@@ -60,7 +60,7 @@ public class TCPClientEndpointConnector extends AbstractEndpointConnector  {
 			
 			e.printStackTrace();
 		}
-
+		return future;
 	}
 
 

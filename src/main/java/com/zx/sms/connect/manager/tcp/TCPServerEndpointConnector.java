@@ -45,7 +45,7 @@ public class TCPServerEndpointConnector extends AbstractEndpointConnector {
 	}
 
 	@Override
-	public void open() throws Exception {
+	public ChannelFuture open() throws Exception {
 		
 		ChannelFuture future = null;
 
@@ -55,6 +55,7 @@ public class TCPServerEndpointConnector extends AbstractEndpointConnector {
 			future = bootstrap.bind(getEndpointEntity().getHost(), getEndpointEntity().getPort()).sync();
 
 		acceptorChannel = future.channel();
+		return future;
 	}
 
 

@@ -41,7 +41,7 @@ public class TestCMPPEndPoint {
 		server.setPort(7891);
 		server.setValid(true);
 		//使用ssl加密数据流
-		server.setUseSSL(false);
+		server.setUseSSL(true);
 		
 		CMPPServerChildEndpointEntity child = new CMPPServerChildEndpointEntity();
 		child.setId("child");
@@ -50,13 +50,13 @@ public class TestCMPPEndPoint {
 		child.setUserName("901782");
 		child.setPassword("ICP");
 		child.setValid(true);
-		
-		child.setWindows((short)1);
-		child.setVersion((short)0x30);
+		child.setWindows((short)16);
+		child.setVersion((short)0x20);
+
 		child.setMaxChannels((short)20);
 		child.setRetryWaitTimeSec((short)100);
 		child.setMaxRetryCnt((short)3);
-		child.setReSendFailMsg(true);
+		child.setReSendFailMsg(false);
 	
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
 		serverhandlers.add(new SessionConnectedHandler());
@@ -74,11 +74,13 @@ public class TestCMPPEndPoint {
 		client.setGroupName("test");
 		client.setUserName("901782");
 		client.setPassword("ICP");
-		client.setWindows((short)1);
-		client.setVersion((short)0x30);
+
+
+		client.setWindows((short)16);
+		client.setVersion((short)0x20);
 		client.setRetryWaitTimeSec((short)100);
-		client.setUseSSL(false);
-		client.setReSendFailMsg(true);
+		client.setUseSSL(true);
+		client.setReSendFailMsg(false);
 
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new MessageReceiveHandler());

@@ -7,8 +7,8 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import org.apache.commons.lang.StringUtils;
@@ -39,19 +39,19 @@ public class CMPPClientEndpointConnector extends AbstractEndpointConnector {
 	}
 	
 	@Override
-	public void open() throws Exception {
+	public ChannelFuture open() throws Exception {
 		String host = getEndpointEntity().getHost();
 		if(StringUtils.isBlank(host)){
 			logger.error("host is blank");
-			return;
+			return null;
 		}
-		doConnect(host.split(","),0,getEndpointEntity().getPort());
+		return doConnect(host.split(","),0,getEndpointEntity().getPort());
 	}
 	
-	private void doConnect(final String[] hosts,final int idx ,final int port){
+	private ChannelFuture doConnect(final String[] hosts,final int idx ,final int port){
 		if(idx>=hosts.length){
 			logger.error("hosts.length is {} ,but idx is {}.",hosts.length,idx);
-			return;
+			return null;
 		}
 		ChannelFuture future = bootstrap.connect(hosts[idx],port);
 		
@@ -68,6 +68,7 @@ public class CMPPClientEndpointConnector extends AbstractEndpointConnector {
 					}
 				}
 		}});
+		return future;
 	}
 
 	
@@ -75,7 +76,7 @@ public class CMPPClientEndpointConnector extends AbstractEndpointConnector {
 	protected SslContext createSslCtx() {
 	
 		try{
-			return SslContext.newClientContext(InsecureTrustManagerFactory.INSTANCE);
+			return SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
 		}catch(Exception ex){
 			ex.printStackTrace();
 			return null;
