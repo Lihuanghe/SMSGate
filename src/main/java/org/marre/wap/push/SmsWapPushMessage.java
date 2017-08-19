@@ -63,7 +63,7 @@ public class SmsWapPushMessage extends SmsPortAddressedMessage implements Serial
 	 * 
 	 */
 	private static final long serialVersionUID = 3377585301993184604L;
-	protected WspEncodingVersion wspEncodingVersion_ = WspEncodingVersion.VERSION_1_2;
+	protected WspEncodingVersion wspEncodingVersion_ = WspEncodingVersion.VERSION_1_3;
     protected transient MimeBodyPart pushMsg_;
     private WbxmlDocument wbxml;
         
@@ -140,7 +140,7 @@ public class SmsWapPushMessage extends SmsPortAddressedMessage implements Serial
     
     public SmsUserData getUserData()
     {
-        WapMimeEncoder wapMimeEncoder = new WapMimeEncoder(WspEncodingVersion.VERSION_1_2);
+        WapMimeEncoder wapMimeEncoder = new WapMimeEncoder(WspEncodingVersion.VERSION_1_3);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         try

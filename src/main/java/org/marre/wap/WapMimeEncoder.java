@@ -56,7 +56,7 @@ public class WapMimeEncoder implements MimeEncoder
 
     public WapMimeEncoder()
     {
-        this(WspEncodingVersion.VERSION_1_2);
+        this(WspEncodingVersion.VERSION_1_3);
     }
     
     public WapMimeEncoder(WspEncodingVersion wspEncodingVersion)

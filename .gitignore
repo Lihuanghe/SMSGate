@@ -12,6 +12,7 @@
 /bin/
 /bdb
 /logs
+/test-output
 jdbc.properties
 
 *.class

@@ -1,6 +1,8 @@
 package com.zx.sms.codec.mms;
 
 import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.Unpooled;
+import io.netty.buffer.UnpooledByteBufAllocator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,6 +13,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.marre.mime.MimeBodyPart;
 import org.marre.mime.MimeFactory;
 import org.marre.mime.MimeMultipartMixed;
 import org.marre.mms.MmsException;
@@ -39,12 +42,15 @@ public class TestMMS1RetrieveConfCodec {
 		header.setDate(new Date());
 		MimeMultipartMixed mixedpart = new MimeMultipartMixed();
 		long random = RandomUtils.nextLong();
-		mixedpart.addBodyPart(MimeFactory.createTextBodyPart(String.valueOf(random)));
+		MimeBodyPart part = MimeFactory.createTextBodyPart(String.valueOf(random));
+		part.setContentId("<1.txt>");
+		part.setContentLocation("1.txt");
+		mixedpart.addBodyPart(part);
 		
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		Mm1Encoder.writeMessageToStream(out, mixedpart, header);
 		
-		System.out.println(ByteBufUtil.hexDump(out.toByteArray()));
+		System.out.println(ByteBufUtil.prettyHexDump(Unpooled.wrappedBuffer(out.toByteArray())));
 		
 		PduParser pduparser = new PduParser(out.toByteArray());
 		GenericPdu pdu = pduparser.parse();
@@ -55,6 +61,8 @@ public class TestMMS1RetrieveConfCodec {
 		Assert.assertEquals(rc.getTo()[0].getString(),"13800138000");
 		Assert.assertEquals(new String(rc.getMessageId()),header.getMessageId());
 		Assert.assertEquals(new String(rc.getTransactionId()),header.getTransactionId());
+		Assert.assertEquals(new String(rc.getBody().getPart(0).getContentId()),"<1.txt>");
+		Assert.assertEquals(new String(rc.getBody().getPart(0).getContentLocation()),"1.txt");
 		Assert.assertEquals(new String(rc.getBody().getPart(0).getData()),String.valueOf(random));
 	}
 	@Test
@@ -74,5 +82,6 @@ public class TestMMS1RetrieveConfCodec {
 		Assert.assertEquals(new String(rc.getTransactionId()),"sdfdf");
 		Assert.assertEquals(rc.getSubject().getString(),"MMS MSG");
 		Assert.assertEquals(rc.getBody().getPartsNum(),2);
+		Assert.assertEquals(new String(rc.getBody().getPartByContentId("<1.smil>").getContentLocation()),"1.smil");
 	}
 }

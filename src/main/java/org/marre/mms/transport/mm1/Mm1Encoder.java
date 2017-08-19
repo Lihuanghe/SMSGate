@@ -56,7 +56,7 @@ import org.marre.wap.mms.MmsHeaderEncoder;
  */
 public final class Mm1Encoder
 {
-    private static final WspEncodingVersion wspEncodingVersion_ = WspEncodingVersion.VERSION_1_2;
+    private static final WspEncodingVersion wspEncodingVersion_ = WspEncodingVersion.VERSION_1_3;
 
     private Mm1Encoder()
     {
