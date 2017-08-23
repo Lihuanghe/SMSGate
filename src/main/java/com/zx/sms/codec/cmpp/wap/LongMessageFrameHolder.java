@@ -79,9 +79,9 @@ public enum LongMessageFrameHolder {
 			return CMPPCommonUtil.buildTextMessage(contents, frame.getMsgfmt());
 		} else {
 			if (SmsUdhIei.APP_PORT_16BIT.equals(udheader.udhIei)) {
-				// 2948 wap_push
+				// 2948 wap_push  0x0B84
 				int destport = (((udheader.infoEleData[0] & 0xff) << 8) | (udheader.infoEleData[1] & 0xff)) & 0x0ffff;
-				// 9200 wap-wsp
+				// 9200 wap-wsp   0x23f0
 				int srcport = (((udheader.infoEleData[2] & 0xff) << 8) | (udheader.infoEleData[3] & 0xff)) & 0x0ffff;
 				if (destport == SmsPort.WAP_PUSH.getPort() && srcport == SmsPort.WAP_WSP.getPort()) {
 					return parseWapPdu(contents);
