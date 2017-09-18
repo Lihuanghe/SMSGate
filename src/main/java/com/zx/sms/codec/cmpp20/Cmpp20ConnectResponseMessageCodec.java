@@ -48,7 +48,7 @@ public class Cmpp20ConnectResponseMessageCodec extends MessageToMessageCodec<Mes
 		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
 
 		responseMessage.setStatus(bodyBuffer.readUnsignedByte());
-		responseMessage.setAuthenticatorISMG(toArray(bodyBuffer.readBytes(Cmpp20ConnectResponse.AUTHENTICATORISMG.getLength())));
+		responseMessage.setAuthenticatorISMG(toArray(bodyBuffer,Cmpp20ConnectResponse.AUTHENTICATORISMG.getLength()));
 		responseMessage.setVersion(bodyBuffer.readUnsignedByte());
 		
 		ReferenceCountUtil.release(bodyBuffer);
@@ -65,7 +65,7 @@ public class Cmpp20ConnectResponseMessageCodec extends MessageToMessageCodec<Mes
 		bodyBuffer.writeBytes(msg.getAuthenticatorISMG());
 		bodyBuffer.writeByte(msg.getVersion());
 
-		msg.setBodyBuffer(toArray(bodyBuffer));
+		msg.setBodyBuffer(toArray(bodyBuffer,bodyBuffer.readableBytes()));
 		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);

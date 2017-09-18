@@ -66,17 +66,16 @@ public class Cmpp7FDeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 		CmppDeliverRequestMessage requestMessage = new CmppDeliverRequestMessage(msg.getHeader());
 
 		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
-		requestMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer.readBytes(CmppDeliverRequest.MSGID.getLength()))));
-		requestMessage.setDestId(bodyBuffer.readBytes(CmppDeliverRequest.DESTID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
-		requestMessage.setServiceid(bodyBuffer.readBytes(CmppDeliverRequest.SERVICEID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer,CmppDeliverRequest.MSGID.getLength())));
+		requestMessage.setDestId(bodyBuffer.readCharSequence(CmppDeliverRequest.DESTID.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
+		requestMessage.setServiceid(bodyBuffer.readCharSequence(CmppDeliverRequest.SERVICEID.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 
 		LongMessageFrame frame = new LongMessageFrame();
 		frame.setTppid(bodyBuffer.readUnsignedByte());
 		frame.setTpudhi(bodyBuffer.readUnsignedByte());
 		frame.setMsgfmt(new SmsDcs((byte)bodyBuffer.readUnsignedByte()));
 
-		requestMessage.setSrcterminalId(bodyBuffer.readBytes(CmppDeliverRequest.SRCTERMINALID.getLength()).toString(GlobalConstance.defaultTransportCharset)
-				.trim());
+		requestMessage.setSrcterminalId(bodyBuffer.readCharSequence(CmppDeliverRequest.SRCTERMINALID.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 		requestMessage.setSrcterminalType(bodyBuffer.readUnsignedByte());
 		requestMessage.setRegisteredDelivery(bodyBuffer.readUnsignedByte());
 		
@@ -89,19 +88,19 @@ public class Cmpp7FDeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 			frame.setMsgLength((short)frameLength);
 		} else {
 			requestMessage.setReportRequestMessage(new CmppReportRequestMessage());
-			requestMessage.getReportRequestMessage().setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer.readBytes(CmppReportRequest.MSGID.getLength()))));
+			requestMessage.getReportRequestMessage().setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer,CmppReportRequest.MSGID.getLength())));
 			requestMessage.getReportRequestMessage().setStat(
-					bodyBuffer.readBytes(CmppReportRequest.STAT.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+					bodyBuffer.readCharSequence(CmppReportRequest.STAT.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 			requestMessage.getReportRequestMessage().setSubmitTime(
-					bodyBuffer.readBytes(CmppReportRequest.SUBMITTIME.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+					bodyBuffer.readCharSequence(CmppReportRequest.SUBMITTIME.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 			requestMessage.getReportRequestMessage().setDoneTime(
-					bodyBuffer.readBytes(CmppReportRequest.DONETIME.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+					bodyBuffer.readCharSequence(CmppReportRequest.DONETIME.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 			requestMessage.getReportRequestMessage().setDestterminalId(
-					bodyBuffer.readBytes(CmppReportRequest.DESTTERMINALID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+					bodyBuffer.readCharSequence(CmppReportRequest.DESTTERMINALID.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 			requestMessage.getReportRequestMessage().setSmscSequence(bodyBuffer.readUnsignedInt());
 		}
 
-		requestMessage.setLinkid(bodyBuffer.readBytes(CmppDeliverRequest.LINKID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setLinkid(bodyBuffer.readCharSequence(CmppDeliverRequest.LINKID.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 		//在线公司自定义的字段
 		int attach = bodyBuffer.readInt();
 		if(attach != 0 ){

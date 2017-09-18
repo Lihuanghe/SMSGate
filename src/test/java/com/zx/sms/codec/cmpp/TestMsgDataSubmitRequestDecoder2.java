@@ -31,7 +31,7 @@ public class TestMsgDataSubmitRequestDecoder2 extends AbstractTestMessageCodec<C
 			System.out.println(result);
 			ByteBuf bytebuf = Unpooled.copiedBuffer(encode(result));
 			int lenght = bytebuf.readableBytes();
-			System.arraycopy(toArray(bytebuf), 0, actuals, index,lenght );
+			System.arraycopy(toArray(bytebuf,bytebuf.readableBytes()), 0, actuals, index,lenght );
 			index = lenght;
 		}
 		Assert.assertArrayEquals(expected, actuals);
@@ -48,7 +48,7 @@ public class TestMsgDataSubmitRequestDecoder2 extends AbstractTestMessageCodec<C
 			System.out.println(result);
 			ByteBuf bytebuf = Unpooled.copiedBuffer(encode(result));
 			int lenght = bytebuf.readableBytes();
-			System.arraycopy(toArray(bytebuf), 0, actuals, index,lenght );
+			System.arraycopy(toArray(bytebuf,bytebuf.readableBytes()), 0, actuals, index,lenght );
 			index = lenght;
 		}
 		Assert.assertArrayEquals(expected, actuals);

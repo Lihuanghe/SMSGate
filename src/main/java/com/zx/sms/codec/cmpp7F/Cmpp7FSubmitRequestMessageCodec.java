@@ -65,7 +65,7 @@ public class Cmpp7FSubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 
 		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
 
-		requestMessage.setMsgid(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer.readBytes(CmppSubmitRequest.MSGID.getLength()))));
+		requestMessage.setMsgid(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer,CmppSubmitRequest.MSGID.getLength())));
 
 		LongMessageFrame frame = new LongMessageFrame();
 
@@ -74,11 +74,10 @@ public class Cmpp7FSubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 
 		requestMessage.setRegisteredDelivery(bodyBuffer.readUnsignedByte());
 		requestMessage.setMsglevel(bodyBuffer.readUnsignedByte());
-		requestMessage.setServiceId(bodyBuffer.readBytes(CmppSubmitRequest.SERVICEID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setServiceId(bodyBuffer.readCharSequence(CmppSubmitRequest.SERVICEID.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 		requestMessage.setFeeUserType(bodyBuffer.readUnsignedByte());
 
-		requestMessage.setFeeterminalId(bodyBuffer.readBytes(CmppSubmitRequest.FEETERMINALID.getLength()).toString(GlobalConstance.defaultTransportCharset)
-				.trim());
+		requestMessage.setFeeterminalId(bodyBuffer.readCharSequence(CmppSubmitRequest.FEETERMINALID.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 
 		requestMessage.setFeeterminaltype(bodyBuffer.readUnsignedByte());
 
@@ -86,22 +85,22 @@ public class Cmpp7FSubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 		frame.setTpudhi(bodyBuffer.readUnsignedByte());
 		frame.setMsgfmt(new SmsDcs((byte)bodyBuffer.readUnsignedByte()));
 
-		requestMessage.setMsgsrc(bodyBuffer.readBytes(CmppSubmitRequest.MSGSRC.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setMsgsrc(bodyBuffer.readCharSequence(CmppSubmitRequest.MSGSRC.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 
-		requestMessage.setFeeType(bodyBuffer.readBytes(CmppSubmitRequest.FEETYPE.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setFeeType(bodyBuffer.readCharSequence(CmppSubmitRequest.FEETYPE.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 
-		requestMessage.setFeeCode(bodyBuffer.readBytes(CmppSubmitRequest.FEECODE.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setFeeCode(bodyBuffer.readCharSequence(CmppSubmitRequest.FEECODE.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 
-		requestMessage.setValIdTime(bodyBuffer.readBytes(CmppSubmitRequest.VALIDTIME.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setValIdTime(bodyBuffer.readCharSequence(CmppSubmitRequest.VALIDTIME.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 
-		requestMessage.setAtTime(bodyBuffer.readBytes(CmppSubmitRequest.ATTIME.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setAtTime(bodyBuffer.readCharSequence(CmppSubmitRequest.ATTIME.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 
-		requestMessage.setSrcId(bodyBuffer.readBytes(CmppSubmitRequest.SRCID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setSrcId(bodyBuffer.readCharSequence(CmppSubmitRequest.SRCID.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 
 		requestMessage.setDestUsrtl(bodyBuffer.readUnsignedByte());
 		String[] destTermId = new String[requestMessage.getDestUsrtl()];
 		for (int i = 0; i < requestMessage.getDestUsrtl(); i++) {
-			destTermId[i] = bodyBuffer.readBytes(CmppSubmitRequest.DESTTERMINALID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim();
+			destTermId[i] = bodyBuffer.readCharSequence(CmppSubmitRequest.DESTTERMINALID.getLength(),GlobalConstance.defaultTransportCharset).toString().trim();
 		}
 		requestMessage.setDestterminalId(destTermId);
 
@@ -114,7 +113,7 @@ public class Cmpp7FSubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 		frame.setMsgContentBytes(contentbytes);
 		frame.setMsgLength((short)msgLength);
 
-		requestMessage.setLinkID(bodyBuffer.readBytes(CmppSubmitRequest.LINKID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setLinkID(bodyBuffer.readCharSequence(CmppSubmitRequest.LINKID.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 
 		//在线公司自定义的字段
 		int attach = bodyBuffer.readInt();

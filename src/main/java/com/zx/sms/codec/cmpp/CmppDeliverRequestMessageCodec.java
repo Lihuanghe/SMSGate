@@ -32,6 +32,7 @@ import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
+import com.zx.sms.common.util.NettyByteBufUtil;
 
 import static com.zx.sms.common.util.NettyByteBufUtil.*;
 /**
@@ -66,17 +67,17 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 		CmppDeliverRequestMessage requestMessage = new CmppDeliverRequestMessage(msg.getHeader());
 
 		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
-		requestMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer.readBytes(CmppDeliverRequest.MSGID.getLength()))));
-		requestMessage.setDestId(bodyBuffer.readBytes(CmppDeliverRequest.DESTID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
-		requestMessage.setServiceid(bodyBuffer.readBytes(CmppDeliverRequest.SERVICEID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer,CmppDeliverRequest.MSGID.getLength())));
+		requestMessage.setDestId(bodyBuffer.readCharSequence(CmppDeliverRequest.DESTID.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
+		requestMessage.setServiceid(bodyBuffer.readCharSequence(CmppDeliverRequest.SERVICEID.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 
 		LongMessageFrame frame = new LongMessageFrame();
 		frame.setTppid(bodyBuffer.readUnsignedByte());
 		frame.setTpudhi(bodyBuffer.readUnsignedByte());
 		frame.setMsgfmt(new SmsDcs((byte)bodyBuffer.readUnsignedByte()));
 
-		requestMessage.setSrcterminalId(bodyBuffer.readBytes(CmppDeliverRequest.SRCTERMINALID.getLength()).toString(GlobalConstance.defaultTransportCharset)
-				.trim());
+		requestMessage.setSrcterminalId(bodyBuffer.readCharSequence(CmppDeliverRequest.SRCTERMINALID.getLength(),GlobalConstance.defaultTransportCharset)
+				.toString().trim());
 		requestMessage.setSrcterminalType(bodyBuffer.readUnsignedByte());
 		requestMessage.setRegisteredDelivery(bodyBuffer.readUnsignedByte());
 		
@@ -92,19 +93,19 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 				logger.warn("CmppDeliverRequestMessage - MsgContent length is {}. should be {}.",frameLength,CmppReportRequest.DESTTERMINALID.getBodyLength());
 			};
 			requestMessage.setReportRequestMessage(new CmppReportRequestMessage());
-			requestMessage.getReportRequestMessage().setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer.readBytes(CmppReportRequest.MSGID.getLength()))));
+			requestMessage.getReportRequestMessage().setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer,CmppReportRequest.MSGID.getLength())));
 			requestMessage.getReportRequestMessage().setStat(
-					bodyBuffer.readBytes(CmppReportRequest.STAT.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+					bodyBuffer.readCharSequence(CmppReportRequest.STAT.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 			requestMessage.getReportRequestMessage().setSubmitTime(
-					bodyBuffer.readBytes(CmppReportRequest.SUBMITTIME.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+					bodyBuffer.readCharSequence(CmppReportRequest.SUBMITTIME.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 			requestMessage.getReportRequestMessage().setDoneTime(
-					bodyBuffer.readBytes(CmppReportRequest.DONETIME.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+					bodyBuffer.readCharSequence(CmppReportRequest.DONETIME.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 			requestMessage.getReportRequestMessage().setDestterminalId(
-					bodyBuffer.readBytes(CmppReportRequest.DESTTERMINALID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+					bodyBuffer.readCharSequence(CmppReportRequest.DESTTERMINALID.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 			requestMessage.getReportRequestMessage().setSmscSequence(bodyBuffer.readUnsignedInt());
 		}
 		//卓望发送的状态报告 少了11个字节， 剩下的字节全部读取
-			requestMessage.setLinkid(bodyBuffer.readBytes(bodyBuffer.readableBytes()).toString(GlobalConstance.defaultTransportCharset).trim());
+			requestMessage.setLinkid(bodyBuffer.readCharSequence(bodyBuffer.readableBytes(),GlobalConstance.defaultTransportCharset).toString().trim());
 		
 		if (requestMessage.getRegisteredDelivery() == 0) {
 			try {

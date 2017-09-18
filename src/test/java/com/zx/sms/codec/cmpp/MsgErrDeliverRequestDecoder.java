@@ -49,7 +49,7 @@ public class MsgErrDeliverRequestDecoder extends AbstractTestMessageCodec<CmppDe
 			ByteBuf bytebuf = Unpooled.copiedBuffer(encode(result));
 			int length = bytebuf.readableBytes();
 			Assert.assertEquals(expected.length+headerLength, length);
-			System.arraycopy(toArray(bytebuf), 0, actuals, index,length );
+			System.arraycopy(toArray(bytebuf,bytebuf.readableBytes()), 0, actuals, index,length );
 			index = length;
 			byte[] deleteheader = new byte[expected.length];
 			System.arraycopy(actuals, 12, deleteheader, 0,expected.length);

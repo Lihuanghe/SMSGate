@@ -1,5 +1,6 @@
 package com.zx.sms.codec.cmpp;
 
+import static com.zx.sms.common.util.NettyByteBufUtil.toArray;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -8,7 +9,6 @@ import io.netty.util.ReferenceCountUtil;
 
 import java.util.List;
 
-import com.google.common.primitives.Bytes;
 import com.zx.sms.codec.cmpp.msg.CmppConnectRequestMessage;
 import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.codec.cmpp.packet.CmppConnectRequest;
@@ -16,7 +16,7 @@ import com.zx.sms.codec.cmpp.packet.CmppPacketType;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CMPPCommonUtil;
-import static com.zx.sms.common.util.NettyByteBufUtil.*;
+import com.zx.sms.common.util.NettyByteBufUtil;
 /**
  *
  * @author huzorro(huzorro@gmail.com)
@@ -45,9 +45,9 @@ public class CmppConnectRequestMessageCodec extends MessageToMessageCodec<Messag
 		CmppConnectRequestMessage requestMessage = new CmppConnectRequestMessage(msg.getHeader());
 
 		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
-		requestMessage.setSourceAddr(bodyBuffer.readBytes(CmppConnectRequest.SOURCEADDR.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setSourceAddr(bodyBuffer.readCharSequence(CmppConnectRequest.SOURCEADDR.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 
-		requestMessage.setAuthenticatorSource(toArray(bodyBuffer.readBytes(CmppConnectRequest.AUTHENTICATORSOURCE.getLength())));
+		requestMessage.setAuthenticatorSource(toArray(bodyBuffer,CmppConnectRequest.AUTHENTICATORSOURCE.getLength()));
 
 		requestMessage.setVersion(bodyBuffer.readUnsignedByte());
 		requestMessage.setTimestamp(bodyBuffer.readUnsignedInt());
@@ -67,7 +67,7 @@ public class CmppConnectRequestMessageCodec extends MessageToMessageCodec<Messag
 		bodyBuffer.writeByte(msg.getVersion());
 		bodyBuffer.writeInt((int) msg.getTimestamp());
 
-		msg.setBodyBuffer(toArray(bodyBuffer));
+		msg.setBodyBuffer(toArray(bodyBuffer,bodyBuffer.readableBytes()));
 		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);

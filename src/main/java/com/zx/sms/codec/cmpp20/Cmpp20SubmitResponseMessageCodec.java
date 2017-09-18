@@ -54,7 +54,7 @@ public class Cmpp20SubmitResponseMessageCodec extends MessageToMessageCodec<Mess
 
 		bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(msg.getMsgId()));
 		bodyBuffer.writeByte((int) msg.getResult());
-		msg.setBodyBuffer(toArray(bodyBuffer));
+		msg.setBodyBuffer(toArray(bodyBuffer,bodyBuffer.readableBytes()));
 		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);
@@ -65,7 +65,7 @@ public class Cmpp20SubmitResponseMessageCodec extends MessageToMessageCodec<Mess
 
 		ByteBuf bodyBuffer =Unpooled.wrappedBuffer(msg.getBodyBuffer());
 
-		responseMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer.readBytes(Cmpp20SubmitResponse.MSGID.getLength()))));
+		responseMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer,Cmpp20SubmitResponse.MSGID.getLength())));
 		responseMessage.setResult(bodyBuffer.readUnsignedByte());
 		ReferenceCountUtil.release(bodyBuffer);
 		return responseMessage;

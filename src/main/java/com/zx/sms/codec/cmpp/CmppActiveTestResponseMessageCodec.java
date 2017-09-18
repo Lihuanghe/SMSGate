@@ -57,7 +57,7 @@ public class CmppActiveTestResponseMessageCodec extends MessageToMessageCodec<Me
 		
 		ByteBuf bodyBuffer = Unpooled.buffer(CmppActiveTestResponse.RESERVED.getLength());
 		bodyBuffer.writeByte(msg.getReserved());
-		msg.setBodyBuffer(toArray(bodyBuffer));
+		msg.setBodyBuffer(toArray(bodyBuffer,bodyBuffer.readableBytes()));
 		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);

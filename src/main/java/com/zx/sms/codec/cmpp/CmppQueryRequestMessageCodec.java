@@ -48,10 +48,10 @@ public class CmppQueryRequestMessageCodec extends MessageToMessageCodec<Message,
 
 		ByteBuf bodyBuffer =Unpooled.wrappedBuffer( msg.getBodyBuffer());
 
-		requestMessage.setTime(bodyBuffer.readBytes(CmppQueryRequest.TIME.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setTime(bodyBuffer.readCharSequence(CmppQueryRequest.TIME.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 		requestMessage.setQueryType(bodyBuffer.readUnsignedByte());
-		requestMessage.setQueryCode(bodyBuffer.readBytes(CmppQueryRequest.QUERYCODE.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
-		requestMessage.setReserve(bodyBuffer.readBytes(CmppQueryRequest.RESERVE.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setQueryCode(bodyBuffer.readCharSequence(CmppQueryRequest.QUERYCODE.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
+		requestMessage.setReserve(bodyBuffer.readCharSequence(CmppQueryRequest.RESERVE.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(requestMessage);
 	}
@@ -67,7 +67,7 @@ public class CmppQueryRequestMessageCodec extends MessageToMessageCodec<Message,
 		bodyBuffer
 				.writeBytes(CMPPCommonUtil.ensureLength(msg.getReserve().getBytes(GlobalConstance.defaultTransportCharset), CmppQueryRequest.RESERVE.getLength(), 0));
 
-		msg.setBodyBuffer(toArray(bodyBuffer));
+		msg.setBodyBuffer(toArray(bodyBuffer,bodyBuffer.readableBytes()));
 		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 

@@ -45,7 +45,7 @@ public class CmppCancelRequestMessageCodec extends MessageToMessageCodec<Message
 		CmppCancelRequestMessage requestMessage = new CmppCancelRequestMessage(msg.getHeader());
 
 		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
-		requestMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer.readBytes(CmppCancelRequest.MSGID.getLength()))));
+		requestMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer,CmppCancelRequest.MSGID.getLength())));
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(requestMessage);
 	}

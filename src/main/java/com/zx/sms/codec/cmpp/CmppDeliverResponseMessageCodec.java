@@ -54,7 +54,7 @@ public class CmppDeliverResponseMessageCodec extends MessageToMessageCodec<Messa
 
 		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
 
-		responseMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer.readBytes(CmppDeliverResponse.MSGID.getLength()))));
+		responseMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer,CmppDeliverResponse.MSGID.getLength())));
 		responseMessage.setResult(bodyBuffer.readUnsignedInt());
 		ReferenceCountUtil.release(bodyBuffer);
 		return responseMessage;
@@ -67,7 +67,7 @@ public class CmppDeliverResponseMessageCodec extends MessageToMessageCodec<Messa
 		bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(msg.getMsgId()));
 		bodyBuffer.writeInt((int) msg.getResult());
 
-		msg.setBodyBuffer(toArray(bodyBuffer));
+		msg.setBodyBuffer(toArray(bodyBuffer,bodyBuffer.readableBytes()));
 		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);

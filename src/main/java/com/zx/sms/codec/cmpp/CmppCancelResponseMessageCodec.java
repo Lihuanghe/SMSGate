@@ -55,7 +55,7 @@ public class CmppCancelResponseMessageCodec extends MessageToMessageCodec<Messag
 		ByteBuf bodyBuffer =  Unpooled.buffer(CmppCancelResponse.SUCCESSID.getLength());
         bodyBuffer.writeInt((int) msg.getSuccessId());
 		
-		msg.setBodyBuffer(toArray(bodyBuffer));
+		msg.setBodyBuffer(toArray(bodyBuffer,bodyBuffer.readableBytes()));
 		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);
