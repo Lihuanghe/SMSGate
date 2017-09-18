@@ -12,6 +12,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
 import org.slf4j.Logger;
@@ -74,7 +75,10 @@ public class TCPClientEndpointConnector extends AbstractEndpointConnector  {
 	@Override
 	protected SslContext createSslCtx() {
 		try{
-			return SslContext.newClientContext(InsecureTrustManagerFactory.INSTANCE);
+			if(getEndpointEntity().isUseSSL())
+				return SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+			else 
+				return null;
 		}catch(Exception ex){
 			return null;
 		}

@@ -33,6 +33,7 @@ import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 
+import static com.zx.sms.common.util.NettyByteBufUtil.*;
 /**
  * @author huzorro(huzorro@gmail.com)
  * @author Lihuanghe(18852780@qq.com)
@@ -65,7 +66,7 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 		CmppDeliverRequestMessage requestMessage = new CmppDeliverRequestMessage(msg.getHeader());
 
 		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
-		requestMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer.readBytes(CmppDeliverRequest.MSGID.getLength()).array()));
+		requestMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer.readBytes(CmppDeliverRequest.MSGID.getLength()))));
 		requestMessage.setDestId(bodyBuffer.readBytes(CmppDeliverRequest.DESTID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 		requestMessage.setServiceid(bodyBuffer.readBytes(CmppDeliverRequest.SERVICEID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 
@@ -91,7 +92,7 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 				logger.warn("CmppDeliverRequestMessage - MsgContent length is {}. should be {}.",frameLength,CmppReportRequest.DESTTERMINALID.getBodyLength());
 			};
 			requestMessage.setReportRequestMessage(new CmppReportRequestMessage());
-			requestMessage.getReportRequestMessage().setMsgId(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer.readBytes(CmppReportRequest.MSGID.getLength()).array()));
+			requestMessage.getReportRequestMessage().setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer.readBytes(CmppReportRequest.MSGID.getLength()))));
 			requestMessage.getReportRequestMessage().setStat(
 					bodyBuffer.readBytes(CmppReportRequest.STAT.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 			requestMessage.getReportRequestMessage().setSubmitTime(

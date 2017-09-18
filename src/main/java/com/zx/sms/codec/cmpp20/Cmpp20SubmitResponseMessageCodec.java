@@ -19,6 +19,7 @@ import com.zx.sms.codec.cmpp20.packet.Cmpp20PacketType;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20SubmitResponse;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
 
+import static com.zx.sms.common.util.NettyByteBufUtil.*;
 /**
  * shifei(shifei@asiainfo.com)
  */
@@ -53,7 +54,7 @@ public class Cmpp20SubmitResponseMessageCodec extends MessageToMessageCodec<Mess
 
 		bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(msg.getMsgId()));
 		bodyBuffer.writeByte((int) msg.getResult());
-		msg.setBodyBuffer(bodyBuffer.array());
+		msg.setBodyBuffer(toArray(bodyBuffer));
 		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);
@@ -64,7 +65,7 @@ public class Cmpp20SubmitResponseMessageCodec extends MessageToMessageCodec<Mess
 
 		ByteBuf bodyBuffer =Unpooled.wrappedBuffer(msg.getBodyBuffer());
 
-		responseMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer.readBytes(Cmpp20SubmitResponse.MSGID.getLength()).array()));
+		responseMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer.readBytes(Cmpp20SubmitResponse.MSGID.getLength()))));
 		responseMessage.setResult(bodyBuffer.readUnsignedByte());
 		ReferenceCountUtil.release(bodyBuffer);
 		return responseMessage;

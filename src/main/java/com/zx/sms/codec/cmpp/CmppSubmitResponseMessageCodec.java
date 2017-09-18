@@ -18,6 +18,7 @@ import com.zx.sms.codec.cmpp.packet.CmppSubmitResponse;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
 
+import static com.zx.sms.common.util.NettyByteBufUtil.*;
 /**
  * @author huzorro(huzorro@gmail.com)
  * @author Lihuanghe(18852780@qq.com)
@@ -57,7 +58,7 @@ public class CmppSubmitResponseMessageCodec extends MessageToMessageCodec<Messag
 
 		bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(msg.getMsgId()));
 		bodyBuffer.writeInt((int) msg.getResult());
-		msg.setBodyBuffer(bodyBuffer.array());
+		msg.setBodyBuffer(toArray(bodyBuffer));
 		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);
@@ -68,7 +69,7 @@ public class CmppSubmitResponseMessageCodec extends MessageToMessageCodec<Messag
 
 		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
 
-		responseMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer.readBytes(CmppSubmitResponse.MSGID.getLength()).array()));
+		responseMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer.readBytes(CmppSubmitResponse.MSGID.getLength()))));
 		responseMessage.setResult(bodyBuffer.readUnsignedInt());
 		ReferenceCountUtil.release(bodyBuffer);
 		return responseMessage;

@@ -32,6 +32,7 @@ import com.zx.sms.common.util.DefaultMsgIdUtil;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 import com.zx.sms.common.util.MsgId;
 
+import static com.zx.sms.common.util.NettyByteBufUtil.*;
 /**
  * shifei(shifei@asiainfo.com)
  */
@@ -63,7 +64,7 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 
 		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
 
-		requestMessage.setMsgid(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer.readBytes(Cmpp20SubmitRequest.MSGID.getLength()).array()));
+		requestMessage.setMsgid(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer.readBytes(Cmpp20SubmitRequest.MSGID.getLength()))));
 		LongMessageFrame frame = new LongMessageFrame();
 
 		frame.setPktotal(bodyBuffer.readUnsignedByte());

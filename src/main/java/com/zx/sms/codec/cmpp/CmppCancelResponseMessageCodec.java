@@ -16,7 +16,7 @@ import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.codec.cmpp.packet.CmppCancelResponse;
 import com.zx.sms.codec.cmpp.packet.CmppPacketType;
 import com.zx.sms.codec.cmpp.packet.PacketType;
-
+import static com.zx.sms.common.util.NettyByteBufUtil.*;
 /**
  * @author huzorro(huzorro@gmail.com)
  * @author Lihuanghe(18852780@qq.com)
@@ -55,7 +55,7 @@ public class CmppCancelResponseMessageCodec extends MessageToMessageCodec<Messag
 		ByteBuf bodyBuffer =  Unpooled.buffer(CmppCancelResponse.SUCCESSID.getLength());
         bodyBuffer.writeInt((int) msg.getSuccessId());
 		
-		msg.setBodyBuffer(bodyBuffer.array());
+		msg.setBodyBuffer(toArray(bodyBuffer));
 		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);

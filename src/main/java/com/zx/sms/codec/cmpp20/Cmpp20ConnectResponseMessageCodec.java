@@ -15,6 +15,7 @@ import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20ConnectResponse;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20PacketType;
 
+import static com.zx.sms.common.util.NettyByteBufUtil.*;
 /**
  *
  * @author huzorro(huzorro@gmail.com)
@@ -47,7 +48,7 @@ public class Cmpp20ConnectResponseMessageCodec extends MessageToMessageCodec<Mes
 		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
 
 		responseMessage.setStatus(bodyBuffer.readUnsignedByte());
-		responseMessage.setAuthenticatorISMG(bodyBuffer.readBytes(Cmpp20ConnectResponse.AUTHENTICATORISMG.getLength()).array());
+		responseMessage.setAuthenticatorISMG(toArray(bodyBuffer.readBytes(Cmpp20ConnectResponse.AUTHENTICATORISMG.getLength())));
 		responseMessage.setVersion(bodyBuffer.readUnsignedByte());
 		
 		ReferenceCountUtil.release(bodyBuffer);
@@ -64,7 +65,7 @@ public class Cmpp20ConnectResponseMessageCodec extends MessageToMessageCodec<Mes
 		bodyBuffer.writeBytes(msg.getAuthenticatorISMG());
 		bodyBuffer.writeByte(msg.getVersion());
 
-		msg.setBodyBuffer(bodyBuffer.array());
+		msg.setBodyBuffer(toArray(bodyBuffer));
 		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);

@@ -21,6 +21,7 @@ import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CMPPCommonUtil;
 
+import static com.zx.sms.common.util.NettyByteBufUtil.*;
 /**
  * @author huzorro(huzorro@gmail.com)
  * @author Lihuanghe(18852780@qq.com)
@@ -85,7 +86,7 @@ public class CmppQueryResponseMessageCodec extends MessageToMessageCodec<Message
 		bodyBuffer.writeInt((int) responseMessage.getMoWT());
 		bodyBuffer.writeInt((int) responseMessage.getMoFL());
 
-		responseMessage.setBodyBuffer(bodyBuffer.array());
+		responseMessage.setBodyBuffer(toArray(bodyBuffer));
 		responseMessage.getHeader().setBodyLength(responseMessage.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(responseMessage);

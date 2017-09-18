@@ -263,7 +263,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			protected void initChannel(Channel ch) throws Exception {
 				ChannelPipeline pipeline = ch.pipeline();
 
-				if (getSslCtx() != null && getEndpointEntity().isUseSSL()) {
+				if (getEndpointEntity().isUseSSL() && getSslCtx() != null ) {
 					initSslCtx(ch, getEndpointEntity());
 				}
 

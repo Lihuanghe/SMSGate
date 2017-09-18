@@ -2,7 +2,7 @@
  * 
  */
 package com.zx.sms.codec.cmpp7F;
-
+import static com.zx.sms.common.util.NettyByteBufUtil.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
@@ -65,7 +65,7 @@ public class Cmpp7FSubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 
 		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
 
-		requestMessage.setMsgid(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer.readBytes(CmppSubmitRequest.MSGID.getLength()).array()));
+		requestMessage.setMsgid(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer.readBytes(CmppSubmitRequest.MSGID.getLength()))));
 
 		LongMessageFrame frame = new LongMessageFrame();
 

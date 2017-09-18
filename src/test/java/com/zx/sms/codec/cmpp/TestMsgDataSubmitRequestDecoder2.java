@@ -10,6 +10,7 @@ import org.marre.sms.DcsGroup;
 import com.zx.sms.codec.AbstractTestMessageCodec;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 
+import static com.zx.sms.common.util.NettyByteBufUtil.*;
 public class TestMsgDataSubmitRequestDecoder2 extends AbstractTestMessageCodec<CmppSubmitRequestMessage> {
 	@Override
 	protected int getVersion() {
@@ -30,7 +31,7 @@ public class TestMsgDataSubmitRequestDecoder2 extends AbstractTestMessageCodec<C
 			System.out.println(result);
 			ByteBuf bytebuf = Unpooled.copiedBuffer(encode(result));
 			int lenght = bytebuf.readableBytes();
-			System.arraycopy(bytebuf.array(), 0, actuals, index,lenght );
+			System.arraycopy(toArray(bytebuf), 0, actuals, index,lenght );
 			index = lenght;
 		}
 		Assert.assertArrayEquals(expected, actuals);
@@ -47,7 +48,7 @@ public class TestMsgDataSubmitRequestDecoder2 extends AbstractTestMessageCodec<C
 			System.out.println(result);
 			ByteBuf bytebuf = Unpooled.copiedBuffer(encode(result));
 			int lenght = bytebuf.readableBytes();
-			System.arraycopy(bytebuf.array(), 0, actuals, index,lenght );
+			System.arraycopy(toArray(bytebuf), 0, actuals, index,lenght );
 			index = lenght;
 		}
 		Assert.assertArrayEquals(expected, actuals);

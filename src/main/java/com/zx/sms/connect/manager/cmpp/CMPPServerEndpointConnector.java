@@ -59,8 +59,13 @@ public class CMPPServerEndpointConnector extends AbstractEndpointConnector {
 	@Override
 	protected SslContext createSslCtx() {
 		try{
-			 SelfSignedCertificate ssc = new SelfSignedCertificate();
-			return SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
+			if(getEndpointEntity().isUseSSL()){
+				 SelfSignedCertificate ssc = new SelfSignedCertificate();
+					return SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
+			}else{
+				return null;
+			}
+			
 		}catch(Exception ex){
 			ex.printStackTrace();
 			return null;

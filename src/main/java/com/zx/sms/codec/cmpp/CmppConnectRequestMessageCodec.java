@@ -16,7 +16,7 @@ import com.zx.sms.codec.cmpp.packet.CmppPacketType;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CMPPCommonUtil;
-
+import static com.zx.sms.common.util.NettyByteBufUtil.*;
 /**
  *
  * @author huzorro(huzorro@gmail.com)
@@ -47,7 +47,7 @@ public class CmppConnectRequestMessageCodec extends MessageToMessageCodec<Messag
 		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
 		requestMessage.setSourceAddr(bodyBuffer.readBytes(CmppConnectRequest.SOURCEADDR.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 
-		requestMessage.setAuthenticatorSource(bodyBuffer.readBytes(CmppConnectRequest.AUTHENTICATORSOURCE.getLength()).array());
+		requestMessage.setAuthenticatorSource(toArray(bodyBuffer.readBytes(CmppConnectRequest.AUTHENTICATORSOURCE.getLength())));
 
 		requestMessage.setVersion(bodyBuffer.readUnsignedByte());
 		requestMessage.setTimestamp(bodyBuffer.readUnsignedInt());
@@ -67,7 +67,7 @@ public class CmppConnectRequestMessageCodec extends MessageToMessageCodec<Messag
 		bodyBuffer.writeByte(msg.getVersion());
 		bodyBuffer.writeInt((int) msg.getTimestamp());
 
-		msg.setBodyBuffer(bodyBuffer.array());
+		msg.setBodyBuffer(toArray(bodyBuffer));
 		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);

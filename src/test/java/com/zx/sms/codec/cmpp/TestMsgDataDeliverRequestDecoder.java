@@ -9,6 +9,7 @@ import org.junit.Test;
 import com.zx.sms.codec.AbstractTestMessageCodec;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 
+import static com.zx.sms.common.util.NettyByteBufUtil.*;
 public class TestMsgDataDeliverRequestDecoder extends AbstractTestMessageCodec<CmppDeliverRequestMessage> {
 	@Override
 	protected int getVersion() {
@@ -28,7 +29,7 @@ public class TestMsgDataDeliverRequestDecoder extends AbstractTestMessageCodec<C
 			ByteBuf bytebuf = Unpooled.copiedBuffer(encode(result));
 			int length = bytebuf.readableBytes();
 			Assert.assertEquals(expected.length, length);
-			System.arraycopy(bytebuf.array(), 0, actuals, index,length );
+			System.arraycopy(toArray(bytebuf), 0, actuals, index,length );
 			index = length;
 			Assert.assertArrayEquals(expected, actuals);
 			Assert.assertEquals("r", result.getMsgContent());

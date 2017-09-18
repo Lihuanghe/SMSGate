@@ -8,6 +8,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import io.netty.util.ReferenceCountUtil;
+import static com.zx.sms.common.util.NettyByteBufUtil.*;
 
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class CmppActiveTestResponseMessageCodec extends MessageToMessageCodec<Me
 		
 		ByteBuf bodyBuffer = Unpooled.buffer(CmppActiveTestResponse.RESERVED.getLength());
 		bodyBuffer.writeByte(msg.getReserved());
-		msg.setBodyBuffer(bodyBuffer.array());
+		msg.setBodyBuffer(toArray(bodyBuffer));
 		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);

@@ -11,6 +11,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 import org.slf4j.Logger;
@@ -100,8 +101,12 @@ public class TCPServerEndpointConnector extends AbstractEndpointConnector {
 	@Override
 	protected SslContext createSslCtx() {
 		try{
-			 SelfSignedCertificate ssc = new SelfSignedCertificate();
-			 return SslContext.newServerContext(ssc.certificate(), ssc.privateKey());
+			if(getEndpointEntity().isUseSSL()){
+				 SelfSignedCertificate ssc = new SelfSignedCertificate();
+					return SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
+			}else{
+				return null;
+			}
 		}catch(Exception ex){
 			return null;
 		}

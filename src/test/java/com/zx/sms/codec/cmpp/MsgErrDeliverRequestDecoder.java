@@ -13,6 +13,7 @@ import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 import com.zx.sms.codec.cmpp.packet.CmppHead;
 import com.zx.sms.codec.cmpp.packet.CmppPacketType;
 
+import static com.zx.sms.common.util.NettyByteBufUtil.*;
 /**
  * 数据短信，无法解析
  * */
@@ -48,7 +49,7 @@ public class MsgErrDeliverRequestDecoder extends AbstractTestMessageCodec<CmppDe
 			ByteBuf bytebuf = Unpooled.copiedBuffer(encode(result));
 			int length = bytebuf.readableBytes();
 			Assert.assertEquals(expected.length+headerLength, length);
-			System.arraycopy(bytebuf.array(), 0, actuals, index,length );
+			System.arraycopy(toArray(bytebuf), 0, actuals, index,length );
 			index = length;
 			byte[] deleteheader = new byte[expected.length];
 			System.arraycopy(actuals, 12, deleteheader, 0,expected.length);

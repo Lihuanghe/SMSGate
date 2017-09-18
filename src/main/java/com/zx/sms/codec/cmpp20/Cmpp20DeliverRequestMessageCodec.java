@@ -33,6 +33,7 @@ import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 
+import static com.zx.sms.common.util.NettyByteBufUtil.*;
 /**
  * shifei(shifei@asiainfo.com)
  */
@@ -65,7 +66,7 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 
 		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
 
-		requestMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer.readBytes(Cmpp20DeliverRequest.MSGID.getLength()).array()));
+		requestMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer.readBytes(Cmpp20DeliverRequest.MSGID.getLength()))));
 		requestMessage.setDestId(bodyBuffer.readBytes(Cmpp20DeliverRequest.DESTID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 		requestMessage.setServiceid(bodyBuffer.readBytes(Cmpp20DeliverRequest.SERVICEID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 
@@ -93,7 +94,7 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 			};
 			requestMessage.setReportRequestMessage(new CmppReportRequestMessage());
 			requestMessage.getReportRequestMessage()
-					.setMsgId(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer.readBytes(Cmpp20ReportRequest.MSGID.getLength()).array()));
+					.setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer.readBytes(Cmpp20ReportRequest.MSGID.getLength()))));
 			requestMessage.getReportRequestMessage().setStat(
 					bodyBuffer.readBytes(Cmpp20ReportRequest.STAT.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 			requestMessage.getReportRequestMessage().setSubmitTime(

@@ -76,7 +76,10 @@ public class CMPPClientEndpointConnector extends AbstractEndpointConnector {
 	protected SslContext createSslCtx() {
 	
 		try{
-			return SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+			if(getEndpointEntity().isUseSSL())
+				return SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+			else 
+				return null;
 		}catch(Exception ex){
 			ex.printStackTrace();
 			return null;

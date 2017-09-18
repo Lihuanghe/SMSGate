@@ -2,7 +2,7 @@ package com.zx.sms.codec.mms;
 
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
-import io.netty.buffer.UnpooledByteBufAllocator;
+import io.netty.handler.ssl.OpenSsl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -83,5 +83,10 @@ public class TestMMS1RetrieveConfCodec {
 		Assert.assertEquals(rc.getSubject().getString(),"MMS MSG");
 		Assert.assertEquals(rc.getBody().getPartsNum(),2);
 		Assert.assertEquals(new String(rc.getBody().getPartByContentId("<1.smil>").getContentLocation()),"1.smil");
+	}
+	
+	@Test
+	public void testOpenSSL(){
+		OpenSsl.unavailabilityCause().printStackTrace();
 	}
 }
