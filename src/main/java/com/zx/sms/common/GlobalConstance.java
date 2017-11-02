@@ -11,7 +11,7 @@ import com.zx.sms.handler.cmpp.CmppActiveTestResponseMessageHandler;
 import com.zx.sms.handler.cmpp.CmppServerIdleStateHandler;
 import com.zx.sms.handler.cmpp.CmppTerminateRequestMessageHandler;
 import com.zx.sms.handler.cmpp.CmppTerminateResponseMessageHandler;
-import com.zx.sms.session.cmpp.SessionState;
+import com.zx.sms.session.SessionState;
 
 public interface GlobalConstance {
 	public final static int MaxMsgLength = 140;

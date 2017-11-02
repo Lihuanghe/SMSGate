@@ -93,4 +93,16 @@ public class TCPClientEndpointConnector extends AbstractEndpointConnector  {
 			}
 		}
 	}
+
+	@Override
+	protected void doAddChannel(Channel ch, int cnt) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity entity) {
+		// TODO Auto-generated method stub
+		
+	}
 }

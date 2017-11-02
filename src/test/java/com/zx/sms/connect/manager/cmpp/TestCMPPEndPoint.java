@@ -41,7 +41,7 @@ public class TestCMPPEndPoint {
 		server.setPort(7891);
 		server.setValid(true);
 		//使用ssl加密数据流
-		server.setUseSSL(true);
+		server.setUseSSL(false);
 		
 		CMPPServerChildEndpointEntity child = new CMPPServerChildEndpointEntity();
 		child.setId("child");
@@ -81,7 +81,7 @@ public class TestCMPPEndPoint {
 		client.setWindows((short)16);
 		client.setVersion((short)0x20);
 		client.setRetryWaitTimeSec((short)100);
-		client.setUseSSL(true);
+		client.setUseSSL(false);
 		client.setReSendFailMsg(false);
 
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();

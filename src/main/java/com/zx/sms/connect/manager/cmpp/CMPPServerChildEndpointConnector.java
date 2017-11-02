@@ -2,6 +2,8 @@ package com.zx.sms.connect.manager.cmpp;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
 import io.netty.handler.ssl.SslContext;
 
 import org.slf4j.Logger;
@@ -31,6 +33,24 @@ public class CMPPServerChildEndpointConnector extends AbstractEndpointConnector 
 	@Override
 	protected void initSslCtx(Channel ch, EndpointEntity entity) {
 		
+	}
+
+	@Override
+	protected void doAddChannel(Channel ch, int cnt) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity entity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected ChannelInitializer<?> initPipeLine() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
