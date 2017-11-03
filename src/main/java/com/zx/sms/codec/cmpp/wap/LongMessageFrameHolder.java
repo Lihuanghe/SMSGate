@@ -21,6 +21,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stax.StAXSource;
 
+import org.marre.sms.SmsAlphabet;
 import org.marre.sms.SmsException;
 import org.marre.sms.SmsMessage;
 import org.marre.sms.SmsPdu;
@@ -154,7 +155,7 @@ public enum LongMessageFrameHolder {
 
 	}
 
-	public List<LongMessageFrame> splitmsgcontent(SmsMessage content, boolean isSupportLongMsg) throws SmsException {
+	public List<LongMessageFrame> splitmsgcontent(SmsMessage content) throws SmsException {
 
 		List<LongMessageFrame> result = new ArrayList<LongMessageFrame>();
 		SmsPdu[] pdus = content.getPdus();
@@ -651,6 +652,16 @@ public enum LongMessageFrameHolder {
 			return encodeSeptetPdu(pdu, baos);
 		default:
 			return encodeOctetPdu(pdu, baos);
+		}
+	}
+	
+	// 如果是7bit编码，需要计算真实的数据长度
+	public static int getPayloadLength(SmsAlphabet alpha,int udl) {
+		switch (alpha) {
+		case GSM:
+			return LongMessageFrameHolder.octetLengthfromseptetsLength(udl);
+		default:
+			return udl;
 		}
 	}
 

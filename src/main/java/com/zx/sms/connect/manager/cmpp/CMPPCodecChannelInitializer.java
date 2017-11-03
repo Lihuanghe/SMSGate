@@ -14,6 +14,8 @@ import com.zx.sms.codec.cmpp.CmppHeaderCodec;
 import com.zx.sms.codec.cmpp20.CMPP20MessageCodecAggregator;
 import com.zx.sms.codec.cmpp7F.CMPP7FMessageCodecAggregator;
 import com.zx.sms.common.NotSupportedException;
+import com.zx.sms.handler.cmpp.CMPPDeliverLongMessageHandler;
+import com.zx.sms.handler.cmpp.CMPPSubmitLongMessageHandler;
 
 /**
  * @author Lihuanghe(18852780@qq.com)
@@ -49,7 +51,10 @@ public class CMPPCodecChannelInitializer extends ChannelInitializer<Channel> {
 		pipeline.addBefore(pipeName(), "CmppHeaderCodec", new CmppHeaderCodec());
 
 		pipeline.addBefore(pipeName(), codecName, getCodecHandler(version));
-
+		
+		//处理长短信
+		pipeline.addBefore(pipeName(), "CMPPDeliverLongMessageHandler", new CMPPDeliverLongMessageHandler());
+		pipeline.addBefore(pipeName(),"CMPPSubmitLongMessageHandler",  new CMPPSubmitLongMessageHandler());
 	}
 
 	public static ChannelDuplexHandler getCodecHandler(int version) throws Exception {

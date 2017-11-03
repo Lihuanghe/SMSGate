@@ -1,8 +1,6 @@
 package com.zx.sms.codec.cmpp.msg;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.marre.sms.SmsAlphabet;
 import org.marre.sms.SmsDcs;
@@ -54,6 +52,14 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 	private SmsMessage msg;
 	
 	private boolean supportLongMsg =  true;
+	
+	private short pktotal = 1;
+	private short pknumber = 1;
+	private short tppid = 0;// 0是普通GSM 类型，点到点方式 ,127 :写sim卡
+	private short tpudhi = 0; // 0:msgcontent不带协议头。1:带有协议头
+	private SmsDcs msgfmt = SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.ASCII, SmsMsgClass.CLASS_UNKNOWN);
+	private short msgLength = 140;
+	private byte[] msgContentBytes = GlobalConstance.emptyBytes;
 	
 	public CmppSubmitRequestMessage(Header header) {
 		super(CmppPacketType.CMPPSUBMITREQUEST, header);
@@ -370,7 +376,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 	 * @return the msgContent
 	 */
 	public void setMsgContent(String msgContent) {
-		this.msg = CMPPCommonUtil.buildTextMessage(msgContent);
+		setMsgContent(CMPPCommonUtil.buildTextMessage(msgContent));
 	}
 	
 	public void setMsgContent(SmsMessage msg){
@@ -383,6 +389,65 @@ public class CmppSubmitRequestMessage extends DefaultMessage {
 
 	public void setSupportLongMsg(boolean supportLongMsg) {
 		this.supportLongMsg = true;
+	}
+
+	public byte[] getMsgContentBytes() {
+		return msgContentBytes;
+	}
+
+	public void setMsgContentBytes(byte[] msgContentBytes) {
+		this.msgContentBytes = msgContentBytes;
+	}
+	public short getPktotal() {
+		return pktotal;
+	}
+
+	public void setPktotal(short pktotal) {
+		this.pktotal = pktotal;
+	}
+
+	public short getPknumber() {
+		return pknumber;
+	}
+
+	public void setPknumber(short pknumber) {
+		this.pknumber = pknumber;
+	}
+
+	public short getTppid() {
+		return tppid;
+	}
+
+	public void setTppid(short tppid) {
+		this.tppid = tppid;
+	}
+
+	public short getTpudhi() {
+		return tpudhi;
+	}
+
+	public void setTpudhi(short tpudhi) {
+		this.tpudhi = tpudhi;
+	}
+
+	public SmsDcs getMsgfmt() {
+		return msgfmt;
+	}
+
+	public void setMsgfmt(SmsDcs msgfmt) {
+		this.msgfmt = msgfmt;
+	}
+
+	public short getMsgLength() {
+		return msgLength;
+	}
+
+	public void setMsgLength(short msgLength) {
+		this.msgLength = msgLength;
+	}
+
+	public void setMsg(SmsMessage msg) {
+		this.msg = msg;
 	}
 
 	public static CmppSubmitRequestMessage create(String phone ,String spid,String text){

@@ -10,7 +10,7 @@ import com.zx.sms.connect.manager.ServerEndpoint;
 /**
  *@author Lihuanghe(18852780@qq.com)
  */
-public class CMPPServerEndpointEntity extends EndpointEntity implements ServerEndpoint {
+public class CMPPServerEndpointEntity extends CMPPEndpointEntity implements ServerEndpoint {
 
 	private Map<String,CMPPServerChildEndpointEntity> childrenEndpoint = new ConcurrentHashMap<String,CMPPServerChildEndpointEntity>() ;
 	

@@ -28,7 +28,7 @@ import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
 import com.zx.sms.connect.manager.ServerEndpoint;
 import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
-import com.zx.sms.session.SessionState;
+import com.zx.sms.session.cmpp.SessionState;
 
 /**
  * 
@@ -59,7 +59,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 			final Channel ch = ctx.channel();
 			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>() {
 				private Message createTestReq() {
-					int contentLength = RandomUtils.nextInt() & 0x0f;
+					int contentLength = RandomUtils.nextInt(300) ;
 					StringBuilder sb = new StringBuilder();
 					if (contentLength % 2 == 0) {
 						while (contentLength-- > 0) {

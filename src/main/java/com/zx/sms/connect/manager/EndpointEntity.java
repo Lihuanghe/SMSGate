@@ -39,6 +39,13 @@ public abstract class EndpointEntity implements Serializable {
 	private List<BusinessHandlerInterface> businessHandlerSet;
 	
 	/**
+	 * 有未发送成功的消息，是否重发，默认不重发，可能引起消息丢失。
+	 * 如果为true，则可能重复发送。
+	 **/
+	private boolean isReSendFailMsg = false; 
+	private short maxRetryCnt = 3;
+	private short retryWaitTimeSec=60;
+	/**
 	 *流量整形 
 	 */
 	private int readLimit = 0;
@@ -120,6 +127,29 @@ public abstract class EndpointEntity implements Serializable {
 		this.businessHandlerSet = businessHandlerSet;
 	}
 	
+	
+	public boolean isReSendFailMsg() {
+		return isReSendFailMsg;
+	}
+
+	public void setReSendFailMsg(boolean isReSendFailMsg) {
+		this.isReSendFailMsg = isReSendFailMsg;
+	}
+	
+	public short getMaxRetryCnt() {
+		return maxRetryCnt;
+	}
+
+	public void setMaxRetryCnt(short maxRetryCnt) {
+		this.maxRetryCnt = maxRetryCnt;
+	}
+	public short getRetryWaitTimeSec() {
+		return retryWaitTimeSec;
+	}
+
+	public void setRetryWaitTimeSec(short retryWaitTimeSec) {
+		this.retryWaitTimeSec = retryWaitTimeSec;
+	}
 	
 	@Override
 	public int hashCode() {

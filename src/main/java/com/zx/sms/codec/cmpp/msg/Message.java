@@ -23,8 +23,6 @@ public interface Message extends Serializable  {
 //	public String getChildChannelIds();
 	public void setLifeTime(long lifeTime);
 	public long getLifeTime();
-    public int incrementAndGetRequests();
-    public void resetRequests();
 //    public Message setResponse(Message message);
 //    public Message getResponse();
 //    public Message setRequest(Message message);

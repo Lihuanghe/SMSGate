@@ -132,16 +132,7 @@ public class LongMessageFrame {
 		this.contentPart = contentPart;
 	}
 
-	// 如果是7bit编码，需要计算真实的数据长度
-	public int getPayloadLength(int udl) {
-		switch (this.msgfmt.getAlphabet()) {
-		case GSM:
-			return LongMessageFrameHolder.octetLengthfromseptetsLength(udl);
-		default:
-			return udl;
 
-		}
-	}
 
 	// get unencode septet bytes
 	public byte[] getPayloadbytes(int udhl) {

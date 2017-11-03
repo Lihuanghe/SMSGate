@@ -26,7 +26,7 @@ import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
 import com.zx.sms.connect.manager.ServerEndpoint;
 import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
-import com.zx.sms.session.SessionState;
+import com.zx.sms.session.cmpp.SessionState;
 
 /**
  * 

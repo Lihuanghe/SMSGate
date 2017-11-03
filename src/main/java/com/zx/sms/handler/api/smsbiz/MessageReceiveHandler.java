@@ -17,7 +17,7 @@ import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
-import com.zx.sms.session.SessionState;
+import com.zx.sms.session.cmpp.SessionState;
 
 public class MessageReceiveHandler extends AbstractBusinessHandler {
 	private static final Logger logger = LoggerFactory.getLogger(MessageReceiveHandler.class);

@@ -3,7 +3,10 @@
  */
 package com.zx.sms.codec.cmpp.msg;
 
+import org.marre.sms.SmsAlphabet;
+import org.marre.sms.SmsDcs;
 import org.marre.sms.SmsMessage;
+import org.marre.sms.SmsMsgClass;
 import org.marre.sms.SmsPortAddressedTextMessage;
 import org.marre.sms.SmsTextMessage;
 import org.marre.wap.push.SmsMmsNotificationMessage;
@@ -42,6 +45,14 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 	private SmsMessage msg;
 
 	private boolean supportLongMsg = true;
+	
+	private short pktotal = 1;
+	private short pknumber = 1;
+	private short tppid = 0;// 0是普通GSM 类型，点到点方式 ,127 :写sim卡
+	private short tpudhi = 0; // 0:msgcontent不带协议头。1:带有协议头
+	private SmsDcs msgfmt = SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.ASCII, SmsMsgClass.CLASS_UNKNOWN);
+	private short msgLength = 140;
+	private byte[] msgContentBytes = GlobalConstance.emptyBytes;
 
 	public CmppDeliverRequestMessage(Header header) {
 		super(CmppPacketType.CMPPDELIVERREQUEST, header);
@@ -235,11 +246,71 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 		this.supportLongMsg = true;
 	}
 
+	public short getPktotal() {
+		return pktotal;
+	}
+
+	public void setPktotal(short pktotal) {
+		this.pktotal = pktotal;
+	}
+
+	public short getPknumber() {
+		return pknumber;
+	}
+
+	public void setPknumber(short pknumber) {
+		this.pknumber = pknumber;
+	}
+
+	public short getTppid() {
+		return tppid;
+	}
+
+	public void setTppid(short tppid) {
+		this.tppid = tppid;
+	}
+
+	public short getTpudhi() {
+		return tpudhi;
+	}
+
+	public void setTpudhi(short tpudhi) {
+		this.tpudhi = tpudhi;
+	}
+
+	public SmsDcs getMsgfmt() {
+		return msgfmt;
+	}
+
+	public void setMsgfmt(SmsDcs msgfmt) {
+		this.msgfmt = msgfmt;
+	}
+
+	public short getMsgLength() {
+		return msgLength;
+	}
+
+	public void setMsgLength(short msgLength) {
+		this.msgLength = msgLength;
+	}
+	
+	public byte[] getMsgContentBytes() {
+		return msgContentBytes;
+	}
+
+	public void setMsgContentBytes(byte[] msgContentBytes) {
+		this.msgContentBytes = msgContentBytes;
+	}
+
+	public void setMsg(SmsMessage msg) {
+		this.msg = msg;
+	}
+
 	/**
 	 * @return the msgContent
 	 */
 	public void setMsgContent(String msgContent) {
-		this.msg = CMPPCommonUtil.buildTextMessage(msgContent);
+		setMsgContent(CMPPCommonUtil.buildTextMessage(msgContent));
 	}
 	
 	public void setMsgContent(SmsMessage msg){

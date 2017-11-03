@@ -32,11 +32,9 @@ import com.zx.sms.session.cmpp.SessionStateManager;
  */
 public class CMPPServerEndpointConnector extends AbstractServerEndpointConnector {
 	private static final Logger logger = LoggerFactory.getLogger(CMPPServerEndpointConnector.class);
-	public CMPPServerEndpointConnector(CMPPServerEndpointEntity e) {
+	public CMPPServerEndpointConnector(CMPPEndpointEntity e) {
 		super(e);
 	}
-	
-
 
 	@Override
 	protected void doAddChannel(Channel ch,int cnt) {
@@ -82,22 +80,13 @@ public class CMPPServerEndpointConnector extends AbstractServerEndpointConnector
 				}
 			}
 			
-
+			logger.warn("cmppentity.getWriteLimit() {}", cmppentity.getWriteLimit());
 			// 增加流量整形 ，每个连接每秒发送，接收消息数不超过配置的值
-			// 这个放在前边，保证真实发送到连接上的速率。可以避免网关抖动造成的发送超速。
-			// 网关抖动时，网关会先积压大量response，然后突然发送大量response给SessionManager,
-			// 造成在Session里等待的消息集中发送,因此造成超速。
-			ch.pipeline().addBefore(CMPPCodecChannelInitializer.codecName, "CMPPChannelTrafficBefore",
+			ch.pipeline().addAfter(CMPPCodecChannelInitializer.codecName, "CMPPChannelTrafficAfter",
 					new CMPPChannelTrafficShapingHandler(cmppentity.getWriteLimit(), cmppentity.getReadLimit(), 250));
-
-			// 将SessinManager放在messageHeaderCodec后边。因为要处理Submit 和
-			// deliver消息的长短信分拆
-			ch.pipeline().addBefore(CMPPCodecChannelInitializer.codecName, "sessionStateManager", new SessionStateManager(cmppentity, storedMap, preSendMap));
-
-			// 这个放在后边，限制发送方的速度，超速后设置连接不可写
-			ch.pipeline().addBefore(CMPPCodecChannelInitializer.codecName, "CMPPChannelTrafficAfter",
-					new CMPPChannelTrafficShapingHandler(cmppentity.getWriteLimit(), cmppentity.getReadLimit(), 250));
-			// 加载业务handler
+			
+			ch.pipeline().addAfter(CMPPCodecChannelInitializer.codecName, "sessionStateManager", new SessionStateManager(cmppentity, storedMap, preSendMap));
+			
 			
 		}
 		

@@ -19,7 +19,7 @@ import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
-import com.zx.sms.session.SessionState;
+import com.zx.sms.session.cmpp.SessionState;
 
 /**
  * @author Lihuanghe(18852780@qq.com)
@@ -109,6 +109,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	protected abstract void doAddChannel(Channel ch,int cnt);
 	protected abstract void doBindHandler(ChannelPipeline pipe, EndpointEntity entity);
 	protected abstract ChannelInitializer<?> initPipeLine();
+	
 	public void addChannel(Channel ch) {
 		
 		// 标识连接已建立

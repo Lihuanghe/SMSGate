@@ -22,7 +22,7 @@ public class DefaultMessage implements Message ,Cloneable {
 	private long timestamp = CachedMillisecondClock.INS.now();
 	//消息的生命周期，单位秒, 0表示永不过期
 	private long lifeTime=0;
-	private AtomicInteger requests = new AtomicInteger();
+	
 //	private Message response;
 //	private Message request;
 	private Header header;
@@ -70,15 +70,6 @@ public class DefaultMessage implements Message ,Cloneable {
 	public PacketType getPacketType() {
 		return packetType;
 	}
-
-	@Override
-	public int incrementAndGetRequests() {
-		return requests.incrementAndGet();
-	}
-
-   public void resetRequests(){
-	   requests = new AtomicInteger();
-   }
 
 
 	@Override
@@ -145,8 +136,6 @@ public class DefaultMessage implements Message ,Cloneable {
 		newHeader.setSequenceId(header.getSequenceId());
 		newHeader.setCommandId(packetType.getCommandId());
 		msg.setHeader(newHeader);
-		
-		msg.resetRequests();
 		msg.setTimestamp(CachedMillisecondClock.INS.now());
 		return msg;
 	}
