@@ -137,7 +137,7 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 				
 				//通知业务handler连接已建立完成
 				notifyChannelConnected(ctx);
-				
+				logger.info("login in success on channel {}" , ctx.channel());
 			}else{
 				//超过最大连接数了
 				failedLogin(ctx, message, 5);
@@ -172,6 +172,8 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 			//如果没有超过最大连接数配置，建立连接
 			conn.addChannel(ctx.channel());
 			notifyChannelConnected(ctx);
+			logger.info("login in success on channel {}" , ctx.channel());
+			
 		}else{
 			ctx.close();
 			return;

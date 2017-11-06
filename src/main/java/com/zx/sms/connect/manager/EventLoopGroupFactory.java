@@ -32,12 +32,6 @@ public enum EventLoopGroupFactory {
 	};
 	private  final static EventLoopGroup bossGroup = new NioEventLoopGroup(1, newThreadFactory("bossGroup"));
 	private  final static EventLoopGroup workgroup = new NioEventLoopGroup(0, newThreadFactory("workGroup"));
-	
-	private  final static ScheduledExecutorService msgResend = new ScheduledThreadPoolExecutor(Integer.valueOf(PropertiesUtils.getproperties("GlobalMsgResendThreadCount","4")),newThreadFactory("msgResend-"),rejected);
-			//new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalMsgResendThreadCount","4")),new DefaultExecutorServiceFactory("msgResend"));
-	private  final static ScheduledExecutorService waitWindow = new ScheduledThreadPoolExecutor(Integer.valueOf(PropertiesUtils.getproperties("GlobalWaitWindowThreadCount","4")),newThreadFactory("waitWindow-"),rejected);
-			//new NioEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalWaitWindowThreadCount","4")),new DefaultExecutorServiceFactory("waitWindow"));
-	
 	/**
 解决Netty-EventLoopGroup无法submit阻塞任务的问题。
 netty的特性：
@@ -53,8 +47,6 @@ EventLoopGroup.submit(callable)方法不能提交阻塞任务。
 	
 	public EventLoopGroup getBoss(){return bossGroup;};
 	public EventLoopGroup getWorker(){return workgroup;};
-	public ScheduledExecutorService getMsgResend(){return msgResend;};
-	public ScheduledExecutorService getWaitWindow(){return waitWindow;};
 	public ListeningScheduledExecutorService getBusiWork(){return busiWork;};
 	
 	
@@ -108,8 +100,6 @@ EventLoopGroup.submit(callable)方法不能提交阻塞任务。
 		//先停业务线程池
 		 //getBusiWork().shutdownGracefully().syncUninterruptibly();
 		 getBusiWork().shutdown();
-		 getMsgResend().shutdown();
-		 getWaitWindow().shutdown();
 		 getBoss().shutdownGracefully().syncUninterruptibly();
 		 
 		 //最后停worker

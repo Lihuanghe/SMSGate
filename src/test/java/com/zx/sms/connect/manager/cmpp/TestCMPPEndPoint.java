@@ -58,9 +58,9 @@ public class TestCMPPEndPoint {
 		child.setRetryWaitTimeSec((short)100);
 		child.setMaxRetryCnt((short)3);
 		child.setReSendFailMsg(false);
-		child.setWriteLimit(200);
+//		child.setWriteLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new SessionConnectedHandler());
+		serverhandlers.add(new MessageReceiveHandler());
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
@@ -77,7 +77,7 @@ public class TestCMPPEndPoint {
 		client.setPassword("ICP");
 
 
-
+		client.setMaxChannels((short)12);
 		client.setWindows((short)16);
 		client.setVersion((short)0x20);
 		client.setRetryWaitTimeSec((short)100);
@@ -85,7 +85,7 @@ public class TestCMPPEndPoint {
 		client.setReSendFailMsg(false);
 
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add(new MessageReceiveHandler());
+		clienthandlers.add(new SessionConnectedHandler() );
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		
@@ -96,6 +96,11 @@ public class TestCMPPEndPoint {
         ObjectName stat = new ObjectName("com.zx.sms:name=ConnState");
         mserver.registerMBean(new ConnState(), stat);
         System.out.println("start.....");
+        Thread.sleep(10000);
+        manager.openEndpoint(client);
+        Thread.sleep(10000);
+        manager.openEndpoint(client);
+        
 		Thread.sleep(300000);
 		CMPPEndpointManager.INS.close();
 	}

@@ -1,6 +1,7 @@
 package com.zx.sms.handler.api.smsbiz;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
 
@@ -19,20 +20,21 @@ import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.session.cmpp.SessionState;
 
+@Sharable
 public class MessageReceiveHandler extends AbstractBusinessHandler {
 	private static final Logger logger = LoggerFactory.getLogger(MessageReceiveHandler.class);
 	private int rate = 1;
 
 	private AtomicLong cnt = new AtomicLong();
 	private long lastNum = 0;
+	private boolean inited = false;
 	@Override
 	public String name() {
 		return "MessageReceiveHandler-smsBiz";
 	}
 
 	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-		if (evt == SessionState.Connect) {
-			final Channel ch = ctx.channel();
+		if (evt == SessionState.Connect && !inited) {
 			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>(){
 				
 				@Override
@@ -46,9 +48,10 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 			},new ExitUnlimitCirclePolicy() {
 				@Override
 				public boolean notOver(Future future) {
-					return ch.isActive();
+					return true;
 				}
 			},rate*1000);
+			inited = true;
 		}
 		ctx.fireUserEventTriggered(evt);
 	}

@@ -8,7 +8,7 @@ public class CMPPServerChildEndpointEntity extends CMPPEndpointEntity implements
 	@Override
 	public CMPPServerChildEndpointConnector buildConnector() {
 		
-		return new CMPPServerChildEndpointConnector((CMPPEndpointEntity)this);
+		return new CMPPServerChildEndpointConnector(this);
 	}
 
 }

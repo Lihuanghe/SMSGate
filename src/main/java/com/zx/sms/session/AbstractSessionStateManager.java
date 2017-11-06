@@ -11,6 +11,10 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
+import java.util.concurrent.RunnableScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -18,15 +22,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-
-
-import com.zx.sms.connect.manager.ClientEndpoint;
+import com.zx.sms.config.PropertiesUtils;
 import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EndpointManager;
-import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.session.cmpp.SessionState;
 
 /**
@@ -61,7 +60,23 @@ public abstract class AbstractSessionStateManager<K,T extends Serializable> exte
 	private long msgReadCount = 0;
 	private long msgWriteCount = 0;
 	private EndpointEntity entity;
+	
+	private  final static ScheduledThreadPoolExecutor msgResend = new ScheduledThreadPoolExecutor(Integer.valueOf(PropertiesUtils.getproperties("GlobalMsgResendThreadCount","4")),new ThreadFactory() {
+	      
+        private final AtomicInteger threadNumber = new AtomicInteger(1);
+      
+        public Thread newThread(Runnable r) {
+            Thread t = new Thread( r,"msgResend-" + threadNumber.getAndIncrement());
+            
+            t.setDaemon(true);
+            if (t.getPriority() != Thread.NORM_PRIORITY)
+                t.setPriority(Thread.NORM_PRIORITY);
+            return t;
+        }
+    },new ThreadPoolExecutor.DiscardPolicy());
 
+	
+	
 	/**
 	 * 重发队列
 	 **/
@@ -118,7 +133,7 @@ public abstract class AbstractSessionStateManager<K,T extends Serializable> exte
 		setUserDefinedWritability(ctx.channel(), true);
 		ctx.fireChannelInactive();
 	}
-	protected abstract K getSequenceId(Object msg);
+	protected abstract K getSequenceId(T msg);
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -131,8 +146,8 @@ public abstract class AbstractSessionStateManager<K,T extends Serializable> exte
 			// 如果是resp，取消息消息重发
 			if (!isRequestMsg(message)) {
 				// 删除发送成功的消息
-
-				T request = storeMap.remove(getSequenceId(msg));
+				K key = getSequenceId(message);
+				T request = storeMap.remove(key);
 				if (request != null) {
 					Entry cancelentry = cancelRetry(request, ctx.channel());
 				}
@@ -216,8 +231,8 @@ public abstract class AbstractSessionStateManager<K,T extends Serializable> exte
 			 * 些任务不能被中断interupted.如果storeMap.remove()被中断会破坏BDB的内部状态，使用BDB无法继续工作
 			 */
 			final AtomicReference<Future> ref = new AtomicReference<Future>();
-
-			Future<?> future = EventLoopGroupFactory.INS.getMsgResend().scheduleWithFixedDelay(new Runnable() {
+			
+			Runnable task = new Runnable() {
 
 				@Override
 				public void run() {
@@ -256,7 +271,8 @@ public abstract class AbstractSessionStateManager<K,T extends Serializable> exte
 						logger.error("retry send Msg Error.", e);
 					}
 				}
-			}, entity.getRetryWaitTimeSec(), entity.getRetryWaitTimeSec(), TimeUnit.SECONDS);
+			};
+			Future<?> future = msgResend.scheduleWithFixedDelay(task, entity.getRetryWaitTimeSec(), entity.getRetryWaitTimeSec(), TimeUnit.SECONDS);
 
 			ref.set(future);
 
@@ -279,6 +295,13 @@ public abstract class AbstractSessionStateManager<K,T extends Serializable> exte
 	
 		if (entry != null && entry.future != null) {
 			entry.future.cancel(false);
+			//删除任务
+			if(entry.future instanceof RunnableScheduledFuture){
+				msgResend.remove((RunnableScheduledFuture)entry.future);
+			}
+			
+		}else{
+			logger.warn("cancelRetry task failed.");
 		}
 		return entry;
 	}
@@ -320,7 +343,6 @@ public abstract class AbstractSessionStateManager<K,T extends Serializable> exte
 
 			// 记录已发送的请求,在发送msg前生记录到map里。防止生成retryTask前就收到resp的情况发生
 			Entry tmpentry = new Entry(message);
-
 			Entry old = msgRetryMap.putIfAbsent(seq, tmpentry);
 
 			if (old != null) {
@@ -353,7 +375,7 @@ public abstract class AbstractSessionStateManager<K,T extends Serializable> exte
 	}
 
 	private void reWriteLater(final ChannelHandlerContext ctx, final T message, final ChannelPromise promise, final int delay) {
-		EventLoopGroupFactory.INS.getMsgResend().schedule(new Runnable() {
+		msgResend.schedule(new Runnable() {
 			@Override
 			public void run() {
 				try {

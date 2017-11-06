@@ -19,7 +19,7 @@ public class SessionStateManager extends AbstractSessionStateManager<Long,Messag
 		super(entity, storeMap, preSend);
 	}
 	@Override
-	protected Long getSequenceId(Object msg) {
+	protected Long getSequenceId(Message msg) {
 		if(msg instanceof Message){
 			Message message = (Message)msg;
 			return message.getHeader().getSequenceId();

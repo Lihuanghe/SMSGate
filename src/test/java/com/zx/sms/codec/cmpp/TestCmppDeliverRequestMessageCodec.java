@@ -156,12 +156,11 @@ public class TestCmppDeliverRequestMessageCodec extends AbstractTestMessageCodec
 	public void testMMSPUSH()
 	{
 		CmppDeliverRequestMessage msg = createTestReq("");
-		SmsMmsNotificationMessage mms = new SmsMmsNotificationMessage("http://www.baidu.com",50*1024);
+		SmsMmsNotificationMessage mms = new SmsMmsNotificationMessage("https://www.baidu.com/s?wd=SMPPv3.4%20%E9%95%BF%E7%9F%AD%E4%BF%A1&rsv_spt=1&rsv_iqid=0xdd4666100001e74c&issp=1&f=8&rsv_bp=1&rsv_idx=2&ie=utf-8&rqlang=cn&tn=baiduhome_pg&rsv_enter=0&oq=SMPPv%2526lt%253B.4%2520ton%2520npi&rsv_t=50fdNrphqry%2FYfHh29wvp8KzJ9ogqigiPr33FT%2FpcGQu6X34vByQNu4O%2FLNZgIiXdd16&inputT=3203&rsv_pq=d576ead9000016eb&rsv_sug3=60&rsv_sug1=15&rsv_sug7=000&rsv_sug2=0&rsv_sug4=3937&rsv_sug=1",50*1024);
 		msg.setMsgContent(mms);
 		mms.setTransactionId("ABC");
 		CmppDeliverRequestMessage result =testWapCodec(msg);
 		SmsMmsNotificationMessage smsmsg = (SmsMmsNotificationMessage)result.getMsg();
-		
 		Assert.assertEquals(smsmsg.getContentLocation_(), smsmsg.getContentLocation_());
 	}
 	
