@@ -60,7 +60,7 @@ public class TestCMPPEndPoint {
 		child.setReSendFailMsg(false);
 //		child.setWriteLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new MessageReceiveHandler());
+		serverhandlers.add(new SessionConnectedHandler());
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
@@ -85,7 +85,7 @@ public class TestCMPPEndPoint {
 		client.setReSendFailMsg(false);
 
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add(new SessionConnectedHandler() );
+		clienthandlers.add( new MessageReceiveHandler());
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		
@@ -96,10 +96,6 @@ public class TestCMPPEndPoint {
         ObjectName stat = new ObjectName("com.zx.sms:name=ConnState");
         mserver.registerMBean(new ConnState(), stat);
         System.out.println("start.....");
-        Thread.sleep(10000);
-        manager.openEndpoint(client);
-        Thread.sleep(10000);
-        manager.openEndpoint(client);
         
 		Thread.sleep(300000);
 		CMPPEndpointManager.INS.close();

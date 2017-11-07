@@ -3,6 +3,7 @@ package com.zx.sms.common;
 import static org.iq80.leveldb.impl.Iq80DBFactory.factory;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Map;
 import java.util.UUID;
 
@@ -46,7 +47,7 @@ public class TestLevelDBQuque {
 	@Test
 	public void teststoreMap(){
 		
-		 Map<Long, Message>  map = BDBStoredMapFactoryImpl.INS.buildMap("abc", "abc");
+		 Map<Serializable, Serializable>  map = BDBStoredMapFactoryImpl.INS.buildMap("abc", "abc");
 		 // Use the db in here....
 			long start = System.currentTimeMillis();
 			int i = 10000;

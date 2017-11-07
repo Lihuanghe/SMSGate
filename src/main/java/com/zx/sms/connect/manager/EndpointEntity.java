@@ -45,6 +45,7 @@ public abstract class EndpointEntity implements Serializable {
 	private boolean isReSendFailMsg = false; 
 	private short maxRetryCnt = 3;
 	private short retryWaitTimeSec=60;
+	private short idleTimeSec = 30;
 	/**
 	 *流量整形 
 	 */
@@ -64,6 +65,13 @@ public abstract class EndpointEntity implements Serializable {
 	}
 	public void setWriteLimit(int writeLimit) {
 		this.writeLimit = writeLimit;
+	}
+	public short getIdleTimeSec() {
+		return idleTimeSec;
+	}
+
+	public void setIdleTimeSec(short idleTimeSec) {
+		this.idleTimeSec = idleTimeSec;
 	}
 	public boolean isValid() {
 		return valid;

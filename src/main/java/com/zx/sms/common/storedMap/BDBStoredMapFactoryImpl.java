@@ -2,6 +2,7 @@ package com.zx.sms.common.storedMap;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -15,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sleepycat.bind.EntryBinding;
-import com.sleepycat.bind.serial.SerialBinding;
 import com.sleepycat.bind.serial.StoredClassCatalog;
 import com.sleepycat.collections.StoredMap;
 import com.sleepycat.collections.StoredSortedMap;
@@ -23,35 +23,34 @@ import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
-import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.common.queue.BdbQueueMap;
 import com.zx.sms.config.PropertiesUtils;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 
-public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Long, Message> {
+public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Serializable, Serializable > {
 	INS;
 	private static final Logger logger = LoggerFactory.getLogger(BDBStoredMapFactoryImpl.class);
 	private final ConcurrentHashMap<String, QueueEnvironment> envMap = new ConcurrentHashMap<String, QueueEnvironment>();
 
-	private final ConcurrentHashMap<String, StoredMap<Long, Message>> storedMaps = new ConcurrentHashMap<String, StoredMap<Long, Message>>();
-	private final ConcurrentHashMap<String, StoredSortedMap<Long, Message>> sortedstoredMap = new ConcurrentHashMap<String, StoredSortedMap<Long, Message>>();
-	private final ConcurrentHashMap<String, BlockingQueue<Message>> queueMap = new ConcurrentHashMap<String, BlockingQueue<Message>>();
+	private final ConcurrentHashMap<String, StoredMap<Serializable, Serializable>> storedMaps = new ConcurrentHashMap<String, StoredMap<Serializable, Serializable>>();
+	private final ConcurrentHashMap<String, StoredSortedMap<Long, Serializable>> sortedstoredMap = new ConcurrentHashMap<String, StoredSortedMap<Long, Serializable>>();
+	private final ConcurrentHashMap<String, BlockingQueue<Serializable>> queueMap = new ConcurrentHashMap<String, BlockingQueue<Serializable>>();
 
 
 	@Override
-	public synchronized Map<Long, Message> buildMap(String storedpath, String name) {
+	public synchronized Map<Serializable, Serializable> buildMap(String storedpath, String name) {
 		QueueEnvironment env = buildBDB(storedpath);
 //		SerialBinding<Long> messageKeyBinding = new SerialBinding<Long>(env.getStoredClassCatalog(), Long.class);
 //		SerialBinding<Message> messageValueBinding = new SerialBinding<Message>(env.getStoredClassCatalog(), Message.class);
-		FstSerialBinding<Long> messageKeyBinding =  new FstSerialBinding<Long>();
-		FstSerialBinding<Message> messageValueBinding =  new FstSerialBinding<Message>();
+		FstSerialBinding<Serializable> messageKeyBinding =  new FstSerialBinding<Serializable>();
+		FstSerialBinding<Serializable> messageValueBinding =  new FstSerialBinding<Serializable>();
 		Database db = env.buildDatabase(name);
 
 		String keyName = new StringBuilder().append(storedpath).append(name).toString();
-		StoredMap<Long, Message> map = storedMaps.get(keyName);
+		StoredMap<Serializable, Serializable> map = storedMaps.get(keyName);
 		if (map == null) {
-			StoredMap<Long, Message> tmpMap = new StoredMap<Long, Message>(db, messageKeyBinding, messageValueBinding, true);
-			StoredMap<Long, Message> old = storedMaps.putIfAbsent(keyName, tmpMap);
+			StoredMap<Serializable, Serializable> tmpMap = new StoredMap<Serializable, Serializable>(db, messageKeyBinding, messageValueBinding, true);
+			StoredMap<Serializable, Serializable> old = storedMaps.putIfAbsent(keyName, tmpMap);
 			return old ==null ? tmpMap:old;
 		}
 		return map;
@@ -59,33 +58,33 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Long, Message> {
 	
 
 	@Override
-	public BlockingQueue<Message> getQueue(String storedpath, String name) {
+	public BlockingQueue<Serializable> getQueue(String storedpath, String name) {
 		String keyName = new StringBuilder().append(storedpath).append(name).toString();
-		BlockingQueue<Message> queue = queueMap.get(keyName);
+		BlockingQueue<Serializable> queue = queueMap.get(keyName);
 		if (queue == null) {
-			StoredSortedMap<Long, Message> sortedStoredmap = buildStoredSortedMap(storedpath, "Trans_" + name);
-			BlockingQueue<Message> newqueue = new BdbQueueMap<Message>(sortedStoredmap);
-			BlockingQueue<Message> oldqueue = queueMap.putIfAbsent(keyName, newqueue);
+			StoredSortedMap<Long, Serializable> sortedStoredmap = buildStoredSortedMap(storedpath, "Trans_" + name);
+			BlockingQueue<Serializable> newqueue = new BdbQueueMap<Serializable>(sortedStoredmap);
+			BlockingQueue<Serializable> oldqueue = queueMap.putIfAbsent(keyName, newqueue);
 			return oldqueue==null?newqueue:oldqueue;
 		}
 		return queue;
 	}
 
-	private StoredSortedMap<Long, Message> buildStoredSortedMap(String storedpath, String name) {
+	private StoredSortedMap<Long, Serializable> buildStoredSortedMap(String storedpath, String name) {
 		QueueEnvironment env = buildBDB(storedpath);
 //		SerialBinding<Long> messageKeyBinding = new SerialBinding<Long>(env.getStoredClassCatalog(), Long.class);
 //		SerialBinding<Message> messageValueBinding = new SerialBinding<Message>(env.getStoredClassCatalog(), Message.class);
 		FstSerialBinding<Long> messageKeyBinding =  new FstSerialBinding<Long>();
-		FstSerialBinding<Message> messageValueBinding =  new FstSerialBinding<Message>();
+		FstSerialBinding<Serializable> messageValueBinding =  new FstSerialBinding<Serializable>();
 		Database db = env.buildDatabase(name);
 		String keyName = new StringBuilder().append(storedpath).append(name).toString();
 
-		StoredSortedMap<Long, Message> soredMap = sortedstoredMap.get(keyName);
+		StoredSortedMap<Long, Serializable> soredMap = sortedstoredMap.get(keyName);
 
 		if (soredMap == null) {
-			soredMap = new StoredSortedMap<Long, Message>(db, (EntryBinding<Long>) messageKeyBinding, (EntryBinding<Message>) messageValueBinding, true);
+			soredMap = new StoredSortedMap<Long, Serializable>(db, (EntryBinding<Long>) messageKeyBinding, (EntryBinding<Serializable>) messageValueBinding, true);
 
-			StoredSortedMap<Long, Message> old = sortedstoredMap.putIfAbsent(keyName, soredMap);
+			StoredSortedMap<Long, Serializable> old = sortedstoredMap.putIfAbsent(keyName, soredMap);
 			return old == null ? soredMap : old;
 		}
 

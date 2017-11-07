@@ -1,5 +1,7 @@
 package com.zx.sms.connect.manager.tcp;
 
+import java.util.Map;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
@@ -21,6 +23,7 @@ import com.zx.sms.connect.manager.AbstractEndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.connect.manager.ServerEndpoint;
+import com.zx.sms.session.AbstractSessionStateManager;
 
 public class TCPServerEndpointConnector extends AbstractEndpointConnector {
 	private static final Logger logger = LoggerFactory.getLogger(TCPServerEndpointConnector.class);
@@ -78,22 +81,6 @@ public class TCPServerEndpointConnector extends AbstractEndpointConnector {
 		}
 	}
 
-	public ChannelInitializer<SocketChannel> initPipeLine() {
-		final TCPServerEchoHandler h = new TCPServerEchoHandler();
-		return new ChannelInitializer<SocketChannel>() {
-
-			@Override
-			protected void initChannel(SocketChannel ch) throws Exception {
-				ChannelPipeline pipeline = ch.pipeline();
-//				pipeline.addLast("serverLog", new LoggingHandler(LogLevel.INFO));
-				pipeline.addLast("channelcollector", new ChannelCollector());
-				pipeline.addLast("Echo", h);
-			}
-
-		};
-	}
-
-
 	private TCPServerEndpointConnector getConnector() {
 		return this;
 	}
@@ -123,14 +110,20 @@ public class TCPServerEndpointConnector extends AbstractEndpointConnector {
 	}
 
 	@Override
-	protected void doAddChannel(Channel ch, int cnt) {
+	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity entity) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity entity) {
+	protected void doinitPipeLine(ChannelPipeline pipeline) {
+		pipeline.addLast("channelcollector", new ChannelCollector());
+		pipeline.addLast("Echo", new TCPServerEchoHandler());
+	}
+
+	@Override
+	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, Map storeMap, Map preSend) {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
 }

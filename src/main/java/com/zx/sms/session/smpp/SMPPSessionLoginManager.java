@@ -1,0 +1,148 @@
+package com.zx.sms.session.smpp;
+
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.zx.sms.codec.smpp.SmppConstants;
+import com.zx.sms.codec.smpp.Tlv;
+import com.zx.sms.codec.smpp.TlvConvertException;
+import com.zx.sms.codec.smpp.msg.BaseBind;
+import com.zx.sms.codec.smpp.msg.BaseBindResp;
+import com.zx.sms.codec.smpp.msg.BindReceiver;
+import com.zx.sms.codec.smpp.msg.BindTransceiver;
+import com.zx.sms.codec.smpp.msg.BindTransmitter;
+import com.zx.sms.codec.smpp.msg.PduResponse;
+import com.zx.sms.connect.manager.EndpointEntity;
+import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
+import com.zx.sms.connect.manager.smpp.SMPPEndpointEntity;
+import com.zx.sms.connect.manager.smpp.SMPPServerEndpointEntity;
+import com.zx.sms.session.AbstractSessionLoginManager;
+
+public class SMPPSessionLoginManager extends AbstractSessionLoginManager {
+	private static final Logger logger = LoggerFactory.getLogger(SMPPSessionLoginManager.class);
+	public SMPPSessionLoginManager(EndpointEntity entity) {
+		super(entity);
+	}
+
+	@Override
+	protected void doLogin(Channel ch) {
+		//发送bind请求
+		SMPPEndpointEntity smppentity = (SMPPEndpointEntity) entity;
+		BaseBind bind = createBindRequest(smppentity);
+		ch.writeAndFlush(bind);
+	}
+
+	@Override
+	protected EndpointEntity queryEndpointEntityByMsg(Object msg) {
+		
+		if(msg instanceof BaseBind){
+			BaseBind  message = (BaseBind)msg;
+			String username = message.getSystemId();
+			if (entity instanceof SMPPServerEndpointEntity) {
+				SMPPServerEndpointEntity serverEntity = (SMPPServerEndpointEntity) entity;
+				return serverEntity.getChild(username.trim());
+			}
+		}
+		return null;
+	}
+
+	@Override
+	protected boolean validAddressHost(String remotehost) {
+		return true;
+	}
+
+	@Override
+	protected int validClientMsg(EndpointEntity entity, Object msg) {
+		SMPPEndpointEntity smppentity = (SMPPEndpointEntity) entity;
+		BaseBind  message = (BaseBind)msg;
+		if(smppentity.getSystemId().equals(message.getSystemId()) && 
+				smppentity.getPassword().equals(message.getPassword()))
+		{
+			return 0;
+		}else{
+			return 3;
+		}
+		
+	}
+
+	@Override
+	protected int validServermsg(Object message) {
+
+		BaseBindResp resp = (BaseBindResp)message;
+		
+		Tlv scInterfaceVersion = resp.getOptionalParameter(SmppConstants.TAG_SC_INTERFACE_VERSION);
+
+            if (scInterfaceVersion != null) {
+                try {
+                    byte tempInterfaceVersion = scInterfaceVersion.getValueAsByte();
+                    logger.info("Server support version : {}" ,tempInterfaceVersion);
+                } catch (TlvConvertException e) {
+                    logger.warn("Unable to convert sc_interface_version to a byte value: {}", e.getMessage());
+                }
+            }
+			
+		return resp.getCommandStatus();
+	}
+
+	@Override
+	protected void changeProtoVersion(ChannelHandlerContext ctx, EndpointEntity entity, Object message) throws Exception {
+
+		
+	}
+
+	@Override
+	protected void doLoginSuccess(ChannelHandlerContext ctx, EndpointEntity entity, Object message) {
+		//发送bind请求
+		SMPPEndpointEntity smppentity = (SMPPEndpointEntity) entity;
+		
+		BaseBind bind = (BaseBind)message;
+		
+		ctx.writeAndFlush(bind.createResponse());
+
+	}
+
+	@Override
+	protected void failedLogin(ChannelHandlerContext ctx, Object msg, long status) {
+		
+		logger.error("Connected error status :{}" , status);
+		BaseBind message = (BaseBind)msg;
+		// 认证失败
+		PduResponse resp = message.createResponse();
+		resp.setCommandStatus((int)status);
+		ChannelFuture promise = ctx.writeAndFlush(resp);
+
+		final ChannelHandlerContext finalctx = ctx;
+		promise.addListener(new GenericFutureListener() {
+
+			public void operationComplete(Future future) throws Exception {
+				finalctx.close();
+			}
+		});
+	}
+	
+    private BaseBind createBindRequest(SMPPEndpointEntity entity)  {
+        BaseBind bind = null;
+        if (entity.getType() == ChannelType.DUPLEX) {
+            bind = new BindTransceiver();
+        } else if (entity.getType() == ChannelType.UP) {
+            bind = new BindReceiver();
+        } else if (entity.getType() == ChannelType.DOWN) {
+            bind = new BindTransmitter();
+        } else {
+        	logger.error("Unable to convert SmppSessionConfiguration into a BaseBind request");
+        }
+        bind.setSystemId(entity.getSystemId());
+        bind.setPassword(entity.getPassword());
+        bind.setSystemType(entity.getSystemType());
+        bind.setInterfaceVersion(entity.getInterfaceVersion());
+        bind.setAddressRange(entity.getAddressRange());
+        return bind;
+    }
+
+}

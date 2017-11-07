@@ -21,7 +21,7 @@
 	</properties>
 	<dependencies>
 
-		<dependency>
+		<!-- dependency>
 		    <groupId>com.fizzed</groupId>
     		<artifactId>ch-smpp</artifactId>
 			<version>6.0.0-netty4-beta-4-SNAPSHOT</version>
@@ -35,7 +35,7 @@
 					<groupId>io.netty</groupId>
 				</exclusion>
 			</exclusions>
-		</dependency>
+		</dependency-->
 
 		<dependency>
 			<groupId>org.testng</groupId>

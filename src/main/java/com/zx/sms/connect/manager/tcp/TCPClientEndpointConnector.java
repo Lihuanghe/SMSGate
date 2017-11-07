@@ -1,5 +1,7 @@
 package com.zx.sms.connect.manager.tcp;
 
+import java.util.Map;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -22,6 +24,7 @@ import com.zx.sms.connect.manager.AbstractEndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.connect.manager.ServerEndpoint;
+import com.zx.sms.session.AbstractSessionStateManager;
 
 public class TCPClientEndpointConnector extends AbstractEndpointConnector  {
 	private static final Logger logger = LoggerFactory.getLogger(TCPClientEndpointConnector.class);
@@ -56,22 +59,6 @@ public class TCPClientEndpointConnector extends AbstractEndpointConnector  {
 		}
 		return future;
 	}
-
-
-
-	public ChannelInitializer<SocketChannel> initPipeLine() {
-
-		return new ChannelInitializer<SocketChannel>() {
-
-			@Override
-			protected void initChannel(SocketChannel ch) throws Exception {
-				ChannelPipeline pipeline = ch.pipeline();
-				 pipeline.addLast("clientLog", new LoggingHandler(LogLevel.DEBUG));
-				 pipeline.addLast("Echo",  new TCPServerEchoHandler());
-			}
-		};
-	}
-
 	@Override
 	protected SslContext createSslCtx() {
 		try{
@@ -94,15 +81,22 @@ public class TCPClientEndpointConnector extends AbstractEndpointConnector  {
 		}
 	}
 
-	@Override
-	protected void doAddChannel(Channel ch, int cnt) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity entity) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	protected void doinitPipeLine(ChannelPipeline pipeline) {
+		 pipeline.addLast("clientLog", new LoggingHandler(LogLevel.DEBUG));
+		 pipeline.addLast("Echo",  new TCPServerEchoHandler());
+	}
+
+	@Override
+	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, Map storeMap, Map preSend) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

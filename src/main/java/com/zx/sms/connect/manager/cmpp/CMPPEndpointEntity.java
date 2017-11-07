@@ -17,8 +17,6 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 	private String password;
 	//默认为3.0协议
 	private short version = (short)0x30L;
-	private short idleTimeSec = 30;
-
 
 	private short windows = 16;
 	private Charset chartset = GlobalConstance.defaultTransportCharset;
@@ -74,14 +72,6 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 
 	public void setVersion(short version) {
 		this.version = version;
-	}
-
-	public short getIdleTimeSec() {
-		return idleTimeSec;
-	}
-
-	public void setIdleTimeSec(short idleTimeSec) {
-		this.idleTimeSec = idleTimeSec;
 	}
 
 	@Deprecated

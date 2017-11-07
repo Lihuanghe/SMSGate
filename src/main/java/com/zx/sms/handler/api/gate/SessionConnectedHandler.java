@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang.math.RandomUtils;
 import org.marre.wap.push.SmsMmsNotificationMessage;
@@ -20,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppReportRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
-import com.zx.sms.codec.cmpp.msg.CmppTerminateRequestMessage;
 import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.common.util.ChannelUtil;
 import com.zx.sms.common.util.MsgId;
@@ -29,7 +27,6 @@ import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
 import com.zx.sms.connect.manager.ServerEndpoint;
 import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
-import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
 import com.zx.sms.session.cmpp.SessionState;
 
 /**
@@ -40,7 +37,8 @@ import com.zx.sms.session.cmpp.SessionState;
 public class SessionConnectedHandler extends AbstractBusinessHandler {
 	private static final Logger logger = LoggerFactory.getLogger(SessionConnectedHandler.class);
 
-	private int totleCnt = 100000;
+	private final static int TOTLE = 300000;
+	private int totleCnt =TOTLE;
 	
 	public int getTotleCnt() {
 		return totleCnt;
@@ -109,13 +107,12 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 				public Boolean call() throws Exception{
 					int cnt = RandomUtils.nextInt() & 0x1f;
 					while(cnt-->0 && totleCnt>0) {
-/*						ChannelFuture future =ChannelUtil.asyncWriteToEntity(getEndpointEntity(), createTestReq(),new GenericFutureListener<ChannelFuture>() {
+						ChannelFuture future = ChannelUtil.asyncWriteToEntity(getEndpointEntity(), createTestReq(),new GenericFutureListener<ChannelFuture>() {
 							@Override
 							public void operationComplete(ChannelFuture future) throws Exception {
 								
 							}
-						});*/
-						ChannelFuture future  = ch.writeAndFlush(createTestReq());
+						});
 						if(future == null){
 							break;
 						}
@@ -149,7 +146,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 	
 	public SessionConnectedHandler clone() throws CloneNotSupportedException {
 		SessionConnectedHandler ret = (SessionConnectedHandler) super.clone();
-		ret.totleCnt = 100000;
+		ret.totleCnt = TOTLE;
 		return ret;
 	}
 

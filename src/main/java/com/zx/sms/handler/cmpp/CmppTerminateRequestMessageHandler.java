@@ -48,6 +48,7 @@ public class CmppTerminateRequestMessageHandler extends SimpleChannelInboundHand
 
 		CmppTerminateResponseMessage responseMessage = new CmppTerminateResponseMessage(e.getHeader().getSequenceId());
 		ChannelFuture future = ctx.channel().writeAndFlush(responseMessage);
+		
 		final ChannelHandlerContext finalctx = ctx;
 		future.addListeners(new GenericFutureListener(){
 			@Override

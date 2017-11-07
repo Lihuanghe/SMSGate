@@ -1,12 +1,18 @@
 package com.zx.sms.connect.manager;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufHolder;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.ssl.SslContext;
+import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -16,9 +22,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.common.GlobalConstance;
+import com.zx.sms.common.storedMap.BDBStoredMapFactoryImpl;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
+import com.zx.sms.connect.manager.cmpp.CMPPCodecChannelInitializer;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
+import com.zx.sms.session.AbstractSessionStateManager;
 import com.zx.sms.session.cmpp.SessionState;
 
 /**
@@ -105,18 +114,72 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	private CircularList getChannels() {
 		return channels;
 	}
-	
-	protected abstract void doAddChannel(Channel ch,int cnt);
+
+	protected abstract AbstractSessionStateManager createSessionManager(EndpointEntity entity, Map storeMap, Map preSend);
+
 	protected abstract void doBindHandler(ChannelPipeline pipe, EndpointEntity entity);
-	protected abstract ChannelInitializer<?> initPipeLine();
-	
+
+	protected abstract void doinitPipeLine(ChannelPipeline pipeline);
+
+	protected ChannelInitializer<?> initPipeLine() {
+
+		return new ChannelInitializer<Channel>() {
+
+			@Override
+			protected void initChannel(Channel ch) throws Exception {
+				ChannelPipeline pipeline = ch.pipeline();
+
+				if (getEndpointEntity().isUseSSL() && getSslCtx() != null) {
+					initSslCtx(ch, getEndpointEntity());
+				}
+				doinitPipeLine(pipeline);
+			}
+		};
+	};
+
 	public void addChannel(Channel ch) {
-		
+
 		// 标识连接已建立
 		ch.attr(GlobalConstance.attributeKey).set(SessionState.Connect);
 		getChannels().add(ch);
 		int cnt = incrementConn();
-		doAddChannel(ch,cnt);
+
+		EndpointEntity endpoint = getEndpointEntity();
+		Map<Serializable, Serializable> storedMap = null;
+		if (endpoint.isReSendFailMsg()) {
+			// 如果上次发送失败的消息要重发一次，则要创建持久化Map用于存储发送的message
+			storedMap = BDBStoredMapFactoryImpl.INS.buildMap(endpoint.getId(), "Session_" + endpoint.getId());
+		} else {
+			storedMap = new HashMap();
+		}
+
+		Map preSendMap = new HashMap();
+
+		logger.debug("Channel added To Endpoint {} .totalCnt:{} ,remoteAddress: {}", endpoint, cnt, ch.remoteAddress());
+		if (cnt == 1 && endpoint.isReSendFailMsg()) {
+			// 如果是第一个连接。要把上次发送失败的消息取出，再次发送一次
+
+			if (storedMap != null && storedMap.size() > 0) {
+				try {
+					for (Map.Entry<Serializable, Serializable> entry : storedMap.entrySet()) {
+						Serializable msg = entry.getValue();
+						preSendMap.put(entry.getKey(), entry.getValue());
+					}
+				} catch (Exception e) {
+					logger.warn("get storedMessage err ", e);
+				} finally {
+					// 删除所有积压的消息
+					storedMap.clear();
+				}
+			}
+		}
+		
+	// 增加流量整形 ，每个连接每秒发送，接收消息数不超过配置的值
+		ch.pipeline().addAfter(CMPPCodecChannelInitializer.codecName, "ChannelTrafficAfter",
+				new MessageChannelTrafficShapingHandler(endpoint.getWriteLimit(), endpoint.getReadLimit(), 250));
+		
+		ch.pipeline().addAfter(CMPPCodecChannelInitializer.codecName, "sessionStateManager", createSessionManager(endpoint, storedMap, preSendMap));
+		
 		bindHandler(ch.pipeline(), getEndpointEntity());
 	}
 
@@ -130,10 +193,10 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	 * 连接建立成功后要加载的channelHandler
 	 */
 	protected void bindHandler(ChannelPipeline pipe, EndpointEntity entity) {
-		
-		//调用子类的bind方法
+
+		// 调用子类的bind方法
 		doBindHandler(pipe, entity);
-		
+
 		List<BusinessHandlerInterface> handlers = entity.getBusinessHandlerSet();
 		if (handlers != null && handlers.size() > 0) {
 			for (BusinessHandlerInterface handler : handlers) {
@@ -167,9 +230,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 	protected abstract void initSslCtx(Channel ch, EndpointEntity entity);
 
-
-	
-	public Channel[] getallChannel(){
+	public Channel[] getallChannel() {
 		return channels.getall();
 	}
 
@@ -179,8 +240,8 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	private class CircularList {
 		private ReadWriteLock lock = new ReentrantReadWriteLock();
 		private List<Channel> collection = new ArrayList<Channel>();
-		
-		public Channel[] getall(){
+
+		public Channel[] getall() {
 			return collection.toArray(new Channel[0]);
 		}
 
@@ -228,7 +289,25 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		private final static long Limited = 65535L;
 		private AtomicLong indexSeq = new AtomicLong();
 	}
+	
+	private class MessageChannelTrafficShapingHandler extends ChannelTrafficShapingHandler {
+		public MessageChannelTrafficShapingHandler(long writeLimit, long readLimit, long checkInterval) {
+			super(writeLimit, readLimit, checkInterval);
+			// 积压75条,或者延迟超过2.5s就不能再写了
+			setMaxWriteSize(75);
+			setMaxWriteDelay(2500);
+		}
 
-
+		@Override
+		protected long calculateSize(Object msg) {
+			if (msg instanceof ByteBuf) {
+				return ((ByteBuf) msg).readableBytes();
+			}
+			if (msg instanceof ByteBufHolder) {
+				return ((ByteBufHolder) msg).content().readableBytes();
+			}
+			return 1;
+		}
+	}
 
 }
