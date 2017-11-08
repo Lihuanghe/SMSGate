@@ -138,6 +138,20 @@ public class ByteBufUtil {
         buffer.writeByte((byte)0x00);
     }
 
+    
+    static public void writeNullTerminatedStringWithFixedLength(ByteBuf buffer, String value,int length) throws UnrecoverablePduException {
+        if (value != null) {
+            try {
+                byte[] bytes = value.getBytes("ISO-8859-1");
+                buffer.writeBytes(bytes);
+            } catch (UnsupportedEncodingException e) {
+                throw new UnrecoverablePduException(e.getMessage(), e);
+            }
+        }
+        // always write null byte
+        buffer.writeByte((byte)0x00);
+    }
+    
     /**
      * Reads a C-String (null terminated) from a buffer.  This method will
      * attempt to find the null byte and read all data up to and including

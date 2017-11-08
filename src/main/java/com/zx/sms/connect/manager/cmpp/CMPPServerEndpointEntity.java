@@ -15,24 +15,24 @@ public class CMPPServerEndpointEntity extends EndpointEntity implements ServerEn
 	private Map<String,CMPPServerChildEndpointEntity> childrenEndpoint = new ConcurrentHashMap<String,CMPPServerChildEndpointEntity>() ;
 	
 	
-	public void addchild(CMPPServerChildEndpointEntity entity)
+	public void addchild(EndpointEntity entity)
 	{
 		
-		childrenEndpoint.put(entity.getUserName().trim(), entity);
+		childrenEndpoint.put(((CMPPServerChildEndpointEntity)entity).getUserName().trim(), (CMPPServerChildEndpointEntity)entity);
 	}
 	
-	public void removechild(CMPPServerChildEndpointEntity entity){
-		childrenEndpoint.remove(entity.getUserName());
+	public void removechild(EndpointEntity entity){
+		childrenEndpoint.remove(((CMPPServerChildEndpointEntity)entity).getUserName());
 	}
 	
-	public CMPPServerChildEndpointEntity getChild(String userName)
+	public EndpointEntity getChild(String userName)
 	{
 		return childrenEndpoint.get(userName);
 	}
 	
-	public List<CMPPServerChildEndpointEntity> getAllChild()
+	public List<EndpointEntity> getAllChild()
 	{
-		List<CMPPServerChildEndpointEntity> list = new ArrayList<CMPPServerChildEndpointEntity>();
+		List<EndpointEntity> list = new ArrayList<EndpointEntity>();
 		for(Map.Entry<String,CMPPServerChildEndpointEntity> entry : childrenEndpoint.entrySet()){
 			list.add(entry.getValue());
 		}

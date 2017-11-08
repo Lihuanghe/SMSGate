@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.storedMap.BDBStoredMapFactoryImpl;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
-import com.zx.sms.connect.manager.cmpp.CMPPCodecChannelInitializer;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 import com.zx.sms.session.AbstractSessionStateManager;
@@ -175,10 +174,10 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		}
 		
 	// 增加流量整形 ，每个连接每秒发送，接收消息数不超过配置的值
-		ch.pipeline().addAfter(CMPPCodecChannelInitializer.codecName, "ChannelTrafficAfter",
+		ch.pipeline().addAfter(GlobalConstance.codecName, "ChannelTrafficAfter",
 				new MessageChannelTrafficShapingHandler(endpoint.getWriteLimit(), endpoint.getReadLimit(), 250));
 		
-		ch.pipeline().addAfter(CMPPCodecChannelInitializer.codecName, "sessionStateManager", createSessionManager(endpoint, storedMap, preSendMap));
+		ch.pipeline().addAfter(GlobalConstance.codecName, "sessionStateManager", createSessionManager(endpoint, storedMap, preSendMap));
 		
 		bindHandler(ch.pipeline(), getEndpointEntity());
 	}

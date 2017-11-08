@@ -27,7 +27,7 @@ public class SMPPServerEndpointConnector extends AbstractServerEndpointConnector
 	@Override
 	protected void doinitPipeLine(ChannelPipeline pipeline) {
 		pipeline.addLast("CmppServerIdleStateHandler", GlobalConstance.idleHandler);
-		pipeline.addLast("SMPPCodecChannelInitializer", new SMPPCodecChannelInitializer());
+		pipeline.addLast(SMPPCodecChannelInitializer.pipeName(), new SMPPCodecChannelInitializer());
 		
 		pipeline.addLast("sessionLoginManager", new SMPPSessionLoginManager(getEndpointEntity()));
 		

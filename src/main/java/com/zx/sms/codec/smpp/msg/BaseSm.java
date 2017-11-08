@@ -23,6 +23,7 @@ package com.zx.sms.codec.smpp.msg;
 import io.netty.buffer.ByteBuf;
 
 import org.marre.sms.SmsMessage;
+import org.marre.sms.SmsTextMessage;
 import org.marre.util.StringUtil;
 
 import com.zx.sms.codec.smpp.Address;
@@ -30,6 +31,7 @@ import com.zx.sms.codec.smpp.RecoverablePduException;
 import com.zx.sms.codec.smpp.SmppInvalidArgumentException;
 import com.zx.sms.codec.smpp.UnrecoverablePduException;
 import com.zx.sms.common.util.ByteBufUtil;
+import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.HexUtil;
 import com.zx.sms.common.util.PduUtil;
 
@@ -46,15 +48,15 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
     protected String serviceType;
     protected Address sourceAddress;
     protected Address destAddress;
-    protected byte esmClass;
-    private byte protocolId;                    // not present in data_sm
-    private byte priority;                      // not present in data_sm
-    private String scheduleDeliveryTime;        // not present in data_sm
-    private String validityPeriod;              // not present in data_sm
-    protected byte registeredDelivery;
-    private byte replaceIfPresent;              // not present in data_sm
-    protected byte dataCoding;
-    private byte defaultMsgId;                  // not present in data_sm, not used in deliver_sm
+    protected byte esmClass=0;
+    private byte protocolId=0;                    // not present in data_sm
+    private byte priority=0;                      // not present in data_sm
+    private String scheduleDeliveryTime="";        // not present in data_sm
+    private String validityPeriod="";              // not present in data_sm
+    protected byte registeredDelivery=1;
+    private byte replaceIfPresent=0;              // not present in data_sm
+    protected byte dataCoding=0;
+    private byte defaultMsgId=0;                  // not present in data_sm, not used in deliver_sm
     private byte[] shortMessage;                // not present in data_sm    
     private SmsMessage smsMsg;
 
@@ -63,7 +65,7 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
     }
 
     public int getShortMessageLength() {
-        return (this.shortMessage == null ? 0 : this.shortMessage.length);
+        return (getShortMessage() == null ? 0 :getShortMessage().length);
     }
 
     public byte[] getShortMessage() {
@@ -179,6 +181,10 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
 
 	public void setSmsMsg(SmsMessage smsMsg) {
 		this.smsMsg = smsMsg;
+	}
+	
+	public void setSmsMsg(String smsMsg) {
+		this.smsMsg = new SmsTextMessage(smsMsg);
 	}
 
 	@Override

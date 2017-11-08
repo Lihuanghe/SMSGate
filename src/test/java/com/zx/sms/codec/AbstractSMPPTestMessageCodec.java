@@ -17,14 +17,17 @@ public  abstract class AbstractSMPPTestMessageCodec<T> {
 	protected EmbeddedChannel ch = new EmbeddedChannel(new ChannelInitializer<Channel>() {
 		@Override
 		protected void initChannel(Channel ch) throws Exception {
-			ResourceLeakDetector.setLevel(Level.ADVANCED);
-			ChannelPipeline pipeline = ch.pipeline();
-			SMPPCodecChannelInitializer codec = new SMPPCodecChannelInitializer();
-			pipeline.addLast("serverLog", new LoggingHandler(LogLevel.INFO));
-			pipeline.addLast(codec.pipeName(), codec);
+			doinitChannel(ch);
 		}
 	});
 	
+	protected void doinitChannel(Channel ch){
+		ResourceLeakDetector.setLevel(Level.ADVANCED);
+		ChannelPipeline pipeline = ch.pipeline();
+		SMPPCodecChannelInitializer codec = new SMPPCodecChannelInitializer();
+		pipeline.addLast("serverLog", new LoggingHandler(LogLevel.INFO));
+		pipeline.addLast(codec.pipeName(), codec);
+	}
 
 	protected ByteBuf encode(T msg){
 		ch.writeOutbound(msg);

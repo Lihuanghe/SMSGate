@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPServerChildEndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPServerEndpointEntity;
+import com.zx.sms.connect.manager.smpp.SMPPServerChildEndpointEntity;
 
 public enum CMPPEndpointManager implements EndpointManagerInterface {
 	INS;
@@ -51,17 +52,15 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 		} else if (entity instanceof CMPPServerEndpointEntity) {
 
 			CMPPServerEndpointEntity serverentity = (CMPPServerEndpointEntity) entity;
-			for (CMPPServerChildEndpointEntity child : serverentity.getAllChild()) {
+			for (EndpointEntity child : serverentity.getAllChild()) {
 				
-				manager.addEndpointEntity(child);
-				
-				List<CMPPEndpointEntity> list = groupMap.get(child.getGroupName());
+				List<CMPPEndpointEntity> list = groupMap.get(((CMPPServerChildEndpointEntity)child).getGroupName());
 				if (list == null) {
 					list = new ArrayList<CMPPEndpointEntity>();
-					List<CMPPEndpointEntity> old = groupMap.putIfAbsent(child.getGroupName(), list);
+					List<CMPPEndpointEntity> old = groupMap.putIfAbsent(((CMPPServerChildEndpointEntity)child).getGroupName(), list);
 					list = old == null ? list : old;
 				}
-				list.add(child);
+				list.add((CMPPServerChildEndpointEntity)child);
 			}
 		}
 	}

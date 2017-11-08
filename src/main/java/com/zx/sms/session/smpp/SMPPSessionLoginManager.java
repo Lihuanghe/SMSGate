@@ -46,7 +46,14 @@ public class SMPPSessionLoginManager extends AbstractSessionLoginManager {
 			String username = message.getSystemId();
 			if (entity instanceof SMPPServerEndpointEntity) {
 				SMPPServerEndpointEntity serverEntity = (SMPPServerEndpointEntity) entity;
-				return serverEntity.getChild(username.trim());
+				EndpointEntity end =  serverEntity.getChild(username.trim());
+				if(end.getChannelType()==ChannelType.DOWN && msg instanceof BindTransmitter){
+					return end;
+				}else if(end.getChannelType()==ChannelType.UP && msg instanceof BindReceiver){
+					return end;
+				}else if(end.getChannelType()==ChannelType.DUPLEX && msg instanceof BindTransceiver){
+					return end;
+				}
 			}
 		}
 		return null;
@@ -128,11 +135,11 @@ public class SMPPSessionLoginManager extends AbstractSessionLoginManager {
 	
     private BaseBind createBindRequest(SMPPEndpointEntity entity)  {
         BaseBind bind = null;
-        if (entity.getType() == ChannelType.DUPLEX) {
+        if (entity.getChannelType() == ChannelType.DUPLEX) {
             bind = new BindTransceiver();
-        } else if (entity.getType() == ChannelType.UP) {
+        } else if (entity.getChannelType() == ChannelType.UP) {
             bind = new BindReceiver();
-        } else if (entity.getType() == ChannelType.DOWN) {
+        } else if (entity.getChannelType() == ChannelType.DOWN) {
             bind = new BindTransmitter();
         } else {
         	logger.error("Unable to convert SmppSessionConfiguration into a BaseBind request");

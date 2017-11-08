@@ -16,6 +16,7 @@ import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.AbstractEndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPServerChildEndpointConnector;
+import com.zx.sms.handler.cmpp.CMPPMessageLogHandler;
 import com.zx.sms.handler.smpp.EnquireLinkMessageHandler;
 import com.zx.sms.handler.smpp.UnbindMessageHandler;
 import com.zx.sms.handler.smpp.UnbindRespMessageHandler;
@@ -42,7 +43,9 @@ public class SMPPServerChildEndpointConnector extends AbstractEndpointConnector{
 
 	@Override
 	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity entity) {
+		
 		pipe.addFirst("socketLog", new LoggingHandler(String.format(GlobalConstance.loggerNamePrefix, entity.getId()), LogLevel.TRACE));
+		pipe.addLast("msgLog", new CMPPMessageLogHandler(entity));
 		pipe.addLast("EnquireLinkMessageHandler",new EnquireLinkMessageHandler());
 		pipe.addLast("UnbindRespMessageHandler", new UnbindRespMessageHandler());
 		pipe.addLast("UnbindMessageHandler", new UnbindMessageHandler());

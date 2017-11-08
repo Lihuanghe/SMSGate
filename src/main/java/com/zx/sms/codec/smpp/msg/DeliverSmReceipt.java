@@ -2,35 +2,134 @@ package com.zx.sms.codec.smpp.msg;
 
 import io.netty.buffer.ByteBuf;
 
-import com.zx.sms.codec.smpp.RecoverablePduException;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.zx.sms.codec.smpp.SmppInvalidArgumentException;
-import com.zx.sms.codec.smpp.UnrecoverablePduException;
-import com.zx.sms.common.util.ByteBufUtil;
-import com.zx.sms.common.util.PduUtil;
 
 public class DeliverSmReceipt extends DeliverSm {
 	
+	private String id;
+	private String sub;
+	private String dlvrd;
+	private String submit_date;
+	private String done_date;
+	private String stat;
+	private String err;
+	private String text;
+	
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getSub() {
+		return sub;
+	}
+
+	public void setSub(String sub) {
+		this.sub = sub;
+	}
+
+	public String getDlvrd() {
+		return dlvrd;
+	}
+
+	public void setDlvrd(String dlvrd) {
+		this.dlvrd = dlvrd;
+	}
+
+	public String getSubmit_date() {
+		return submit_date;
+	}
+
+	public void setSubmit_date(String submit_date) {
+		this.submit_date = submit_date;
+	}
+
+	public String getDone_date() {
+		return done_date;
+	}
+
+	public void setDone_date(String done_date) {
+		this.done_date = done_date;
+	}
+
+	public String getStat() {
+		return stat;
+	}
+
+	public void setStat(String stat) {
+		this.stat = stat;
+	}
+
+	public String getErr() {
+		return err;
+	}
+
+	public void setErr(String err) {
+		this.err = err;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
+
 	//不能修改shortMessage字段
 	public byte[] getShortMessage() {
-       return null;
+		StringBuffer sb = new StringBuffer();
+		sb.append("id:").append(id).append(" ");
+		sb.append("sub:").append(sub).append(" ");
+		sb.append("dlvrd:").append(dlvrd).append(" ");
+		sb.append("submit date:").append(submit_date).append(" ");
+		sb.append("done date:").append(done_date).append(" ");
+		sb.append("stat:").append(stat).append(" ");
+		sb.append("err:").append(err).append(" ");
+		sb.append("text:").append(text);
+		try {
+			return sb.toString().getBytes("ISO-8859-1");
+		} catch (UnsupportedEncodingException e) {
+			
+		}
+		return null;
     }
 	
     public void setShortMessage(byte[] value) throws SmppInvalidArgumentException {
-        
-    }
-	@Override
-    public void readBody(ByteBuf buffer) throws UnrecoverablePduException, RecoverablePduException {
-		super.readBody(buffer);
-		
-    }
-
-
-
-    @Override
-    public void writeBody(ByteBuf buffer) throws UnrecoverablePduException, RecoverablePduException {
     	
-    	super.writeBody(buffer);
-    	
+    	try {
+    		String txt = new String(value,"ISO-8859-1");
+        	String[] c = txt.split(" ");
+			this.id = c[0].split(":")[1];
+			this.sub = c[1].split(":")[1];
+			this.dlvrd = c[2].split(":")[1];
+			this.submit_date = c[4].split(":")[1];
+			this.done_date = c[6].split(":")[1];
+			this.stat = c[7].split(":")[1];
+			this.err = c[8].split(":")[1];
+			this.text = c[9].split(":")[1];
+		} catch (Exception e) {
+		}
+    	super.setShortMessage(value);
     }
     
+	private byte[] byteBufreadarray(ByteBuf buf){
+		byte[] dst = new byte[ buf.readableBytes()];
+		buf.readBytes(dst);
+		return dst;
+	}
+
+	@Override
+	public String toString() {
+		return "DeliverSmReceipt [id=" + id + ", sub=" + sub + ", dlvrd=" + dlvrd + ", submit_date=" + submit_date + ", done_date=" + done_date + ", stat="
+				+ stat + ", err=" + err + ", text=" + text + "]";
+	}
+	
 }

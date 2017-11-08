@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
 import org.marre.sms.SmsDcs;
 import org.marre.sms.SmsMessage;
@@ -12,24 +13,30 @@ import org.slf4j.LoggerFactory;
 
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.codec.cmpp.wap.AbstractLongMessageHandler;
+import com.zx.sms.codec.smpp.DeliverSmReceiptCodec;
 import com.zx.sms.codec.smpp.SMPPMessageCodec;
 import com.zx.sms.codec.smpp.msg.BaseSm;
 import com.zx.sms.codec.smpp.msg.DeliverSm;
 import com.zx.sms.codec.smpp.msg.DeliverSmReceipt;
 import com.zx.sms.codec.smpp.msg.SubmitSm;
+import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 
 public class SMPPCodecChannelInitializer extends ChannelInitializer<Channel> {
 	private static final Logger logger = LoggerFactory.getLogger(SMPPCodecChannelInitializer.class);
-	public final static String codecName = "SMPPCodecChannelInitializer";
+	
 	public static String pipeName() {
 		return "cmppCodec";
 	}
 	@Override
 	protected void initChannel(Channel ch) throws Exception {
 		ChannelPipeline pipeline = ch.pipeline();
-		pipeline.addBefore(pipeName(), codecName, new SMPPMessageCodec());
+		pipeline.addBefore(pipeName(), "FrameDecoder", new LengthFieldBasedFrameDecoder(4 * 1024 , 0, 4, -4, 0, true));
+
+		pipeline.addBefore(pipeName(), GlobalConstance.codecName, new SMPPMessageCodec());
+		pipeline.addBefore(pipeName(), "DeliverSmReceiptCodec", new DeliverSmReceiptCodec());
+		
 		pipeline.addBefore(pipeName(), "SMPPLongMessageHandler", new SMPPLongMessageHandler());
 		
 	}

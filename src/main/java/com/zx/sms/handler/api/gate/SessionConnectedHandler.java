@@ -22,10 +22,10 @@ import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.common.util.ChannelUtil;
 import com.zx.sms.common.util.MsgId;
+import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
 import com.zx.sms.connect.manager.ServerEndpoint;
-import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.session.cmpp.SessionState;
 
@@ -37,7 +37,7 @@ import com.zx.sms.session.cmpp.SessionState;
 public class SessionConnectedHandler extends AbstractBusinessHandler {
 	private static final Logger logger = LoggerFactory.getLogger(SessionConnectedHandler.class);
 
-	private final static int TOTLE = 300000;
+	private static int TOTLE = 100000;
 	private int totleCnt =TOTLE;
 	
 	public int getTotleCnt() {
@@ -47,16 +47,24 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 		this.totleCnt = totleCnt;
 	}
 	
+	public SessionConnectedHandler(){
+		TOTLE = 100000;
+	}
+	
+	public SessionConnectedHandler(int t){
+		TOTLE = t;
+	}
+	
 	@Override
 	public void userEventTriggered(final ChannelHandlerContext ctx, Object evt) throws Exception {
 
 		if (evt == SessionState.Connect) {
 			
-			final CMPPEndpointEntity finalentity = (CMPPEndpointEntity) getEndpointEntity();
+			final EndpointEntity finalentity = (EndpointEntity) getEndpointEntity();
 			final Channel ch = ctx.channel();
 			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>() {
 				private Message createTestReq() {
-					int contentLength = RandomUtils.nextInt(30) ;
+					int contentLength = RandomUtils.nextInt(400) ;
 					StringBuilder sb = new StringBuilder();
 					if (contentLength % 2 == 0) {
 						while (contentLength-- > 0) {
@@ -128,11 +136,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 			}, new ExitUnlimitCirclePolicy() {
 				@Override
 				public boolean notOver(Future future) {
-					boolean ret = ch.isActive() && totleCnt > 0;
-					if(!ret){
-						ch.close();
-					}
-					return ret;
+					return  ch.isActive() && totleCnt > 0;
 				}
 			},1);
 		}

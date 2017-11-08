@@ -13,6 +13,7 @@ import com.zx.sms.codec.smpp.SMPPMessageCodec;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.AbstractClientEndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
+import com.zx.sms.handler.cmpp.CMPPMessageLogHandler;
 import com.zx.sms.handler.smpp.EnquireLinkMessageHandler;
 import com.zx.sms.handler.smpp.UnbindMessageHandler;
 import com.zx.sms.handler.smpp.UnbindRespMessageHandler;
@@ -36,6 +37,7 @@ public class SMPPClientEndpointConnector extends AbstractClientEndpointConnector
 	@Override
 	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity entity) {
 		pipe.addFirst("socketLog", new LoggingHandler(String.format(GlobalConstance.loggerNamePrefix, entity.getId()), LogLevel.TRACE));
+		pipe.addLast("msgLog", new CMPPMessageLogHandler(entity));
 		pipe.addLast("EnquireLinkMessageHandler",new EnquireLinkMessageHandler());
 		pipe.addLast("UnbindRespMessageHandler", new UnbindRespMessageHandler());
 		pipe.addLast("UnbindMessageHandler", new UnbindMessageHandler());
@@ -44,7 +46,7 @@ public class SMPPClientEndpointConnector extends AbstractClientEndpointConnector
 	@Override
 	protected void doinitPipeLine(ChannelPipeline pipeline) {
 		pipeline.addLast("CmppServerIdleStateHandler", GlobalConstance.idleHandler);
-		pipeline.addLast("SMPPCodecChannelInitializer", new SMPPCodecChannelInitializer());
+		pipeline.addLast(SMPPCodecChannelInitializer.pipeName(), new SMPPCodecChannelInitializer());
 		pipeline.addLast("sessionLoginManager", new SMPPSessionLoginManager(getEndpointEntity()));
 	}
 

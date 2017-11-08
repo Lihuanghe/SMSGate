@@ -1,6 +1,5 @@
 package com.zx.sms.handler.api.smsbiz;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
@@ -64,7 +63,7 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 			CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(e.getHeader().getSequenceId());
 			responseMessage.setMsgId(e.getMsgId());
 			responseMessage.setResult(0);
-			ctx.writeAndFlush(responseMessage);
+//			ctx.channel().writeAndFlush(responseMessage);
 			cnt.incrementAndGet();
 
 		} else if (msg instanceof CmppDeliverResponseMessage) {
@@ -75,7 +74,7 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 			CmppSubmitResponseMessage resp = new CmppSubmitResponseMessage(e.getHeader().getSequenceId());
 			resp.setMsgId(e.getMsgid());
 			resp.setResult(0);
-			ctx.writeAndFlush(resp);
+//			ctx.channel().writeAndFlush(resp);
 			cnt.incrementAndGet();
 		} else if (msg instanceof CmppSubmitResponseMessage) {
 			CmppSubmitResponseMessage e = (CmppSubmitResponseMessage) msg;

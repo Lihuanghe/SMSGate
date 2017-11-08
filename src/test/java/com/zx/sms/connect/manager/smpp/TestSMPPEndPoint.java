@@ -1,7 +1,6 @@
-package com.zx.sms.connect.manager.cmpp;
+package com.zx.sms.connect.manager.smpp;
 
 import java.lang.management.ManagementFactory;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,8 +11,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.zx.sms.codec.smpp.SMPP2CMPPBusinessHandler;
 import com.zx.sms.connect.manager.CMPPEndpointManager;
 import com.zx.sms.connect.manager.EndpointManager;
+import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 import com.zx.sms.handler.api.gate.SessionConnectedHandler;
 import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
@@ -28,71 +29,65 @@ import com.zx.sms.mbean.ConnState;
  */
 
 
-public class TestCMPPEndPoint {
-	private static final Logger logger = LoggerFactory.getLogger(TestCMPPEndPoint.class);
+public class TestSMPPEndPoint {
+	private static final Logger logger = LoggerFactory.getLogger(TestSMPPEndPoint.class);
 
 	@Test
-	public void testCMPPEndpoint() throws Exception {
+	public void testSMPPEndpoint() throws Exception {
 	
 		final EndpointManager manager = EndpointManager.INS;
 
-		CMPPServerEndpointEntity server = new CMPPServerEndpointEntity();
+		SMPPServerEndpointEntity server = new SMPPServerEndpointEntity();
 		server.setId("server");
 		server.setHost("127.0.0.1");
-		server.setPort(7891);
+		server.setPort(2776);
 		server.setValid(true);
 		//使用ssl加密数据流
 		server.setUseSSL(false);
 		
-		CMPPServerChildEndpointEntity child = new CMPPServerChildEndpointEntity();
+		SMPPServerChildEndpointEntity child = new SMPPServerChildEndpointEntity();
 		child.setId("child");
-		child.setChartset(Charset.forName("utf-8"));
-		child.setGroupName("test");
-		child.setUserName("901782");
+		child.setSystemId("901782");
 		child.setPassword("ICP");
 
 		child.setValid(true);
-		child.setWindows((short)16);
-		child.setVersion((short)0x20);
-
+		child.setChannelType(ChannelType.DOWN);
 		child.setMaxChannels((short)20);
-		child.setRetryWaitTimeSec((short)5);
+		child.setRetryWaitTimeSec((short)100);
 		child.setMaxRetryCnt((short)3);
 		child.setReSendFailMsg(false);
-//		
+//		child.setWriteLimit(200);
 //		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new SessionConnectedHandler(1));
+		serverhandlers.add(new SMPP2CMPPBusinessHandler());
+		serverhandlers.add( new MessageReceiveHandler());
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
-		
 		manager.addEndpointEntity(server);
-	
-		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
+		manager.openAll();
+		
+		SMPPClientEndpointEntity client = new SMPPClientEndpointEntity();
 		client.setId("client");
 		client.setHost("127.0.0.1");
-		client.setPort(7891);
-		client.setChartset(Charset.forName("utf-8"));
-		client.setGroupName("test");
-		client.setUserName("901782");
+		client.setPort(2776);
+		client.setSystemId("901782");
 		client.setPassword("ICP");
-
+		client.setChannelType(ChannelType.DOWN);
 
 		client.setMaxChannels((short)12);
-		client.setWindows((short)16);
-		client.setVersion((short)0x20);
-		client.setRetryWaitTimeSec((short)10);
+		client.setRetryWaitTimeSec((short)5);
 		client.setUseSSL(false);
 		client.setReSendFailMsg(false);
-		client.setWriteLimit(200);
-//		client.setReadLimit(200);
+//		client.setWriteLimit(200);
+		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new MessageReceiveHandler());
+		clienthandlers.add(new SMPP2CMPPBusinessHandler());
+		clienthandlers.add(new SessionConnectedHandler(1));
 		client.setBusinessHandlerSet(clienthandlers);
-		manager.addEndpointEntity(client);
 		
-		manager.openAll();
+		manager.openEndpoint(client);
+		
 		//LockSupport.park();
 		 MBeanServer mserver = ManagementFactory.getPlatformMBeanServer();  
 

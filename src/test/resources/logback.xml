@@ -33,7 +33,7 @@
 	
 	
 	<logger name="entity" additivity="false">
-		<level value="info" />
+		<level value="trace" />
 		<appender-ref ref="STDOUT" />
 	</logger>
 

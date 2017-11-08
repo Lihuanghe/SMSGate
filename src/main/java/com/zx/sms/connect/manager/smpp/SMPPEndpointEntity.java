@@ -2,6 +2,7 @@ package com.zx.sms.connect.manager.smpp;
 
 import com.zx.sms.codec.smpp.Address;
 import com.zx.sms.connect.manager.EndpointEntity;
+import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
 
 public abstract class SMPPEndpointEntity extends EndpointEntity {
     /**
@@ -13,7 +14,6 @@ public abstract class SMPPEndpointEntity extends EndpointEntity {
     private String systemType;
     private byte interfaceVersion;  // interface version requested by us or them
     private Address addressRange;
-    private ChannelType type;
     
 	public String getSystemId() {
 		return systemId;
@@ -45,12 +45,5 @@ public abstract class SMPPEndpointEntity extends EndpointEntity {
 	public void setAddressRange(Address addressRange) {
 		this.addressRange = addressRange;
 	}
-	public ChannelType getType() {
-		return type;
-	}
-	public void setType(ChannelType type) {
-		this.type = type;
-	}
-	
 
 }

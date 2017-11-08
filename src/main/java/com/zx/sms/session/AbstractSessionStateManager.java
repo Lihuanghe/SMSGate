@@ -239,7 +239,7 @@ public abstract class AbstractSessionStateManager<K,T extends Serializable> exte
 					try {
 						int times = entry.cnt.get();
 						logger.warn("retry Send Msg : {}", message);
-						if (times > entity.getMaxRetryCnt()) {
+						if (times >= entity.getMaxRetryCnt()) {
 
 							//会有future泄漏的情况发生，这里cancel掉自己，来规避泄漏
 							Future future = ref.get();
