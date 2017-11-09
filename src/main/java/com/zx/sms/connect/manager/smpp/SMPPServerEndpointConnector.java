@@ -1,9 +1,11 @@
 package com.zx.sms.connect.manager.smpp;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
+import io.netty.handler.timeout.IdleStateHandler;
 
 import com.zx.sms.codec.smpp.SMPPMessageCodec;
 import com.zx.sms.common.GlobalConstance;
@@ -26,9 +28,10 @@ public class SMPPServerEndpointConnector extends AbstractServerEndpointConnector
 
 	@Override
 	protected void doinitPipeLine(ChannelPipeline pipeline) {
-		pipeline.addLast("CmppServerIdleStateHandler", GlobalConstance.idleHandler);
+		EndpointEntity entity = getEndpointEntity();
+		pipeline.addLast(GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, entity.getIdleTimeSec(), TimeUnit.SECONDS));
+		pipeline.addLast("SmppServerIdleStateHandler", GlobalConstance.smppidleHandler);
 		pipeline.addLast(SMPPCodecChannelInitializer.pipeName(), new SMPPCodecChannelInitializer());
-		
 		pipeline.addLast("sessionLoginManager", new SMPPSessionLoginManager(getEndpointEntity()));
 		
 	}

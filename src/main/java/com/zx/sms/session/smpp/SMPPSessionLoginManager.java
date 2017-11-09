@@ -121,7 +121,7 @@ public class SMPPSessionLoginManager extends AbstractSessionLoginManager {
 		BaseBind message = (BaseBind)msg;
 		// 认证失败
 		PduResponse resp = message.createResponse();
-		resp.setCommandStatus((int)status);
+		resp.setCommandStatus((int)SmppConstants.STATUS_BINDFAIL);
 		ChannelFuture promise = ctx.writeAndFlush(resp);
 
 		final ChannelHandlerContext finalctx = ctx;

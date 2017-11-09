@@ -31,6 +31,7 @@ import com.zx.sms.codec.smpp.SmppConstants;
 import com.zx.sms.codec.smpp.Tlv;
 import com.zx.sms.codec.smpp.UnrecoverablePduException;
 import com.zx.sms.common.util.ByteBufUtil;
+import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 import com.zx.sms.common.util.HexUtil;
 
 public abstract class Pdu implements Serializable,Cloneable{
@@ -51,7 +52,7 @@ public abstract class Pdu implements Serializable,Cloneable{
         this.isRequest = isRequest;
         this.commandLength = null;
         this.commandId = commandId;
-        this.sequenceNumber = null;
+        this.sequenceNumber = (int)DefaultSequenceNumberUtil.getSequenceNo();
         this.referenceObject = null;
     }
 

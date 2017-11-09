@@ -39,5 +39,4 @@ public class EnquireLink extends EmptyBody<EnquireLinkResp> {
     public Class<EnquireLinkResp> getResponseClass() {
         return EnquireLinkResp.class;
     }
-    
 }

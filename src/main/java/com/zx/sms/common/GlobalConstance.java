@@ -11,6 +11,7 @@ import com.zx.sms.handler.cmpp.CmppActiveTestResponseMessageHandler;
 import com.zx.sms.handler.cmpp.CmppServerIdleStateHandler;
 import com.zx.sms.handler.cmpp.CmppTerminateRequestMessageHandler;
 import com.zx.sms.handler.cmpp.CmppTerminateResponseMessageHandler;
+import com.zx.sms.handler.smpp.SmppServerIdleStateHandler;
 import com.zx.sms.session.cmpp.SessionState;
 
 public interface GlobalConstance {
@@ -26,6 +27,7 @@ public interface GlobalConstance {
     public final static  CmppTerminateRequestMessageHandler terminateHandler =  new CmppTerminateRequestMessageHandler();
     public final static  CmppTerminateResponseMessageHandler terminateRespHandler = new CmppTerminateResponseMessageHandler();
     public final static  CmppServerIdleStateHandler idleHandler = new CmppServerIdleStateHandler();
+    public final static  SmppServerIdleStateHandler smppidleHandler = new SmppServerIdleStateHandler();
     public final static AttributeKey<SessionState> attributeKey = AttributeKey.newInstance(SessionState.Connect.name());
     public final static BlackHoleHandler blackhole = new BlackHoleHandler();
     public final static String IdleCheckerHandlerName = "IdleStateHandler";

@@ -51,11 +51,12 @@ public class TestSMPPEndPoint {
 		child.setPassword("ICP");
 
 		child.setValid(true);
-		child.setChannelType(ChannelType.DOWN);
+		child.setChannelType(ChannelType.DUPLEX);
 		child.setMaxChannels((short)20);
 		child.setRetryWaitTimeSec((short)30);
 		child.setMaxRetryCnt((short)3);
 		child.setReSendFailMsg(false);
+		child.setIdleTimeSec((short)15);
 //		child.setWriteLimit(200);
 //		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
@@ -73,7 +74,7 @@ public class TestSMPPEndPoint {
 		client.setPort(2776);
 		client.setSystemId("901782");
 		client.setPassword("ICP");
-		client.setChannelType(ChannelType.DOWN);
+		client.setChannelType(ChannelType.DUPLEX);
 
 		client.setMaxChannels((short)12);
 		client.setRetryWaitTimeSec((short)100);
@@ -83,7 +84,7 @@ public class TestSMPPEndPoint {
 //		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new SMPP2CMPPBusinessHandler());
-		clienthandlers.add(new SessionConnectedHandler(300000));
+//		clienthandlers.add(new SessionConnectedHandler(300000));
 		client.setBusinessHandlerSet(clienthandlers);
 		
 		manager.openEndpoint(client);
