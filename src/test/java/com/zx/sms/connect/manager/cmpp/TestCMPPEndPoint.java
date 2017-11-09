@@ -62,7 +62,7 @@ public class TestCMPPEndPoint {
 //		
 //		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new SessionConnectedHandler(1));
+		serverhandlers.add(new SessionConnectedHandler(300000));
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
@@ -85,7 +85,7 @@ public class TestCMPPEndPoint {
 		client.setRetryWaitTimeSec((short)10);
 		client.setUseSSL(false);
 		client.setReSendFailMsg(false);
-		client.setWriteLimit(200);
+//		client.setWriteLimit(200);
 //		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add( new MessageReceiveHandler());

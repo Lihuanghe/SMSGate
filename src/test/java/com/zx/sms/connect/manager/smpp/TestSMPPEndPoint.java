@@ -53,7 +53,7 @@ public class TestSMPPEndPoint {
 		child.setValid(true);
 		child.setChannelType(ChannelType.DOWN);
 		child.setMaxChannels((short)20);
-		child.setRetryWaitTimeSec((short)100);
+		child.setRetryWaitTimeSec((short)30);
 		child.setMaxRetryCnt((short)3);
 		child.setReSendFailMsg(false);
 //		child.setWriteLimit(200);
@@ -76,14 +76,14 @@ public class TestSMPPEndPoint {
 		client.setChannelType(ChannelType.DOWN);
 
 		client.setMaxChannels((short)12);
-		client.setRetryWaitTimeSec((short)5);
+		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);
 		client.setReSendFailMsg(false);
 //		client.setWriteLimit(200);
-		client.setReadLimit(200);
+//		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new SMPP2CMPPBusinessHandler());
-		clienthandlers.add(new SessionConnectedHandler(1));
+		clienthandlers.add(new SessionConnectedHandler(300000));
 		client.setBusinessHandlerSet(clienthandlers);
 		
 		manager.openEndpoint(client);

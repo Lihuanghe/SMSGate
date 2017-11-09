@@ -73,8 +73,10 @@ public class SMPP2CMPPBusinessHandler extends AbstractBusinessHandler {
     		        out.add(pdu);
     			
     		}else if(msg instanceof CmppDeliverResponseMessage){
+    			
     			DeliverSmResp resp = new DeliverSmResp();
     		    resp.setSequenceNumber((int)msg.getHeader().getSequenceId());
+    		    resp.setCommandStatus((int)((CmppDeliverResponseMessage)msg).getResult());
     		    out.add(resp);
     			
     		}else if(msg instanceof CmppSubmitRequestMessage){
@@ -92,6 +94,7 @@ public class SMPP2CMPPBusinessHandler extends AbstractBusinessHandler {
     		}else if(msg instanceof CmppSubmitResponseMessage){
     			SubmitSmResp resp = new SubmitSmResp();
     		    resp.setSequenceNumber((int)msg.getHeader().getSequenceId());
+    		    resp.setCommandStatus((int)((CmppSubmitResponseMessage)msg).getResult());
     		    out.add(resp);
     		}
     	}
@@ -122,7 +125,7 @@ public class SMPP2CMPPBusinessHandler extends AbstractBusinessHandler {
     		}else if(msg instanceof DeliverSmResp){
     			DeliverSmResp deliresp = (DeliverSmResp)msg;
     			CmppDeliverResponseMessage delir = new CmppDeliverResponseMessage(msg.getSequenceNumber());
-    			
+    			delir.setResult(deliresp.getCommandStatus());
     			out.add(delir);
     		}else if(msg instanceof SubmitSm){
     			SubmitSm sm = (SubmitSm)msg;
@@ -138,7 +141,9 @@ public class SMPP2CMPPBusinessHandler extends AbstractBusinessHandler {
     			
     		}else if(msg instanceof SubmitSmResp){
     			SubmitSmResp submitresp = (SubmitSmResp)msg;
-    			out.add(new CmppSubmitResponseMessage(msg.getSequenceNumber()));
+    			CmppSubmitResponseMessage mtresp = new CmppSubmitResponseMessage(msg.getSequenceNumber());
+    			mtresp.setResult(submitresp.getCommandStatus());
+    			out.add(mtresp);
     		}else{
     			out.add(msg);
     		}

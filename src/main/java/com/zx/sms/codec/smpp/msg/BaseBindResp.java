@@ -21,7 +21,6 @@ package com.zx.sms.codec.smpp.msg;
  */
 
 import io.netty.buffer.ByteBuf;
-import bsh.StringUtil;
 
 import com.zx.sms.codec.smpp.RecoverablePduException;
 import com.zx.sms.codec.smpp.UnrecoverablePduException;
