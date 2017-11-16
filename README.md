@@ -11,7 +11,7 @@ cmpp协议已经跟华为，东软，亚信的短信网关都做过联调测试�
 因要与短信中心对接，新增了对SMPP协议的支持。
 SMPP的协议解析代码是从  [Twitter-SMPP 的代码](https://github.com/fizzed/cloudhopper-smpp) copy过来的。
 
-##性能测试
+## 性能测试 
 在48core，128G内存的物理服务器上测试协议解析效率：35K条/s, cpu使用率25%. 
 
 ## Build
