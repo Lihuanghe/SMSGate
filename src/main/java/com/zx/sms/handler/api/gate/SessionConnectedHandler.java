@@ -21,7 +21,7 @@ import com.zx.sms.codec.cmpp.msg.CmppReportRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.common.util.ChannelUtil;
-import com.zx.sms.common.util.MsgId;
+//import com.zx.sms.common.util.MsgId;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
@@ -85,7 +85,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						msg.setLinkid("0000");
 						msg.setMsgContent(sb.toString());
 
-						msg.setMsgId(new MsgId());
+//						msg.setMsgId(new MsgId());
 						msg.setRegisteredDelivery((short) 0);
 						if (msg.getRegisteredDelivery() == 1) {
 							msg.setReportRequestMessage(new CmppReportRequestMessage());
@@ -102,7 +102,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						msg.setDestterminalId(String.valueOf(System.nanoTime()));
 						msg.setLinkID("0000");
 						msg.setMsgContent(sb.toString());
-						msg.setMsgid(new MsgId());
+//						msg.setMsgid(new MsgId());
 						msg.setServiceId("10086");
 						msg.setSrcId("10086");
 						msg.setAttachment((Serializable)map);

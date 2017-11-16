@@ -1,4 +1,4 @@
-# CMPPGate
+# CMPPGate , SMPPGate
 中移短信cmpp协议netty实现编解码
 
 这是一个在netty4框架下实现的cmpp3.0/cmpp2.0短信协议解析及网关端口管理 (master分支是依赖于netty5的)。
@@ -7,6 +7,8 @@
 目前已支持发送和解析`长文本短们拆分合并`，`WapPush短信`，以及`彩信通知`类型的短信。可以实现对彩信或者wap-push短信的拦截和加工处理。wap短信的解析使用 [smsj] (https://github.com/marre/smsj)的短信库
 
 代码已经跟华为，东软，亚信的短信网关都做过联调测试，兼容了不同厂家的错误和异常，如果跟网关通信出错，可以打开trace日志查看二进制数据。
+
+因要与短信中心对接，新增了对SMPP协议的支持。
 
 ##性能测试
 在48core，128G内存的物理服务器上测试协议解析效率：35K条/s, cpu使用率25%. 
@@ -85,7 +87,7 @@ CMPPMessageCodecAggregator [这是3.0协议]
 11. 业务处理类收到SessionState.Connect事件，开始业务处理，如下发短信。
 12. SessionStateManager会拦截所有read()和write()的消息，进行消息持久化，消息重发，流量控制。
 
-## Api使用举例
+## CMPP Api使用举例
 
 ```java
 
@@ -95,79 +97,154 @@ public class TestCMPPEndPoint {
 	@Test
 	public void testCMPPEndpoint() throws Exception {
 	
-		final CMPPEndpointManager manager = CMPPEndpointManager.INS;
+		final EndpointManager manager = EndpointManager.INS;
 
-		// 注意下面所有Entity的Id字段是不允许重复的，Id标识整个JVM唯一的一个网关端口
-		// 创建一个CMPP的服务端，模拟一个短信网关
 		CMPPServerEndpointEntity server = new CMPPServerEndpointEntity();
 		server.setId("server");
 		server.setHost("127.0.0.1");
 		server.setPort(7891);
 		server.setValid(true);
-		server.setUseSSL(false);  //不使用SSL加密流量
+		//使用ssl加密数据流
+		server.setUseSSL(false);
 		
-		//给这个网关增加一个允许接入的账号
 		CMPPServerChildEndpointEntity child = new CMPPServerChildEndpointEntity();
 		child.setId("child");
 		child.setChartset(Charset.forName("utf-8"));
 		child.setGroupName("test");
 		child.setUserName("901782");
 		child.setPassword("ICP");
+
 		child.setValid(true);
 		child.setWindows((short)16);
-		child.setVersion((short)48);
+		child.setVersion((short)0x20);
+
 		child.setMaxChannels((short)20);
-		child.setRetryWaitTimeSec((short)100);
+		child.setRetryWaitTimeSec((short)5);
 		child.setMaxRetryCnt((short)3);
-		
-		//给这个账号添加一个业务处理: SessionConnectedHandler 。当client连接完成,用户名密码正确后，立即给Client发送200000条短信
+		child.setReSendFailMsg(false);
+//		
+//		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new SessionConnectedHandler());
+		serverhandlers.add(new SessionConnectedHandler(300000));
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
-		//把Server加入到管理器
+		
 		manager.addEndpointEntity(server);
 	
-	
-		//模拟创建一个Client,要去连接上面的网关，使用上面账号密码
 		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
 		client.setId("client");
-		client.setHost("127.0.0.2,127.0.0.3,127.0.0.1");
+		client.setHost("127.0.0.1");
 		client.setPort(7891);
 		client.setChartset(Charset.forName("utf-8"));
 		client.setGroupName("test");
 		client.setUserName("901782");
 		client.setPassword("ICP");
-		client.setReadLimit(0);
-		child.setWriteLimit(100);
+
+
+		client.setMaxChannels((short)12);
 		client.setWindows((short)16);
-		client.setVersion((short)48);
-		client.setRetryWaitTimeSec((short)100);
-		client.setUseSSL(false); //不使用SSL加密流量
-		
-		//这里是给Client增加一个处理业务:MessageReceiveHandler ，统计接收到的短信条数和速度，并打印到控制台。
+		client.setVersion((short)0x20);
+		client.setRetryWaitTimeSec((short)10);
+		client.setUseSSL(false);
+		client.setReSendFailMsg(false);
+//		client.setWriteLimit(200);
+//		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add(new MessageReceiveHandler());
+		clienthandlers.add( new MessageReceiveHandler());
 		client.setBusinessHandlerSet(clienthandlers);
-		
-		//把Client加入到管理器
 		manager.addEndpointEntity(client);
 		
-		//管理器打开端口
 		manager.openAll();
-		
-		//主线程挂起，在控制台看实时打印的Log
+		//LockSupport.park();
+		 MBeanServer mserver = ManagementFactory.getPlatformMBeanServer();  
+
+        ObjectName stat = new ObjectName("com.zx.sms:name=ConnState");
+        mserver.registerMBean(new ConnState(), stat);
+        System.out.println("start.....");
+        
 		Thread.sleep(300000);
-		
-		//关闭所有连接和端口
-		CMPPEndpointManager.INS.close();
+		EndpointManager.INS.close();
 	}
-}
 
 ```
 
+## SMPP Api使用举例
 
+```java
+
+public class TestSMPPEndPoint {
+	private static final Logger logger = LoggerFactory.getLogger(TestSMPPEndPoint.class);
+
+	@Test
+	public void testSMPPEndpoint() throws Exception {
+	
+		final EndpointManager manager = EndpointManager.INS;
+
+		SMPPServerEndpointEntity server = new SMPPServerEndpointEntity();
+		server.setId("server");
+		server.setHost("127.0.0.1");
+		server.setPort(2776);
+		server.setValid(true);
+		//使用ssl加密数据流
+		server.setUseSSL(false);
+		
+		SMPPServerChildEndpointEntity child = new SMPPServerChildEndpointEntity();
+		child.setId("child");
+		child.setSystemId("901782");
+		child.setPassword("ICP");
+
+		child.setValid(true);
+		child.setChannelType(ChannelType.DUPLEX);
+		child.setMaxChannels((short)20);
+		child.setRetryWaitTimeSec((short)30);
+		child.setMaxRetryCnt((short)3);
+		child.setReSendFailMsg(false);
+		child.setIdleTimeSec((short)15);
+//		child.setWriteLimit(200);
+//		child.setReadLimit(200);
+		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
+		serverhandlers.add(new SMPP2CMPPBusinessHandler());  //  将CMPP的对象转成SMPP对象，然后再经SMPP解码器处理
+		serverhandlers.add( new MessageReceiveHandler());   // 复用CMPP的Handler
+		child.setBusinessHandlerSet(serverhandlers);
+		server.addchild(child);
+		
+		manager.addEndpointEntity(server);
+		manager.openAll();
+		
+		SMPPClientEndpointEntity client = new SMPPClientEndpointEntity();
+		client.setId("client");
+		client.setHost("127.0.0.1");
+		client.setPort(2776);
+		client.setSystemId("901782");
+		client.setPassword("ICP");
+		client.setChannelType(ChannelType.DUPLEX);
+
+		client.setMaxChannels((short)12);
+		client.setRetryWaitTimeSec((short)100);
+		client.setUseSSL(false);
+		client.setReSendFailMsg(false);
+//		client.setWriteLimit(200);
+//		client.setReadLimit(200);
+		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
+		clienthandlers.add(new SMPP2CMPPBusinessHandler()); //  将CMPP的对象转成SMPP对象，然后再经SMPP解码器处理
+		clienthandlers.add(new SessionConnectedHandler(600000)); //// 复用CMPP的Handler
+		client.setBusinessHandlerSet(clienthandlers);
+		
+		manager.openEndpoint(client);
+		
+		//LockSupport.park();
+		 MBeanServer mserver = ManagementFactory.getPlatformMBeanServer();  
+
+        ObjectName stat = new ObjectName("com.zx.sms:name=ConnState");
+        mserver.registerMBean(new ConnState(), stat);
+        System.out.println("start.....");
+        
+		Thread.sleep(300000);
+		EndpointManager.INS.close();
+	}
+	
+```
 
 
 

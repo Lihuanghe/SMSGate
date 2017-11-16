@@ -9,7 +9,7 @@ import java.util.List;
 import com.zx.sms.codec.smpp.msg.Pdu;
 
 public class SMPPMessageCodec extends MessageToMessageCodec<ByteBuf, Pdu> {
-	private final PduTranscoder transcoder = new DefaultPduTranscoder(new DefaultPduTranscoderContext());
+	private static final PduTranscoder transcoder = new DefaultPduTranscoder(new DefaultPduTranscoderContext());
 	@Override
 	protected void encode(ChannelHandlerContext ctx, Pdu msg, List<Object> out) throws Exception {
 		ByteBuf buf = transcoder.encode(msg);

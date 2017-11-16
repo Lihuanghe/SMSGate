@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.codec.smpp.SMPP2CMPPBusinessHandler;
-import com.zx.sms.connect.manager.CMPPEndpointManager;
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
@@ -60,8 +59,8 @@ public class TestSMPPEndPoint {
 //		child.setWriteLimit(200);
 //		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new SMPP2CMPPBusinessHandler());
-		serverhandlers.add( new MessageReceiveHandler());
+		serverhandlers.add(new SMPP2CMPPBusinessHandler());  //  将CMPP的对象转成SMPP对象，然后再经SMPP解码器处理
+		serverhandlers.add( new MessageReceiveHandler());   // 复用CMPP的Handler
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
@@ -83,8 +82,8 @@ public class TestSMPPEndPoint {
 //		client.setWriteLimit(200);
 //		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add(new SMPP2CMPPBusinessHandler());
-//		clienthandlers.add(new SessionConnectedHandler(300000));
+		clienthandlers.add(new SMPP2CMPPBusinessHandler()); //  将CMPP的对象转成SMPP对象，然后再经SMPP解码器处理
+		clienthandlers.add(new SessionConnectedHandler(600000)); //// 复用CMPP的Handler
 		client.setBusinessHandlerSet(clienthandlers);
 		
 		manager.openEndpoint(client);
@@ -97,6 +96,6 @@ public class TestSMPPEndPoint {
         System.out.println("start.....");
         
 		Thread.sleep(300000);
-		CMPPEndpointManager.INS.close();
+		EndpointManager.INS.close();
 	}
 }

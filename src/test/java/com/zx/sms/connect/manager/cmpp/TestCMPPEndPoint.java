@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.zx.sms.connect.manager.CMPPEndpointManager;
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 import com.zx.sms.handler.api.gate.SessionConnectedHandler;
@@ -101,6 +100,6 @@ public class TestCMPPEndPoint {
         System.out.println("start.....");
         
 		Thread.sleep(300000);
-		CMPPEndpointManager.INS.close();
+		EndpointManager.INS.close();
 	}
 }

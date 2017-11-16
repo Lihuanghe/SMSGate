@@ -23,8 +23,14 @@ package com.zx.sms.codec.smpp.msg;
 import io.netty.buffer.ByteBuf;
 
 import org.marre.sms.SmsMessage;
+import org.marre.sms.SmsPortAddressedTextMessage;
 import org.marre.sms.SmsTextMessage;
 import org.marre.util.StringUtil;
+import org.marre.wap.push.SmsMmsNotificationMessage;
+import org.marre.wap.push.SmsWapPushMessage;
+import org.marre.wap.push.WapSIPush;
+import org.marre.wap.push.WapSLPush;
+import org.marre.wap.wbxml.WbxmlDocument;
 
 import com.zx.sms.codec.smpp.Address;
 import com.zx.sms.codec.smpp.RecoverablePduException;
@@ -186,6 +192,28 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
 	public void setSmsMsg(String smsMsg) {
 		this.smsMsg = new SmsTextMessage(smsMsg);
 	}
+	
+    public String getMsgContent() {
+		if(smsMsg instanceof SmsTextMessage){
+			SmsTextMessage textMsg = (SmsTextMessage) smsMsg;
+			return textMsg.getText();
+		}else if(smsMsg instanceof SmsPortAddressedTextMessage){
+			SmsPortAddressedTextMessage textMsg = (SmsPortAddressedTextMessage) smsMsg;
+			return textMsg.getText();
+		}else if(smsMsg instanceof SmsMmsNotificationMessage){
+			SmsMmsNotificationMessage mms = (SmsMmsNotificationMessage) smsMsg;
+			return mms.getContentLocation_();
+		}else if(smsMsg instanceof SmsWapPushMessage){
+			SmsWapPushMessage wap = (SmsWapPushMessage) smsMsg;
+			WbxmlDocument wbxml = wap.getWbxml();
+			if(wbxml instanceof WapSIPush){
+				return ((WapSIPush)wbxml).getUri();
+			}else if(wbxml instanceof WapSLPush){
+				return ((WapSLPush)wbxml).getUri();
+			}
+		}
+		return "";
+	}
 
 	@Override
     public void readBody(ByteBuf buffer) throws UnrecoverablePduException, RecoverablePduException {
@@ -258,7 +286,7 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
         buffer.append("] dcs [0x");
         buffer.append(HexUtil.toHexString(this.dataCoding));
         buffer.append("] message [");
-        HexUtil.appendHexString(buffer, this.shortMessage);
+        buffer.append(getMsgContent());
         buffer.append("])");
     }
 }

@@ -1,12 +1,13 @@
 package com.zx.sms.codec.smpp;
 
-import java.util.List;
-
-import org.marre.sms.SmsDcs;
-
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.MessageToMessageCodec;
+
+import java.util.List;
+
+import org.marre.sms.SmsDcs;
 
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
@@ -23,9 +24,10 @@ import com.zx.sms.codec.smpp.msg.SubmitSm;
 import com.zx.sms.codec.smpp.msg.SubmitSmResp;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
 
+@Sharable
 public class SMPP2CMPPBusinessHandler extends AbstractBusinessHandler {
 
-	private SMPP2CMPPCodec codec = new SMPP2CMPPCodec();
+	private static SMPP2CMPPCodec codec = new SMPP2CMPPCodec();
 	@Override
 	public String name() {
 		return "SMPP2CMPPBusinessHandler";
@@ -41,7 +43,7 @@ public class SMPP2CMPPBusinessHandler extends AbstractBusinessHandler {
     	codec.write(ctx, msg, promise);
     }
     
-    private class SMPP2CMPPCodec extends MessageToMessageCodec<Pdu, DefaultMessage> {
+    private static class SMPP2CMPPCodec extends MessageToMessageCodec<Pdu, DefaultMessage> {
 
     	@Override
     	protected void encode(ChannelHandlerContext ctx, DefaultMessage msg, List<Object> out) throws Exception {

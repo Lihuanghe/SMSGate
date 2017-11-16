@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import com.zx.sms.codec.AbstractSMPPTestMessageCodec;
 import com.zx.sms.codec.smpp.msg.EnquireLink;
+import com.zx.sms.common.util.StandardCharsets;
 
 public class TestEnquireLinkCodec extends AbstractSMPPTestMessageCodec<EnquireLink> {
 
@@ -24,5 +25,10 @@ public class TestEnquireLinkCodec extends AbstractSMPPTestMessageCodec<EnquireLi
 		 Assert.assertEquals(16, b.readableBytes());
 	}
 	
+	@Test
+	public void testChar(){
+		ByteBuf buf = Unpooled.wrappedBuffer(new byte[]{65,66,67,68,32,0,1,2});
+		System.out.println(buf.readCharSequence(8, StandardCharsets.ISO_8859_1));
+	}
 	
 }
