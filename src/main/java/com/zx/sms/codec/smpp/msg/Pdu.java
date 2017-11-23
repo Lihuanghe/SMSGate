@@ -22,9 +22,9 @@ package com.zx.sms.codec.smpp.msg;
 
 import io.netty.buffer.ByteBuf;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
+import com.zx.sms.BaseMessage;
 import com.zx.sms.codec.smpp.PduTranscoderContext;
 import com.zx.sms.codec.smpp.RecoverablePduException;
 import com.zx.sms.codec.smpp.SmppConstants;
@@ -34,7 +34,7 @@ import com.zx.sms.common.util.ByteBufUtil;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 import com.zx.sms.common.util.HexUtil;
 
-public abstract class Pdu implements Serializable,Cloneable{
+public abstract class Pdu implements BaseMessage,Cloneable{
     
     private final String name;
     private final boolean isRequest;

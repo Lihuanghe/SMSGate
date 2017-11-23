@@ -23,9 +23,4 @@ public class SMPPSessionStateManager extends AbstractSessionStateManager<Integer
 		return true;
 	}
 
-	@Override
-	protected boolean isRequestMsg(Pdu msg) {
-		return msg.isRequest();
-	}
-
 }

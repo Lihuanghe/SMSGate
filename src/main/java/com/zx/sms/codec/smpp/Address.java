@@ -22,6 +22,8 @@ package com.zx.sms.codec.smpp;
 
 import io.netty.buffer.ByteBuf;
 
+import java.io.Serializable;
+
 import org.apache.commons.codec.binary.Hex;
 
 import com.zx.sms.common.util.ByteBufUtil;
@@ -32,7 +34,7 @@ import com.zx.sms.common.util.PduUtil;
  * 
  * @author joelauer (twitter: @jjlauer or <a href="http://twitter.com/jjlauer" target=window>http://twitter.com/jjlauer</a>)
  */
-public class Address {
+public class Address implements Serializable{
 
     private byte ton;
     private byte npi;

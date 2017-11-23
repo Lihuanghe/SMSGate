@@ -20,22 +20,13 @@ public class SessionStateManager extends AbstractSessionStateManager<Long,Messag
 	}
 	@Override
 	protected Long getSequenceId(Message msg) {
-		if(msg instanceof Message){
-			Message message = (Message)msg;
-			return message.getHeader().getSequenceId();
-		}
-		return null;
+			return msg.getHeader().getSequenceId();
 	}
 	@Override
 	protected boolean checkTerminateLife(Object msg) {
 		
 		return true;
 	}
-	@Override
-	protected boolean isRequestMsg(Message msg) {
-		Message message = (Message)msg;
-		long commandId = message.getHeader().getCommandId();
-		return (commandId & 0x80000000L) == 0L;
-	}
+
 
 }

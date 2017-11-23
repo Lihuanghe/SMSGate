@@ -139,4 +139,15 @@ public class DefaultMessage implements Message ,Cloneable {
 		msg.setTimestamp(CachedMillisecondClock.INS.now());
 		return msg;
 	}
+
+	@Override
+	public boolean isRequest() {
+		long commandId = getHeader().getCommandId();
+		return (commandId & 0x80000000L) == 0L;
+	}
+	@Override
+	public boolean isResponse() {
+		long commandId = getHeader().getCommandId();
+		return (commandId & 0x80000000L) == 0x80000000L;
+	}
 }

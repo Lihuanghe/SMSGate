@@ -37,7 +37,7 @@ public class TestSMPPEndPoint {
 		final EndpointManager manager = EndpointManager.INS;
 
 		SMPPServerEndpointEntity server = new SMPPServerEndpointEntity();
-		server.setId("server");
+		server.setId("smppserver");
 		server.setHost("127.0.0.1");
 		server.setPort(2776);
 		server.setValid(true);
@@ -45,7 +45,7 @@ public class TestSMPPEndPoint {
 		server.setUseSSL(false);
 		
 		SMPPServerChildEndpointEntity child = new SMPPServerChildEndpointEntity();
-		child.setId("child");
+		child.setId("smppchild");
 		child.setSystemId("901782");
 		child.setPassword("ICP");
 
@@ -54,7 +54,7 @@ public class TestSMPPEndPoint {
 		child.setMaxChannels((short)20);
 		child.setRetryWaitTimeSec((short)30);
 		child.setMaxRetryCnt((short)3);
-		child.setReSendFailMsg(false);
+		child.setReSendFailMsg(true);
 		child.setIdleTimeSec((short)15);
 //		child.setWriteLimit(200);
 //		child.setReadLimit(200);
@@ -68,7 +68,7 @@ public class TestSMPPEndPoint {
 		manager.openAll();
 		
 		SMPPClientEndpointEntity client = new SMPPClientEndpointEntity();
-		client.setId("client");
+		client.setId("smppclient");
 		client.setHost("127.0.0.1");
 		client.setPort(2776);
 		client.setSystemId("901782");
@@ -78,7 +78,7 @@ public class TestSMPPEndPoint {
 		client.setMaxChannels((short)12);
 		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);
-		client.setReSendFailMsg(false);
+		client.setReSendFailMsg(true);
 //		client.setWriteLimit(200);
 //		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();

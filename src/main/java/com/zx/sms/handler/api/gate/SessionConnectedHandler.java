@@ -83,7 +83,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						CmppDeliverRequestMessage msg = new CmppDeliverRequestMessage();
 						msg.setDestId("13800138000");
 						msg.setLinkid("0000");
-						msg.setMsgContent(sb.toString());
+						msg.setMsgContent("a");
 
 //						msg.setMsgId(new MsgId());
 						msg.setRegisteredDelivery((short) 0);
@@ -94,19 +94,19 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						msg.setSrcterminalId(String.valueOf(System.nanoTime()));
 						msg.setSrcterminalType((short) 1);
 						msg.setAttachment((Serializable)map);
-						msg.setMsgContent(new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd",50*1024));
+//						msg.setMsgContent(new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd",50*1024));
 						
 						return msg;
 					} else {
 						CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
 						msg.setDestterminalId(String.valueOf(System.nanoTime()));
 						msg.setLinkID("0000");
-						msg.setMsgContent(sb.toString());
+						msg.setMsgContent("a");
 //						msg.setMsgid(new MsgId());
 						msg.setServiceId("10086");
 						msg.setSrcId("10086");
 						msg.setAttachment((Serializable)map);
-						msg.setMsgContent(new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd",50*1024));
+//						msg.setMsgContent(new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd",50*1024));
 						return msg;
 					}
 				}
@@ -115,12 +115,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 				public Boolean call() throws Exception{
 					int cnt = RandomUtils.nextInt() & 0x1f;
 					while(cnt-->0 && totleCnt>0) {
-						ChannelFuture future = ChannelUtil.asyncWriteToEntity(getEndpointEntity(), createTestReq(),new GenericFutureListener<ChannelFuture>() {
-							@Override
-							public void operationComplete(ChannelFuture future) throws Exception {
-								
-							}
-						});
+						ChannelFuture future = ctx.writeAndFlush(createTestReq() );
 						if(future == null){
 							break;
 						}

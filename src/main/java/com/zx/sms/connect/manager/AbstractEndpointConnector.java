@@ -21,6 +21,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.zx.sms.BaseMessage;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.storedMap.BDBStoredMapFactoryImpl;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
@@ -228,7 +229,20 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	}
 
 	protected abstract void initSslCtx(Channel ch, EndpointEntity entity);
-
+	
+	protected long doCalculateSize(Object msg){
+		if(msg instanceof BaseMessage){
+			BaseMessage req = (BaseMessage)msg;
+			if(req.isRequest()){
+				return 1;
+			}else{
+				return 0;
+			}
+		}else{
+			return -1L;
+		}
+	}
+	
 	public Channel[] getallChannel() {
 		return channels.getall();
 	}
@@ -305,7 +319,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			if (msg instanceof ByteBufHolder) {
 				return ((ByteBufHolder) msg).content().readableBytes();
 			}
-			return 1;
+			return doCalculateSize(msg);
 		}
 	}
 

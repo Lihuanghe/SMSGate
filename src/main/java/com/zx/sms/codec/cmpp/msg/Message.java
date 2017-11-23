@@ -1,9 +1,8 @@
 package com.zx.sms.codec.cmpp.msg;
 
-import io.netty.buffer.ByteBuf;
-
 import java.io.Serializable;
 
+import com.zx.sms.BaseMessage;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 
 /**
@@ -11,7 +10,7 @@ import com.zx.sms.codec.cmpp.packet.PacketType;
  * @author huzorro(huzorro@gmail.com)
  *
  */
-public interface Message extends Serializable  {
+public interface Message extends BaseMessage  {
 	public void setPacketType(PacketType packetType);
 	public PacketType getPacketType();
 	public void setTimestamp(long milliseconds);

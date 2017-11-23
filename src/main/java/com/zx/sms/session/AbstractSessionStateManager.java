@@ -7,7 +7,6 @@ import io.netty.channel.ChannelOutboundBuffer;
 import io.netty.channel.ChannelPromise;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
@@ -22,6 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.zx.sms.BaseMessage;
 import com.zx.sms.config.PropertiesUtils;
 import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
@@ -31,7 +31,7 @@ import com.zx.sms.session.cmpp.SessionState;
 /**
  * @author Lihuanghe(18852780@qq.com) 消息发送窗口拜你控制和消息重发 ，消息持久化
  */
-public abstract class AbstractSessionStateManager<K,T extends Serializable> extends ChannelDuplexHandler {
+public abstract class AbstractSessionStateManager<K,T extends BaseMessage> extends ChannelDuplexHandler {
 	private static final Logger logger = LoggerFactory.getLogger(AbstractSessionStateManager.class);
 	// 用来记录连接上的错误消息
 	private final Logger errlogger;
@@ -139,12 +139,12 @@ public abstract class AbstractSessionStateManager<K,T extends Serializable> exte
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
 		msgReadCount++;
-		if (msg instanceof Serializable) {
+		if (msg instanceof BaseMessage) {
 			final T message = (T) msg;
 			// 设置消息的生命周期
 
 			// 如果是resp，取消息消息重发
-			if (!isRequestMsg(message)) {
+			if (message.isResponse()) {
 				// 删除发送成功的消息
 				K key = getSequenceId(message);
 				T request = storeMap.remove(key);
@@ -162,10 +162,10 @@ public abstract class AbstractSessionStateManager<K,T extends Serializable> exte
 	protected abstract boolean checkTerminateLife(Object msg);
 	
 	@Override
-	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
+	public void write(ChannelHandlerContext ctx, Object message, ChannelPromise promise) throws Exception {
 
-		if (msg instanceof Serializable) {
-
+		if (message instanceof BaseMessage) {
+			BaseMessage msg = (BaseMessage)message;
 			// 发送消息超过生命周期
 			
 			if (!checkTerminateLife(msg)) {
@@ -174,7 +174,7 @@ public abstract class AbstractSessionStateManager<K,T extends Serializable> exte
 				return;
 			}
 
-			if (isRequestMsg((T) msg)) {
+			if (msg.isRequest()) {
 				// 发送，未收到Response时，60秒后重试,
 				writeWithWindow(ctx, (T) msg, promise);
 			} else {
@@ -183,7 +183,7 @@ public abstract class AbstractSessionStateManager<K,T extends Serializable> exte
 			}
 		} else {
 			// 不是Message消息时直接发送
-			ctx.write(msg, promise);
+			ctx.write(message, promise);
 		}
 	}
 
@@ -206,7 +206,6 @@ public abstract class AbstractSessionStateManager<K,T extends Serializable> exte
 	 * 获取发送窗口，并且注册重试任务
 	 **/
 	private boolean writeWithWindow(final ChannelHandlerContext ctx, final T message, final ChannelPromise promise) {
-		
 		try {
 			safewrite(ctx, message, promise);
 		} catch (Exception e) {
@@ -305,8 +304,6 @@ public abstract class AbstractSessionStateManager<K,T extends Serializable> exte
 		}
 		return entry;
 	}
-
-	protected abstract boolean isRequestMsg(T msg);
 
 	private void preSendMsg(ChannelHandlerContext ctx) {
 		if (preSend != null && preSend.size() > 0) {
