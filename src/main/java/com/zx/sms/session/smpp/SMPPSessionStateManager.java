@@ -23,4 +23,9 @@ public class SMPPSessionStateManager extends AbstractSessionStateManager<Integer
 		return true;
 	}
 
+	@Override
+	protected boolean needSendAgainByResponse(Pdu req, Pdu res) {
+		return false;
+	}
+
 }

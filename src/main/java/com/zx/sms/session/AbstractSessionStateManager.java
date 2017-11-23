@@ -134,6 +134,8 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 		ctx.fireChannelInactive();
 	}
 	protected abstract K getSequenceId(T msg);
+	
+	protected abstract boolean needSendAgainByResponse(T req,T res);
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -150,6 +152,11 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 				T request = storeMap.remove(key);
 				if (request != null) {
 					Entry cancelentry = cancelRetry(request, ctx.channel());
+					
+					//根据Response 判断是否需要重发,比如CMPP协议，如果收到result==8，表示超速，需要重新发送
+					if(needSendAgainByResponse(request ,message)){
+						reWriteLater(ctx, request, ctx.newPromise(), 400);
+					}
 				}
 				else{
 					errlogger.warn("receive ResponseMessage ,but not found related Request Msg. {}",message);
