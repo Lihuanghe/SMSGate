@@ -22,13 +22,15 @@ package com.zx.sms.codec.smpp.msg;
 
 import io.netty.buffer.ByteBuf;
 
+import com.zx.sms.LongSMSMessage;
+import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.codec.smpp.RecoverablePduException;
 import com.zx.sms.codec.smpp.SmppConstants;
 import com.zx.sms.codec.smpp.UnrecoverablePduException;
 import com.zx.sms.common.util.ByteBufUtil;
 import com.zx.sms.common.util.PduUtil;
 
-public class DataSm extends BaseSm<DataSmResp> {
+public class DataSm extends BaseSm<DataSmResp>  implements LongSMSMessage{
 
     public DataSm() {
         super(SmppConstants.CMD_ID_DATA_SM, "data_sm");
@@ -75,5 +77,17 @@ public class DataSm extends BaseSm<DataSmResp> {
         buffer.writeByte(this.registeredDelivery);
         buffer.writeByte(this.dataCoding);
     }
-    
+	@Override
+	public LongMessageFrame generateFrame() {
+		
+		return doGenerateFrame();
+	}
+	@Override
+	public DataSm generateMessage(LongMessageFrame frame) {
+		try {
+			return (DataSm)doGenerateMessage(frame);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 }

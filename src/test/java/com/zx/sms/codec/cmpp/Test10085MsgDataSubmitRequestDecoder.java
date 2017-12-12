@@ -3,6 +3,7 @@ package com.zx.sms.codec.cmpp;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.zx.sms.codec.AbstractTestMessageCodec;
@@ -23,6 +24,7 @@ public class Test10085MsgDataSubmitRequestDecoder extends AbstractTestMessageCod
 		while(null!= ( result =  (CmppSubmitRequestMessage)ch.readInbound())){
 			
 			System.out.println(result);
+			Assert.assertNotNull(result);
 			result.setSupportLongMsg(true);
 			ch.writeOutbound(result);
 		}

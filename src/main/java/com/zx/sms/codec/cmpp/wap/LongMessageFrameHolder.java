@@ -105,6 +105,16 @@ public enum LongMessageFrameHolder {
 			}
 		}
 	}
+	
+	/**
+	 * 获取长短信切分后的短信片断内容
+	 * 
+	 **/
+	public String getPartTextMsg(LongMessageFrame frame){
+		UserDataHeader header = parseUserDataHeader(frame.getMsgContentBytes());
+		byte[] payload = frame.getPayloadbytes(header.headerlength);
+		return CMPPCommonUtil.buildTextMessage(payload, frame.getMsgfmt()).getText();
+	}
 
 	/**
 	 * 获取一条完整的长短信，如果长短信组装未完成，返回null

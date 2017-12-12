@@ -15,9 +15,12 @@ import org.marre.wap.push.WapSIPush;
 import org.marre.wap.push.WapSLPush;
 import org.marre.wap.wbxml.WbxmlDocument;
 
+import com.zx.sms.LongSMSMessage;
 import com.zx.sms.codec.cmpp.packet.CmppPacketType;
+import com.zx.sms.codec.smpp.msg.DeliverSm;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CMPPCommonUtil;
+import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 import com.zx.sms.common.util.MsgId;
 
 /**
@@ -25,7 +28,7 @@ import com.zx.sms.common.util.MsgId;
  * @author Lihuanghe(18852780@qq.com)
  *
  */
-public class CmppDeliverRequestMessage extends DefaultMessage {
+public class CmppDeliverRequestMessage extends DefaultMessage  implements LongSMSMessage{
 	private static final long serialVersionUID = 4851585208067281751L;
 	private MsgId msgId = new MsgId();
 	private String destId = GlobalConstance.emptyString;
@@ -318,5 +321,33 @@ public class CmppDeliverRequestMessage extends DefaultMessage {
 		sb.append("CmppDeliverRequestMessage [msgId=").append(msgId).append(", destId=").append(destId).append(", srcterminalId=").append(srcterminalId)
 				.append(", msgContent=").append(getMsgContent()).append(", SmsMessageType=").append(msg==null?"":msg.getClass().getSimpleName()).append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
 		return sb.toString();
+	}
+
+	@Override
+	public LongMessageFrame generateFrame() {
+		LongMessageFrame frame = new LongMessageFrame();
+		frame.setTppid(getTppid());
+		frame.setTpudhi(getTpudhi());
+		frame.setMsgfmt(getMsgfmt());
+		frame.setMsgContentBytes(getMsgContentBytes());
+		frame.setMsgLength((short)getMsgLength());
+		return frame;
+	}
+	
+	@Override
+	public CmppDeliverRequestMessage generateMessage(LongMessageFrame frame)  throws Exception{
+		CmppDeliverRequestMessage requestMessage = this.clone();
+		
+		requestMessage.setTppid(frame.getTppid());
+		requestMessage.setTpudhi(frame.getTpudhi());
+		requestMessage.setMsgfmt(frame.getMsgfmt());
+		requestMessage.setMsgContentBytes(frame.getMsgContentBytes());
+		requestMessage.setMsgLength((short)frame.getMsgLength());
+		
+		if(frame.getPknumber()!=1){
+			requestMessage.getHeader().setSequenceId(DefaultSequenceNumberUtil.getSequenceNo());
+		}
+		
+		return requestMessage;
 	}
 }

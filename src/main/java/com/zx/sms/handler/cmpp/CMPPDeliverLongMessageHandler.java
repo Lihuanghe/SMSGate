@@ -29,36 +29,8 @@ public class CMPPDeliverLongMessageHandler extends AbstractLongMessageHandler<Cm
 	}
 
 	@Override
-	protected LongMessageFrame generateFrame(CmppDeliverRequestMessage msg) {
-		LongMessageFrame frame = new LongMessageFrame();
-		frame.setTppid(msg.getTppid());
-		frame.setTpudhi(msg.getTpudhi());
-		frame.setMsgfmt(msg.getMsgfmt());
-		frame.setMsgContentBytes(msg.getMsgContentBytes());
-		frame.setMsgLength((short)msg.getMsgLength());
-		return frame;
-	}
-
-	@Override
 	protected String generateFrameKey(CmppDeliverRequestMessage msg) {
 		return msg.getSrcterminalId();
-	}
-
-	@Override
-	protected CmppDeliverRequestMessage generateMessage(CmppDeliverRequestMessage t, LongMessageFrame frame) throws Exception {
-		CmppDeliverRequestMessage requestMessage = t.clone();
-		
-		requestMessage.setTppid(frame.getTppid());
-		requestMessage.setTpudhi(frame.getTpudhi());
-		requestMessage.setMsgfmt(frame.getMsgfmt());
-		requestMessage.setMsgContentBytes(frame.getMsgContentBytes());
-		requestMessage.setMsgLength((short)frame.getMsgLength());
-		
-		if(frame.getPknumber()!=1){
-			requestMessage.getHeader().setSequenceId(DefaultSequenceNumberUtil.getSequenceNo());
-		}
-		
-		return requestMessage;
 	}
 
 	@Override

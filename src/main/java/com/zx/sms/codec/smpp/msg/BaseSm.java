@@ -22,6 +22,7 @@ package com.zx.sms.codec.smpp.msg;
 
 import io.netty.buffer.ByteBuf;
 
+import org.marre.sms.SmsDcs;
 import org.marre.sms.SmsMessage;
 import org.marre.sms.SmsPortAddressedTextMessage;
 import org.marre.sms.SmsTextMessage;
@@ -32,12 +33,14 @@ import org.marre.wap.push.WapSIPush;
 import org.marre.wap.push.WapSLPush;
 import org.marre.wap.wbxml.WbxmlDocument;
 
+import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.codec.smpp.Address;
 import com.zx.sms.codec.smpp.RecoverablePduException;
 import com.zx.sms.codec.smpp.SmppInvalidArgumentException;
 import com.zx.sms.codec.smpp.UnrecoverablePduException;
 import com.zx.sms.common.util.ByteBufUtil;
 import com.zx.sms.common.util.CMPPCommonUtil;
+import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 import com.zx.sms.common.util.HexUtil;
 import com.zx.sms.common.util.PduUtil;
 
@@ -269,6 +272,33 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
         }
     }
 
+    protected BaseSm doGenerateMessage(LongMessageFrame frame) throws Exception {
+		BaseSm requestMessage = (BaseSm)this.clone();
+		
+		requestMessage.setProtocolId((byte)frame.getTppid());
+		byte old = requestMessage.getEsmClass();
+		requestMessage.setEsmClass((byte)((frame.getTpudhi()<<6) | old));
+		requestMessage.setDataCoding(frame.getMsgfmt().getValue());
+		requestMessage.setShortMessage(frame.getMsgContentBytes());
+		
+		if(frame.getPknumber()!=1){
+			requestMessage.setSequenceNumber((int)DefaultSequenceNumberUtil.getSequenceNo());
+		}
+		return requestMessage;
+	}
+    
+
+	protected LongMessageFrame doGenerateFrame() {
+		LongMessageFrame frame = new LongMessageFrame();
+		frame.setTppid(getProtocolId());
+		//udhi bit : x1xxxxxx 表示要处理长短信  
+		frame.setTpudhi((short)((getEsmClass()>>6) & 0x01));
+		frame.setMsgfmt(new SmsDcs(getDataCoding()));
+		frame.setMsgContentBytes(getShortMessage());
+		frame.setMsgLength((short)getShortMessageLength());
+		return frame;
+	}
+    
     @Override
     public void appendBodyToString(StringBuilder buffer) {
         buffer.append("(serviceType [");

@@ -20,9 +20,11 @@ package com.zx.sms.codec.smpp.msg;
  * #L%
  */
 
+import com.zx.sms.LongSMSMessage;
+import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.codec.smpp.SmppConstants;
 
-public class SubmitSm extends BaseSm<SubmitSmResp> {
+public class SubmitSm extends BaseSm<SubmitSmResp>  implements LongSMSMessage {
 
     public SubmitSm() {
         super(SmppConstants.CMD_ID_SUBMIT_SM, "submit_sm");
@@ -39,5 +41,19 @@ public class SubmitSm extends BaseSm<SubmitSmResp> {
     public Class<SubmitSmResp> getResponseClass() {
         return SubmitSmResp.class;
     }
+
+	@Override
+	public LongMessageFrame generateFrame() {
+		
+		return doGenerateFrame();
+	}
+	@Override
+	public SubmitSm generateMessage(LongMessageFrame frame) {
+		try {
+			return (SubmitSm)doGenerateMessage(frame);
+		} catch (Exception e) {
+			return null;
+		}
+	}
     
 }

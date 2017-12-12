@@ -78,7 +78,7 @@ public class TestSMPPEndPoint {
 		client.setMaxChannels((short)12);
 		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);
-		client.setReSendFailMsg(true);
+//		client.setReSendFailMsg(true);
 //		client.setWriteLimit(200);
 //		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();

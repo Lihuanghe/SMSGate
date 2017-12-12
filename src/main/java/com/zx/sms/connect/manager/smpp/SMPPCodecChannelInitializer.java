@@ -60,18 +60,6 @@ public class SMPPCodecChannelInitializer extends ChannelInitializer<Channel> {
 		}
 
 		@Override
-		protected LongMessageFrame generateFrame(BaseSm msg) {
-			LongMessageFrame frame = new LongMessageFrame();
-			frame.setTppid(msg.getProtocolId());
-			//udhi bit : x1xxxxxx 表示要处理长短信  
-			frame.setTpudhi((short)((msg.getEsmClass()>>6) & 0x01));
-			frame.setMsgfmt(new SmsDcs(msg.getDataCoding()));
-			frame.setMsgContentBytes(msg.getShortMessage());
-			frame.setMsgLength((short)msg.getShortMessageLength());
-			return frame;
-		}
-
-		@Override
 		protected String generateFrameKey(BaseSm msg) throws Exception{
 			if(msg instanceof SubmitSm){
 				return msg.getDestAddress().getAddress();
@@ -81,22 +69,6 @@ public class SMPPCodecChannelInitializer extends ChannelInitializer<Channel> {
 				logger.warn("not support Type {}" ,msg.getClass());
 				throw new NotSupportedException("not support LongMessage Type  "+ msg.getClass());
 			}
-		}
-
-		@Override
-		protected BaseSm generateMessage(BaseSm t, LongMessageFrame frame) throws Exception {
-			BaseSm requestMessage = (BaseSm)t.clone();
-			
-			requestMessage.setProtocolId((byte)frame.getTppid());
-			byte old = requestMessage.getEsmClass();
-			requestMessage.setEsmClass((byte)((frame.getTpudhi()<<6) | old));
-			requestMessage.setDataCoding(frame.getMsgfmt().getValue());
-			requestMessage.setShortMessage(frame.getMsgContentBytes());
-			
-			if(frame.getPknumber()!=1){
-				requestMessage.setSequenceNumber((int)DefaultSequenceNumberUtil.getSequenceNo());
-			}
-			return requestMessage;
 		}
 
 		@Override

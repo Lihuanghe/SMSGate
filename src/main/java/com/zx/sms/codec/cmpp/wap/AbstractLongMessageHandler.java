@@ -10,6 +10,7 @@ import org.marre.sms.SmsMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.zx.sms.LongSMSMessage;
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 
 public abstract class AbstractLongMessageHandler<T> extends MessageToMessageCodec<T, T> {
@@ -17,8 +18,9 @@ public abstract class AbstractLongMessageHandler<T> extends MessageToMessageCode
 
 	@Override
 	protected void decode(ChannelHandlerContext ctx, T msg, List<Object> out) throws Exception {
-		if (needHandleLongMessage(msg)) {
-			LongMessageFrame frame = generateFrame(msg);
+		if (msg instanceof LongSMSMessage && needHandleLongMessage(msg)) {
+			
+			LongMessageFrame frame = ((LongSMSMessage)msg).generateFrame();
 			String key = generateFrameKey(msg);
 			try {
 				SmsMessage content = LongMessageFrameHolder.INS.putAndget(key, frame);
@@ -43,12 +45,14 @@ public abstract class AbstractLongMessageHandler<T> extends MessageToMessageCode
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, T requestMessage, List<Object> out) throws Exception {
-		if (needHandleLongMessage(requestMessage)) {
+		if (requestMessage instanceof LongSMSMessage  && needHandleLongMessage(requestMessage)) {
 			SmsMessage msgcontent = getSmsMessage(requestMessage);
 			List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(msgcontent);
 			boolean first = true;
+			LongSMSMessage lmsg = (LongSMSMessage)requestMessage;
 			for (LongMessageFrame frame : frameList) {
-				T t = generateMessage(requestMessage, frame);
+				
+				T t = (T)lmsg.generateMessage(frame);
 				out.add(t);
 			}
 
@@ -62,11 +66,11 @@ public abstract class AbstractLongMessageHandler<T> extends MessageToMessageCode
 
 	protected abstract boolean needHandleLongMessage(T msg);
 
-	protected abstract LongMessageFrame generateFrame(T msg);
+//	protected abstract LongMessageFrame generateFrame(T msg);
 
 	protected abstract String generateFrameKey(T msg) throws Exception;
 
-	protected abstract T generateMessage(T t, LongMessageFrame frame) throws Exception;
+//	protected abstract T generateMessage(T t, LongMessageFrame frame) throws Exception;
 
 	protected abstract SmsMessage getSmsMessage(T t);
 
