@@ -1,10 +1,8 @@
 package com.zx.sms.codec.cmpp;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
-import io.netty.util.ReferenceCountUtil;
 
 import java.util.List;
 
@@ -17,7 +15,6 @@ import com.zx.sms.codec.cmpp.msg.Header;
 import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.codec.cmpp.packet.CmppHead;
 import com.zx.sms.common.GlobalConstance;
-import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 
 /**
  *

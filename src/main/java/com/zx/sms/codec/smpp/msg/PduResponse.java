@@ -1,5 +1,8 @@
 package com.zx.sms.codec.smpp.msg;
 
+import com.zx.sms.BaseMessage;
+import com.zx.sms.codec.cmpp.msg.Message;
+
 /*
  * #%L
  * ch-smpp
@@ -23,6 +26,7 @@ package com.zx.sms.codec.smpp.msg;
 public abstract class PduResponse extends Pdu {
 
     private String resultMessage;
+    private PduRequest request;
     
     public PduResponse(int commandId, String name) {
         super(commandId, name, false);
@@ -35,5 +39,15 @@ public abstract class PduResponse extends Pdu {
     public String getResultMessage() {
         return this.resultMessage;
     }
+    
+	@Override
+	public void setRequest(BaseMessage message) {
+		this.request = (PduRequest)message;
+	}
+
+	@Override
+	public BaseMessage getRequest() {
+		return this.request;
+	}
     
 }

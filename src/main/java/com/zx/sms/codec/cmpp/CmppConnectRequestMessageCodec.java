@@ -16,7 +16,6 @@ import com.zx.sms.codec.cmpp.packet.CmppPacketType;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CMPPCommonUtil;
-import com.zx.sms.common.util.NettyByteBufUtil;
 /**
  *
  * @author huzorro(huzorro@gmail.com)

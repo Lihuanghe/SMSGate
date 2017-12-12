@@ -1,5 +1,6 @@
 package com.zx.sms.codec.cmpp;
 
+import static com.zx.sms.common.util.NettyByteBufUtil.toArray;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -13,9 +14,6 @@ import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.codec.cmpp.packet.CmppConnectResponse;
 import com.zx.sms.codec.cmpp.packet.CmppPacketType;
 import com.zx.sms.codec.cmpp.packet.PacketType;
-import com.zx.sms.common.GlobalConstance;
-
-import static com.zx.sms.common.util.NettyByteBufUtil.*;
 /**
  *
  * @author huzorro(huzorro@gmail.com)

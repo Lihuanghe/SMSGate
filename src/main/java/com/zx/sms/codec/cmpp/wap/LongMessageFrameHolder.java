@@ -111,9 +111,15 @@ public enum LongMessageFrameHolder {
 	 * 
 	 **/
 	public String getPartTextMsg(LongMessageFrame frame){
-		UserDataHeader header = parseUserDataHeader(frame.getMsgContentBytes());
-		byte[] payload = frame.getPayloadbytes(header.headerlength);
-		return CMPPCommonUtil.buildTextMessage(payload, frame.getMsgfmt()).getText();
+		if (frame.getTpudhi() == 0) {
+			return CMPPCommonUtil.buildTextMessage(frame.getPayloadbytes(0), frame.getMsgfmt()).getText();
+		} else if ((frame.getTpudhi() & 0x01) == 1 || (frame.getTpudhi()&0x40)==0x40) {
+			UserDataHeader header = parseUserDataHeader(frame.getMsgContentBytes());
+			byte[] payload = frame.getPayloadbytes(header.headerlength);
+			return CMPPCommonUtil.buildTextMessage(payload, frame.getMsgfmt()).getText();
+		}
+		return null;
+		
 	}
 
 	/**

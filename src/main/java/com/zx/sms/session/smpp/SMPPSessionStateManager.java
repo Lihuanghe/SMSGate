@@ -19,11 +19,6 @@ public class SMPPSessionStateManager extends AbstractSessionStateManager<Integer
 	}
 
 	@Override
-	protected boolean checkTerminateLife(Object msg) {
-		return true;
-	}
-
-	@Override
 	protected boolean needSendAgainByResponse(Pdu req, Pdu res) {
 		return false;
 	}

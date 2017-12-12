@@ -4,7 +4,6 @@
 package com.zx.sms.codec.cmpp.msg;
 
 import com.zx.sms.codec.cmpp.packet.CmppPacketType;
-import com.zx.sms.codec.cmpp.packet.CmppQueryResponse;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CachedMillisecondClock;
 

@@ -149,7 +149,6 @@ public class SMPP2CMPPBusinessHandler extends AbstractBusinessHandler {
     		}else{
     			out.add(msg);
     		}
-    		
     	}
 
     }

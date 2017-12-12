@@ -3,9 +3,6 @@
  */
 package com.zx.sms.codec.cmpp.msg;
 
-import java.util.concurrent.atomic.AtomicLong;
-
-import com.zx.sms.codec.cmpp.packet.CmppReportRequest;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;

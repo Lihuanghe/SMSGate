@@ -1,5 +1,7 @@
 package com.zx.sms.codec.smpp.msg;
 
+import com.zx.sms.BaseMessage;
+
 
 /*
  * #%L
@@ -40,6 +42,15 @@ public abstract class PduRequest<R extends PduResponse> extends Pdu {
     
 	public PduRequest clone() throws CloneNotSupportedException {
 		return (PduRequest) super.clone();
+	}
+	
+	@Override
+	public void setRequest(BaseMessage message) {
+	}
+
+	@Override
+	public BaseMessage getRequest() {
+		return null;
 	}
 
 }

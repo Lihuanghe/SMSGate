@@ -17,8 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
+import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppReportRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
+import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.common.util.ChannelUtil;
 //import com.zx.sms.common.util.MsgId;
@@ -64,27 +66,13 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 			final Channel ch = ctx.channel();
 			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>() {
 				private Message createTestReq() {
-					int contentLength = RandomUtils.nextInt(400) ;
-					StringBuilder sb = new StringBuilder();
-					if (contentLength % 2 == 0) {
-						while (contentLength-- > 0) {
-							sb.append('中');
-						}
-					} else {
-						while (contentLength-- > 0) {
-							sb.append('a');
-						}
-					}
-					Map<String, Object> map = new HashMap<String, Object>();
-					map.put("a", 1);
-					map.put("b", "adf");
 					
 					if (finalentity instanceof ServerEndpoint) {
 						CmppDeliverRequestMessage msg = new CmppDeliverRequestMessage();
 						msg.setDestId("13800138000");
 						msg.setLinkid("0000");
+//						msg.setMsgContent(sb.toString());
 						msg.setMsgContent("a");
-
 //						msg.setMsgId(new MsgId());
 						msg.setRegisteredDelivery((short) 0);
 						if (msg.getRegisteredDelivery() == 1) {
@@ -93,7 +81,6 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						msg.setServiceid("10086");
 						msg.setSrcterminalId(String.valueOf(System.nanoTime()));
 						msg.setSrcterminalType((short) 1);
-						msg.setAttachment((Serializable)map);
 //						msg.setMsgContent(new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd",50*1024));
 						
 						return msg;
@@ -105,7 +92,6 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 //						msg.setMsgid(new MsgId());
 						msg.setServiceId("10086");
 						msg.setSrcId("10086");
-						msg.setAttachment((Serializable)map);
 //						msg.setMsgContent(new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd",50*1024));
 						return msg;
 					}
@@ -138,6 +124,8 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 		ctx.fireUserEventTriggered(evt);
 
 	}
+
+	
 	@Override
 	public String name() {
 		return "SessionConnectedHandler-Gate";

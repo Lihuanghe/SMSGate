@@ -153,10 +153,15 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 				if (request != null) {
 					Entry cancelentry = cancelRetry(request, ctx.channel());
 					
+
+					
 					//根据Response 判断是否需要重发,比如CMPP协议，如果收到result==8，表示超速，需要重新发送
 					if(needSendAgainByResponse(request ,message)){
 						reWriteLater(ctx, request, ctx.newPromise(), 400);
 					}
+					
+					//把response关联上request供使用。
+					message.setRequest(request);
 				}
 				else{
 					errlogger.warn("receive ResponseMessage ,but not found related Request Msg. {}",message);
@@ -165,8 +170,6 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 		}
 		ctx.fireChannelRead(msg);
 	}
-
-	protected abstract boolean checkTerminateLife(Object msg);
 	
 	@Override
 	public void write(ChannelHandlerContext ctx, Object message, ChannelPromise promise) throws Exception {
@@ -175,7 +178,7 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 			BaseMessage msg = (BaseMessage)message;
 			// 发送消息超过生命周期
 			
-			if (!checkTerminateLife(msg)) {
+			if (msg.isTerminated()) {
 				errlogger.error("Msg Life over .{}", msg);
 				promise.setFailure(new RuntimeException("Msg Life over"));
 				return;

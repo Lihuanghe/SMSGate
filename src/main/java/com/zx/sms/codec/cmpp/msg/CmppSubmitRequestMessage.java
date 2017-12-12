@@ -16,6 +16,7 @@ import org.marre.wap.wbxml.WbxmlDocument;
 
 import com.zx.sms.LongSMSMessage;
 import com.zx.sms.codec.cmpp.packet.CmppPacketType;
+import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
@@ -351,24 +352,30 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 
 	
 	public String getMsgContent() {
-		if(msg instanceof SmsTextMessage){
-			SmsTextMessage textMsg = (SmsTextMessage) msg;
-			return textMsg.getText();
-		}else if(msg instanceof SmsPortAddressedTextMessage){
-			SmsPortAddressedTextMessage textMsg = (SmsPortAddressedTextMessage) msg;
-			return textMsg.getText();
-		}else if(msg instanceof SmsMmsNotificationMessage){
-			SmsMmsNotificationMessage mms = (SmsMmsNotificationMessage) msg;
-			return mms.getContentLocation_();
-		}else if(msg instanceof SmsWapPushMessage){
-			SmsWapPushMessage wap = (SmsWapPushMessage) msg;
-			WbxmlDocument wbxml = wap.getWbxml();
-			if(wbxml instanceof WapSIPush){
-				return ((WapSIPush)wbxml).getUri();
-			}else if(wbxml instanceof WapSLPush){
-				return ((WapSLPush)wbxml).getUri();
+		if(msgContentBytes!=null && msgContentBytes.length>0){
+			LongMessageFrame frame = generateFrame();
+			return LongMessageFrameHolder.INS.getPartTextMsg(frame);
+		}else{
+			if(msg instanceof SmsTextMessage){
+				SmsTextMessage textMsg = (SmsTextMessage) msg;
+				return textMsg.getText();
+			}else if(msg instanceof SmsPortAddressedTextMessage){
+				SmsPortAddressedTextMessage textMsg = (SmsPortAddressedTextMessage) msg;
+				return textMsg.getText();
+			}else if(msg instanceof SmsMmsNotificationMessage){
+				SmsMmsNotificationMessage mms = (SmsMmsNotificationMessage) msg;
+				return mms.getContentLocation_();
+			}else if(msg instanceof SmsWapPushMessage){
+				SmsWapPushMessage wap = (SmsWapPushMessage) msg;
+				WbxmlDocument wbxml = wap.getWbxml();
+				if(wbxml instanceof WapSIPush){
+					return ((WapSIPush)wbxml).getUri();
+				}else if(wbxml instanceof WapSLPush){
+					return ((WapSLPush)wbxml).getUri();
+				}
 			}
 		}
+
 		return "";
 	}
 	public SmsMessage getMsg() {

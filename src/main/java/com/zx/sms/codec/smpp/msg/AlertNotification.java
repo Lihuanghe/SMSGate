@@ -22,6 +22,7 @@ package com.zx.sms.codec.smpp.msg;
 
 import io.netty.buffer.ByteBuf;
 
+import com.zx.sms.BaseMessage;
 import com.zx.sms.codec.smpp.Address;
 import com.zx.sms.codec.smpp.RecoverablePduException;
 import com.zx.sms.codec.smpp.SmppConstants;
@@ -82,5 +83,15 @@ public class AlertNotification extends Pdu {
         buffer.append(this.esmeAddress);
         buffer.append("])");
     }
+
+	@Override
+	public void setRequest(BaseMessage message) {
+		
+	}
+
+	@Override
+	public BaseMessage getRequest() {
+		return null;
+	}
 
 }

@@ -31,6 +31,7 @@ import com.zx.sms.codec.smpp.SmppConstants;
 import com.zx.sms.codec.smpp.Tlv;
 import com.zx.sms.codec.smpp.UnrecoverablePduException;
 import com.zx.sms.common.util.ByteBufUtil;
+import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 import com.zx.sms.common.util.HexUtil;
 
@@ -46,6 +47,10 @@ public abstract class Pdu implements BaseMessage,Cloneable{
     private ArrayList<Tlv> optionalParameters;
     // a reference object that a caller can attach to this pdu
     private Object referenceObject;
+    
+	private long timestamp = CachedMillisecondClock.INS.now();
+	//消息的生命周期，单位秒, 0表示永不过期
+	private long lifeTime=0;
 
     public Pdu(int commandId, String name, boolean isRequest) {
         this.name = name;
@@ -138,6 +143,25 @@ public abstract class Pdu implements BaseMessage,Cloneable{
             return this.sequenceNumber.intValue();
         }
     }
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	public long getLifeTime() {
+		return lifeTime;
+	}
+
+	public void setLifeTime(long lifeTime) {
+		this.lifeTime = lifeTime;
+	}
+	
+	public boolean isTerminated() {
+		return lifeTime !=0 && (( timestamp + lifeTime*1000 ) - CachedMillisecondClock.INS.now() < 0L);
+	}
 
     public int getOptionalParameterCount() {
         if (this.optionalParameters == null) {

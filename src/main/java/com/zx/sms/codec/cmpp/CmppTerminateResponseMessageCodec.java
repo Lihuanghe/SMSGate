@@ -3,11 +3,10 @@
  */
 package com.zx.sms.codec.cmpp;
 
-import java.util.List;
-
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
+
+import java.util.List;
 
 import com.zx.sms.codec.cmpp.msg.CmppTerminateResponseMessage;
 import com.zx.sms.codec.cmpp.msg.Message;

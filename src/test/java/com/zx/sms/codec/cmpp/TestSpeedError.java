@@ -1,6 +1,7 @@
 package com.zx.sms.codec.cmpp;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.embedded.EmbeddedChannel;
@@ -106,5 +107,24 @@ public class TestSpeedError {
 		//这次接收的是Null
 		recvMsg = ch.readOutbound();
 		Assert.assertNull(recvMsg);
+	}
+	
+	@Test
+	public void testterminated() throws InterruptedException{
+		CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
+		msg.setDestterminalId(new String[]{"13800138000"});
+		msg.setLinkID("0000");
+		msg.setMsgContent("123asdf23asdgq5");
+		msg.setMsgid(new MsgId());
+		msg.setServiceId("10086");
+		msg.setSrcId("10086");
+		//设置短信的生存时间为2s
+		msg.setLifeTime(2);
+		Thread.sleep(2500);
+		
+		ChannelFuture futurn = ch.write(msg);
+		Thread.sleep(100);
+		Assert.assertTrue(!futurn.isSuccess());
+		Assert.assertTrue("Msg Life over".equals(futurn.cause().getMessage()));
 	}
 }

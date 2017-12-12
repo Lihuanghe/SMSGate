@@ -28,12 +28,6 @@ public class SessionStateManager extends AbstractSessionStateManager<Long, Messa
 	}
 
 	@Override
-	protected boolean checkTerminateLife(Object msg) {
-
-		return true;
-	}
-
-	@Override
 	protected boolean needSendAgainByResponse(Message req, Message res) {
 		if (res instanceof CmppSubmitResponseMessage) {
 			CmppSubmitResponseMessage submitResp = (CmppSubmitResponseMessage) res;

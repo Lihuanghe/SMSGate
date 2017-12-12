@@ -61,7 +61,6 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 		if (msg instanceof CmppDeliverRequestMessage) {
 			CmppDeliverRequestMessage e = (CmppDeliverRequestMessage) msg;
 			CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(e.getHeader().getSequenceId());
-			responseMessage.setMsgId(e.getMsgId());
 			responseMessage.setResult(0);
 			ctx.channel().writeAndFlush(responseMessage);
 			cnt.incrementAndGet();
@@ -72,7 +71,6 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 		} else if (msg instanceof CmppSubmitRequestMessage) {
 			CmppSubmitRequestMessage e = (CmppSubmitRequestMessage) msg;
 			CmppSubmitResponseMessage resp = new CmppSubmitResponseMessage(e.getHeader().getSequenceId());
-			resp.setMsgId(e.getMsgid());
 			resp.setResult(0);
 			ctx.channel().writeAndFlush(resp);
 			cnt.incrementAndGet();

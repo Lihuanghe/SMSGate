@@ -3,7 +3,6 @@
  */
 package com.zx.sms.codec.cmpp;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 

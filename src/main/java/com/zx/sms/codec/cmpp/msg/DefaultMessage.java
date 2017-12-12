@@ -1,15 +1,11 @@
 package com.zx.sms.codec.cmpp.msg;
 
-import io.netty.buffer.ByteBuf;
-
 import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicInteger;
 
+import com.zx.sms.BaseMessage;
 import com.zx.sms.codec.cmpp.packet.PacketType;
-import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
-import com.zx.sms.handler.api.AbstractBusinessHandler;
 
 /**
  *
@@ -24,7 +20,7 @@ public class DefaultMessage implements Message ,Cloneable {
 	private long lifeTime=0;
 	
 //	private Message response;
-//	private Message request;
+	private Message request;
 	private Header header;
 	private byte[] buffer;
 
@@ -115,11 +111,9 @@ public class DefaultMessage implements Message ,Cloneable {
 	}
 
 	@Override
-	public boolean isTerminationLife() {
+	public boolean isTerminated() {
 		return lifeTime !=0 && (( timestamp + lifeTime*1000 ) - CachedMillisecondClock.INS.now() < 0L);
 	}
-	
-
 
 	public Serializable getAttachment() {
 		return attachment;
@@ -149,5 +143,15 @@ public class DefaultMessage implements Message ,Cloneable {
 	public boolean isResponse() {
 		long commandId = getHeader().getCommandId();
 		return (commandId & 0x80000000L) == 0x80000000L;
+	}
+
+	@Override
+	public void setRequest(BaseMessage message) {
+		this.request = (Message)message;
+	}
+
+	@Override
+	public BaseMessage getRequest() {
+		return this.request;
 	}
 }
