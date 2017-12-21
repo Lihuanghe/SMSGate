@@ -82,23 +82,21 @@ public class SmsMmsNotificationMessage extends SmsWapPushMessage implements Seri
         // X-Mms-Message-Type (m-notification-ind)
         MmsHeaderEncoder.writeHeaderXMmsMessageType(os, MmsConstants.X_MMS_MESSAGE_TYPE_ID_M_NOTIFICATION_IND);
         MmsHeaderEncoder.writeHeaderXMmsTransactionId(os, transactionId_);
-        MmsHeaderEncoder.writeHeaderXMmsMmsVersion(os, MmsConstants.X_MMS_MMS_VERSION_ID_1_0);
-
-        if ((from_ != null) && (from_.length() > 0))
-        {
-            MmsHeaderEncoder.writeHeaderFrom(os, from_);
-        }
-
+        MmsHeaderEncoder.writeHeaderXMmsMmsVersion(os, MmsConstants.X_MMS_MMS_VERSION_1_2);
+        MmsHeaderEncoder.writeHeaderContentLocation(os, contentLocation_);
+        MmsHeaderEncoder.writeHeaderXMmsExpiryRelative(os, expiry_);
         if ((subject_ != null) && (subject_.length() > 0))
         {
             MmsHeaderEncoder.writeHeaderSubject(os, subject_);
         }
 
+        if ((from_ != null) && (from_.length() > 0))
+        {
+            MmsHeaderEncoder.writeHeaderFrom(os, from_);
+        }
         MmsHeaderEncoder.writeHeaderXMmsMessageClass(os, messageClassId_);
         MmsHeaderEncoder.writeHeaderXMmsMessageSize(os, size_);
        // MmsHeaderEncoder.writeHeaderXMmsExpiryAbsolute(os, expiry_ + System.currentTimeMillis()/1000);
-        MmsHeaderEncoder.writeHeaderXMmsExpiryRelative(os, expiry_);
-        MmsHeaderEncoder.writeHeaderContentLocation(os, contentLocation_);
     }
 
     public void setMessageClass(int messageClassId)

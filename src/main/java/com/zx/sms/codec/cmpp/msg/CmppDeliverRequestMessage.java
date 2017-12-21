@@ -218,10 +218,6 @@ public class CmppDeliverRequestMessage extends DefaultMessage  implements LongSM
 	}
 
 	public String getMsgContent() {
-		if(msgContentBytes!=null && msgContentBytes.length>0){
-			LongMessageFrame frame = generateFrame();
-			return LongMessageFrameHolder.INS.getPartTextMsg(frame);
-		}else{
 			if(msg instanceof SmsTextMessage){
 				SmsTextMessage textMsg = (SmsTextMessage) msg;
 				return textMsg.getText();
@@ -240,7 +236,11 @@ public class CmppDeliverRequestMessage extends DefaultMessage  implements LongSM
 					return ((WapSLPush)wbxml).getUri();
 				}
 			}
-		}
+			
+			if(msgContentBytes!=null && msgContentBytes.length>0){
+				LongMessageFrame frame = generateFrame();
+				return LongMessageFrameHolder.INS.getPartTextMsg(frame);
+			}
 		
 		return "";
 	}

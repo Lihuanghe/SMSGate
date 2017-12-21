@@ -71,9 +71,10 @@ public final class MmsConstants
             "x-mms-read-reply", "x-mms-report-allowed", "x-mms-response-status", "x-mms-response-text",
             "x-mms-sender-visibility", "x-mms-status", "subject", "to", "x-mms-transaction-id"};
 
-    public static final int X_MMS_MMS_VERSION_ID_1_0 = 0x00;
-
-    public static final String[] X_MMS_MMS_VERSION_NAMES = {"1.0"};
+    public static final int X_MMS_MMS_VERSION_1_3                 = ((1 << 4) | 3);
+    public static final int X_MMS_MMS_VERSION_1_2                 = ((1 << 4) | 2);
+    public static final int X_MMS_MMS_VERSION_1_1                 = ((1 << 4) | 1);
+    public static final int X_MMS_MMS_VERSION_1_0                 = ((1 << 4) | 0);
 
     public static final int X_MMS_MESSAGE_TYPE_ID_M_SEND_REQ = 0;
     public static final int X_MMS_MESSAGE_TYPE_ID_M_SEND_CONF = 1;

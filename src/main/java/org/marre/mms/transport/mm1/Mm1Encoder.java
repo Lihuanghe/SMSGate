@@ -72,17 +72,6 @@ public final class Mm1Encoder
             writeHeadersToStream(out, headers);
 
             // Add content-type
-
-            // Prefer "vnd.wap.multipart..." instead of "multipart/..."
-            if (message instanceof MimeMultipart)
-            {
-                // Convert multipart headers...
-                // TODO: Clone content type... We shouldn't change the msg...
-                String ct = message.getContentType().getValue();
-                String newCt = WspUtil.convertMultipartContentType(ct);
-                message.getContentType().setValue(newCt);
-            }
-
             MmsHeaderEncoder.writeHeaderContentType(wspEncodingVersion_, out, message.getContentType());
 
             // Add content

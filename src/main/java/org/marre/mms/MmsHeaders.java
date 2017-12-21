@@ -45,7 +45,7 @@ public class MmsHeaders
     
     protected int    messageTypeId_ = MmsConstants.X_MMS_MESSAGE_TYPE_ID_M_SEND_REQ;
     protected String transactionId_;
-    protected int    versionId_     = MmsConstants.X_MMS_MMS_VERSION_ID_1_0;
+    protected int    version_     = MmsConstants.X_MMS_MMS_VERSION_1_2;
     protected String subject_;
     protected String from_;
     protected String to_;
@@ -79,12 +79,12 @@ public class MmsHeaders
     
     public int getVersion()
     {
-        return versionId_;
+        return version_;
     }
     
     public void setVersion(int versionId)
     {
-        versionId_ = versionId;
+    	version_ = versionId;
     }
     
     public String getSubject()

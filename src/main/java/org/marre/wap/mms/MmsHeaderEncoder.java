@@ -109,26 +109,11 @@ public final class MmsHeaderEncoder
         WspUtil.writeTextString(os, transactionId);
     }
 
-    public static void writeHeaderXMmsMmsVersion(OutputStream os, int versionId) throws IOException
+    public static void writeHeaderXMmsMmsVersion(OutputStream os, int version) throws IOException
     {
         WspUtil.writeShortInteger(os, MmsConstants.HEADER_ID_X_MMS_MMS_VERSION);
+        WspUtil.writeShortInteger(os, version);
 
-        switch (versionId)
-        {
-        case MmsConstants.X_MMS_MMS_VERSION_ID_1_0:
-        default:
-            WspUtil.writeShortInteger(os, 0x10);
-            break;
-        }
-    }
-
-    public static void writeHeaderXMmsMmsVersion(OutputStream os, String version) throws IOException
-    {
-        int versionId = StringUtil.findString(MmsConstants.X_MMS_MMS_VERSION_NAMES, version.toLowerCase());
-        if (versionId != -1)
-        {
-            writeHeaderXMmsMessageType(os, versionId);
-        }
     }
 
     public static void writeHeaderDate(OutputStream os, Date date) throws IOException

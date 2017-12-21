@@ -852,7 +852,14 @@ public class PduParser {
 			if (dataLength > 0) {
 				byte[] partData = new byte[dataLength];
 				String partContentType = new String(part.getContentType());
-				pduDataStream.read(partData, 0, dataLength);
+				int reallength = pduDataStream.read(partData, 0, dataLength);
+				
+				if (reallength < dataLength){
+					byte[]  tmp = new byte[reallength];
+					System.arraycopy(partData, 0, tmp, 0, reallength);
+					partData = tmp;
+				}
+				
 				if (partContentType.equalsIgnoreCase(ContentType.MULTIPART_ALTERNATIVE)) {
 					// parse "multipart/vnd.wap.multipart.alternative".
 					PduBody childBody = parseParts(new ByteArrayInputStream(partData));

@@ -34,10 +34,12 @@
  * ***** END LICENSE BLOCK ***** */
 package org.marre.mime;
 
+import org.marre.wap.WspUtil;
+
 public class MimeContentType extends MimeHeader
 {
     public MimeContentType(String contentType)
     {
-        super("Content-type", contentType);
+        super("Content-type", WspUtil.convertMultipartContentType(contentType));
     }
 }
