@@ -123,7 +123,7 @@ public class SessionLoginManager extends AbstractSessionLoginManager {
 			
 			//以配置的协议版本为准
 			//更换协议解析器
-			logger.info("changeCodec to version:{}", version);
+			logger.info("changeCodec to version:{}", childentity.getVersion());
 			ctx.pipeline().replace(GlobalConstance.codecName, GlobalConstance.codecName,
 					CMPPCodecChannelInitializer.getCodecHandler(childentity.getVersion()));
 		}

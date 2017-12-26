@@ -3,7 +3,6 @@ package com.zx.sms.session;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelOutboundBuffer;
 import io.netty.channel.ChannelPromise;
 
 import java.io.IOException;
@@ -36,9 +35,6 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 	// 用来记录连接上的错误消息
 	private final Logger errlogger;
 	
-	//cmpp自定义的可写标致位，1-3已被 AbstractTrafficShapingHandler 使用。
-	final int userDefinedWritabilityIndex = 4;
-
 	/**
 	 * @param entity
 	 *            Session关联的端口
@@ -129,8 +125,6 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 			cancelRetry(requestmsg, ctx.channel());
 		}
 
-		//设置连接为可写
-		setUserDefinedWritability(ctx.channel(), true);
 		ctx.fireChannelInactive();
 	}
 	protected abstract K getSequenceId(T msg);
@@ -152,8 +146,6 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 				T request = storeMap.remove(key);
 				if (request != null) {
 					Entry cancelentry = cancelRetry(request, ctx.channel());
-					
-
 					
 					//根据Response 判断是否需要重发,比如CMPP协议，如果收到result==8，表示超速，需要重新发送
 					if(needSendAgainByResponse(request ,message)){
@@ -204,13 +196,6 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 		}
 		ctx.fireUserEventTriggered(evt);
 	}
-
-    void setUserDefinedWritability(Channel ch, boolean writable) {
-        ChannelOutboundBuffer cob = ch.unsafe().outboundBuffer();
-        if (cob != null ) {
-            cob.setUserDefinedWritability(userDefinedWritabilityIndex, writable);
-        }
-    }
     
 	/**
 	 * 获取发送窗口，并且注册重试任务

@@ -1,10 +1,13 @@
 package com.zx.sms.codec.cmpp;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.embedded.EmbeddedChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.ResourceLeakDetector;
 import io.netty.util.ResourceLeakDetector.Level;
 
@@ -32,7 +35,9 @@ public class TestSpeedError {
 			ResourceLeakDetector.setLevel(Level.ADVANCED);
 			ChannelPipeline pipeline = ch.pipeline();
 			CMPPCodecChannelInitializer codec = new CMPPCodecChannelInitializer();
-			
+			pipeline.addLast("serverLog", new LoggingHandler(LogLevel.INFO));
+			pipeline.addLast(codec.pipeName(), codec);
+
 			CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
 			client.setId("client");
 			client.setHost("127.0.0.1");
@@ -62,7 +67,6 @@ public class TestSpeedError {
 		msg.setDestterminalId(new String[]{"13800138000"});
 		msg.setLinkID("0000");
 		msg.setMsgContent("123");
-		msg.setMsgid(new MsgId());
 		msg.setServiceId("10086");
 		msg.setSrcId("10086");
 		
@@ -75,7 +79,7 @@ public class TestSpeedError {
 		//有一条等待发送的消息
 		Assert.assertEquals(1, sessionhandler.getWaittingResp());
 		
-		CmppSubmitRequestMessage recvMsg = ch.readOutbound();
+		ByteBuf recvMsg = ch.readOutbound();
 		Assert.assertNotNull(recvMsg);
 		
 		//新为上面等待超时，会重发一次，所以这里会收到两条
@@ -83,9 +87,10 @@ public class TestSpeedError {
 		Assert.assertNotNull(recvMsg);
 		
 		//回复一条超速错误
-		CmppSubmitResponseMessage resp = new CmppSubmitResponseMessage(recvMsg.getHeader().getSequenceId());
+		CmppSubmitResponseMessage resp = new CmppSubmitResponseMessage(msg.getHeader().getSequenceId());
 		resp.setResult(8L);
-		ch.writeInbound(resp);
+		ch.writeOutbound(resp); //把resp转化为ByteBuf
+		ch.writeInbound(ch.readOutbound());
 		
 		Thread.sleep(1000);
 		//一共发送了3条MT消息
@@ -95,18 +100,27 @@ public class TestSpeedError {
 		Assert.assertNotNull(recvMsg);
 		
 		//回复一条正确接收
-		resp = new CmppSubmitResponseMessage(recvMsg.getHeader().getSequenceId());
+		resp = new CmppSubmitResponseMessage(msg.getHeader().getSequenceId());
 		resp.setResult(0L);
-		ch.writeInbound(resp);
+		ch.writeOutbound(resp); //把resp转化为ByteBuf
+		
+		ch.writeInbound(ch.readOutbound());
+		
+		CmppSubmitResponseMessage respret = ch.readInbound();
+		//System.out.println(respret.getRequest());
+		Assert.assertSame(msg, respret.getRequest());
+		Assert.assertNotEquals(respret.getMsgId(), msg.getMsgid());
+
 		
 		//没有等待发送的消息
 		Assert.assertEquals(0, sessionhandler.getWaittingResp());
 		
 		//等待重发超时
 		Thread.sleep((reSendTime + 1)*1000);
-		//这次接收的是Null
+		//因为已收到response,发送成功了，不会再重发了，因此这次接收的是Null
 		recvMsg = ch.readOutbound();
 		Assert.assertNull(recvMsg);
+		
 	}
 	
 	@Test
@@ -120,10 +134,11 @@ public class TestSpeedError {
 		msg.setSrcId("10086");
 		//设置短信的生存时间为2s
 		msg.setLifeTime(2);
-		Thread.sleep(2500);
+		Thread.sleep(3000);
 		
-		ChannelFuture futurn = ch.write(msg);
-		Thread.sleep(100);
+		ChannelFuture futurn = ch.writeAndFlush(msg);
+//		System.out.println(futurn.isSuccess());
+//		Thread.sleep(100); 
 		Assert.assertTrue(!futurn.isSuccess());
 		Assert.assertTrue("Msg Life over".equals(futurn.cause().getMessage()));
 	}

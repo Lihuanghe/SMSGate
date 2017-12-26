@@ -1,6 +1,5 @@
 package com.zx.sms.connect.manager;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -9,10 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
-import com.zx.sms.connect.manager.cmpp.CMPPServerChildEndpointEntity;
-import com.zx.sms.connect.manager.cmpp.CMPPServerEndpointEntity;
 
 /**
  * @author Lihuanghe(18852780@qq.com) 系统连接的统一管理器，负责连接服务端，或者开启监听端口，等客户端连接 。
@@ -25,7 +20,7 @@ public enum EndpointManager implements EndpointManagerInterface {
 
 	private ConcurrentHashMap<String, EndpointEntity> idMap = new ConcurrentHashMap<String, EndpointEntity>();
 
-	private ConcurrentHashMap<String, EndpointConnector> map = new ConcurrentHashMap<String, EndpointConnector>();
+	private ConcurrentHashMap<String, EndpointConnector<?>> map = new ConcurrentHashMap<String, EndpointConnector<?>>();
 
 	public synchronized void openEndpoint(EndpointEntity entity) {
 		if (!entity.isValid())
@@ -36,7 +31,7 @@ public enum EndpointManager implements EndpointManagerInterface {
 			addEndpointEntity(entity);
 		}
 
-		EndpointConnector conn = map.get(entity.getId());
+		EndpointConnector<?> conn = map.get(entity.getId());
 		if (conn == null){
 			conn = entity.buildConnector();
 			map.put(entity.getId(), conn);
@@ -50,7 +45,7 @@ public enum EndpointManager implements EndpointManagerInterface {
 	}
 
 	public synchronized void close(EndpointEntity entity) {
-		EndpointConnector conn = map.get(entity.getId());
+		EndpointConnector<?> conn = map.get(entity.getId());
 		if (conn == null)
 			return;
 		try {
@@ -63,11 +58,11 @@ public enum EndpointManager implements EndpointManagerInterface {
 		}
 	}
 
-	public EndpointConnector getEndpointConnector(EndpointEntity entity) {
+	public EndpointConnector<?> getEndpointConnector(EndpointEntity entity) {
 		return map.get(entity.getId());
 	}
 
-	public EndpointConnector getEndpointConnector(String entityId) {
+	public EndpointConnector<?> getEndpointConnector(String entityId) {
 		return map.get(entityId);
 	}
 

@@ -100,19 +100,18 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 			return;
 		}
 
+		//修改协议版本，使用客户端对应协议的协议解析器
+		changeProtoVersion(ctx,childentity,message);
+		
 		if (!validAddressHost(childentity.getHost())) {
 			failedLogin(ctx, message, 2);
 			return;
 		}
-
 		
 		// 服务端收到Request，校验用户名密码成功
 		int status = validClientMsg(childentity,message);
 		// 认证成功
 		if (status == 0) {
-			
-			//修改协议版本，使用客户端对应协议的协议解析器
-			changeProtoVersion(ctx,childentity,message);
 
 			state = SessionState.Connect;
 			
@@ -137,7 +136,7 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 				
 				//通知业务handler连接已建立完成
 				notifyChannelConnected(ctx);
-				logger.info("login in success on channel {}" , ctx.channel());
+				logger.info("{} login success on channel {}" , childentity.getId(), ctx.channel());
 			}else{
 				//超过最大连接数了
 				failedLogin(ctx, message, 5);
@@ -172,13 +171,13 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 			//如果没有超过最大连接数配置，建立连接
 			conn.addChannel(ctx.channel());
 			notifyChannelConnected(ctx);
-			logger.info("login in success on channel {}" , ctx.channel());
+			logger.info("{} login success on channel {}" ,entity.getId(), ctx.channel());
 			
 		}else{
+			logger.info("{} login failed (status = {}) on channel {}" ,entity.getId(), status ,ctx.channel());
 			ctx.close();
 			return;
 		}
-
 	}
 	
 	private boolean validMaxChannel(EndpointEntity entity,EndpointConnector conn)
