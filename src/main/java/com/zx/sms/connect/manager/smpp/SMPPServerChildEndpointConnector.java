@@ -76,7 +76,7 @@ public class SMPPServerChildEndpointConnector extends AbstractEndpointConnector{
 	}
 
 	@Override
-	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, Map storeMap, Map preSend) {
+	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, Map storeMap, boolean preSend) {
 		return new SMPPSessionStateManager(entity, storeMap, preSend);
 	}
 

@@ -37,7 +37,7 @@ public class SMPPServerEndpointConnector extends AbstractServerEndpointConnector
 	}
 
 	@Override
-	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, Map storeMap, Map preSend) {
+	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, Map storeMap, boolean preSend) {
 		// TODO Auto-generated method stub
 		return null;
 	}

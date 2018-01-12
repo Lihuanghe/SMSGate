@@ -5,7 +5,7 @@
 
 	<groupId>com.zx.sms</groupId>
 	<artifactId>cmpp-core</artifactId>
-	<version>2.0.0</version>
+	<version>2.0.1</version>
 	<packaging>jar</packaging>
 	<name>cmpp-core</name>
 
@@ -57,7 +57,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>18.0</version>
+			<version>16.0</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
@@ -94,7 +94,7 @@
 		<dependency>
 			<groupId>org.iq80.leveldb</groupId>
 			<artifactId>leveldb</artifactId>
-			<version>0.6</version>
+			<version>0.7</version>
 			<scope>test</scope>
 		</dependency>
 

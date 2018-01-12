@@ -108,7 +108,7 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 
 	@Override
 	public String toString() {
-		return "CMPPEndpointEntity [groupName=" + groupName + ", userName=" + userName + ", chartset=" + chartset + ", getId()=" + getId() + ", getDesc()="
+		return this.getClass().getSimpleName()+"[groupName=" + groupName + ", userName=" + userName + ", chartset=" + chartset + ", getId()=" + getId() + ", getDesc()="
 				+ getDesc() + ", getChannelType()=" + getChannelType() + ", getHost()=" + getHost() + ", getPort()=" + getPort() + ", getMaxChannels()="
 				+ getMaxChannels() + "]";
 	}

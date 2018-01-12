@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
-public interface StoredMapFactory<K,T extends Serializable> {
+public interface StoredMapFactory<K,T extends VersionObject> {
 	
 	/**
 	 * @param storedpath
@@ -14,5 +14,4 @@ public interface StoredMapFactory<K,T extends Serializable> {
 	 */
 	Map<K,T> buildMap(String storedpath,String name);
 	
-	BlockingQueue<T> getQueue(String storedpath,String name);
 }

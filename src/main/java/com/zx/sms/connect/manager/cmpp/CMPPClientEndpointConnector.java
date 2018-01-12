@@ -79,7 +79,7 @@ public class CMPPClientEndpointConnector extends AbstractClientEndpointConnector
 
 	@Override
 	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, Map storeMap,
-			Map preSend) {
+			boolean preSend) {
 		return new SessionStateManager(entity, storeMap, preSend);
 	}
 

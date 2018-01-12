@@ -10,6 +10,7 @@ import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.BaseMessage;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.storedMap.BDBStoredMapFactoryImpl;
+import com.zx.sms.common.storedMap.VersionObject;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
@@ -115,7 +117,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		return channels;
 	}
 
-	protected abstract AbstractSessionStateManager createSessionManager(EndpointEntity entity, Map storeMap, Map preSend);
+	protected abstract AbstractSessionStateManager createSessionManager(EndpointEntity entity, Map storeMap,boolean presend);
 
 	protected abstract void doBindHandler(ChannelPipeline pipe, EndpointEntity entity);
 
@@ -145,7 +147,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		int cnt = incrementConn();
 
 		EndpointEntity endpoint = getEndpointEntity();
-		Map<Serializable, Serializable> storedMap = null;
+		Map<Serializable, VersionObject> storedMap = null;
 		if (endpoint.isReSendFailMsg()) {
 			// 如果上次发送失败的消息要重发一次，则要创建持久化Map用于存储发送的message
 			storedMap = BDBStoredMapFactoryImpl.INS.buildMap(endpoint.getId(), "Session_" + endpoint.getId());
@@ -153,38 +155,24 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			storedMap = new HashMap();
 		}
 
-		Map preSendMap = new HashMap();
+		logger.info("Channel added To Endpoint {} .totalCnt:{} ,remoteAddress: {}", endpoint, cnt, ch.remoteAddress());
 
-		logger.debug("Channel added To Endpoint {} .totalCnt:{} ,remoteAddress: {}", endpoint, cnt, ch.remoteAddress());
 		if (cnt == 1 && endpoint.isReSendFailMsg()) {
 			// 如果是第一个连接。要把上次发送失败的消息取出，再次发送一次
-
-			if (storedMap != null && storedMap.size() > 0) {
-				try {
-					for (Map.Entry<Serializable, Serializable> entry : storedMap.entrySet()) {
-						Serializable msg = entry.getValue();
-						preSendMap.put(entry.getKey(), entry.getValue());
-					}
-				} catch (Exception e) {
-					logger.warn("get storedMessage err ", e);
-				} finally {
-					// 删除所有积压的消息
-					storedMap.clear();
-				}
-			}
+			ch.pipeline().addAfter(GlobalConstance.codecName, "sessionStateManager", createSessionManager(endpoint, storedMap, true));
+		}else{
+			ch.pipeline().addAfter(GlobalConstance.codecName, "sessionStateManager", createSessionManager(endpoint, storedMap, false));
 		}
 		
-	// 增加流量整形 ，每个连接每秒发送，接收消息数不超过配置的值
+		// 增加流量整形 ，每个连接每秒发送，接收消息数不超过配置的值
 		ch.pipeline().addAfter(GlobalConstance.codecName, "ChannelTrafficAfter",
 				new MessageChannelTrafficShapingHandler(endpoint.getWriteLimit(), endpoint.getReadLimit(), 250));
-		
-		ch.pipeline().addAfter(GlobalConstance.codecName, "sessionStateManager", createSessionManager(endpoint, storedMap, preSendMap));
 		
 		bindHandler(ch.pipeline(), getEndpointEntity());
 	}
 
 	public void removeChannel(Channel ch) {
-		ch.attr(GlobalConstance.attributeKey).set(SessionState.DisConnect);
+		
 		if (getChannels().remove(ch))
 			decrementConn();
 	}
@@ -251,8 +239,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	 * 循环列表，用于实现轮循算法
 	 */
 	private class CircularList {
-		private ReadWriteLock lock = new ReentrantReadWriteLock();
-		private List<Channel> collection = new ArrayList<Channel>();
+		private List<Channel> collection = Collections.synchronizedList( new ArrayList<Channel>(20)); 
 
 		public Channel[] getall() {
 			return collection.toArray(new Channel[0]);
@@ -261,8 +248,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		public Channel fetch() {
 
 			try {
-				lock.readLock().lock();
-				int size = collection.size();
+				int size = getConnectionNum();
 				if (size == 0)
 					return null;
 
@@ -271,7 +257,6 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 				// 超过65535归0
 				return ret;
 			} finally {
-				lock.readLock().unlock();
 			}
 		}
 
@@ -279,10 +264,8 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 			boolean r = false;
 			try {
-				lock.writeLock().lock();
 				r = collection.add(ele);
 			} finally {
-				lock.writeLock().unlock();
 			}
 			return r;
 		}
@@ -291,10 +274,8 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 			boolean r = false;
 			try {
-				lock.writeLock().lock();
 				r = collection.remove(ele);
 			} finally {
-				lock.writeLock().unlock();
 			}
 			return r;
 		}

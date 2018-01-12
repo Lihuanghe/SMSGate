@@ -54,7 +54,7 @@ public class TestSpeedError {
 			client.setRetryWaitTimeSec(reSendTime);
 			client.setUseSSL(false);
 			client.setReSendFailMsg(true);
-			pipeline.addLast("session",new SessionStateManager(client, new HashMap(), new HashMap()));
+			pipeline.addLast("session",new SessionStateManager(client, new HashMap(), true));
 		}
 	});
 	

@@ -4,7 +4,6 @@ import java.lang.management.ManagementFactory;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.LockSupport;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -28,45 +27,14 @@ import com.zx.sms.mbean.ConnState;
  */
 
 
-public class TestCMPPEndPoint {
-	private static final Logger logger = LoggerFactory.getLogger(TestCMPPEndPoint.class);
+public class ClientTestCMPPEndPoint {
+	private static final Logger logger = LoggerFactory.getLogger(ClientTestCMPPEndPoint.class);
 
 	@Test
 	public void testCMPPEndpoint() throws Exception {
 	
 		final EndpointManager manager = EndpointManager.INS;
-
-		CMPPServerEndpointEntity server = new CMPPServerEndpointEntity();
-		server.setId("server");
-		server.setHost("127.0.0.1");
-		server.setPort(7891);
-		server.setValid(true);
-		//使用ssl加密数据流
-		server.setUseSSL(false);
-		
-		CMPPServerChildEndpointEntity child = new CMPPServerChildEndpointEntity();
-		child.setId("child");
-		child.setChartset(Charset.forName("utf-8"));
-		child.setGroupName("test");
-		child.setUserName("901782");
-		child.setPassword("ICP");
-
-		child.setValid(true);
-		child.setWindows((short)16);
-		child.setVersion((short)0x20);
-
-		child.setMaxChannels((short)20);
-		child.setRetryWaitTimeSec((short)30);
-		child.setMaxRetryCnt((short)3);
-		child.setReSendFailMsg(true);
-		child.setWriteLimit(200);
-		child.setReadLimit(200);
-		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new SessionConnectedHandler(0));
-		child.setBusinessHandlerSet(serverhandlers);
-		server.addchild(child);
-		
-		manager.addEndpointEntity(server);
+	
 	
 		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
 		client.setId("client");
@@ -88,18 +56,17 @@ public class TestCMPPEndPoint {
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add( new MessageReceiveHandler());
 		client.setBusinessHandlerSet(clienthandlers);
-//		manager.addEndpointEntity(client);
+		manager.addEndpointEntity(client);
 		
 		manager.openAll();
-		//
+		//LockSupport.park();
 		 MBeanServer mserver = ManagementFactory.getPlatformMBeanServer();  
 
         ObjectName stat = new ObjectName("com.zx.sms:name=ConnState");
         mserver.registerMBean(new ConnState(), stat);
         System.out.println("start.....");
         
-//		Thread.sleep(300000);
-        LockSupport.park();
+		Thread.sleep(300000);
 		EndpointManager.INS.close();
 	}
 }

@@ -27,49 +27,37 @@ import com.zx.sms.common.queue.BdbQueueMap;
 import com.zx.sms.config.PropertiesUtils;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 
-public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Serializable, Serializable > {
+public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Serializable, VersionObject > {
 	INS;
 	private static final Logger logger = LoggerFactory.getLogger(BDBStoredMapFactoryImpl.class);
 	private final ConcurrentHashMap<String, QueueEnvironment> envMap = new ConcurrentHashMap<String, QueueEnvironment>();
 
-	private final ConcurrentHashMap<String, StoredMap<Serializable, Serializable>> storedMaps = new ConcurrentHashMap<String, StoredMap<Serializable, Serializable>>();
+	private final ConcurrentHashMap<String, StoredMap<Serializable, VersionObject>> storedMaps = new ConcurrentHashMap<String, StoredMap<Serializable, VersionObject>>();
 	private final ConcurrentHashMap<String, StoredSortedMap<Long, Serializable>> sortedstoredMap = new ConcurrentHashMap<String, StoredSortedMap<Long, Serializable>>();
 	private final ConcurrentHashMap<String, BlockingQueue<Serializable>> queueMap = new ConcurrentHashMap<String, BlockingQueue<Serializable>>();
 
 
+	/**
+	 * VersionObject
+	 * 在保存消息对象信息时，同时保存时间戳。这样就可以区分哪些是历史信息。
+	 */
 	@Override
-	public synchronized Map<Serializable, Serializable> buildMap(String storedpath, String name) {
+	public synchronized Map<Serializable, VersionObject> buildMap(String storedpath, String name) {
 		QueueEnvironment env = buildBDB(storedpath);
-//		SerialBinding<Long> messageKeyBinding = new SerialBinding<Long>(env.getStoredClassCatalog(), Long.class);
-//		SerialBinding<Message> messageValueBinding = new SerialBinding<Message>(env.getStoredClassCatalog(), Message.class);
 		FstSerialBinding<Serializable> messageKeyBinding =  new FstSerialBinding<Serializable>();
-		FstSerialBinding<Serializable> messageValueBinding =  new FstSerialBinding<Serializable>();
+		FstSerialBinding<VersionObject> messageValueBinding =  new FstSerialBinding<VersionObject>();
 		Database db = env.buildDatabase(name);
 
 		String keyName = new StringBuilder().append(storedpath).append(name).toString();
-		StoredMap<Serializable, Serializable> map = storedMaps.get(keyName);
+		StoredMap<Serializable, VersionObject> map = storedMaps.get(keyName);
 		if (map == null) {
-			StoredMap<Serializable, Serializable> tmpMap = new StoredMap<Serializable, Serializable>(db, messageKeyBinding, messageValueBinding, true);
-			StoredMap<Serializable, Serializable> old = storedMaps.putIfAbsent(keyName, tmpMap);
+			StoredMap<Serializable, VersionObject> tmpMap = new StoredMap<Serializable, VersionObject>(db, messageKeyBinding, messageValueBinding, true);
+			StoredMap<Serializable, VersionObject> old = storedMaps.putIfAbsent(keyName, tmpMap);
 			return old ==null ? tmpMap:old;
 		}
 		return map;
 	}
 	
-
-	@Override
-	public BlockingQueue<Serializable> getQueue(String storedpath, String name) {
-		String keyName = new StringBuilder().append(storedpath).append(name).toString();
-		BlockingQueue<Serializable> queue = queueMap.get(keyName);
-		if (queue == null) {
-			StoredSortedMap<Long, Serializable> sortedStoredmap = buildStoredSortedMap(storedpath, "Trans_" + name);
-			BlockingQueue<Serializable> newqueue = new BdbQueueMap<Serializable>(sortedStoredmap);
-			BlockingQueue<Serializable> oldqueue = queueMap.putIfAbsent(keyName, newqueue);
-			return oldqueue==null?newqueue:oldqueue;
-		}
-		return queue;
-	}
-
 	private StoredSortedMap<Long, Serializable> buildStoredSortedMap(String storedpath, String name) {
 		QueueEnvironment env = buildBDB(storedpath);
 //		SerialBinding<Long> messageKeyBinding = new SerialBinding<Long>(env.getStoredClassCatalog(), Long.class);
@@ -87,7 +75,6 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Serializable, Se
 			StoredSortedMap<Long, Serializable> old = sortedstoredMap.putIfAbsent(keyName, soredMap);
 			return old == null ? soredMap : old;
 		}
-
 		return soredMap;
 	}
 

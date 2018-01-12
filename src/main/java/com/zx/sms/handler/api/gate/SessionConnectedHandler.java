@@ -65,14 +65,14 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 			final EndpointEntity finalentity = (EndpointEntity) getEndpointEntity();
 			final Channel ch = ctx.channel();
 			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>() {
-				private Message createTestReq() {
+				private Message createTestReq(String content) {
 					
 					if (finalentity instanceof ServerEndpoint) {
 						CmppDeliverRequestMessage msg = new CmppDeliverRequestMessage();
 						msg.setDestId("13800138000");
 						msg.setLinkid("0000");
 //						msg.setMsgContent(sb.toString());
-						msg.setMsgContent("a");
+						msg.setMsgContent(content);
 //						msg.setMsgId(new MsgId());
 						msg.setRegisteredDelivery((short) 0);
 						if (msg.getRegisteredDelivery() == 1) {
@@ -101,12 +101,12 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 				public Boolean call() throws Exception{
 					int cnt = RandomUtils.nextInt() & 0x1f;
 					while(cnt-->0 && totleCnt>0) {
-						ChannelFuture future = ctx.writeAndFlush(createTestReq() );
+						ChannelFuture future = ctx.writeAndFlush(createTestReq(String.valueOf(totleCnt)) );
 						if(future == null){
 							break;
 						}
 						try{
-							future.sync();
+//							future.sync();
 							totleCnt--;
 						}catch(Exception e){
 							break;
@@ -117,7 +117,9 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 			}, new ExitUnlimitCirclePolicy() {
 				@Override
 				public boolean notOver(Future future) {
-					return  ch.isActive() && totleCnt > 0;
+					boolean over =   ch.isActive() && totleCnt > 0;
+					if(!over)logger.info("========send over.============");
+					return over;
 				}
 			},1);
 		}

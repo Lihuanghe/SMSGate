@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.ClientEndpoint;
 import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
@@ -59,10 +60,14 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 
     @Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {	
+    	Channel ch = ctx.channel();
+    	
 		if(entity!=null){
-			logger.warn("connection closed . {}" ,entity);
+		
 			EndpointConnector conn = EndpointManager.INS.getEndpointConnector(entity);
-			if(conn!=null)conn.removeChannel(ctx.channel());
+			if(conn!=null)conn.removeChannel(ch);
+			ch.attr(GlobalConstance.attributeKey).set(SessionState.DisConnect);
+			logger.warn("Connection closed . {} , connect count : {}" ,entity,conn.getConnectionNum());
 		}else{
 			logger.debug("session is not created. the entity is {}.channel remote is {}" ,entity ,ctx.channel().remoteAddress());
 		}
@@ -112,7 +117,9 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 		int status = validClientMsg(childentity,message);
 		// 认证成功
 		if (status == 0) {
-
+			//绑定端口为对应账号的端口
+			entity = childentity;
+			
 			state = SessionState.Connect;
 			
 			// 打开连接，并把连接加入管理 器
