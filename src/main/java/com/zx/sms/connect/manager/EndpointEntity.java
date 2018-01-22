@@ -53,8 +53,15 @@ public abstract class EndpointEntity implements Serializable {
 	private int writeLimit = 0;
 	
 	private boolean useSSL = false;
-    
-    public int getReadLimit() {
+	private String proxy;
+	
+    public String getProxy() {
+		return proxy;
+	}
+	public void setProxy(String proxy) {
+		this.proxy = proxy;
+	}
+	public int getReadLimit() {
 		return readLimit;
 	}
 	public void setReadLimit(int readLimit) {
