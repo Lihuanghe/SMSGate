@@ -89,6 +89,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						msg.setDestterminalId(String.valueOf(System.nanoTime()));
 						msg.setLinkID("0000");
 						msg.setMsgContent("a");
+						msg.setRegisteredDelivery((short)1);
 //						msg.setMsgid(new MsgId());
 						msg.setServiceId("10086");
 						msg.setSrcId("10086");

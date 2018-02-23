@@ -59,10 +59,10 @@ public class SgipDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 		
 		requestMessage.setUsernumber(bodyBuffer.readBytes(
 				SgipDeliverRequest.USERNUMBER.getLength()).toString(
-						GlobalConstance.defaultTransportCharset));
+						GlobalConstance.defaultTransportCharset).trim());
 		requestMessage.setSpnumber(bodyBuffer.readBytes(
 				SgipDeliverRequest.SPNUMBER.getLength()).toString(
-				GlobalConstance.defaultTransportCharset));
+				GlobalConstance.defaultTransportCharset).trim());
 		requestMessage.setTppid(bodyBuffer.readUnsignedByte());
 		requestMessage.setTpudhi(bodyBuffer.readUnsignedByte());
 		requestMessage.setMsgfmt(new SmsDcs((byte)bodyBuffer.readUnsignedByte()));
@@ -77,7 +77,7 @@ public class SgipDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 		
 		requestMessage.setReserve(bodyBuffer.readBytes(
 				SgipDeliverRequest.RESERVE.getLength()).toString(
-				GlobalConstance.defaultTransportCharset));
+				GlobalConstance.defaultTransportCharset).trim());
 		
 			out.add(requestMessage);
 

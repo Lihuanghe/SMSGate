@@ -55,7 +55,7 @@ public class SgipDeliverResponseMessageCodec extends MessageToMessageCodec<Messa
 		responseMessage.setResult(bodyBuffer.readUnsignedByte());
 		responseMessage.setReserve(bodyBuffer.readBytes(
 				SgipDeliverResponse.RESERVE.getLength()).toString(
-						GlobalConstance.defaultTransportCharset));
+						GlobalConstance.defaultTransportCharset).trim());
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(responseMessage);
 	}

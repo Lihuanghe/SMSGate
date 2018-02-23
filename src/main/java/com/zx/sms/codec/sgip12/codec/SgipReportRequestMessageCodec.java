@@ -51,10 +51,10 @@ public class SgipReportRequestMessageCodec extends MessageToMessageCodec<Message
 		ByteBuf seqbuf = bodyBuffer.readBytes(SgipReportRequest.SUBMITSEQUENCENUMBER.getLength());
 		requestMessage.setSequenceId(DefaultSequenceNumberUtil.bytes2SequenceN(toArray(seqbuf, seqbuf.readableBytes())));
 		requestMessage.setReporttype(bodyBuffer.readUnsignedByte());
-		requestMessage.setUsernumber(bodyBuffer.readBytes(SgipReportRequest.USERNUMBER.getLength()).toString(GlobalConstance.defaultTransportCharset));
+		requestMessage.setUsernumber(bodyBuffer.readBytes(SgipReportRequest.USERNUMBER.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 		requestMessage.setState(bodyBuffer.readUnsignedByte());
 		requestMessage.setErrorcode(bodyBuffer.readUnsignedByte());
-		requestMessage.setReserve(bodyBuffer.readBytes(SgipReportRequest.RESERVE.getLength()).toString(GlobalConstance.defaultTransportCharset));
+		requestMessage.setReserve(bodyBuffer.readBytes(SgipReportRequest.RESERVE.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
 
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(requestMessage);

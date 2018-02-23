@@ -3,8 +3,6 @@
  */
 package com.zx.sms.codec.sgip12.msg;
 
-import org.apache.commons.codec.binary.Hex;
-
 import com.zx.sms.codec.cmpp.msg.DefaultMessage;
 import com.zx.sms.codec.cmpp.msg.Header;
 import com.zx.sms.codec.sgip12.packet.SgipPacketType;
@@ -56,9 +54,8 @@ public class SgipReportResponseMessage extends DefaultMessage {
 	@Override
 	public String toString() {
 		return String
-				.format("ReportResponseMessage [result=%s, reserve=%s, getPacketType()=%s, getTimestamp()=%s, getChannelIds()=%s, getChildChannelIds()=%s, getHeader()=%s, getBodyBuffer()=%s]",
-						result, reserve,  getHeader(),
-						Hex.encodeHexString(getBodyBuffer()));
+				.format("ReportResponseMessage [result=%s, reserve=%s,  getHeader()=%s]",
+						result, reserve,  getHeader());
 	}
 	
 }

@@ -57,9 +57,8 @@ public class SgipDeliverResponseMessage extends DefaultMessage {
 	@Override
 	public String toString() {
 		return String
-				.format("DeliverResponseMessage [result=%s, reserve=%s, getPacketType()=%s, getTimestamp()=%s, getChannelIds()=%s, getChildChannelIds()=%s, getHeader()=%s, getBodyBuffer()=%s]",
-						result, reserve, getPacketType(), getTimestamp(), getHeader(),
-						Hex.encodeHexString(getBodyBuffer()));
+				.format("DeliverResponseMessage [result=%s, reserve=%s, getPacketType()=%s, getTimestamp()=%s,  getHeader()=%s]",
+						result, reserve, getPacketType(), getTimestamp(), getHeader());
 	}
 	
 }

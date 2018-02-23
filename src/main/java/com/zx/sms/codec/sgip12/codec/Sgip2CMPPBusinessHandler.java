@@ -101,6 +101,8 @@ public class Sgip2CMPPBusinessHandler extends AbstractBusinessHandler {
     			CmppSubmitResponseMessage message = (CmppSubmitResponseMessage)msg;
     			resp.setResult((short)message.getResult());
     			out.add(resp);
+    		}else{
+    			out.add(msg);
     		}
     	}
     	

@@ -12,12 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.codec.sgip12.codec.Sgip2CMPPBusinessHandler;
-import com.zx.sms.codec.smpp.SMPP2CMPPBusinessHandler;
 import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 import com.zx.sms.handler.api.gate.SessionConnectedHandler;
 import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
+import com.zx.sms.handler.sgip.SgipReportRequestMessageHandler;
 import com.zx.sms.mbean.ConnState;
 /**
  *经测试，35个连接，每个连接每200/s条消息
@@ -40,15 +40,15 @@ public class TestSgipEndPoint {
 		SgipServerEndpointEntity server = new SgipServerEndpointEntity();
 		server.setId("smppserver");
 		server.setHost("127.0.0.1");
-		server.setPort(2776);
+		server.setPort(8801);
 		server.setValid(true);
 		//使用ssl加密数据流
 		server.setUseSSL(false);
 		
 		SgipServerChildEndpointEntity child = new SgipServerChildEndpointEntity();
 		child.setId("smppchild");
-		child.setLoginName("901782");
-		child.setLoginPassowrd("ICP");
+		child.setLoginName("333");
+		child.setLoginPassowrd("0555");
 
 		child.setValid(true);
 		child.setChannelType(ChannelType.DOWN);
@@ -60,8 +60,10 @@ public class TestSgipEndPoint {
 //		child.setWriteLimit(200);
 //		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
+		
+		serverhandlers.add(new SgipReportRequestMessageHandler());
 		serverhandlers.add(new Sgip2CMPPBusinessHandler());  //  将CMPP的对象转成SMPP对象，然后再经SMPP解码器处理
-		serverhandlers.add( new MessageReceiveHandler());   // 复用CMPP的Handler
+		serverhandlers.add(new MessageReceiveHandler());   // 复用CMPP的Handler
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
@@ -71,9 +73,9 @@ public class TestSgipEndPoint {
 		SgipClientEndpointEntity client = new SgipClientEndpointEntity();
 		client.setId("smppclient");
 		client.setHost("127.0.0.1");
-		client.setPort(2776);
-		client.setLoginName("901782");
-		client.setLoginPassowrd("ICP");
+		client.setPort(8001);
+		client.setLoginName("333");
+		client.setLoginPassowrd("0555");
 		client.setChannelType(ChannelType.DOWN);
 
 		client.setMaxChannels((short)12);
@@ -84,7 +86,7 @@ public class TestSgipEndPoint {
 //		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new Sgip2CMPPBusinessHandler()); //  将CMPP的对象转成SMPP对象，然后再经SMPP解码器处理
-		clienthandlers.add(new SessionConnectedHandler(5)); //// 复用CMPP的Handler
+		clienthandlers.add(new SessionConnectedHandler(2)); //// 复用CMPP的Handler
 		client.setBusinessHandlerSet(clienthandlers);
 		
 		manager.openEndpoint(client);
