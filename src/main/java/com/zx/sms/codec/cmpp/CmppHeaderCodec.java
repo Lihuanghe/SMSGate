@@ -1,6 +1,7 @@
 package com.zx.sms.codec.cmpp;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 
@@ -55,7 +56,7 @@ public class CmppHeaderCodec extends MessageToMessageCodec<ByteBuf, Message> {
 		int packetLength = message.getBodyBuffer().length + headerLength;
 
 		// buf由netty写channel的时候释放
-		ByteBuf buf = ctx.alloc().buffer(packetLength);
+		ByteBuf buf = Unpooled.buffer(packetLength);
 		buf.writeInt(packetLength);
 		buf.writeInt((int) message.getHeader().getCommandId());
 		buf.writeInt((int) message.getHeader().getSequenceId());

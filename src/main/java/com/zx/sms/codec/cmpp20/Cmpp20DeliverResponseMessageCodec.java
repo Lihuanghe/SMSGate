@@ -46,8 +46,18 @@ public class Cmpp20DeliverResponseMessageCodec extends MessageToMessageCodec<Mes
 			//不解析，交给下一个codec
 			out.add(msg);
 			return;
-        } ;	
-		out.add(decode(msg));
+        }
+        CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(msg.getHeader());
+     
+        
+        ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
+        
+		responseMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer
+				,Cmpp20DeliverResponse.MSGID.getLength())));
+		responseMessage.setResult(bodyBuffer.readUnsignedByte());
+		
+		ReferenceCountUtil.release(bodyBuffer);
+		out.add(responseMessage);
 	}
 
 	@Override
@@ -61,19 +71,5 @@ public class Cmpp20DeliverResponseMessageCodec extends MessageToMessageCodec<Mes
         msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
         ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);
-		
-	}
-	public static CmppDeliverResponseMessage decode(Message msg){
-        CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(msg.getHeader());
-     
-        
-        ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
-        
-		responseMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(toArray(bodyBuffer
-				,Cmpp20DeliverResponse.MSGID.getLength())));
-		responseMessage.setResult(bodyBuffer.readUnsignedByte());
-		
-		ReferenceCountUtil.release(bodyBuffer);
-		return responseMessage;
 	}
 }

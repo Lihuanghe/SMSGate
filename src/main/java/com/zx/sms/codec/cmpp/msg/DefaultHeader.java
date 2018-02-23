@@ -13,6 +13,7 @@ public class DefaultHeader implements Header {
     private long bodyLength;
     private long commandId;
     private long sequenceId;
+    private long nodeId;
 
     @Override
     public void setHeadLength(long length) {
@@ -68,6 +69,16 @@ public class DefaultHeader implements Header {
 	@Override
 	public String toString() {
 		return "DefaultHeader [commandId=" + commandId + ", sequenceId=" + sequenceId + "]";
+	}
+
+	@Override
+	public long getNodeId() {
+		return nodeId;
+	}
+
+	@Override
+	public void setNodeId(long nodeId) {
+		this.nodeId = nodeId;
 	}
 
 }

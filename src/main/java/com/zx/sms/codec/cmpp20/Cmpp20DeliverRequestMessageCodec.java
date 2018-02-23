@@ -156,14 +156,9 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 					Cmpp20DeliverRequest.RESERVED.getLength(), 0));
 
 
-			requestMessage.setBodyBuffer(byteBufreadarray(bodyBuffer));
+			requestMessage.setBodyBuffer(toArray(bodyBuffer,bodyBuffer.readableBytes()));
 			requestMessage.getHeader().setBodyLength(requestMessage.getBodyBuffer().length);
 			out.add(requestMessage);
 			ReferenceCountUtil.release(bodyBuffer);
-	}
-	private byte[] byteBufreadarray(ByteBuf buf){
-		byte[] dst = new byte[ buf.readableBytes()];
-		buf.readBytes(dst);
-		return dst;
 	}
 }

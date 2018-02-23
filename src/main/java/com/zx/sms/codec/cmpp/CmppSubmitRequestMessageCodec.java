@@ -112,9 +112,8 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppSubmitRequestMessage requestMessage, List<Object> out) throws Exception {
-
-
-			ByteBuf bodyBuffer = Unpooled.buffer(CmppSubmitRequest.ATTIME.getBodyLength() + requestMessage.getMsgLength() + requestMessage.getDestUsrtl()
+		assert(requestMessage.getDestUsrtl()>0);
+			ByteBuf bodyBuffer = Unpooled.buffer(CmppSubmitRequest.ATTIME.getBodyLength() + requestMessage.getMsgLength() + (requestMessage.getDestUsrtl()-1)
 					* CmppSubmitRequest.DESTTERMINALID.getLength());
 
 			bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(requestMessage.getMsgid()));
@@ -172,15 +171,9 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 			// bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getReserve().getBytes(GlobalConstance.defaultTransportCharset),
 			// CmppSubmitRequest.RESERVE.getLength(), 0));/**cmpp3.0 无该字段，不进行编解码
 			// */
-			requestMessage.setBodyBuffer(byteBufreadarray(bodyBuffer));
+			requestMessage.setBodyBuffer(toArray(bodyBuffer,bodyBuffer.readableBytes()));
 			requestMessage.getHeader().setBodyLength(requestMessage.getBodyBuffer().length);
 			out.add(requestMessage);
 			ReferenceCountUtil.release(bodyBuffer);
-	}
-
-	private byte[] byteBufreadarray(ByteBuf buf){
-		byte[] dst = new byte[ buf.readableBytes()];
-		buf.readBytes(dst);
-		return dst;
 	}
 }

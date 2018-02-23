@@ -18,4 +18,6 @@ public interface Header extends Serializable {
     public long getCommandId();
     public void setSequenceId(long transitionId);
     public long getSequenceId();
+    public long getNodeId();
+    public void setNodeId(long nodeId);
 }
