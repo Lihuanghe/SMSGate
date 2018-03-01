@@ -80,21 +80,26 @@ public class SMPPSessionLoginManager extends AbstractSessionLoginManager {
 
 	@Override
 	protected int validServermsg(Object message) {
-
-		BaseBindResp resp = (BaseBindResp)message;
-		
-		Tlv scInterfaceVersion = resp.getOptionalParameter(SmppConstants.TAG_SC_INTERFACE_VERSION);
-
-            if (scInterfaceVersion != null) {
-                try {
-                    byte tempInterfaceVersion = scInterfaceVersion.getValueAsByte();
-                    logger.info("Server support version : {}" ,tempInterfaceVersion);
-                } catch (TlvConvertException e) {
-                    logger.warn("Unable to convert sc_interface_version to a byte value: {}", e.getMessage());
-                }
-            }
+		if(message instanceof BaseBindResp){
+			BaseBindResp resp = (BaseBindResp)message;
 			
-		return resp.getCommandStatus();
+			Tlv scInterfaceVersion = resp.getOptionalParameter(SmppConstants.TAG_SC_INTERFACE_VERSION);
+
+	            if (scInterfaceVersion != null) {
+	                try {
+	                    byte tempInterfaceVersion = scInterfaceVersion.getValueAsByte();
+	                    logger.info("Server support version : {}" ,tempInterfaceVersion);
+	                } catch (TlvConvertException e) {
+	                    logger.warn("Unable to convert sc_interface_version to a byte value: {}", e.getMessage());
+	                }
+	            }
+				
+			return resp.getCommandStatus();
+		}else{
+			logger.error("connect msg type error : {}" , message);
+			return 9;
+		}
+
 	}
 
 	@Override
@@ -116,21 +121,26 @@ public class SMPPSessionLoginManager extends AbstractSessionLoginManager {
 
 	@Override
 	protected void failedLogin(ChannelHandlerContext ctx, Object msg, long status) {
-		
-		logger.error("Connected error status :{}" , status);
-		BaseBind message = (BaseBind)msg;
-		// 认证失败
-		PduResponse resp = message.createResponse();
-		resp.setCommandStatus((int)SmppConstants.STATUS_BINDFAIL);
-		ChannelFuture promise = ctx.writeAndFlush(resp);
+		if(msg instanceof BaseBind){
+			logger.error("Connected error status :{}" , status);
+			BaseBind message = (BaseBind)msg;
+			// 认证失败
+			PduResponse resp = message.createResponse();
+			resp.setCommandStatus((int)SmppConstants.STATUS_BINDFAIL);
+			ChannelFuture promise = ctx.writeAndFlush(resp);
 
-		final ChannelHandlerContext finalctx = ctx;
-		promise.addListener(new GenericFutureListener() {
+			final ChannelHandlerContext finalctx = ctx;
+			promise.addListener(new GenericFutureListener() {
 
-			public void operationComplete(Future future) throws Exception {
-				finalctx.close();
-			}
-		});
+				public void operationComplete(Future future) throws Exception {
+					finalctx.close();
+				}
+			});
+		}else{
+			logger.error("connect msg type error : {}" , msg);
+			ctx.close();
+		}
+
 	}
 	
     private BaseBind createBindRequest(SMPPEndpointEntity entity)  {

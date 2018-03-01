@@ -103,9 +103,14 @@ public class SessionLoginManager extends AbstractSessionLoginManager {
 
 	@Override
 	protected int validServermsg(Object message) {
-		CmppConnectResponseMessage resp = (CmppConnectResponseMessage) message;
-		//不校验服务器验证码了。直接返回状态
-		return (int) resp.getStatus();
+		if(message instanceof CmppConnectResponseMessage){
+			CmppConnectResponseMessage resp = (CmppConnectResponseMessage) message;
+			//不校验服务器验证码了。直接返回状态
+			return (int) resp.getStatus();
+		}else{
+			logger.error("connect msg type error : {}" , message);
+			return 9;
+		}
 	}
 
 	@Override
@@ -147,22 +152,27 @@ public class SessionLoginManager extends AbstractSessionLoginManager {
 	 * 状态 0：正确 1：消息结构错 2：非法源地址 3：认证错 4：版本太高 5~ ：其他错误
 	 */
 	protected void failedLogin(ChannelHandlerContext ctx, Object msg, long status) {
-		
-		logger.error("Connected error status :{}" , status);
-		CmppConnectRequestMessage message = (CmppConnectRequestMessage)msg;
-		// 认证失败
-		CmppConnectResponseMessage resp = new CmppConnectResponseMessage(message.getHeader().getSequenceId());
-		resp.setAuthenticatorISMG(new byte[16]);
-		resp.setStatus(status);
-		ChannelFuture promise = ctx.writeAndFlush(resp);
+		if(msg instanceof CmppConnectRequestMessage){
+			logger.error("Connected error status :{}" , status);
+			CmppConnectRequestMessage message = (CmppConnectRequestMessage)msg;
+			// 认证失败
+			CmppConnectResponseMessage resp = new CmppConnectResponseMessage(message.getHeader().getSequenceId());
+			resp.setAuthenticatorISMG(new byte[16]);
+			resp.setStatus(status);
+			ChannelFuture promise = ctx.writeAndFlush(resp);
 
-		final ChannelHandlerContext finalctx = ctx;
-		promise.addListener(new GenericFutureListener() {
+			final ChannelHandlerContext finalctx = ctx;
+			promise.addListener(new GenericFutureListener() {
 
-			public void operationComplete(Future future) throws Exception {
-				finalctx.close();
-			}
-		});
+				public void operationComplete(Future future) throws Exception {
+					finalctx.close();
+				}
+			});
+		}else{
+			logger.error("connect msg type error : {}" , msg);
+			ctx.close();
+		}
+
 	}
 
 }

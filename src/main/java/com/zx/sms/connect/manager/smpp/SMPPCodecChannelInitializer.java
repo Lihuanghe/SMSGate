@@ -46,7 +46,7 @@ public class SMPPCodecChannelInitializer extends ChannelInitializer<Channel> {
 		
 		@Override
 		protected void response(ChannelHandlerContext ctx, BaseSm msg) {
-			ctx.channel().writeAndFlush(msg.createResponse());
+			ctx.writeAndFlush(msg.createResponse());
 		}
 
 		@Override

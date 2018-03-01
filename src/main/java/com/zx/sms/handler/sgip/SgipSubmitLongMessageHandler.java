@@ -15,7 +15,7 @@ public class SgipSubmitLongMessageHandler extends AbstractLongMessageHandler<Sgi
 	protected void response(ChannelHandlerContext ctx, SgipSubmitRequestMessage msg) {
 		//短信片断未接收完全，直接给网关回复resp，等待其它片断
 		SgipSubmitResponseMessage responseMessage = new SgipSubmitResponseMessage(msg.getHeader());
-		ctx.channel().writeAndFlush(responseMessage);
+		ctx.writeAndFlush(responseMessage);
 	}
 
 	@Override

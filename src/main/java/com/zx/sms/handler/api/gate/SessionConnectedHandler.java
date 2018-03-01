@@ -88,7 +88,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
 						msg.setDestterminalId(String.valueOf(System.nanoTime()));
 						msg.setLinkID("0000");
-						msg.setMsgContent("a");
+						msg.setMsgContent(content);
 						msg.setRegisteredDelivery((short)1);
 //						msg.setMsgid(new MsgId());
 						msg.setServiceId("10086");

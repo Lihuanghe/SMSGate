@@ -86,7 +86,7 @@ public class TestSgipEndPoint {
 //		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new Sgip2CMPPBusinessHandler()); //  将CMPP的对象转成SMPP对象，然后再经SMPP解码器处理
-		clienthandlers.add(new SessionConnectedHandler(2)); //// 复用CMPP的Handler
+		clienthandlers.add(new SessionConnectedHandler(1000)); //// 复用CMPP的Handler
 		client.setBusinessHandlerSet(clienthandlers);
 		
 		manager.openEndpoint(client);

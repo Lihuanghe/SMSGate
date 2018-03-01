@@ -69,10 +69,14 @@ public class SgipSessionLoginManager extends AbstractSessionLoginManager {
 
 	@Override
 	protected int validServermsg(Object message) {
-
-		SgipBindResponseMessage resp = (SgipBindResponseMessage)message;
+		if(message instanceof SgipBindResponseMessage){
+			SgipBindResponseMessage resp = (SgipBindResponseMessage)message;
 			
-		return resp.getResult();
+			return resp.getResult();
+		}else{
+			logger.error("connect msg type error : {}" , message);
+			return 9;
+		}
 	}
 
 	@Override
@@ -94,21 +98,26 @@ public class SgipSessionLoginManager extends AbstractSessionLoginManager {
 
 	@Override
 	protected void failedLogin(ChannelHandlerContext ctx, Object msg, long status) {
-		
-		logger.error("Connected error status :{}" , status);
-		Message message = (Message)msg;
-		// 认证失败
-		SgipBindResponseMessage resp = new SgipBindResponseMessage(((Message)message).getHeader());
-		resp.setResult((short)status);
-		ChannelFuture promise = ctx.writeAndFlush(resp);
+		if(msg instanceof SgipBindRequestMessage){
+			logger.error("Connected error status :{}" , status);
+			SgipBindRequestMessage message = (SgipBindRequestMessage)msg;
+			// 认证失败
+			SgipBindResponseMessage resp = new SgipBindResponseMessage(((Message)message).getHeader());
+			resp.setResult((short)status);
+			ChannelFuture promise = ctx.writeAndFlush(resp);
 
-		final ChannelHandlerContext finalctx = ctx;
-		promise.addListener(new GenericFutureListener() {
+			final ChannelHandlerContext finalctx = ctx;
+			promise.addListener(new GenericFutureListener() {
 
-			public void operationComplete(Future future) throws Exception {
-				finalctx.close();
-			}
-		});
+				public void operationComplete(Future future) throws Exception {
+					finalctx.close();
+				}
+			});
+		}else{
+			logger.error("connect msg type error : {}" , msg);
+			ctx.close();
+		}
+
 	}
 	
     private SgipBindRequestMessage createBindRequest(SgipEndpointEntity entity)  {

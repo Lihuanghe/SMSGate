@@ -16,7 +16,7 @@ public class SgipDeliverLongMessageHandler extends AbstractLongMessageHandler<Sg
 		//短信片断未接收完全，直接给网关回复resp，等待其它片断
 		SgipDeliverResponseMessage responseMessage = new SgipDeliverResponseMessage(msg.getHeader());
 		responseMessage.setResult((short)0);
-		ctx.channel().writeAndFlush(responseMessage);
+		ctx.writeAndFlush(responseMessage);
 	}
 
 	@Override

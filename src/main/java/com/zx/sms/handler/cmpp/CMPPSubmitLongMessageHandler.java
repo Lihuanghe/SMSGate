@@ -19,7 +19,7 @@ public class CMPPSubmitLongMessageHandler extends AbstractLongMessageHandler<Cmp
 		//短信片断未接收完全，直接给网关回复resp，等待其它片断
 		CmppSubmitResponseMessage responseMessage = new CmppSubmitResponseMessage(msg.getHeader());
 		responseMessage.setResult(0);
-		ctx.channel().writeAndFlush(responseMessage);
+		ctx.writeAndFlush(responseMessage);
 	}
 
 	@Override
