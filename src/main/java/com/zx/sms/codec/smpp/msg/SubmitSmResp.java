@@ -24,7 +24,12 @@ import com.zx.sms.codec.smpp.SmppConstants;
 
 public class SubmitSmResp extends BaseSmResp {
 
-    public SubmitSmResp() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -5291638876856717604L;
+
+	public SubmitSmResp() {
         super(SmppConstants.CMD_ID_SUBMIT_SM_RESP, "submit_sm_resp");
     }
     

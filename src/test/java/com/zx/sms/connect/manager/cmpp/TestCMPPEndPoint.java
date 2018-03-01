@@ -7,6 +7,7 @@ import java.lang.management.ManagementFactory;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
 
 import javax.management.MBeanServer;
@@ -65,7 +66,7 @@ public class TestCMPPEndPoint {
 		child.setWriteLimit(200);
 		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new SessionConnectedHandler(1));
+		serverhandlers.add(new SessionConnectedHandler(new AtomicInteger(300000)));
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		

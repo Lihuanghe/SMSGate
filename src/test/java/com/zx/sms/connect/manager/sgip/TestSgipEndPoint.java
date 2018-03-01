@@ -6,6 +6,7 @@ import io.netty.util.ResourceLeakDetector.Level;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -43,7 +44,7 @@ public class TestSgipEndPoint {
 		SgipServerEndpointEntity server = new SgipServerEndpointEntity();
 		server.setId("sgipserver");
 		server.setHost("127.0.0.1");
-		server.setPort(8801);
+		server.setPort(8001);
 		server.setValid(true);
 		//使用ssl加密数据流
 		server.setUseSSL(false);
@@ -58,7 +59,7 @@ public class TestSgipEndPoint {
 		child.setMaxChannels((short)20);
 		child.setRetryWaitTimeSec((short)30);
 		child.setMaxRetryCnt((short)3);
-		child.setReSendFailMsg(false);
+		child.setReSendFailMsg(true);
 		child.setIdleTimeSec((short)15);
 //		child.setWriteLimit(200);
 //		child.setReadLimit(200);
@@ -66,11 +67,11 @@ public class TestSgipEndPoint {
 		
 		serverhandlers.add(new SgipReportRequestMessageHandler());
 		serverhandlers.add(new Sgip2CMPPBusinessHandler());  //  将CMPP的对象转成sgip对象，然后再经sgip解码器处理
-		serverhandlers.add(new MessageReceiveHandler());   // 复用CMPP的Handler
+		serverhandlers.add(new SessionConnectedHandler(new AtomicInteger(300000)));   // 复用CMPP的Handler
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
-		manager.addEndpointEntity(server);
+//		manager.addEndpointEntity(server);
 		
 		
 		SgipClientEndpointEntity client = new SgipClientEndpointEntity();
@@ -89,7 +90,7 @@ public class TestSgipEndPoint {
 //		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new Sgip2CMPPBusinessHandler()); //  将CMPP的对象转成sgip对象，然后再经sgip解码器处理
-		clienthandlers.add(new SessionConnectedHandler(1)); //// 复用CMPP的Handler
+		clienthandlers.add(new MessageReceiveHandler()); //// 复用CMPP的Handler
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		manager.openAll();

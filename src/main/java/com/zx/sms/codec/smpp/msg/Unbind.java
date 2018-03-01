@@ -24,7 +24,12 @@ import com.zx.sms.codec.smpp.SmppConstants;
 
 public class Unbind extends EmptyBody<UnbindResp> {
     
-    public Unbind() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1777566735396989201L;
+
+	public Unbind() {
         super(SmppConstants.CMD_ID_UNBIND, "unbind");
     }
 

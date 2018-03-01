@@ -3,6 +3,7 @@ package com.zx.sms.connect.manager.smpp;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -83,7 +84,7 @@ public class TestSMPPEndPoint {
 //		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new SMPP2CMPPBusinessHandler()); //  将CMPP的对象转成SMPP对象，然后再经SMPP解码器处理
-		clienthandlers.add(new SessionConnectedHandler(60)); //// 复用CMPP的Handler
+		clienthandlers.add(new SessionConnectedHandler(new AtomicInteger(300000))); //// 复用CMPP的Handler
 		client.setBusinessHandlerSet(clienthandlers);
 		
 		manager.openEndpoint(client);

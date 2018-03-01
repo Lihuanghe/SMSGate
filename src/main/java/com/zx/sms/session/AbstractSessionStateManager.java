@@ -33,11 +33,11 @@ import com.zx.sms.session.cmpp.SessionState;
 /**
  * @author Lihuanghe(18852780@qq.com) 消息发送窗口拜你控制和消息重发 ，消息持久化
  */
-public abstract class AbstractSessionStateManager<K,T extends BaseMessage> extends ChannelDuplexHandler {
+public abstract class AbstractSessionStateManager<K, T extends BaseMessage> extends ChannelDuplexHandler {
 	private static final Logger logger = LoggerFactory.getLogger(AbstractSessionStateManager.class);
 	// 用来记录连接上的错误消息
 	private final Logger errlogger;
-	
+
 	/**
 	 * @param entity
 	 *            Session关联的端口
@@ -48,7 +48,7 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 	 */
 	public AbstractSessionStateManager(EndpointEntity entity, Map<K, VersionObject<T>> storeMap, boolean preSend) {
 		this.entity = entity;
-		errlogger = LoggerFactory.getLogger("error."+entity.getId());
+		errlogger = LoggerFactory.getLogger("error." + entity.getId());
 		this.storeMap = storeMap;
 		this.preSend = preSend;
 	}
@@ -59,25 +59,24 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 	private long msgReadCount = 0;
 	private long msgWriteCount = 0;
 	private EndpointEntity entity;
-	
-	private final long version = System.currentTimeMillis();
-	
-	private  final static ScheduledThreadPoolExecutor msgResend = new ScheduledThreadPoolExecutor(Integer.valueOf(PropertiesUtils.getproperties("GlobalMsgResendThreadCount","4")),new ThreadFactory() {
-	      
-        private final AtomicInteger threadNumber = new AtomicInteger(1);
-      
-        public Thread newThread(Runnable r) {
-            Thread t = new Thread( r,"msgResend-" + threadNumber.getAndIncrement());
-            
-            t.setDaemon(true);
-            if (t.getPriority() != Thread.NORM_PRIORITY)
-                t.setPriority(Thread.NORM_PRIORITY);
-            return t;
-        }
-    },new ThreadPoolExecutor.DiscardPolicy());
 
-	
-	
+	private final long version = System.currentTimeMillis();
+
+	private final static ScheduledThreadPoolExecutor msgResend = new ScheduledThreadPoolExecutor(Integer.valueOf(PropertiesUtils.getproperties(
+			"GlobalMsgResendThreadCount", "4")), new ThreadFactory() {
+
+		private final AtomicInteger threadNumber = new AtomicInteger(1);
+
+		public Thread newThread(Runnable r) {
+			Thread t = new Thread(r, "msgResend-" + threadNumber.getAndIncrement());
+
+			t.setDaemon(true);
+			if (t.getPriority() != Thread.NORM_PRIORITY)
+				t.setPriority(Thread.NORM_PRIORITY);
+			return t;
+		}
+	}, new ThreadPoolExecutor.DiscardPolicy());
+
 	/**
 	 * 重发队列
 	 **/
@@ -91,25 +90,25 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 	 * 会话刚建立时要发送的数据
 	 */
 	private boolean preSend;
-	
+
 	private boolean preSendover = false;
-	
-	public int getWaittingResp(){
+
+	public int getWaittingResp() {
 		return storeMap.size();
 	}
 
-	public long getReadCount(){
+	public long getReadCount() {
 		return msgReadCount;
 	}
-	
-	public long getWriteCount(){
+
+	public long getWriteCount() {
 		return msgWriteCount;
 	}
-	
+
 	public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
 		logger.warn("Connection closed. channel:{}", ctx.channel());
-		
-		ctx.executor().execute(new Runnable(){
+
+		ctx.executor().execute(new Runnable() {
 
 			@Override
 			public void run() {
@@ -119,26 +118,25 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 
 					EndpointConnector conn = EndpointManager.INS.getEndpointConnector(entity);
 					// 所有连接都已关闭
-					if (conn == null)
-						break;
+					if (conn != null){
+						Channel ch = conn.fetch();
 
-					Channel ch = conn.fetch();
+						if (ch != null && ch.isActive()) {
 
-					if (ch != null && ch.isActive()) {
-
-						if (entity.isReSendFailMsg()) {
-							// 连接断连，但是未收到Resp的消息，通过其它连接再发送一次
-							ch.writeAndFlush(requestmsg);
-							logger.debug("current channel {} is closed.send requestMsg from other channel {} which is active.", ctx.channel(), ch);
-						} else {
-							errlogger.error("Channel closed . Msg {} may not send Success. ", requestmsg);
+							if (entity.isReSendFailMsg()) {
+								// 连接断连，但是未收到Resp的消息，通过其它连接再发送一次
+								ch.writeAndFlush(requestmsg);
+								logger.warn("current channel {} is closed.send requestMsg {} from other channel {} which is active.", ctx.channel(),requestmsg, ch);
+							} else {
+								errlogger.error("Channel closed . Msg {} may not send Success. ", requestmsg);
+							}
 						}
 					}
 					cancelRetry(requestmsg, ctx.channel());
 				}
-				
-				//如果重发的消息没有发送完毕。从其它连接发送
-				if(preSend && (!preSendover)){
+
+				// 如果重发的消息没有发送完毕。从其它连接发送
+				if (preSend && (!preSendover)) {
 					for (Map.Entry<K, VersionObject<T>> entry : storeMap.entrySet()) {
 						EndpointConnector conn = EndpointManager.INS.getEndpointConnector(entity);
 						// 所有连接都已关闭
@@ -149,30 +147,31 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 
 						if (ch != null && ch.isActive()) {
 							K key = entry.getKey();
-							
+
 							VersionObject<T> vobj = entry.getValue();
 							long v = vobj.getVersion();
 							T msg = vobj.getObj();
+							
+							//只发送在本次连接建立之前的未成功的消息
+							//v保存了消息创建时的时间
 							if (version > v && msg != null) {
 								// 如果配置了失败重发
-								if (preSend) {
-									logger.debug("Send last failed msg . {}", msg);
-									ch.writeAndFlush(msg);
-								}
+								logger.debug("Send last failed msg . {}", msg);
+								ch.writeAndFlush(msg);
 							}
 						}
 					}
 				}
 			}
-			
-		});
 
+		});
 
 		ctx.fireChannelInactive();
 	}
+
 	protected abstract K getSequenceId(T msg);
-	
-	protected abstract boolean needSendAgainByResponse(T req,T res);
+
+	protected abstract boolean needSendAgainByResponse(T req, T res);
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -190,30 +189,29 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 				if (vobj != null) {
 					T request = vobj.getObj();
 					Entry cancelentry = cancelRetry(request, ctx.channel());
-					
-					//根据Response 判断是否需要重发,比如CMPP协议，如果收到result==8，表示超速，需要重新发送
-					if(needSendAgainByResponse(request ,message)){
+
+					// 根据Response 判断是否需要重发,比如CMPP协议，如果收到result==8，表示超速，需要重新发送
+					if (needSendAgainByResponse(request, message)) {
 						reWriteLater(ctx, request, ctx.newPromise(), 400);
 					}
-					
-					//把response关联上request供使用。
+
+					// 把response关联上request供使用。
 					message.setRequest(request);
-				}
-				else{
-					errlogger.warn("receive ResponseMessage ,but not found related Request Msg. {}",message);
+				} else {
+					errlogger.warn("receive ResponseMessage ,but not found related Request Msg. {}", message);
 				}
 			}
 		}
 		ctx.fireChannelRead(msg);
 	}
-	
+
 	@Override
 	public void write(ChannelHandlerContext ctx, Object message, ChannelPromise promise) throws Exception {
 
 		if (message instanceof BaseMessage) {
-			BaseMessage msg = (BaseMessage)message;
+			BaseMessage msg = (BaseMessage) message;
 			// 发送消息超过生命周期
-			
+
 			if (msg.isTerminated()) {
 				errlogger.error("Msg Life over .{}", msg);
 				promise.setFailure(new RuntimeException("Msg Life over"));
@@ -236,19 +234,19 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 	public void userEventTriggered(final ChannelHandlerContext ctx, Object evt) throws Exception {
 
 		if (evt == SessionState.Connect) {
-			ctx.executor().execute(new Runnable(){
+			ctx.executor().execute(new Runnable() {
 
 				@Override
 				public void run() {
 					preSendMsg(ctx);
 				}
-				
+
 			});
-			
+
 		}
 		ctx.fireUserEventTriggered(evt);
 	}
-    
+
 	/**
 	 * 获取发送窗口，并且注册重试任务
 	 **/
@@ -277,17 +275,21 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 			 * 些任务不能被中断interupted.如果storeMap.remove()被中断会破坏BDB的内部状态，使用BDB无法继续工作
 			 */
 			final AtomicReference<Future> ref = new AtomicReference<Future>();
-			
+
 			Runnable task = new Runnable() {
 
 				@Override
 				public void run() {
 					try {
+						
+						if(!ctx.channel().isActive()) return;
+						
 						int times = entry.cnt.get();
+						
 						logger.warn("retry Send Msg : {}", message);
 						if (times >= entity.getMaxRetryCnt()) {
 
-							//会有future泄漏的情况发生，这里cancel掉自己，来规避泄漏
+							// 会有future泄漏的情况发生，这里cancel掉自己，来规避泄漏
 							Future future = ref.get();
 							if (future != null)
 								future.cancel(false);
@@ -301,10 +303,10 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 							logger.error("retry send msg {} times。cancel retry task", times);
 
 							errlogger.error("RetryFailed: {}", message);
-							
-							logger.error("retry send Message {} 3 times,the connection may die.close it",message);
+
+							logger.error("retry send Message {} 3 times,the connection may die.close it", message);
 							ctx.close();
-							
+
 						} else {
 
 							msgWriteCount++;
@@ -338,15 +340,15 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 
 	private Entry cancelRetry(T requestMsg, Channel channel) {
 		Entry entry = msgRetryMap.remove(getSequenceId(requestMsg));
-	
+
 		if (entry != null && entry.future != null) {
 			entry.future.cancel(false);
-			//删除任务
-			if(entry.future instanceof RunnableScheduledFuture){
-				msgResend.remove((RunnableScheduledFuture)entry.future);
+			// 删除任务
+			if (entry.future instanceof RunnableScheduledFuture) {
+				msgResend.remove((RunnableScheduledFuture) entry.future);
 			}
-			
-		}else{
+
+		} else {
 			logger.debug("cancelRetry task failed.");
 		}
 		return entry;
@@ -354,21 +356,23 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 
 	private void preSendMsg(ChannelHandlerContext ctx) {
 		boolean isbreak = false;
-		for (Map.Entry<K, VersionObject<T>> entry : storeMap.entrySet()) {
-			
-			if(!ctx.channel().isActive()) {
-				isbreak = true;
-				break;
-			}
-			
-			K key = entry.getKey();
-			
-			VersionObject<T> vobj = entry.getValue();
-			long v = vobj.getVersion();
-			T msg = vobj.getObj();
-			if (version > v && msg != null) {
-				// 如果配置了失败重发
-				if (preSend) {
+		if (preSend) {
+			for (Map.Entry<K, VersionObject<T>> entry : storeMap.entrySet()) {
+
+				if (!ctx.channel().isActive()) {
+					isbreak = true;
+					break;
+				}
+
+				K key = entry.getKey();
+
+				VersionObject<T> vobj = entry.getValue();
+				long v = vobj.getVersion();
+				T msg = vobj.getObj();
+
+				//只发送在本次连接建立之前的未成功的消息
+				//v保存了消息创建时的时间
+				if (version > v && msg != null) {
 					logger.debug("Send last failed msg . {}", msg);
 					writeWithWindow(ctx, msg, ctx.newPromise());
 				}
@@ -400,19 +404,19 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 				// 持久化到队列
 				storeMap.put(seq, new VersionObject<T>(message));
 
-				promise.addListener(new ChannelFutureListener(){
+				promise.addListener(new ChannelFutureListener() {
 
 					@Override
 					public void operationComplete(ChannelFuture future) throws Exception {
-						
-						if(future.isSuccess()){
+
+						if (future.isSuccess()) {
 							// 注册重试任务
 							scheduleRetryMsg(ctx, message);
 						}
 					}
-					
+
 				});
-				ctx.writeAndFlush(message,promise);
+				ctx.writeAndFlush(message, promise);
 			}
 
 		} else {
@@ -438,7 +442,7 @@ public abstract class AbstractSessionStateManager<K,T extends BaseMessage> exten
 
 		}, delay, TimeUnit.MILLISECONDS);
 	}
-	
+
 	private class Entry {
 		// 保证future的可见性，
 		volatile Future future;

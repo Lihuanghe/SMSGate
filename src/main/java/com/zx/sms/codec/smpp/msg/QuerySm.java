@@ -37,7 +37,11 @@ import com.zx.sms.common.util.PduUtil;
  */
 public class QuerySm extends PduRequest<QuerySmResp> {
 
-    private String messageId;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 2134101625543975063L;
+	private String messageId;
     private Address sourceAddress;
 
     public QuerySm() {

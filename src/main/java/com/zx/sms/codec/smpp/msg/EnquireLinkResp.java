@@ -24,7 +24,12 @@ import com.zx.sms.codec.smpp.SmppConstants;
 
 public class EnquireLinkResp extends EmptyBodyResp {
 
-    public EnquireLinkResp() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -4538115852615546996L;
+
+	public EnquireLinkResp() {
         super(SmppConstants.CMD_ID_ENQUIRE_LINK_RESP, "enquire_link_resp");
     }
     

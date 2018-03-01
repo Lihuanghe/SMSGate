@@ -28,7 +28,12 @@ import com.zx.sms.codec.smpp.SmppConstants;
  */
 public class BindTransceiver extends BaseBind<BindTransceiverResp> {
 
-    public BindTransceiver() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7788689674672351061L;
+
+	public BindTransceiver() {
         super(SmppConstants.CMD_ID_BIND_TRANSCEIVER, "bind_transceiver");
     }
 

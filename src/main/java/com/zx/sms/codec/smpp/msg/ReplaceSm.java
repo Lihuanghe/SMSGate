@@ -35,7 +35,11 @@ import com.zx.sms.common.util.PduUtil;
 
 public class ReplaceSm extends PduRequest<ReplaceSmResp> {
 
-    private String messageId;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -9091662675742249630L;
+	private String messageId;
     private Address sourceAddress;
     private String scheduleDeliveryTime;
     private String validityPeriod;

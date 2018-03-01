@@ -66,6 +66,7 @@ public class SMPP2CMPPBusinessHandler extends AbstractBusinessHandler {
     			}else{
     				pdu = new DeliverSm();
     			}
+    				pdu.setDataCoding(deliver.getMsgfmt().getValue());
     		        pdu.setCommandStatus(0);
     		        pdu.setSequenceNumber((int)deliver.getHeader().getSequenceId());
     		        pdu.setServiceType("");
@@ -138,7 +139,7 @@ public class SMPP2CMPPBusinessHandler extends AbstractBusinessHandler {
     			submit.setMsgContent(sm.getSmsMsg());
     			submit.setMsgfmt(new SmsDcs(sm.getDataCoding()));
     			submit.setTppid(sm.getProtocolId());
-    			submit.setTpudhi(sm.getEsmClass());
+    			submit.setTpudhi((short)((sm.getEsmClass()>>6)&0x01));
     			out.add(submit);
     			
     		}else if(msg instanceof SubmitSmResp){

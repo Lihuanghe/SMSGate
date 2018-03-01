@@ -37,7 +37,11 @@ import com.zx.sms.common.util.PduUtil;
  */
 public class CancelSm extends PduRequest<CancelSmResp> {
 
-    protected String serviceType;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7249768577373486011L;
+	protected String serviceType;
     protected String messageId;
     protected Address sourceAddress;
     protected Address destAddress;

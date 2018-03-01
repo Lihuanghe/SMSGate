@@ -27,7 +27,12 @@ import com.zx.sms.codec.smpp.UnrecoverablePduException;
 
 public abstract class EmptyBodyResp extends PduResponse {
 
-    public EmptyBodyResp(int commandId, String name) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4591976508943538165L;
+
+	public EmptyBodyResp(int commandId, String name) {
         super(commandId, name);
     }
 

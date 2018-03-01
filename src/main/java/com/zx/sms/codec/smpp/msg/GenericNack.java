@@ -28,7 +28,12 @@ import com.zx.sms.codec.smpp.UnrecoverablePduException;
 
 public class GenericNack extends PduResponse {
     
-    public GenericNack() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 423864924963205127L;
+
+	public GenericNack() {
         super(SmppConstants.CMD_ID_GENERIC_NACK, "generic_nack");
     }
 

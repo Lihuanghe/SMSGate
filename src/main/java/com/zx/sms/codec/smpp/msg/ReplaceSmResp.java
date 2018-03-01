@@ -28,7 +28,12 @@ import com.zx.sms.codec.smpp.UnrecoverablePduException;
 
 public class ReplaceSmResp extends PduResponse {
 
-    public ReplaceSmResp() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8769525307033653040L;
+
+	public ReplaceSmResp() {
         super(SmppConstants.CMD_ID_REPLACE_SM_RESP, "replace_sm_resp");
     }
     

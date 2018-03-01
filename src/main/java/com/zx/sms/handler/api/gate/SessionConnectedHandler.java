@@ -5,7 +5,9 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
 
+import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.math.RandomUtils;
 import org.slf4j.Logger;
@@ -31,22 +33,24 @@ import com.zx.sms.session.cmpp.SessionState;
 public class SessionConnectedHandler extends AbstractBusinessHandler {
 	private static final Logger logger = LoggerFactory.getLogger(SessionConnectedHandler.class);
 
-	private static int TOTLE = 100000;
-	private int totleCnt =TOTLE;
+	private AtomicInteger totleCnt = new AtomicInteger(100000);
 	
-	public int getTotleCnt() {
+	public AtomicInteger getTotleCnt() {
 		return totleCnt;
 	}
-	public void setTotleCnt(int totleCnt) {
+	public void setTotleCnt(AtomicInteger totleCnt) {
 		this.totleCnt = totleCnt;
 	}
 	
 	public SessionConnectedHandler(){
-		TOTLE = 100000;
+	}
+	
+	public SessionConnectedHandler(AtomicInteger t){
+		totleCnt = t;
 	}
 	
 	public SessionConnectedHandler(int t){
-		TOTLE = t;
+		totleCnt = new AtomicInteger(t);
 	}
 	
 	@Override
@@ -94,14 +98,13 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 				@Override
 				public Boolean call() throws Exception{
 					int cnt = RandomUtils.nextInt() & 0x1f;
-					while(cnt-->0 && totleCnt>0) {
-						ChannelFuture future = ctx.writeAndFlush(createTestReq(String.valueOf("尊敬的客户,您好！您于2016-03-23 14:51:36通过中国移动10085销售专线订购的【一加手机高清防刮保护膜】，请点击支付http://www.10085.cn/web85/page/zyzxpay/wap_order.html?orderId=76DEF9AE1808F506FD4E6CB782E3B8E7EE875E766D3D335C 完成下单。请在60分钟内完成支付，如有疑问，请致电10085咨询，谢谢！中国移动10085看了我")) );
+					while(cnt-->0 && totleCnt.decrementAndGet()>0) {
+						ChannelFuture future = ctx.writeAndFlush(createTestReq(UUID.randomUUID().toString()) );
 						if(future == null){
 							break;
 						}
 						try{
-//							future.sync();
-							totleCnt--;
+							future.sync();
 						}catch(Exception e){
 							break;
 						}
@@ -111,7 +114,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 			}, new ExitUnlimitCirclePolicy() {
 				@Override
 				public boolean notOver(Future future) {
-					boolean over =   ch.isActive() && totleCnt > 0;
+					boolean over =   ch.isActive() && totleCnt.get() > 0;
 					if(!over)logger.info("========send over.============");
 					return over;
 				}
@@ -129,7 +132,6 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 	
 	public SessionConnectedHandler clone() throws CloneNotSupportedException {
 		SessionConnectedHandler ret = (SessionConnectedHandler) super.clone();
-		ret.totleCnt = TOTLE;
 		return ret;
 	}
 

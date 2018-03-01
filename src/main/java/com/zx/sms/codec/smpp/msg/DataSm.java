@@ -30,9 +30,13 @@ import com.zx.sms.codec.smpp.UnrecoverablePduException;
 import com.zx.sms.common.util.ByteBufUtil;
 import com.zx.sms.common.util.PduUtil;
 
-public class DataSm extends BaseSm<DataSmResp>  implements LongSMSMessage{
+public class DataSm extends BaseSm<DataSmResp>  implements LongSMSMessage<DataSm>{
 
-    public DataSm() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3066462470955865784L;
+	public DataSm() {
         super(SmppConstants.CMD_ID_DATA_SM, "data_sm");
     }
 

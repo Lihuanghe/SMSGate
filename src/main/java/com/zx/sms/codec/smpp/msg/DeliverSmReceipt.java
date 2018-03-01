@@ -10,6 +10,10 @@ import com.zx.sms.codec.smpp.SmppInvalidArgumentException;
 
 public class DeliverSmReceipt extends DeliverSm {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4411244865862324858L;
 	private String id;
 	private String sub;
 	private String dlvrd;
@@ -82,6 +86,10 @@ public class DeliverSmReceipt extends DeliverSm {
 	public void setText(String text) {
 		this.text = text;
 	}
+	
+    public byte getEsmClass() {
+        return 0x04;
+    }
 
 	//不能修改shortMessage字段
 	public byte[] getShortMessage() {

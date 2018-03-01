@@ -22,7 +22,12 @@ package com.zx.sms.codec.smpp.msg;
 
 public class PartialPdu extends EmptyBody<GenericNack> {
     
-    public PartialPdu(int commandId) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -257762394313889568L;
+
+	public PartialPdu(int commandId) {
         super(commandId, "partial_pdu");
     }
 

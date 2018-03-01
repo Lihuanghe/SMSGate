@@ -32,7 +32,11 @@ import com.zx.sms.common.util.PduUtil;
 
 public class AlertNotification extends Pdu {
 
-    protected Address sourceAddress;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 3381959655631251521L;
+	protected Address sourceAddress;
     protected Address esmeAddress;
 
     public AlertNotification(){

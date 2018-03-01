@@ -33,7 +33,12 @@ import com.zx.sms.codec.smpp.UnrecoverablePduException;
  */
 public class CancelSmResp extends PduResponse {
 
-    public CancelSmResp() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3066011148275221941L;
+
+	public CancelSmResp() {
         super(SmppConstants.CMD_ID_CANCEL_SM_RESP, "cancel_sm_resp");
     }
 

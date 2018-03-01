@@ -24,9 +24,14 @@ import com.zx.sms.LongSMSMessage;
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.codec.smpp.SmppConstants;
 
-public class DeliverSm extends BaseSm<DeliverSmResp> implements LongSMSMessage {
+public class DeliverSm extends BaseSm<DeliverSmResp> implements LongSMSMessage<DeliverSm> {
 
-    public DeliverSm() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6858655335844462036L;
+
+	public DeliverSm() {
         super(SmppConstants.CMD_ID_DELIVER_SM, "deliver_sm");
     }
 

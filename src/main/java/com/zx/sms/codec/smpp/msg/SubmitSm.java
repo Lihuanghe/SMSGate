@@ -24,9 +24,13 @@ import com.zx.sms.LongSMSMessage;
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.codec.smpp.SmppConstants;
 
-public class SubmitSm extends BaseSm<SubmitSmResp>  implements LongSMSMessage {
+public class SubmitSm extends BaseSm<SubmitSmResp>  implements LongSMSMessage<SubmitSm> {
 
-    public SubmitSm() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -4398064962035428672L;
+	public SubmitSm() {
         super(SmppConstants.CMD_ID_SUBMIT_SM, "submit_sm");
     }
 

@@ -27,7 +27,7 @@ public class SMPPCodecChannelInitializer extends ChannelInitializer<Channel> {
 	private static final Logger logger = LoggerFactory.getLogger(SMPPCodecChannelInitializer.class);
 	
 	public static String pipeName() {
-		return "cmppCodec";
+		return "smppCodec";
 	}
 	@Override
 	protected void initChannel(Channel ch) throws Exception {
