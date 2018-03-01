@@ -1,4 +1,4 @@
-# CMPPGate , SMPPGate
+# CMPPGate , SMPPGate , SGIPGate
 中移短信cmpp协议/smpp协议 netty实现编解码
 
 这是一个在netty4框架下实现的cmpp3.0/cmpp2.0短信协议解析及网关端口管理 (master分支是依赖于netty5的)。
@@ -10,6 +10,9 @@ cmpp协议已经跟华为，东软，亚信的短信网关都做过联调测试�
 
 因要与短信中心对接，新增了对SMPP协议的支持。
 SMPP的协议解析代码是从  [Twitter-SMPP 的代码](https://github.com/fizzed/cloudhopper-smpp) copy过来的。
+
+新增对sgip协议(联通短信协议)的支持
+SMPP的协议解析代码是从 [huzorro@gmail.com 的代码 ](https://github.com/huzorro/sgipsgw) copy过来的进行改造的。
 
 ## 性能测试 
 在48core，128G内存的物理服务器上测试协议解析效率：35K条/s, cpu使用率25%. 
@@ -123,8 +126,7 @@ public class TestCMPPEndPoint {
 		child.setRetryWaitTimeSec((short)5);
 		child.setMaxRetryCnt((short)3);
 		child.setReSendFailMsg(false);
-//		
-//		child.setReadLimit(200);
+		//child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
 		serverhandlers.add(new SessionConnectedHandler(300000));
 		child.setBusinessHandlerSet(serverhandlers);
@@ -149,8 +151,8 @@ public class TestCMPPEndPoint {
 		client.setRetryWaitTimeSec((short)10);
 		client.setUseSSL(false);
 		client.setReSendFailMsg(false);
-//		client.setWriteLimit(200);
-//		client.setReadLimit(200);
+		//client.setWriteLimit(200);
+		//client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add( new MessageReceiveHandler());
 		client.setBusinessHandlerSet(clienthandlers);
@@ -202,8 +204,6 @@ public class TestSMPPEndPoint {
 		child.setMaxRetryCnt((short)3);
 		child.setReSendFailMsg(false);
 		child.setIdleTimeSec((short)15);
-//		child.setWriteLimit(200);
-//		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
 		serverhandlers.add(new SMPP2CMPPBusinessHandler());  //  将CMPP的对象转成SMPP对象，然后再经SMPP解码器处理
 		serverhandlers.add( new MessageReceiveHandler());   // 复用CMPP的Handler
@@ -225,8 +225,6 @@ public class TestSMPPEndPoint {
 		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);
 		client.setReSendFailMsg(false);
-//		client.setWriteLimit(200);
-//		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new SMPP2CMPPBusinessHandler()); //  将CMPP的对象转成SMPP对象，然后再经SMPP解码器处理
 		clienthandlers.add(new SessionConnectedHandler(600000)); //// 复用CMPP的Handler
@@ -245,6 +243,78 @@ public class TestSMPPEndPoint {
 		EndpointManager.INS.close();
 	}
 	
+```
+
+## SGIP Api使用举例
+
+```java
+public class TestSgipEndPoint {
+	private static final Logger logger = LoggerFactory.getLogger(TestSgipEndPoint.class);
+
+	@Test
+	public void testsgipEndpoint() throws Exception {
+		ResourceLeakDetector.setLevel(Level.ADVANCED);
+		final EndpointManager manager = EndpointManager.INS;
+
+		SgipServerEndpointEntity server = new SgipServerEndpointEntity();
+		server.setId("sgipserver");
+		server.setHost("127.0.0.1");
+		server.setPort(8801);
+		server.setValid(true);
+		//使用ssl加密数据流
+		server.setUseSSL(false);
+		
+		SgipServerChildEndpointEntity child = new SgipServerChildEndpointEntity();
+		child.setId("sgipchild");
+		child.setLoginName("333");
+		child.setLoginPassowrd("0555");
+
+		child.setValid(true);
+		child.setChannelType(ChannelType.DOWN);
+		child.setMaxChannels((short)20);
+		child.setRetryWaitTimeSec((short)30);
+		child.setMaxRetryCnt((short)3);
+		child.setReSendFailMsg(false);
+		child.setIdleTimeSec((short)15);
+		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
+		
+		serverhandlers.add(new SgipReportRequestMessageHandler());
+		serverhandlers.add(new Sgip2CMPPBusinessHandler());  //  将CMPP的对象转成sgip对象，然后再经sgip解码器处理
+		serverhandlers.add(new MessageReceiveHandler());   // 复用CMPP的Handler
+		child.setBusinessHandlerSet(serverhandlers);
+		server.addchild(child);
+		
+		manager.addEndpointEntity(server);
+		
+		
+		SgipClientEndpointEntity client = new SgipClientEndpointEntity();
+		client.setId("sgipclient");
+		client.setHost("127.0.0.1");
+		client.setPort(8001);
+		client.setLoginName("333");
+		client.setLoginPassowrd("0555");
+		client.setChannelType(ChannelType.DOWN);
+
+		client.setMaxChannels((short)12);
+		client.setRetryWaitTimeSec((short)100);
+		client.setUseSSL(false);
+		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
+		clienthandlers.add(new Sgip2CMPPBusinessHandler()); //  将CMPP的对象转成sgip对象，然后再经sgip解码器处理
+		clienthandlers.add(new SessionConnectedHandler(1)); //// 复用CMPP的Handler
+		client.setBusinessHandlerSet(clienthandlers);
+		manager.addEndpointEntity(client);
+		manager.openAll();
+		//LockSupport.park();
+		 MBeanServer mserver = ManagementFactory.getPlatformMBeanServer();  
+
+        ObjectName stat = new ObjectName("com.zx.sms:name=ConnState");
+        mserver.registerMBean(new ConnState(), stat);
+        System.out.println("start.....");
+        
+		Thread.sleep(300000);
+		EndpointManager.INS.close();
+	}
+}
 ```
 
 ## Demo 执行日志
