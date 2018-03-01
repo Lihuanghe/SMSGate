@@ -144,7 +144,7 @@ public class SessionLoginManager extends AbstractSessionLoginManager {
 		resp.setStatus(0);
 		resp.setAuthenticatorISMG(DigestUtils.md5(Bytes.concat(Ints.toByteArray((int)resp.getStatus()), message.getAuthenticatorSource(), childentity
 				.getPassword().getBytes(childentity.getChartset()))));
-		ctx.writeAndFlush(resp);
+		ctx.channel().writeAndFlush(resp);
 	}
 
 	@Override

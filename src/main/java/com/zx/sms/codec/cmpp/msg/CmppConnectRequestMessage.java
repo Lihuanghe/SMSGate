@@ -84,5 +84,8 @@ public class CmppConnectRequestMessage extends DefaultMessage {
 		this.timestamp = timestamp;
 	}
 
-
+	@Override
+	public String toString() {
+		return String.format("CmppConnectRequestMessage [version=%s, sourceAddr=%s, sequenceId=%s]", version, sourceAddr, getHeader().getSequenceId());
+	}
 }

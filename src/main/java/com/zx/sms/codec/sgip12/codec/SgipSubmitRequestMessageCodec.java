@@ -90,7 +90,7 @@ public class SgipSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 		requestMessage.setMsgfmt(new SmsDcs((byte) bodyBuffer.readUnsignedByte()));
 
 		requestMessage.setMessagetype(bodyBuffer.readUnsignedByte());
-		int msgLength = LongMessageFrameHolder.getPayloadLength(requestMessage.getMsgfmt().getAlphabet(), bodyBuffer.readUnsignedByte()) & 0xffff;
+		int msgLength = LongMessageFrameHolder.getPayloadLength(requestMessage.getMsgfmt().getAlphabet(), bodyBuffer.readInt());
 
 		byte[] contentbytes = new byte[msgLength];
 		bodyBuffer.readBytes(contentbytes);

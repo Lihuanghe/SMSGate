@@ -27,8 +27,8 @@ public class SgipSessionLoginManager extends AbstractSessionLoginManager {
 	@Override
 	protected void doLogin(Channel ch) {
 		//发送bind请求
-		SgipEndpointEntity smppentity = (SgipEndpointEntity) entity;
-		SgipBindRequestMessage bind = createBindRequest(smppentity);
+		SgipEndpointEntity sgipentity = (SgipEndpointEntity) entity;
+		SgipBindRequestMessage bind = createBindRequest(sgipentity);
 		ch.writeAndFlush(bind);
 	}
 
@@ -87,12 +87,12 @@ public class SgipSessionLoginManager extends AbstractSessionLoginManager {
 	@Override
 	protected void doLoginSuccess(ChannelHandlerContext ctx, EndpointEntity entity, Object message) {
 		//发送bind请求
-		SgipEndpointEntity smppentity = (SgipEndpointEntity) entity;
+		SgipEndpointEntity sgipentity = (SgipEndpointEntity) entity;
 		
 		SgipBindResponseMessage resp = new SgipBindResponseMessage(((Message)message).getHeader());
 		resp.setResult((short)0);
 		
-		ctx.writeAndFlush(resp);
+		ctx.channel().writeAndFlush(resp);
 
 	}
 

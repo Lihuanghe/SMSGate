@@ -48,7 +48,7 @@ public class Sgip2CMPPBusinessHandler extends AbstractBusinessHandler {
     			DefaultMessage pdu = null;
     			CmppDeliverRequestMessage deliver = (CmppDeliverRequestMessage)msg;
     			if(deliver.isReport()){
-    				SgipReportRequestMessage pdur = new SgipReportRequestMessage();
+    				SgipReportRequestMessage pdur = new SgipReportRequestMessage(deliver.getHeader());
     				CmppReportRequestMessage report = deliver.getReportRequestMessage();
     				pdur.setSequenceId(new SequenceNumber(report.getMsgId().toString()));
     				pdur.setUsernumber(report.getDestterminalId());
@@ -56,7 +56,7 @@ public class Sgip2CMPPBusinessHandler extends AbstractBusinessHandler {
     				pdur.setReserve(report.getStat());
     				pdu = pdur;
     			}else{
-        			SgipDeliverRequestMessage sgipmsg = new SgipDeliverRequestMessage();
+        			SgipDeliverRequestMessage sgipmsg = new SgipDeliverRequestMessage(deliver.getHeader());
         			sgipmsg.setTimestamp(deliver.getTimestamp());
         			sgipmsg.setUsernumber(deliver.getDestId());
         			sgipmsg.setSpnumber(deliver.getSrcterminalId());
@@ -111,7 +111,7 @@ public class Sgip2CMPPBusinessHandler extends AbstractBusinessHandler {
     	protected void decode(ChannelHandlerContext ctx, DefaultMessage msg, List<Object> out) throws Exception {
     		if(msg instanceof SgipDeliverRequestMessage){
     			SgipDeliverRequestMessage deli = (SgipDeliverRequestMessage)msg;
-    			CmppDeliverRequestMessage deliver = new CmppDeliverRequestMessage();
+    			CmppDeliverRequestMessage deliver = new CmppDeliverRequestMessage(deli.getHeader());
     			deliver.setTimestamp(deli.getTimestamp());
     			deliver.setMsgContent(deli.getMsg());
     			deliver.setSrcterminalId(deli.getSpnumber());
@@ -124,7 +124,7 @@ public class Sgip2CMPPBusinessHandler extends AbstractBusinessHandler {
     			SgipReportRequestMessage rece = (SgipReportRequestMessage)msg;
 				CmppReportRequestMessage report = new CmppReportRequestMessage();
 				
-				CmppDeliverRequestMessage deliver = new CmppDeliverRequestMessage();
+				CmppDeliverRequestMessage deliver = new CmppDeliverRequestMessage(rece.getHeader());
 				deliver.setTimestamp(rece.getTimestamp());
 				deliver.setReportRequestMessage(report);
 				deliver.setRegisteredDelivery((short)1);
@@ -142,6 +142,7 @@ public class Sgip2CMPPBusinessHandler extends AbstractBusinessHandler {
     			submit.setTimestamp(sm.getTimestamp());
     			submit.setDestUsrtl(sm.getUsercount());
     			submit.setDestterminalId(sm.getUsernumber().toArray(new String[sm.getUsercount()]));
+    			submit.setRegisteredDelivery(sm.getReportflag());
     			submit.setSrcId(sm.getSpnumber());
     			submit.setMsgsrc(sm.getCorpid());
     			submit.setMsgContent(sm.getMsg());

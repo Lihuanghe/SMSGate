@@ -115,7 +115,7 @@ public class SMPPSessionLoginManager extends AbstractSessionLoginManager {
 		
 		BaseBind bind = (BaseBind)message;
 		
-		ctx.writeAndFlush(bind.createResponse());
+		ctx.channel().writeAndFlush(bind.createResponse());
 
 	}
 

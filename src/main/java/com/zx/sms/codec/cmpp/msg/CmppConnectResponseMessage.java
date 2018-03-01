@@ -62,5 +62,8 @@ public class CmppConnectResponseMessage extends DefaultMessage{
         this.version = version;
     }
 
- 
+	@Override
+	public String toString() {
+		return String.format("CmppConnectResponseMessage [version=%s, status=%s, sequenceId=%s]", version, status, getHeader().getSequenceId());
+	}
 }

@@ -37,6 +37,7 @@ public class SgipSubmitLongMessageHandler extends AbstractLongMessageHandler<Sgi
 	@Override
 	protected void resetMessageContent(SgipSubmitRequestMessage t, SmsMessage content) {
 		t.setMsgContent(content);
+		
 	}
 
 }

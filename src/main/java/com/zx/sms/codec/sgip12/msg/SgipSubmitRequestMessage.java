@@ -4,6 +4,7 @@
 package com.zx.sms.codec.sgip12.msg;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.marre.sms.SmsAlphabet;
@@ -437,14 +438,16 @@ public class SgipSubmitRequestMessage extends DefaultMessage implements LongSMSM
 		return requestMessage;
 	}
 	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
-		return String
-				.format("SubmitRequestMessage [spnumber=%s, chargenumber=%s]",
-						spnumber, chargenumber);
+		StringBuilder sb = new StringBuilder();
+		sb.append("SgipSubmitRequestMessage [corpid=").append(corpid)
+		.append(", spnumber=").append(spnumber)
+		.append(", destterminalId=").append(Arrays.toString(usernumber.toArray()))
+		.append(", msgContent=").append(getMsgContent())
+		.append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
+		return sb.toString();
 	}
+
 
 }

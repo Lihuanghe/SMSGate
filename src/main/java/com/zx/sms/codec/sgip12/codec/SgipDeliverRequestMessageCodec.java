@@ -66,10 +66,11 @@ public class SgipDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 		requestMessage.setTpudhi(bodyBuffer.readUnsignedByte());
 		requestMessage.setMsgfmt(new SmsDcs((byte) bodyBuffer.readUnsignedByte()));
 
-		int frameLength = LongMessageFrameHolder.getPayloadLength(requestMessage.getMsgfmt().getAlphabet(), bodyBuffer.readUnsignedByte());
+		int frameLength = LongMessageFrameHolder.getPayloadLength(requestMessage.getMsgfmt().getAlphabet(), bodyBuffer.readInt());
 
 		byte[] contentbytes = new byte[frameLength];
 		bodyBuffer.readBytes(contentbytes);
+		
 		requestMessage.setMsgContentBytes(contentbytes);
 		requestMessage.setMessagelength(frameLength);
 

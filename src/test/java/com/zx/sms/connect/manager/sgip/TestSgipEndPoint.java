@@ -36,20 +36,20 @@ public class TestSgipEndPoint {
 	private static final Logger logger = LoggerFactory.getLogger(TestSgipEndPoint.class);
 
 	@Test
-	public void testSMPPEndpoint() throws Exception {
+	public void testsgipEndpoint() throws Exception {
 		ResourceLeakDetector.setLevel(Level.ADVANCED);
 		final EndpointManager manager = EndpointManager.INS;
 
 		SgipServerEndpointEntity server = new SgipServerEndpointEntity();
-		server.setId("smppserver");
+		server.setId("sgipserver");
 		server.setHost("127.0.0.1");
-		server.setPort(8001);
+		server.setPort(8801);
 		server.setValid(true);
 		//使用ssl加密数据流
 		server.setUseSSL(false);
 		
 		SgipServerChildEndpointEntity child = new SgipServerChildEndpointEntity();
-		child.setId("smppchild");
+		child.setId("sgipchild");
 		child.setLoginName("333");
 		child.setLoginPassowrd("0555");
 
@@ -58,23 +58,23 @@ public class TestSgipEndPoint {
 		child.setMaxChannels((short)20);
 		child.setRetryWaitTimeSec((short)30);
 		child.setMaxRetryCnt((short)3);
-		child.setReSendFailMsg(true);
+		child.setReSendFailMsg(false);
 		child.setIdleTimeSec((short)15);
 //		child.setWriteLimit(200);
 //		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
 		
 		serverhandlers.add(new SgipReportRequestMessageHandler());
-		serverhandlers.add(new Sgip2CMPPBusinessHandler());  //  将CMPP的对象转成SMPP对象，然后再经SMPP解码器处理
+		serverhandlers.add(new Sgip2CMPPBusinessHandler());  //  将CMPP的对象转成sgip对象，然后再经sgip解码器处理
 		serverhandlers.add(new MessageReceiveHandler());   // 复用CMPP的Handler
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
 		manager.addEndpointEntity(server);
-		manager.openAll();
+		
 		
 		SgipClientEndpointEntity client = new SgipClientEndpointEntity();
-		client.setId("smppclient");
+		client.setId("sgipclient");
 		client.setHost("127.0.0.1");
 		client.setPort(8001);
 		client.setLoginName("333");
@@ -88,12 +88,11 @@ public class TestSgipEndPoint {
 //		client.setWriteLimit(200);
 //		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add(new Sgip2CMPPBusinessHandler()); //  将CMPP的对象转成SMPP对象，然后再经SMPP解码器处理
-		clienthandlers.add(new SessionConnectedHandler(1000)); //// 复用CMPP的Handler
+		clienthandlers.add(new Sgip2CMPPBusinessHandler()); //  将CMPP的对象转成sgip对象，然后再经sgip解码器处理
+		clienthandlers.add(new SessionConnectedHandler(1)); //// 复用CMPP的Handler
 		client.setBusinessHandlerSet(clienthandlers);
-		
-		manager.openEndpoint(client);
-		
+		manager.addEndpointEntity(client);
+		manager.openAll();
 		//LockSupport.park();
 		 MBeanServer mserver = ManagementFactory.getPlatformMBeanServer();  
 

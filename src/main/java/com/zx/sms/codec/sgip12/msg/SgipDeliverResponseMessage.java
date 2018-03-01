@@ -3,11 +3,8 @@
  */
 package com.zx.sms.codec.sgip12.msg;
 
-import org.apache.commons.codec.binary.Hex;
-
 import com.zx.sms.codec.cmpp.msg.DefaultMessage;
 import com.zx.sms.codec.cmpp.msg.Header;
-import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.codec.sgip12.packet.SgipPacketType;
 import com.zx.sms.common.GlobalConstance;
 
@@ -57,8 +54,8 @@ public class SgipDeliverResponseMessage extends DefaultMessage {
 	@Override
 	public String toString() {
 		return String
-				.format("DeliverResponseMessage [result=%s, reserve=%s, getPacketType()=%s, getTimestamp()=%s,  getHeader()=%s]",
-						result, reserve, getPacketType(), getTimestamp(), getHeader());
+				.format("SgipDeliverResponseMessage [result=%s, reserve=%s, sequenceId=%s]",
+						result, reserve, getHeader().getSequenceId());
 	}
 	
 }

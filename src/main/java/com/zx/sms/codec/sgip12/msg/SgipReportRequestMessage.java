@@ -114,10 +114,10 @@ public class SgipReportRequestMessage extends DefaultMessage {
 	@Override
 	public String toString() {
 		return String
-				.format("ReportRequestMessage [ reporttype=%s, usernumber=%s, state=%s, errorcode=%s, reserve=%s, getPacketType()=%s, getHeader()=%s]",
+				.format("ReportRequestMessage [ reporttype=%s, usernumber=%s, state=%s, errorcode=%s, reserve=%s, sequenceId=%s]",
 						 reporttype, usernumber, state,
-						errorcode, reserve, getPacketType(),
-						getHeader());
+						errorcode, reserve, 
+						getHeader().getSequenceId());
 	}
 	
 }

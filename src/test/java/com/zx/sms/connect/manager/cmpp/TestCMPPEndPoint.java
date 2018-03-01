@@ -65,7 +65,7 @@ public class TestCMPPEndPoint {
 		child.setWriteLimit(200);
 		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new SessionConnectedHandler(3000));
+		serverhandlers.add(new SessionConnectedHandler(1));
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		

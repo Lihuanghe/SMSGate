@@ -199,8 +199,8 @@ public class SgipDeliverRequestMessage extends DefaultMessage implements LongSMS
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("DeliverRequestMessage [").append("destId=").append(usernumber).append(", srcterminalId=").append(spnumber)
-				.append(", msgContent=").append(getMsgContent()).append(", SmsMessageType=").append(msg==null?"":msg.getClass().getSimpleName()).append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
+		sb.append("SgipDeliverRequestMessage [").append("destId=").append(usernumber).append(", srcterminalId=").append(spnumber)
+				.append(", msgContent=").append(getMsgContent()).append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
 		return sb.toString();
 	}
 	public SgipDeliverRequestMessage clone() throws CloneNotSupportedException {

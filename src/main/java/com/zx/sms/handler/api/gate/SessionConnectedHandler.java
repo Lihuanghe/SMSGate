@@ -4,26 +4,18 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.math.RandomUtils;
-import org.marre.wap.push.SmsMmsNotificationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
-import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppReportRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
-import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.codec.cmpp.msg.Message;
-import com.zx.sms.common.util.ChannelUtil;
-//import com.zx.sms.common.util.MsgId;
+import com.zx.sms.common.util.MsgId;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
@@ -73,7 +65,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						msg.setLinkid("0000");
 //						msg.setMsgContent(sb.toString());
 						msg.setMsgContent(content);
-//						msg.setMsgId(new MsgId());
+						msg.setMsgId(new MsgId());
 						msg.setRegisteredDelivery((short) 0);
 						if (msg.getRegisteredDelivery() == 1) {
 							msg.setReportRequestMessage(new CmppReportRequestMessage());
@@ -90,9 +82,10 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						msg.setLinkID("0000");
 						msg.setMsgContent(content);
 						msg.setRegisteredDelivery((short)1);
-//						msg.setMsgid(new MsgId());
+						msg.setMsgid(new MsgId());
 						msg.setServiceId("10086");
 						msg.setSrcId("10086");
+						msg.setMsgsrc("927165");
 //						msg.setMsgContent(new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd",50*1024));
 						return msg;
 					}
@@ -102,7 +95,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 				public Boolean call() throws Exception{
 					int cnt = RandomUtils.nextInt() & 0x1f;
 					while(cnt-->0 && totleCnt>0) {
-						ChannelFuture future = ctx.writeAndFlush(createTestReq(String.valueOf(totleCnt)) );
+						ChannelFuture future = ctx.writeAndFlush(createTestReq(String.valueOf("尊敬的客户,您好！您于2016-03-23 14:51:36通过中国移动10085销售专线订购的【一加手机高清防刮保护膜】，请点击支付http://www.10085.cn/web85/page/zyzxpay/wap_order.html?orderId=76DEF9AE1808F506FD4E6CB782E3B8E7EE875E766D3D335C 完成下单。请在60分钟内完成支付，如有疑问，请致电10085咨询，谢谢！中国移动10085看了我")) );
 						if(future == null){
 							break;
 						}

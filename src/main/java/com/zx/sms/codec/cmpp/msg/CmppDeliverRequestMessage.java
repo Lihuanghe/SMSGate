@@ -325,7 +325,7 @@ public class CmppDeliverRequestMessage extends DefaultMessage  implements LongSM
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("CmppDeliverRequestMessage [msgId=").append(msgId).append(", destId=").append(destId).append(", srcterminalId=").append(srcterminalId)
-				.append(", msgContent=").append(getMsgContent()).append(", SmsMessageType=").append(msg==null?"":msg.getClass().getSimpleName()).append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
+				.append(", msgContent=").append(getMsgContent()).append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
 		return sb.toString();
 	}
 

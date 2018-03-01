@@ -475,8 +475,11 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("CmppSubmitRequestMessage [msgid=").append(msgid).append(", destterminalId=").append(Arrays.toString(destterminalId)).append(", msgContent=")
-		.append(getMsgContent()).append(", SmsMessageType=").append(msg==null?"":msg.getClass().getSimpleName()).append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
+		sb.append("CmppSubmitRequestMessage [msgid=").append(msgid)
+		.append(", srcId=").append(srcId)
+		.append(", msgsrc=").append(msgsrc)
+		.append(", destterminalId=").append(Arrays.toString(destterminalId)).append(", msgContent=")
+		.append(getMsgContent()).append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
 		return sb.toString();
 	}
 
