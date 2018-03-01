@@ -1,5 +1,4 @@
 package com.zx.sms.codec.sgip12.codec;
-import static com.zx.sms.common.util.NettyByteBufUtil.toArray;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -36,8 +35,10 @@ public class SgipHeaderCodec extends MessageToMessageCodec<ByteBuf, Message> {
 		Header header = new DefaultHeader();
 		header.setPacketLength(bytebuf.readUnsignedInt());
 		header.setCommandId(bytebuf.readUnsignedInt());
-		ByteBuf seqbuf = bytebuf.readBytes(SgipHead.SEQUENCENUMBER.getLength());
-		SequenceNumber seq = DefaultSequenceNumberUtil.bytes2SequenceN(toArray(seqbuf,seqbuf.readableBytes()));
+		byte[] seqbytes = new byte[SgipHead.SEQUENCENUMBER.getLength()];
+		bytebuf.readBytes(seqbytes);
+		SequenceNumber seq = DefaultSequenceNumberUtil.bytes2SequenceN(seqbytes);
+		
 		message.setTimestamp(seq.getTimestamp());
 		header.setSequenceId(seq.getSequenceId());
 		header.setNodeId(seq.getNodeIds());
@@ -53,6 +54,7 @@ public class SgipHeaderCodec extends MessageToMessageCodec<ByteBuf, Message> {
 		} else {
 			message.setBodyBuffer(GlobalConstance.emptyBytes);
 		}
+		
 		message.setHeader(header);
 		list.add(message);
 	}

@@ -1,5 +1,8 @@
 package com.zx.sms.connect.manager.cmpp;
 
+import io.netty.util.ResourceLeakDetector;
+import io.netty.util.ResourceLeakDetector.Level;
+
 import java.lang.management.ManagementFactory;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -33,7 +36,7 @@ public class TestCMPPEndPoint {
 
 	@Test
 	public void testCMPPEndpoint() throws Exception {
-	
+		ResourceLeakDetector.setLevel(Level.ADVANCED);
 		final EndpointManager manager = EndpointManager.INS;
 
 		CMPPServerEndpointEntity server = new CMPPServerEndpointEntity();
@@ -62,7 +65,7 @@ public class TestCMPPEndPoint {
 		child.setWriteLimit(200);
 		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new SessionConnectedHandler(30));
+		serverhandlers.add(new SessionConnectedHandler(3000));
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		

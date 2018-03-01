@@ -48,13 +48,17 @@ public class SgipReportRequestMessageCodec extends MessageToMessageCodec<Message
 		SgipReportRequestMessage requestMessage = new SgipReportRequestMessage(msg.getHeader());
 		requestMessage.setTimestamp(msg.getTimestamp());
 		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
-		ByteBuf seqbuf = bodyBuffer.readBytes(SgipReportRequest.SUBMITSEQUENCENUMBER.getLength());
-		requestMessage.setSequenceId(DefaultSequenceNumberUtil.bytes2SequenceN(toArray(seqbuf, seqbuf.readableBytes())));
+		
+		byte[] seqbytes = new byte[SgipReportRequest.SUBMITSEQUENCENUMBER.getLength()];
+		bodyBuffer.readBytes(seqbytes);
+		
+		requestMessage.setSequenceId(DefaultSequenceNumberUtil.bytes2SequenceN(seqbytes));
+		
 		requestMessage.setReporttype(bodyBuffer.readUnsignedByte());
-		requestMessage.setUsernumber(bodyBuffer.readBytes(SgipReportRequest.USERNUMBER.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setUsernumber(bodyBuffer.readCharSequence(SgipReportRequest.USERNUMBER.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 		requestMessage.setState(bodyBuffer.readUnsignedByte());
 		requestMessage.setErrorcode(bodyBuffer.readUnsignedByte());
-		requestMessage.setReserve(bodyBuffer.readBytes(SgipReportRequest.RESERVE.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setReserve(bodyBuffer.readCharSequence(SgipReportRequest.RESERVE.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(requestMessage);

@@ -57,8 +57,10 @@ public class SgipSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 		requestMessage.setTimestamp(msg.getTimestamp());
 		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
 
-		requestMessage.setSpnumber(bodyBuffer.readBytes(SgipSubmitRequest.SPNUMBER.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
-		requestMessage.setChargenumber(bodyBuffer.readBytes(SgipSubmitRequest.CHARGENUMBER.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setSpnumber(bodyBuffer.readCharSequence(SgipSubmitRequest.SPNUMBER.getLength(), GlobalConstance.defaultTransportCharset).toString()
+				.trim());
+		requestMessage.setChargenumber(bodyBuffer.readCharSequence(SgipSubmitRequest.CHARGENUMBER.getLength(), GlobalConstance.defaultTransportCharset)
+				.toString().trim());
 
 		int usercount = bodyBuffer.readUnsignedByte();
 		requestMessage.setUsercount((short) usercount);
@@ -67,16 +69,21 @@ public class SgipSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 					.toString().trim());
 		}
 
-		requestMessage.setCorpid(bodyBuffer.readBytes(SgipSubmitRequest.CORPID.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
-		requestMessage.setServicetype(bodyBuffer.readBytes(SgipSubmitRequest.SERVICETYPE.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setCorpid(bodyBuffer.readCharSequence(SgipSubmitRequest.CORPID.getLength(), GlobalConstance.defaultTransportCharset).toString().trim());
+		requestMessage.setServicetype(bodyBuffer.readCharSequence(SgipSubmitRequest.SERVICETYPE.getLength(), GlobalConstance.defaultTransportCharset)
+				.toString().trim());
 		requestMessage.setFeetype(bodyBuffer.readUnsignedByte());
-		requestMessage.setFeevalue(bodyBuffer.readBytes(SgipSubmitRequest.FEEVALUE.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
-		requestMessage.setGivenvalue(bodyBuffer.readBytes(SgipSubmitRequest.GIVENVALUE.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setFeevalue(bodyBuffer.readCharSequence(SgipSubmitRequest.FEEVALUE.getLength(), GlobalConstance.defaultTransportCharset).toString()
+				.trim());
+		requestMessage.setGivenvalue(bodyBuffer.readCharSequence(SgipSubmitRequest.GIVENVALUE.getLength(), GlobalConstance.defaultTransportCharset).toString()
+				.trim());
 		requestMessage.setAgentflag(bodyBuffer.readUnsignedByte());
 		requestMessage.setMorelatetomtflag(bodyBuffer.readUnsignedByte());
 		requestMessage.setPriority(bodyBuffer.readUnsignedByte());
-		requestMessage.setExpiretime(bodyBuffer.readBytes(SgipSubmitRequest.EXPIRETIME.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
-		requestMessage.setScheduletime(bodyBuffer.readBytes(SgipSubmitRequest.SCHEDULETIME.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setExpiretime(bodyBuffer.readCharSequence(SgipSubmitRequest.EXPIRETIME.getLength(), GlobalConstance.defaultTransportCharset).toString()
+				.trim());
+		requestMessage.setScheduletime(bodyBuffer.readCharSequence(SgipSubmitRequest.SCHEDULETIME.getLength(), GlobalConstance.defaultTransportCharset)
+				.toString().trim());
 		requestMessage.setReportflag(bodyBuffer.readUnsignedByte());
 		requestMessage.setTppid(bodyBuffer.readUnsignedByte());
 		requestMessage.setTpudhi(bodyBuffer.readUnsignedByte());
@@ -90,7 +97,8 @@ public class SgipSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 		requestMessage.setMsgContentBytes(contentbytes);
 		requestMessage.setMessagelength(msgLength);
 
-		requestMessage.setReserve(bodyBuffer.readBytes(SgipSubmitRequest.RESERVE.getLength()).toString(GlobalConstance.defaultTransportCharset).trim());
+		requestMessage
+				.setReserve(bodyBuffer.readCharSequence(SgipSubmitRequest.RESERVE.getLength(), GlobalConstance.defaultTransportCharset).toString().trim());
 
 		out.add(requestMessage);
 		ReferenceCountUtil.release(bodyBuffer);

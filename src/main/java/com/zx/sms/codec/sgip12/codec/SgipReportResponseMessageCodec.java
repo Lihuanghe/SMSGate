@@ -13,21 +13,20 @@ import io.netty.util.ReferenceCountUtil;
 import java.util.List;
 
 import com.zx.sms.codec.cmpp.msg.Message;
-import com.zx.sms.codec.cmpp.packet.CmppCancelResponse;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.codec.sgip12.msg.SgipReportResponseMessage;
-import com.zx.sms.codec.sgip12.packet.SgipDeliverResponse;
 import com.zx.sms.codec.sgip12.packet.SgipPacketType;
 import com.zx.sms.codec.sgip12.packet.SgipReportResponse;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CMPPCommonUtil;
+
 /**
  * @author huzorro(huzorro@gmail.com)
  * @author Lihuanghe(18852780@qq.com)
  */
 public class SgipReportResponseMessageCodec extends MessageToMessageCodec<Message, SgipReportResponseMessage> {
 	private PacketType packetType;
-	
+
 	public SgipReportResponseMessageCodec() {
 		this(SgipPacketType.REPORTRESPONSE);
 	}
@@ -39,21 +38,19 @@ public class SgipReportResponseMessageCodec extends MessageToMessageCodec<Messag
 	@Override
 	protected void decode(ChannelHandlerContext ctx, Message msg, List<Object> out) throws Exception {
 		long commandId = ((Long) msg.getHeader().getCommandId()).longValue();
-		if (packetType.getCommandId() != commandId)
-		{
-			//不解析，交给下一个codec
+		if (packetType.getCommandId() != commandId) {
+			// 不解析，交给下一个codec
 			out.add(msg);
 			return;
 		}
 
 		SgipReportResponseMessage responseMessage = new SgipReportResponseMessage(msg.getHeader());
 		responseMessage.setTimestamp(msg.getTimestamp());
-		ByteBuf  bodyBuffer = Unpooled.wrappedBuffer( msg.getBodyBuffer());
+		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
 		responseMessage.setResult(bodyBuffer.readUnsignedByte());
-		responseMessage.setReserve(bodyBuffer.readBytes(
-				SgipReportResponse.RESERVE.getLength()).toString(
-						GlobalConstance.defaultTransportCharset).trim());
-		
+		responseMessage.setReserve(bodyBuffer.readCharSequence(SgipReportResponse.RESERVE.getLength(), GlobalConstance.defaultTransportCharset).toString()
+				.trim());
+
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(responseMessage);
 	}
@@ -62,13 +59,12 @@ public class SgipReportResponseMessageCodec extends MessageToMessageCodec<Messag
 	protected void encode(ChannelHandlerContext ctx, SgipReportResponseMessage msg, List<Object> out) throws Exception {
 
 		ByteBuf bodyBuffer = Unpooled.buffer(SgipReportResponse.RESULT.getBodyLength());
-		
+
 		bodyBuffer.writeByte(msg.getResult());
-		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(msg.getReserve()
-				.getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(msg.getReserve().getBytes(GlobalConstance.defaultTransportCharset),
 				SgipReportResponse.RESERVE.getLength(), 0));
 
-		msg.setBodyBuffer(toArray(bodyBuffer,bodyBuffer.readableBytes()));
+		msg.setBodyBuffer(toArray(bodyBuffer, bodyBuffer.readableBytes()));
 		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(msg);

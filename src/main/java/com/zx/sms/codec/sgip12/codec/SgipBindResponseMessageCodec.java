@@ -13,7 +13,6 @@ import io.netty.util.ReferenceCountUtil;
 import java.util.List;
 
 import com.zx.sms.codec.cmpp.msg.Message;
-import com.zx.sms.codec.cmpp.packet.CmppActiveTestResponse;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.codec.sgip12.msg.SgipBindResponseMessage;
 import com.zx.sms.codec.sgip12.packet.SgipBindResponse;
@@ -28,7 +27,7 @@ import com.zx.sms.common.util.CMPPCommonUtil;
  */
 public class SgipBindResponseMessageCodec extends MessageToMessageCodec<Message, SgipBindResponseMessage> {
 	private PacketType packetType;
-	
+
 	public SgipBindResponseMessageCodec() {
 		this(SgipPacketType.BINDRESPONSE);
 	}
@@ -37,40 +36,36 @@ public class SgipBindResponseMessageCodec extends MessageToMessageCodec<Message,
 		this.packetType = packetType;
 	}
 
-
 	@Override
 	protected void decode(ChannelHandlerContext ctx, Message msg, List<Object> out) throws Exception {
 		long commandId = ((Long) msg.getHeader().getCommandId()).longValue();
-		if (packetType.getCommandId() != commandId)
-		{
-			//不解析，交给下一个codec
+		if (packetType.getCommandId() != commandId) {
+			// 不解析，交给下一个codec
 			out.add(msg);
 			return;
 		}
 
 		SgipBindResponseMessage responseMessage = new SgipBindResponseMessage(msg.getHeader());
 		responseMessage.setTimestamp(msg.getTimestamp());
-		
-		ByteBuf  bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
+
+		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
 		responseMessage.setResult(bodyBuffer.readUnsignedByte());
-		responseMessage.setReserve(bodyBuffer.readBytes(
-				SgipBindResponse.RESERVE.getLength()).toString(
-				GlobalConstance.defaultTransportCharset).trim());
+		responseMessage
+				.setReserve(bodyBuffer.readCharSequence(SgipBindResponse.RESERVE.getLength(), GlobalConstance.defaultTransportCharset).toString().trim());
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(responseMessage);
 	}
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, SgipBindResponseMessage responseMessage, List<Object> out) throws Exception {
-		
+
 		ByteBuf bodyBuffer = Unpooled.buffer(SgipBindResponse.RESERVE.getBodyLength());
-	
+
 		bodyBuffer.writeByte(responseMessage.getResult());
-		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(responseMessage.getReserve()
-				.getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(responseMessage.getReserve().getBytes(GlobalConstance.defaultTransportCharset),
 				SgipBindResponse.RESERVE.getLength(), 0));
-		
-		responseMessage.setBodyBuffer(toArray(bodyBuffer,bodyBuffer.readableBytes()));
+
+		responseMessage.setBodyBuffer(toArray(bodyBuffer, bodyBuffer.readableBytes()));
 		responseMessage.getHeader().setBodyLength(responseMessage.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(responseMessage);

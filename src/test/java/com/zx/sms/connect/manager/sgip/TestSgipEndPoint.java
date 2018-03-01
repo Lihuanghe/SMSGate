@@ -1,5 +1,8 @@
 package com.zx.sms.connect.manager.sgip;
 
+import io.netty.util.ResourceLeakDetector;
+import io.netty.util.ResourceLeakDetector.Level;
+
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,13 +37,13 @@ public class TestSgipEndPoint {
 
 	@Test
 	public void testSMPPEndpoint() throws Exception {
-	
+		ResourceLeakDetector.setLevel(Level.ADVANCED);
 		final EndpointManager manager = EndpointManager.INS;
 
 		SgipServerEndpointEntity server = new SgipServerEndpointEntity();
 		server.setId("smppserver");
 		server.setHost("127.0.0.1");
-		server.setPort(8801);
+		server.setPort(8001);
 		server.setValid(true);
 		//使用ssl加密数据流
 		server.setUseSSL(false);

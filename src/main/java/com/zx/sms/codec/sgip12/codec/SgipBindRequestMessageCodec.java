@@ -39,46 +39,36 @@ public class SgipBindRequestMessageCodec extends MessageToMessageCodec<Message, 
 	protected void decode(ChannelHandlerContext ctx, Message msg, List<Object> out) throws Exception {
 		long commandId = ((Long) msg.getHeader().getCommandId()).longValue();
 		if (packetType.getCommandId() != commandId) {
-			//不解析，交给下一个codec
+			// 不解析，交给下一个codec
 			out.add(msg);
 			return;
 		}
 
 		SgipBindRequestMessage requestMessage = new SgipBindRequestMessage(msg.getHeader());
 		requestMessage.setTimestamp(msg.getTimestamp());
-		
+
 		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
-		
+
 		requestMessage.setLoginType(bodyBuffer.readUnsignedByte());
-		requestMessage.setLoginName(bodyBuffer.readBytes(
-				SgipBindRequest.LOGINNAME.getLength()).toString(
-						GlobalConstance.defaultTransportCharset).trim());
-		requestMessage.setLoginPassowrd(bodyBuffer.readBytes(
-				SgipBindRequest.LOGINPASSWD.getLength()).toString(
-						GlobalConstance.defaultTransportCharset).trim());
-		requestMessage.setReserve(bodyBuffer.readBytes(
-				SgipBindRequest.RESERVE.getLength()).toString(
-						GlobalConstance.defaultTransportCharset).trim());
+		requestMessage.setLoginName(bodyBuffer.readCharSequence(SgipBindRequest.LOGINNAME.getLength(), GlobalConstance.defaultTransportCharset).toString().trim());
+		requestMessage.setLoginPassowrd(bodyBuffer.readCharSequence(SgipBindRequest.LOGINPASSWD.getLength(), GlobalConstance.defaultTransportCharset).toString().trim());
+		requestMessage.setReserve(bodyBuffer.readCharSequence(SgipBindRequest.RESERVE.getLength(), GlobalConstance.defaultTransportCharset).toString().trim());
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(requestMessage);
 	}
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, SgipBindRequestMessage requestMessage, List<Object> out) throws Exception {
-		ByteBuf bodyBuffer =  Unpooled.buffer(SgipBindRequest.LOGINNAME.getBodyLength());
+		ByteBuf bodyBuffer = Unpooled.buffer(SgipBindRequest.LOGINNAME.getBodyLength());
 		bodyBuffer.writeByte(requestMessage.getLoginType());
-		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage
-				.getLoginName().getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getLoginName().getBytes(GlobalConstance.defaultTransportCharset),
 				SgipBindRequest.LOGINNAME.getLength(), 0));
-		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage
-				.getLoginPassowrd()
-				.getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getLoginPassowrd().getBytes(GlobalConstance.defaultTransportCharset),
 				SgipBindRequest.LOGINPASSWD.getLength(), 0));
-		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getReserve()
-				.getBytes(GlobalConstance.defaultTransportCharset),
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getReserve().getBytes(GlobalConstance.defaultTransportCharset),
 				SgipBindRequest.RESERVE.getLength(), 0));
-		
-		requestMessage.setBodyBuffer(toArray(bodyBuffer,bodyBuffer.readableBytes()));
+
+		requestMessage.setBodyBuffer(toArray(bodyBuffer, bodyBuffer.readableBytes()));
 		requestMessage.getHeader().setBodyLength(requestMessage.getBodyBuffer().length);
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(requestMessage);

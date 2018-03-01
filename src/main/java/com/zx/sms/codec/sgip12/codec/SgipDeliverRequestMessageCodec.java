@@ -24,6 +24,7 @@ import com.zx.sms.codec.sgip12.packet.SgipDeliverRequest;
 import com.zx.sms.codec.sgip12.packet.SgipPacketType;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CMPPCommonUtil;
+
 /**
  * @author huzorro(huzorro@gmail.com)
  * @author Lihuanghe(18852780@qq.com)
@@ -56,59 +57,51 @@ public class SgipDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 		ByteBuf bodyBuffer = Unpooled.wrappedBuffer(message.getBodyBuffer());
 		SgipDeliverRequestMessage requestMessage = new SgipDeliverRequestMessage(message.getHeader());
 		requestMessage.setTimestamp(message.getTimestamp());
-		
-		requestMessage.setUsernumber(bodyBuffer.readBytes(
-				SgipDeliverRequest.USERNUMBER.getLength()).toString(
-						GlobalConstance.defaultTransportCharset).trim());
-		requestMessage.setSpnumber(bodyBuffer.readBytes(
-				SgipDeliverRequest.SPNUMBER.getLength()).toString(
-				GlobalConstance.defaultTransportCharset).trim());
+
+		requestMessage.setUsernumber(bodyBuffer.readCharSequence(SgipDeliverRequest.USERNUMBER.getLength(), GlobalConstance.defaultTransportCharset).toString()
+				.trim());
+		requestMessage.setSpnumber(bodyBuffer.readCharSequence(SgipDeliverRequest.SPNUMBER.getLength(), GlobalConstance.defaultTransportCharset).toString()
+				.trim());
 		requestMessage.setTppid(bodyBuffer.readUnsignedByte());
 		requestMessage.setTpudhi(bodyBuffer.readUnsignedByte());
-		requestMessage.setMsgfmt(new SmsDcs((byte)bodyBuffer.readUnsignedByte()));
-		
-		
-		int frameLength = LongMessageFrameHolder.getPayloadLength(requestMessage.getMsgfmt().getAlphabet(),bodyBuffer.readUnsignedByte());
-		
+		requestMessage.setMsgfmt(new SmsDcs((byte) bodyBuffer.readUnsignedByte()));
+
+		int frameLength = LongMessageFrameHolder.getPayloadLength(requestMessage.getMsgfmt().getAlphabet(), bodyBuffer.readUnsignedByte());
+
 		byte[] contentbytes = new byte[frameLength];
 		bodyBuffer.readBytes(contentbytes);
 		requestMessage.setMsgContentBytes(contentbytes);
 		requestMessage.setMessagelength(frameLength);
-		
-		requestMessage.setReserve(bodyBuffer.readBytes(
-				SgipDeliverRequest.RESERVE.getLength()).toString(
-				GlobalConstance.defaultTransportCharset).trim());
-		
-			out.add(requestMessage);
+
+		requestMessage.setReserve(bodyBuffer.readCharSequence(SgipDeliverRequest.RESERVE.getLength(), GlobalConstance.defaultTransportCharset).toString()
+				.trim());
+
+		out.add(requestMessage);
 
 		ReferenceCountUtil.release(bodyBuffer);
 	}
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, SgipDeliverRequestMessage requestMessage, List<Object> out) throws Exception {
-		
-			ByteBuf bodyBuffer = Unpooled.buffer(SgipDeliverRequest.USERNUMBER.getBodyLength() + requestMessage.getMessagelength());
 
-			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage
-					.getUsernumber().getBytes(GlobalConstance.defaultTransportCharset),
-					SgipDeliverRequest.USERNUMBER.getLength(), 0));
-			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getSpnumber()
-					.getBytes(GlobalConstance.defaultTransportCharset),
-					SgipDeliverRequest.SPNUMBER.getLength(), 0));
-			bodyBuffer.writeByte(requestMessage.getTppid());
-			bodyBuffer.writeByte(requestMessage.getTpudhi());
-			bodyBuffer.writeByte(requestMessage.getMsgfmt().getValue());
-			bodyBuffer.writeInt((int) requestMessage.getMessagelength());
-			bodyBuffer.writeBytes(requestMessage.getMsgContentBytes());
-			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getReserve()
-					.getBytes(GlobalConstance.defaultTransportCharset),
-					SgipDeliverRequest.RESERVE.getLength(), 0));
+		ByteBuf bodyBuffer = Unpooled.buffer(SgipDeliverRequest.USERNUMBER.getBodyLength() + requestMessage.getMessagelength());
 
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getUsernumber().getBytes(GlobalConstance.defaultTransportCharset),
+				SgipDeliverRequest.USERNUMBER.getLength(), 0));
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getSpnumber().getBytes(GlobalConstance.defaultTransportCharset),
+				SgipDeliverRequest.SPNUMBER.getLength(), 0));
+		bodyBuffer.writeByte(requestMessage.getTppid());
+		bodyBuffer.writeByte(requestMessage.getTpudhi());
+		bodyBuffer.writeByte(requestMessage.getMsgfmt().getValue());
+		bodyBuffer.writeInt((int) requestMessage.getMessagelength());
+		bodyBuffer.writeBytes(requestMessage.getMsgContentBytes());
+		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getReserve().getBytes(GlobalConstance.defaultTransportCharset),
+				SgipDeliverRequest.RESERVE.getLength(), 0));
 
-			requestMessage.setBodyBuffer(toArray(bodyBuffer,bodyBuffer.readableBytes()));
-			requestMessage.getHeader().setBodyLength(requestMessage.getBodyBuffer().length);
-			out.add(requestMessage);
-			ReferenceCountUtil.release(bodyBuffer);
+		requestMessage.setBodyBuffer(toArray(bodyBuffer, bodyBuffer.readableBytes()));
+		requestMessage.getHeader().setBodyLength(requestMessage.getBodyBuffer().length);
+		out.add(requestMessage);
+		ReferenceCountUtil.release(bodyBuffer);
 
 	}
 }
