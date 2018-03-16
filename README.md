@@ -162,12 +162,7 @@ public class TestCMPPEndPoint {
 		
 		manager.openAll();
 		//LockSupport.park();
-		 MBeanServer mserver = ManagementFactory.getPlatformMBeanServer();  
-
-        ObjectName stat = new ObjectName("com.zx.sms:name=ConnState");
-        mserver.registerMBean(new ConnState(), stat);
-        System.out.println("start.....");
-        
+       
 		Thread.sleep(300000);
 		EndpointManager.INS.close();
 	}
@@ -235,12 +230,6 @@ public class TestSMPPEndPoint {
 		manager.openEndpoint(client);
 		
 		//LockSupport.park();
-		 MBeanServer mserver = ManagementFactory.getPlatformMBeanServer();  
-
-        ObjectName stat = new ObjectName("com.zx.sms:name=ConnState");
-        mserver.registerMBean(new ConnState(), stat);
-        System.out.println("start.....");
-        
 		Thread.sleep(300000);
 		EndpointManager.INS.close();
 	}
@@ -307,10 +296,6 @@ public class TestSgipEndPoint {
 		manager.addEndpointEntity(client);
 		manager.openAll();
 		//LockSupport.park();
-		 MBeanServer mserver = ManagementFactory.getPlatformMBeanServer();  
-
-        ObjectName stat = new ObjectName("com.zx.sms:name=ConnState");
-        mserver.registerMBean(new ConnState(), stat);
         System.out.println("start.....");
         
 		Thread.sleep(300000);
