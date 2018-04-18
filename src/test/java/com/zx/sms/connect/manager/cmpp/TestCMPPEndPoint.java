@@ -95,11 +95,6 @@ public class TestCMPPEndPoint {
 		manager.addEndpointEntity(client);
 		
 		manager.openAll();
-		//
-		 MBeanServer mserver = ManagementFactory.getPlatformMBeanServer();  
-
-        ObjectName stat = new ObjectName("com.zx.sms:name=ConnState");
-        mserver.registerMBean(new ConnState(), stat);
         System.out.println("start.....");
         
 //		Thread.sleep(300000);

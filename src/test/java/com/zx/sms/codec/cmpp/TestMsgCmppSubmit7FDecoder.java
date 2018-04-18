@@ -1,6 +1,7 @@
 package com.zx.sms.codec.cmpp;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -11,14 +12,60 @@ import org.junit.Test;
 
 import com.zx.sms.codec.AbstractTestMessageCodec;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
+import com.zx.sms.common.util.MsgId;
 
 public class TestMsgCmppSubmit7FDecoder extends AbstractTestMessageCodec<CmppSubmitRequestMessage> {
 	@Override
 	protected int getVersion() {
-		return 0x7F;
+		return 0x7f;
 	}
 
+	public void testlongCodec(String content)
+	{
+		CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
+		msg.setDestterminalId(new String[]{"13800138000"});
+		msg.setLinkID("0000");
+		msg.setMsgContent(content);
+		msg.setMsgid(new MsgId());
+		msg.setServiceId("10086");
+		msg.setSrcId("10086");
+		msg.setSupportLongMsg(true);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("a", 1);
+		map.put("b", "adf");
+		msg.setAttachment((Serializable)map);
+		
+		channel().writeOutbound(msg);
+		ByteBuf buf =(ByteBuf)channel().readOutbound();
+		ByteBuf copybuf = Unpooled.buffer();
+	    while(buf!=null){
+			
+			
+	    	copybuf.writeBytes(buf.copy());
+			int length = buf.readableBytes();
+			
+			Assert.assertEquals(length, buf.readUnsignedInt());
+			Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
+			
+
+			buf =(ByteBuf)channel().readOutbound();
+	    }
+	    
+		CmppSubmitRequestMessage result = decode(copybuf);
+		
+		System.out.println(result.getMsgContent());
+		Assert.assertEquals(msg.getServiceId(), result.getServiceId());
+		Assert.assertEquals(msg.getMsgContent(), result.getMsgContent());
+		Assert.assertTrue(result.getAttachment() instanceof Map);
+		Map retmap = (Map)result.getAttachment() ;
+		Assert.assertEquals("adf", retmap.get("b"));
+	}
 	
+	@Test
+	public void testlongCodec()
+	{
+		testlongCodec("1234567890123456789中01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890" );
+	}
 	
 	@Test
 	public void testCodec()
