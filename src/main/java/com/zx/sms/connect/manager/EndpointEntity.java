@@ -23,6 +23,9 @@ public abstract class EndpointEntity implements Serializable {
 	private ChannelType channelType;
 	private String host;
 	private Integer port;
+	
+	private String localhost;
+	private Integer localport;
 
 	/**
 	 *最大连接数 
@@ -116,6 +119,20 @@ public abstract class EndpointEntity implements Serializable {
 	public void setPort(Integer port) {
 		this.port = port;
 	}
+	
+	
+	public String getLocalhost() {
+		return localhost;
+	}
+	public void setLocalhost(String localhost) {
+		this.localhost = localhost;
+	}
+	public Integer getLocalport() {
+		return localport;
+	}
+	public void setLocalport(Integer localport) {
+		this.localport = localport;
+	}
 	public boolean isUseSSL() {
 		return useSSL;
 	}
@@ -165,6 +182,7 @@ public abstract class EndpointEntity implements Serializable {
 	public void setRetryWaitTimeSec(short retryWaitTimeSec) {
 		this.retryWaitTimeSec = retryWaitTimeSec;
 	}
+	
 	
 	@Override
 	public int hashCode() {

@@ -10,6 +10,9 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.util.concurrent.GenericFutureListener;
+import io.netty.util.internal.SocketUtils;
+
+import java.net.SocketAddress;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -29,19 +32,28 @@ public abstract class AbstractClientEndpointConnector extends AbstractEndpointCo
 	@Override
 	public ChannelFuture open() throws Exception {
 		String host = getEndpointEntity().getHost();
+		String localhost = getEndpointEntity().getLocalhost();
+		Integer localport = getEndpointEntity().getLocalport();
+		SocketAddress localaddr = null;
+		
+		if(StringUtils.isNotBlank(localhost) && localport!=null){
+			localaddr = SocketUtils.socketAddress(localhost, localport);
+		}
+		
 		if(StringUtils.isBlank(host)){
-			logger.error("host is blank");
+			logger.error("remote host is blank");
 			return null;
 		}
-		return doConnect(host.split(","),0,getEndpointEntity().getPort());
+		return doConnect(host.split(","),0,getEndpointEntity().getPort(),localaddr);
 	}
 	
-	private ChannelFuture doConnect(final String[] hosts,final int idx ,final int port){
+	private ChannelFuture doConnect(final String[] hosts,final int idx ,final int port ,final SocketAddress localaddress){
 		if(idx>=hosts.length){
 			logger.error("hosts.length is {} ,but idx is {}.",hosts.length,idx);
 			return null;
 		}
-		ChannelFuture future = bootstrap.connect(hosts[idx],port);
+		
+		ChannelFuture future = bootstrap.connect(SocketUtils.socketAddress(hosts[idx],port),localaddress);
 		
 		future.addListener(new GenericFutureListener<ChannelFuture>(){
 
@@ -50,9 +62,9 @@ public abstract class AbstractClientEndpointConnector extends AbstractEndpointCo
 				if(!f.isSuccess()){
 					if(idx+1 < hosts.length){
 						logger.info("retry next host {}",hosts[idx+1]);
-						doConnect(hosts,idx+1, port);
+						doConnect(hosts,idx+1, port,localaddress);
 					}else{
-						logger.error("Connect to {}:{} failed.",getEndpointEntity().getHost(),port);
+						logger.error("Connect to {}:{} failed. cause by {}.",getEndpointEntity().getHost(),port,f.cause().getMessage());
 					}
 				}
 		}});
