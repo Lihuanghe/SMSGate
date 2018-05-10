@@ -62,9 +62,9 @@ public class TestCMPPEndPoint {
 		child.setMaxChannels((short)20);
 		child.setRetryWaitTimeSec((short)30);
 		child.setMaxRetryCnt((short)3);
-		child.setReSendFailMsg(true);
-		child.setWriteLimit(200);
-		child.setReadLimit(200);
+//		child.setReSendFailMsg(true);
+//		child.setWriteLimit(200);
+//		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
 		serverhandlers.add(new SessionConnectedHandler(new AtomicInteger(300000)));
 		child.setBusinessHandlerSet(serverhandlers);
