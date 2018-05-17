@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.connect.manager.CMPPEndpointManager;
 import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
-import com.zx.sms.handler.api.gate.RecvSendDriverHandler;
 import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
 /**
  *为业务平台编写测试驱动，实现发送多少条，短信端口，短信渠道，短信内容配置化

@@ -1,24 +1,19 @@
 package com.zx.sms.connect.manager.smpp;
 
-import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.codec.smpp.SMPP2CMPPBusinessHandler;
-import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
+import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 import com.zx.sms.handler.api.gate.SessionConnectedHandler;
 import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
-import com.zx.sms.mbean.ConnState;
 /**
  *经测试，35个连接，每个连接每200/s条消息
  *lenovoX250能承担7000/s消息编码解析无压力。
@@ -92,9 +87,6 @@ public class TestSMPPEndPoint {
 		manager.addEndpointEntity(client);
 		manager.openAll();
 		//LockSupport.park();
-		MBeanServer mserver = ManagementFactory.getPlatformMBeanServer();  
-        ObjectName stat = new ObjectName("com.zx.sms:name=ConnState");
-        mserver.registerMBean(new ConnState(), stat);
         System.out.println("start.....");
 		Thread.sleep(300000);
 		EndpointManager.INS.close();

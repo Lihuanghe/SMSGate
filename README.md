@@ -16,6 +16,10 @@ SMPP的协议解析代码是从  [Twitter-SMPP 的代码](https://github.com/fiz
 
 sgip的协议解析代码是从 [huzorro@gmail.com 的代码 ](https://github.com/huzorro/sgipsgw) copy过来后改造的。
 
+支持发送彩信通知，WAP短信以及闪信(Flash Message):
+
+![image](./doc/QQ20180518143313.jpg)
+
 ## 性能测试 
 在48core，128G内存的物理服务器上测试协议解析效率：35K条/s, cpu使用率25%. 
 

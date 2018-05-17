@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import com.zx.sms.connect.manager.CMPPEndpointManager;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
-import com.zx.sms.handler.api.gate.SessionConnectedHandler;
 import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
 /**
  *经测试，35个连接，每个连接每200/s条消息
