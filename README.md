@@ -18,7 +18,9 @@ sgip的协议解析代码是从 [huzorro@gmail.com 的代码 ](https://github.co
 
 支持发送彩信通知，WAP短信以及闪信(Flash Message):
 
-![image](./doc/QQ20180518143313.jpg)
+<DIV>
+<img src="./doc/QQ20180518143313.jpg" width="25%" height="25px">
+<DIV>
 
 ## 性能测试 
 在48core，128G内存的物理服务器上测试协议解析效率：35K条/s, cpu使用率25%. 
