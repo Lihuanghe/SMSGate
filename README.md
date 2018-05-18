@@ -19,7 +19,7 @@ sgip的协议解析代码是从 [huzorro@gmail.com 的代码 ](https://github.co
 支持发送彩信通知，WAP短信以及闪信(Flash Message):
 
 <DIV>
-<img src="./doc/QQ20180518143313.jpg" width="25%" height="25px">
+<img src="./doc/QQ20180518143313.jpg" width="25%" height="25%">
 <DIV>
 
 ## 性能测试 
