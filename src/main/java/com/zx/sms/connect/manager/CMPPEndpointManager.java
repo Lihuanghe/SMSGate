@@ -18,7 +18,6 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 	@Override
 	public void openEndpoint(EndpointEntity entity) {
 		manager.openEndpoint(entity);
-
 	}
 
 	@Override
@@ -39,7 +38,6 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 		// 端口按group分组，方便按省份转发处理
 		if (entity instanceof CMPPEndpointEntity) {
 			CMPPEndpointEntity cmppentity = (CMPPEndpointEntity) entity;
-			
 
 			List<CMPPEndpointEntity> list = groupMap.get(cmppentity.getGroupName());
 			if (list == null) {
@@ -48,21 +46,7 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 				list = old == null ? list : old;
 			}
 			list.add(cmppentity);
-			
-		} else if (entity instanceof CMPPServerEndpointEntity) {
-
-			CMPPServerEndpointEntity serverentity = (CMPPServerEndpointEntity) entity;
-			for (EndpointEntity child : serverentity.getAllChild()) {
-				
-				List<CMPPEndpointEntity> list = groupMap.get(((CMPPServerChildEndpointEntity)child).getGroupName());
-				if (list == null) {
-					list = new ArrayList<CMPPEndpointEntity>();
-					List<CMPPEndpointEntity> old = groupMap.putIfAbsent(((CMPPServerChildEndpointEntity)child).getGroupName(), list);
-					list = old == null ? list : old;
-				}
-				list.add((CMPPServerChildEndpointEntity)child);
-			}
-		}
+		} 
 	}
 
 	@Override
@@ -86,7 +70,6 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 	@Override
 	public void remove(String id) {
 		manager.remove(id);
-
 	}
 
 	@Override
@@ -94,7 +77,6 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 		return manager.getEndpointEntity(id);
 	}
 	
-
 	public void addAllEndpointEntity(List<EndpointEntity> entities) {
 		if (entities == null || entities.size() == 0)
 			return;
@@ -107,5 +89,4 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 	public void close() {
 		manager.close();
 	}
-
 }

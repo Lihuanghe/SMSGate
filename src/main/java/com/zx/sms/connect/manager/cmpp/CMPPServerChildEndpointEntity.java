@@ -1,8 +1,5 @@
 package com.zx.sms.connect.manager.cmpp;
 
-import java.util.List;
-
-import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.ServerEndpoint;
 
@@ -33,11 +30,6 @@ public class CMPPServerChildEndpointEntity extends CMPPEndpointEntity implements
 		return null;
 	}
 
-	@Override
-	public List<EndpointEntity> getAllChild() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 
 }

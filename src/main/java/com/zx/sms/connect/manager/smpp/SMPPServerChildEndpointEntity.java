@@ -1,7 +1,5 @@
 package com.zx.sms.connect.manager.smpp;
 
-import java.util.List;
-
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.ServerEndpoint;
 
@@ -27,12 +25,6 @@ public class SMPPServerChildEndpointEntity extends SMPPEndpointEntity implements
 
 	@Override
 	public EndpointEntity getChild(String userName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<EndpointEntity> getAllChild() {
 		// TODO Auto-generated method stub
 		return null;
 	}

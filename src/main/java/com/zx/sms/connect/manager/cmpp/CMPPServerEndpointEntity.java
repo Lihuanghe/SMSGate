@@ -1,7 +1,5 @@
 package com.zx.sms.connect.manager.cmpp;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,15 +27,7 @@ public class CMPPServerEndpointEntity extends EndpointEntity implements ServerEn
 	{
 		return childrenEndpoint.get(userName);
 	}
-	
-	public List<EndpointEntity> getAllChild()
-	{
-		List<EndpointEntity> list = new ArrayList<EndpointEntity>();
-		for(Map.Entry<String,CMPPServerChildEndpointEntity> entry : childrenEndpoint.entrySet()){
-			list.add(entry.getValue());
-		}
-		return list;
-	}
+
 	@Override
 	public CMPPServerEndpointConnector buildConnector() {
 		return new CMPPServerEndpointConnector(this);

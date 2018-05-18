@@ -78,14 +78,6 @@ public enum EndpointManager implements EndpointManagerInterface {
 	public synchronized void addEndpointEntity(EndpointEntity entity) {
 		endpoints.add(entity);
 		idMap.put(entity.getId(), entity);
-		if (entity instanceof ServerEndpoint) {
-			ServerEndpoint serverentity = (ServerEndpoint) entity;
-			if(serverentity.getAllChild()!=null)
-				for (EndpointEntity child : serverentity.getAllChild()) {
-				endpoints.add(child);
-				idMap.put(child.getId(), child);
-			}
-		}
 	}
 
 	public void addAllEndpointEntity(List<EndpointEntity> entities) {

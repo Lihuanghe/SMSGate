@@ -1,7 +1,5 @@
 package com.zx.sms.connect.manager.tcp;
 
-import java.util.List;
-
 import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.ServerEndpoint;
@@ -31,12 +29,6 @@ public class TCPServerEndpointEntity extends EndpointEntity implements ServerEnd
 
 	@Override
 	public EndpointEntity getChild(String userName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<EndpointEntity> getAllChild() {
 		// TODO Auto-generated method stub
 		return null;
 	}
