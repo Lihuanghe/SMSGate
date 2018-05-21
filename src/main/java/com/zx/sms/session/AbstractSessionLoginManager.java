@@ -67,7 +67,7 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 			EndpointConnector conn = EndpointManager.INS.getEndpointConnector(entity);
 			if(conn!=null)conn.removeChannel(ch);
 			ch.attr(GlobalConstance.attributeKey).set(SessionState.DisConnect);
-			logger.warn("Connection closed . {} , connect count : {}" ,entity,conn.getConnectionNum());
+			logger.warn("Connection closed . {} , connect count : {}" ,entity,conn==null?0:conn.getConnectionNum());
 		}else{
 			logger.debug("session is not created. the entity is {}.channel remote is {}" ,entity ,ctx.channel().remoteAddress());
 		}
