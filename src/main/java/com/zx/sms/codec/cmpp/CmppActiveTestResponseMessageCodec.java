@@ -47,7 +47,11 @@ public class CmppActiveTestResponseMessageCodec extends MessageToMessageCodec<Me
 
 		CmppActiveTestResponseMessage responseMessage = new CmppActiveTestResponseMessage(msg.getHeader());
 		ByteBuf  bodyBuffer = Unpooled.wrappedBuffer(msg.getBodyBuffer());
-		responseMessage.setReserved(bodyBuffer.readByte());
+		
+		//甘肃测试环境回包缺少reserved字段，这里要容错
+		if(bodyBuffer.readableBytes()>0)
+			responseMessage.setReserved(bodyBuffer.readByte());
+		
 		ReferenceCountUtil.release(bodyBuffer);
 		out.add(responseMessage);
 	}
