@@ -32,7 +32,7 @@ public class TestSMPP2CMPPSubmitCodec extends AbstractSMPPTestMessageCodec<CmppS
 		ResourceLeakDetector.setLevel(Level.ADVANCED);
 		ChannelPipeline pipeline = ch.pipeline();
 		SMPPCodecChannelInitializer codec = new SMPPCodecChannelInitializer();
-		pipeline.addLast("serverLog", new LoggingHandler(LogLevel.INFO));
+		pipeline.addLast("serverLog", new LoggingHandler(LogLevel.DEBUG));
 		pipeline.addLast(codec.pipeName(), codec);
 		pipeline.addLast("SMPP2CMPPCodec", new SMPP2CMPPBusinessHandler());
 	}

@@ -21,7 +21,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stax.StAXSource;
 
+import org.apache.commons.codec.binary.Hex;
 import org.marre.sms.SmsAlphabet;
+import org.marre.sms.SmsDcs;
 import org.marre.sms.SmsException;
 import org.marre.sms.SmsMessage;
 import org.marre.sms.SmsPdu;
@@ -50,6 +52,9 @@ import PduParser.PduParser;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.RemovalCause;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.util.CMPPCommonUtil;
@@ -62,14 +67,31 @@ import es.rickyepoderi.wbxml.stream.WbXmlInputFactory;
 //可以使用 Redis.Memcached等。
 public enum LongMessageFrameHolder {
 	INS;
-	private final Logger logger = LoggerFactory.getLogger(LongMessageFrameHolder.class);
+	private static final Logger logger = LoggerFactory.getLogger(LongMessageFrameHolder.class);
 
+	private static final RemovalListener<String, FrameHolder> removealListener = new RemovalListener<String, FrameHolder>() {
+
+		@Override
+		public void onRemoval(RemovalNotification<String, FrameHolder> notification) {
+			RemovalCause cause = notification.getCause();
+			FrameHolder h = notification.getValue();
+			switch (cause) {
+			case EXPIRED:
+			case SIZE:
+			case COLLECTED:
+				logger.error("Long Message Lost cause by {}. {}:{}",cause, notification.getKey(), CMPPCommonUtil.buildTextMessage(h.mergeAllcontent(), h.getMsgfmt()).getText());
+			default:
+				return;
+			}
+		}
+	};
 	/**
 	 * 以服务号码+帧唯一码为key
-	 *  注意：这里使用的jvm缓存保证长短信的分片。如果是集群部署，从网关过来的长短信会随机发送到不同的主机，需要使用集群缓存，如redis,memcached来保存长短信分片。
-	 *  由于可能有短信分片丢失，造成一直不能组装完成，为防止内存泄漏，这里要使用支持过期失效的缓存。
+	 * 注意：这里使用的jvm缓存保证长短信的分片。如果是集群部署，从网关过来的长短信会随机发送到不同的主机，需要使用集群缓存
+	 * ，如redis,memcached来保存长短信分片。 由于可能有短信分片丢失，造成一直不能组装完成，为防止内存泄漏，这里要使用支持过期失效的缓存。
 	 */
-	private static Cache<String, FrameHolder> cache =CacheBuilder.newBuilder().expireAfterAccess(7200, TimeUnit.SECONDS).build();
+	private static Cache<String, FrameHolder> cache = CacheBuilder.newBuilder().expireAfterAccess(2, TimeUnit.HOURS).removalListener(removealListener)
+			.build();
 	private static ConcurrentMap<String, FrameHolder> map = cache.asMap();
 
 	private SmsMessage generatorSmsMessage(FrameHolder fh, LongMessageFrame frame) throws NotSupportedException {
@@ -80,24 +102,25 @@ public enum LongMessageFrameHolder {
 			return CMPPCommonUtil.buildTextMessage(contents, frame.getMsgfmt());
 		} else {
 			if (SmsUdhIei.APP_PORT_16BIT.equals(udheader.udhIei)) {
-				// 2948 wap_push  0x0B84
+				// 2948 wap_push 0x0B84
 				int destport = (((udheader.infoEleData[0] & 0xff) << 8) | (udheader.infoEleData[1] & 0xff)) & 0x0ffff;
-				// 9200 wap-wsp   0x23f0
+				// 9200 wap-wsp 0x23f0
 				int srcport = (((udheader.infoEleData[2] & 0xff) << 8) | (udheader.infoEleData[3] & 0xff)) & 0x0ffff;
 				if (destport == SmsPort.WAP_PUSH.getPort() && srcport == SmsPort.WAP_WSP.getPort()) {
 					return parseWapPdu(contents);
 				} else if (destport == SmsPort.NOKIA_MULTIPART_MESSAGE.getPort() && srcport == SmsPort.ZERO.getPort()) {
 					// Nokia手机支持的OTA图片格式
 					throw new NotSupportedException("Nokia手机支持的OTA图片格式,无法解析");
-				} else if(destport == SmsPort.OTA_SETTINGS_BROWSER.getPort()){
+				} else if (destport == SmsPort.OTA_SETTINGS_BROWSER.getPort()) {
 					// Nokia手机支持的OTA浏览器书签
 					throw new NotSupportedException("Nokia手机支持的OTA浏览器书签,无法解析");
 				}
 
-				logger.warn("UnsupportedportMessage UDH:{} udhdata:{},pdu:[{}]", udheader.udhIei, ByteBufUtil.hexDump(udheader.infoEleData), ByteBufUtil.hexDump(contents));
+				logger.warn("UnsupportedportMessage UDH:{} udhdata:{},pdu:[{}]", udheader.udhIei, ByteBufUtil.hexDump(udheader.infoEleData),
+						ByteBufUtil.hexDump(contents));
 
 				SmsTextMessage text = CMPPCommonUtil.buildTextMessage(contents, frame.getMsgfmt());
-				return new SmsPortAddressedTextMessage(new SmsPort(destport),new SmsPort(srcport),text);
+				return new SmsPortAddressedTextMessage(new SmsPort(destport), new SmsPort(srcport), text);
 			} else {
 				// 其它都当成文本短信
 				logger.warn("Unsupported UDH:{} udhdata:{},pdu:[{}]", udheader.udhIei, ByteBufUtil.hexDump(udheader.infoEleData), ByteBufUtil.hexDump(contents));
@@ -105,21 +128,21 @@ public enum LongMessageFrameHolder {
 			}
 		}
 	}
-	
+
 	/**
 	 * 获取长短信切分后的短信片断内容
 	 * 
 	 **/
-	public String getPartTextMsg(LongMessageFrame frame){
+	public String getPartTextMsg(LongMessageFrame frame) {
 		if (frame.getTpudhi() == 0) {
 			return CMPPCommonUtil.buildTextMessage(frame.getPayloadbytes(0), frame.getMsgfmt()).getText();
-		} else if ((frame.getTpudhi() & 0x01) == 1 || (frame.getTpudhi()&0x40)==0x40) {
+		} else if ((frame.getTpudhi() & 0x01) == 1 || (frame.getTpudhi() & 0x40) == 0x40) {
 			UserDataHeader header = parseUserDataHeader(frame.getMsgContentBytes());
 			byte[] payload = frame.getPayloadbytes(header.headerlength);
 			return CMPPCommonUtil.buildTextMessage(payload, frame.getMsgfmt()).getText();
 		}
 		return null;
-		
+
 	}
 
 	/**
@@ -127,17 +150,17 @@ public enum LongMessageFrameHolder {
 	 **/
 	public SmsMessage putAndget(String serviceNum, LongMessageFrame frame) throws NotSupportedException {
 
-		//assert (frame.getTppid() == 0);
+		// assert (frame.getTppid() == 0);
 
 		// 短信内容不带协议头，直接获取短信内容
 		// udhi只取第一个bit
 		if (frame.getTpudhi() == 0) {
 			return CMPPCommonUtil.buildTextMessage(frame.getPayloadbytes(0), frame.getMsgfmt());
 
-		} else if ((frame.getTpudhi() & 0x01) == 1 || (frame.getTpudhi()&0x40)==0x40) {
+		} else if ((frame.getTpudhi() & 0x01) == 1 || (frame.getTpudhi() & 0x40) == 0x40) {
 
 			FrameHolder fh = createFrameHolder(frame);
-			
+
 			// 判断是否只有一帧
 			if (fh.isComplete()) {
 
@@ -215,9 +238,9 @@ public enum LongMessageFrameHolder {
 
 		throw new NotSupportedException("Not Support LongMsg");
 	}
-	
-	private int byteToint(byte b){
-		return (int)(b&0x0ff);
+
+	private int byteToint(byte b) {
+		return (int) (b & 0x0ff);
 	}
 
 	private FrameHolder createFrameHolder(LongMessageFrame frame) throws NotSupportedException {
@@ -235,12 +258,14 @@ public enum LongMessageFrameHolder {
 				if (SmsUdhIei.CONCATENATED_8BIT.equals(udhi.udhIei)) {
 					frameKey = udhi.infoEleData[i];
 					i++;
-					frameholder = new FrameHolder(frameKey, byteToint(udhi.infoEleData[i]), frame.getPayloadbytes(header.headerlength), byteToint(udhi.infoEleData[i + 1]) - 1);
+					frameholder = new FrameHolder(frameKey, byteToint(udhi.infoEleData[i]), frame.getPayloadbytes(header.headerlength),
+							byteToint(udhi.infoEleData[i + 1]) - 1);
 
 				} else if (SmsUdhIei.CONCATENATED_16BIT.equals(udhi.udhIei)) {
 					frameKey = (((udhi.infoEleData[i] & 0xff) << 8) | (udhi.infoEleData[i + 1] & 0xff) & 0x0ffff);
 					i += 2;
-					frameholder = new FrameHolder(frameKey,byteToint( udhi.infoEleData[i]), frame.getPayloadbytes(header.headerlength), byteToint(udhi.infoEleData[i + 1]) - 1);
+					frameholder = new FrameHolder(frameKey, byteToint(udhi.infoEleData[i]), frame.getPayloadbytes(header.headerlength),
+							byteToint(udhi.infoEleData[i + 1]) - 1);
 				} else {
 					appudhinfo = udhi;
 				}
@@ -252,6 +277,7 @@ public enum LongMessageFrameHolder {
 			// 如果没有app的udh，默认为文本短信
 
 			frameholder.setAppUDHinfo(appudhinfo);
+			frameholder.setMsgfmt(frame.getMsgfmt());
 			return frameholder;
 		}
 
@@ -324,6 +350,8 @@ public enum LongMessageFrameHolder {
 		private int totalbyteLength = 0;
 
 		private BitSet idxBitset;
+		
+		private SmsDcs msgfmt;
 
 		private InformationElement appUDHinfo;
 
@@ -374,12 +402,23 @@ public enum LongMessageFrameHolder {
 			byte[] ret = new byte[totalbyteLength];
 			int idx = 0;
 			for (int i = 0; i < totalLength; i++) {
-				System.arraycopy(content[i], 0, ret, idx, content[i].length);
-				idx += content[i].length;
+				if (content[i] != null && content[i].length > 0) {
+					System.arraycopy(content[i], 0, ret, idx, content[i].length);
+					idx += content[i].length;
+				}
 			}
 
 			return ret;
 		}
+
+		public SmsDcs getMsgfmt() {
+			return msgfmt;
+		}
+
+		public void setMsgfmt(SmsDcs msgfmt) {
+			this.msgfmt = msgfmt;
+		}
+		
 	}
 
 	/**
@@ -670,9 +709,9 @@ public enum LongMessageFrameHolder {
 			return encodeOctetPdu(pdu, baos);
 		}
 	}
-	
+
 	// 如果是7bit编码，需要计算真实的数据长度
-	public static int getPayloadLength(SmsAlphabet alpha,int udl) {
+	public static int getPayloadLength(SmsAlphabet alpha, int udl) {
 		switch (alpha) {
 		case GSM:
 			return LongMessageFrameHolder.octetLengthfromseptetsLength(udl);

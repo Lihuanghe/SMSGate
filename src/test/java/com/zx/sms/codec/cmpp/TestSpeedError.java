@@ -40,7 +40,7 @@ public class TestSpeedError {
 			ResourceLeakDetector.setLevel(Level.ADVANCED);
 			ChannelPipeline pipeline = ch.pipeline();
 			CMPPCodecChannelInitializer codec = new CMPPCodecChannelInitializer();
-			pipeline.addLast("serverLog", new LoggingHandler(LogLevel.INFO));
+			pipeline.addLast("serverLog", new LoggingHandler(LogLevel.DEBUG));
 			pipeline.addLast(codec.pipeName(), codec);
 
 			CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
