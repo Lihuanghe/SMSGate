@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.BaseMessage;
+import com.zx.sms.common.SmsLifeTerminateException;
 import com.zx.sms.common.storedMap.VersionObject;
 import com.zx.sms.config.PropertiesUtils;
 import com.zx.sms.connect.manager.EndpointConnector;
@@ -214,7 +215,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 
 			if (msg.isTerminated()) {
 				errlogger.error("Msg Life over .{}", msg);
-				promise.setFailure(new RuntimeException("Msg Life over"));
+				promise.setFailure(new SmsLifeTerminateException("Msg Life over"));
 				return;
 			}
 
