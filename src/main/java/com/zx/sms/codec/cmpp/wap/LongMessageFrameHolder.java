@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +22,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stax.StAXSource;
 
-import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.marre.sms.SmsAlphabet;
 import org.marre.sms.SmsDcs;
 import org.marre.sms.SmsException;
@@ -79,7 +80,7 @@ public enum LongMessageFrameHolder {
 			case EXPIRED:
 			case SIZE:
 			case COLLECTED:
-				logger.error("Long Message Lost cause by {}. {}:{}",cause, notification.getKey(), CMPPCommonUtil.buildTextMessage(h.mergeAllcontent(), h.getMsgfmt()).getText());
+				logger.error("Long Message Lost cause by {}. {}|{}|{}|{}",cause, DateFormatUtils.format(h.getTimestamp(),DateFormatUtils.ISO_DATETIME_FORMAT.getPattern()),notification.getKey(),h.getSequence(), CMPPCommonUtil.buildTextMessage(h.mergeAllcontent(), h.getMsgfmt()).getText());
 			default:
 				return;
 			}
@@ -278,6 +279,7 @@ public enum LongMessageFrameHolder {
 
 			frameholder.setAppUDHinfo(appudhinfo);
 			frameholder.setMsgfmt(frame.getMsgfmt());
+			frameholder.setSequence(frame.getSequence());
 			return frameholder;
 		}
 
@@ -339,6 +341,10 @@ public enum LongMessageFrameHolder {
 	 * 例如：06 08 04 00 39 02 01 <br/>
 	 **/
 	private class FrameHolder {
+		
+		//这个字段目前只在当分片丢失时方便跟踪
+		private long sequence;
+		private long timestamp = System.currentTimeMillis();
 		/**
 		 * 长短信的总分片数量
 		 * */
@@ -362,6 +368,18 @@ public enum LongMessageFrameHolder {
 
 		public InformationElement getAppUDHinfo() {
 			return this.appUDHinfo;
+		}
+
+		public long getSequence() {
+			return sequence;
+		}
+
+		public void setSequence(long sequence) {
+			this.sequence = sequence;
+		}
+
+		public long getTimestamp() {
+			return timestamp;
 		}
 
 		public FrameHolder(int frameKey, int totalLength, byte[] content, int frameIndex) {

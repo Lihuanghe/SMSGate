@@ -418,6 +418,7 @@ public class SgipSubmitRequestMessage extends DefaultMessage implements LongSMSM
 		frame.setMsgfmt(getMsgfmt());
 		frame.setMsgContentBytes(getMsgContentBytes());
 		frame.setMsgLength((short)getMessagelength());
+		frame.setSequence(getSequenceNo());
 		return frame;
 	}
 

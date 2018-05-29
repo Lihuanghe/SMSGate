@@ -22,6 +22,8 @@ public class LongMessageFrame {
 	private byte[] msgContentBytes = GlobalConstance.emptyBytes;
 
 	private String contentPart;
+	
+	private long sequence;
 
 	/**
 	 * @return the pktotal
@@ -133,6 +135,13 @@ public class LongMessageFrame {
 	}
 
 
+	public long getSequence() {
+		return sequence;
+	}
+
+	public void setSequence(long sequence) {
+		this.sequence = sequence;
+	}
 
 	// get unencode septet bytes
 	public byte[] getPayloadbytes(int udhl) {

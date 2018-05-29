@@ -153,4 +153,9 @@ public class DefaultMessage implements Message ,Cloneable {
 	public BaseMessage getRequest() {
 		return this.request;
 	}
+
+	@Override
+	public long getSequenceNo() {
+		return getHeader().getSequenceId();
+	}
 }

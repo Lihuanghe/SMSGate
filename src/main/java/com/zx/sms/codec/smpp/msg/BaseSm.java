@@ -296,6 +296,7 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
 		frame.setMsgfmt(new SmsDcs(getDataCoding()));
 		frame.setMsgContentBytes(getShortMessage());
 		frame.setMsgLength((short)getShortMessageLength());
+		frame.setSequence(getSequenceNo());
 		return frame;
 	}
     

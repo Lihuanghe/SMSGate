@@ -491,6 +491,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 		frame.setMsgfmt(getMsgfmt());
 		frame.setMsgContentBytes(getMsgContentBytes());
 		frame.setMsgLength((short)getMsgLength());
+		frame.setSequence(getSequenceNo());
 		return frame;
 	}
 
