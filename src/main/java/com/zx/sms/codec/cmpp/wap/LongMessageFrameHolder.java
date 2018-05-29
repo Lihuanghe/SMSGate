@@ -80,7 +80,9 @@ public enum LongMessageFrameHolder {
 			case EXPIRED:
 			case SIZE:
 			case COLLECTED:
-				logger.error("Long Message Lost cause by {}. {}|{}|{}|{}",cause, DateFormatUtils.format(h.getTimestamp(),DateFormatUtils.ISO_DATETIME_FORMAT.getPattern()),notification.getKey(),h.getSequence(), CMPPCommonUtil.buildTextMessage(h.mergeAllcontent(), h.getMsgfmt()).getText());
+				logger.error("Long Message Lost cause by {}. {}|{}|{}|{}", cause,
+						DateFormatUtils.format(h.getTimestamp(), DateFormatUtils.ISO_DATETIME_FORMAT.getPattern()), notification.getKey(), h.getSequence(),
+						CMPPCommonUtil.buildTextMessage(h.mergeAllcontent(), h.getMsgfmt()).getText());
 			default:
 				return;
 			}
@@ -91,8 +93,7 @@ public enum LongMessageFrameHolder {
 	 * 注意：这里使用的jvm缓存保证长短信的分片。如果是集群部署，从网关过来的长短信会随机发送到不同的主机，需要使用集群缓存
 	 * ，如redis,memcached来保存长短信分片。 由于可能有短信分片丢失，造成一直不能组装完成，为防止内存泄漏，这里要使用支持过期失效的缓存。
 	 */
-	private static Cache<String, FrameHolder> cache = CacheBuilder.newBuilder().expireAfterAccess(2, TimeUnit.HOURS).removalListener(removealListener)
-			.build();
+	private static Cache<String, FrameHolder> cache = CacheBuilder.newBuilder().expireAfterAccess(2, TimeUnit.HOURS).removalListener(removealListener).build();
 	private static ConcurrentMap<String, FrameHolder> map = cache.asMap();
 
 	private SmsMessage generatorSmsMessage(FrameHolder fh, LongMessageFrame frame) throws NotSupportedException {
@@ -160,31 +161,38 @@ public enum LongMessageFrameHolder {
 
 		} else if ((frame.getTpudhi() & 0x01) == 1 || (frame.getTpudhi() & 0x40) == 0x40) {
 
-			FrameHolder fh = createFrameHolder(serviceNum,frame);
+			try {
+				FrameHolder fh = createFrameHolder(serviceNum, frame);
+				
+				if(fh == null)
+					return null;
+				
+				// 判断是否只有一帧
+				if (fh.isComplete()) {
 
-			// 判断是否只有一帧
-			if (fh.isComplete()) {
+					return generatorSmsMessage(fh, frame);
+				}
 
-				return generatorSmsMessage(fh, frame);
-			}
+				// 超过一帧的，进行长短信合并
+				String mapKey = new StringBuilder().append(serviceNum).append(".").append(fh.frameKey).toString();
 
-			// 超过一帧的，进行长短信合并
-			String mapKey = new StringBuilder().append(serviceNum).append(".").append(fh.frameKey).toString();
+				FrameHolder oldframeHolder = map.putIfAbsent(mapKey, fh);
 
-			FrameHolder oldframeHolder = map.putIfAbsent(mapKey, fh);
+				if (oldframeHolder != null) {
 
-			if (oldframeHolder != null) {
+					mergeFrameHolder(oldframeHolder, frame);
+				} else {
+					oldframeHolder = fh;
+				}
 
-				mergeFrameHolder(oldframeHolder, frame);
-			} else {
-				oldframeHolder = fh;
-			}
+				if (oldframeHolder.isComplete()) {
 
-			if (oldframeHolder.isComplete()) {
+					map.remove(mapKey);
 
-				map.remove(mapKey);
-
-				return generatorSmsMessage(oldframeHolder, frame);
+					return generatorSmsMessage(oldframeHolder, frame);
+				}
+			} catch (Exception ex) {
+				return null;
 			}
 
 		} else {
@@ -228,9 +236,11 @@ public enum LongMessageFrameHolder {
 				if (SmsUdhIei.CONCATENATED_8BIT.equals(udhi.udhIei)) {
 
 					fh.merge(frame.getPayloadbytes(header.headerlength), udhi.infoEleData[2] - 1);
+					break;
 				} else if (SmsUdhIei.CONCATENATED_16BIT.equals(udhi.udhIei)) {
 
 					fh.merge(frame.getPayloadbytes(header.headerlength), udhi.infoEleData[3] - 1);
+					break;
 				}
 			}
 
@@ -244,7 +254,7 @@ public enum LongMessageFrameHolder {
 		return (int) (b & 0x0ff);
 	}
 
-	private FrameHolder createFrameHolder(String serviceNum,LongMessageFrame frame) throws NotSupportedException {
+	private FrameHolder createFrameHolder(String serviceNum, LongMessageFrame frame) throws NotSupportedException {
 
 		byte[] msgcontent = frame.getMsgContentBytes();
 
@@ -255,25 +265,25 @@ public enum LongMessageFrameHolder {
 			InformationElement appudhinfo = null;
 			int i = 0;
 			int frameKey = 0;
+			int frameIndex = 0;
 			for (InformationElement udhi : header.infoElement) {
 				if (SmsUdhIei.CONCATENATED_8BIT.equals(udhi.udhIei)) {
 					frameKey = udhi.infoEleData[i];
 					i++;
-					frameholder = new FrameHolder(frameKey, byteToint(udhi.infoEleData[i]), frame.getPayloadbytes(header.headerlength),
-							byteToint(udhi.infoEleData[i + 1]) - 1);
-
+					frameholder = new FrameHolder(frameKey, byteToint(udhi.infoEleData[i]));
+					frameIndex = byteToint(udhi.infoEleData[i + 1]) - 1;
 				} else if (SmsUdhIei.CONCATENATED_16BIT.equals(udhi.udhIei)) {
 					frameKey = (((udhi.infoEleData[i] & 0xff) << 8) | (udhi.infoEleData[i + 1] & 0xff) & 0x0ffff);
 					i += 2;
-					frameholder = new FrameHolder(frameKey, byteToint(udhi.infoEleData[i]), frame.getPayloadbytes(header.headerlength),
-							byteToint(udhi.infoEleData[i + 1]) - 1);
+					frameholder = new FrameHolder(frameKey, byteToint(udhi.infoEleData[i]));
+					frameIndex = byteToint(udhi.infoEleData[i + 1]) - 1;
 				} else {
 					appudhinfo = udhi;
 				}
 			}
 			// 不是续列短信
 			if (frameholder == null) {
-				frameholder = new FrameHolder(0x0, 1, frame.getPayloadbytes(header.headerlength), 0);
+				frameholder = new FrameHolder(0x0, 1);
 			}
 			// 如果没有app的udh，默认为文本短信
 
@@ -281,6 +291,7 @@ public enum LongMessageFrameHolder {
 			frameholder.setMsgfmt(frame.getMsgfmt());
 			frameholder.setSequence(frame.getSequence());
 			frameholder.setServiceNum(serviceNum);
+			frameholder.merge(frame.getPayloadbytes(header.headerlength), frameIndex);
 			return frameholder;
 		}
 
@@ -342,8 +353,8 @@ public enum LongMessageFrameHolder {
 	 * 例如：06 08 04 00 39 02 01 <br/>
 	 **/
 	private class FrameHolder {
-		
-		//这个字段目前只在当分片丢失时方便跟踪
+
+		// 这个字段目前只在当分片丢失时方便跟踪
 		private String serviceNum;
 		private long sequence;
 		private long timestamp = CachedMillisecondClock.INS.now();
@@ -358,7 +369,7 @@ public enum LongMessageFrameHolder {
 		private int totalbyteLength = 0;
 
 		private BitSet idxBitset;
-		
+
 		private SmsDcs msgfmt;
 
 		private InformationElement appUDHinfo;
@@ -371,7 +382,7 @@ public enum LongMessageFrameHolder {
 		public InformationElement getAppUDHinfo() {
 			return this.appUDHinfo;
 		}
-		
+
 		public void setServiceNum(String serviceNum) {
 			this.serviceNum = serviceNum;
 		}
@@ -388,35 +399,27 @@ public enum LongMessageFrameHolder {
 			return timestamp;
 		}
 
-		public FrameHolder(int frameKey, int totalLength, byte[] content, int frameIndex) {
+		public FrameHolder(int frameKey, int totalLength) {
 			this.frameKey = frameKey;
 			this.totalLength = totalLength;
 
 			this.content = new byte[totalLength][];
 			this.idxBitset = new BitSet(totalLength);
-			merge(content, frameIndex);
 		}
 
-		public synchronized void merge(byte[] content, int idx) {
+		public synchronized void merge(byte[] content, int idx) throws NotSupportedException {
 
 			if (idxBitset.get(idx)) {
-				logger.warn("have received the same index of Message. do not merge this content.{},origin:{},{},{},new content:{}",
-						this.serviceNum,
-						CMPPCommonUtil.buildTextMessage(this.content[idx], msgfmt).getText(),
-						DateFormatUtils.format(getTimestamp(),DateFormatUtils.ISO_DATETIME_FORMAT.getPattern()),
-						getSequence(),
-						CMPPCommonUtil.buildTextMessage(content, msgfmt).getText());
-				return;
+				logger.warn("have received the same index of Message. do not merge this content.{},origin:{},{},{},new content:{}", this.serviceNum,
+						CMPPCommonUtil.buildTextMessage(this.content[idx], msgfmt).getText(), DateFormatUtils.format(getTimestamp(),
+								DateFormatUtils.ISO_DATETIME_FORMAT.getPattern()), getSequence(), CMPPCommonUtil.buildTextMessage(content, msgfmt).getText());
+				throw new NotSupportedException("received the same index");
 			}
-			if (this.content.length <= idx) {
-				logger.warn("have received error index:{} of Message content length:{}. do not merge this content.{},{},{},{}", 
-						idx, 
-						this.content.length,
-						this.serviceNum,
-						DateFormatUtils.format(getTimestamp(),DateFormatUtils.ISO_DATETIME_FORMAT.getPattern()),
-						getSequence(),
+			if (this.content.length <= idx || idx < 0) {
+				logger.warn("have received error index:{} of Message content length:{}. do not merge this content.{},{},{},{}", idx, this.content.length,
+						this.serviceNum, DateFormatUtils.format(getTimestamp(), DateFormatUtils.ISO_DATETIME_FORMAT.getPattern()), getSequence(),
 						CMPPCommonUtil.buildTextMessage(content, msgfmt).getText());
-				return;
+				throw new NotSupportedException("have received error index");
 			}
 			// 设置该短信序号已填冲
 			idxBitset.set(idx);
@@ -453,7 +456,7 @@ public enum LongMessageFrameHolder {
 		public void setMsgfmt(SmsDcs msgfmt) {
 			this.msgfmt = msgfmt;
 		}
-		
+
 	}
 
 	/**
