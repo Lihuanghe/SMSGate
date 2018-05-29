@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -395,11 +394,20 @@ public enum LongMessageFrameHolder {
 		public synchronized void merge(byte[] content, int idx) {
 
 			if (idxBitset.get(idx)) {
-				logger.warn("have received the same index of Message. do not merge this content. ");
+				logger.warn("have received the same index of Message. do not merge this content.origin:{},{},{},new content:{}",
+						CMPPCommonUtil.buildTextMessage(this.content[idx], msgfmt).getText(),
+						DateFormatUtils.format(getTimestamp(),DateFormatUtils.ISO_DATETIME_FORMAT.getPattern()),
+						getSequence(),
+						CMPPCommonUtil.buildTextMessage(content, msgfmt).getText());
 				return;
 			}
 			if (this.content.length <= idx) {
-				logger.warn("have received error index:{} of Message content length:{}. do not merge this content. ", idx, this.content.length);
+				logger.warn("have received error index:{} of Message content length:{}. do not merge this content.{},{} ,{}", 
+						idx, 
+						this.content.length,
+						DateFormatUtils.format(getTimestamp(),DateFormatUtils.ISO_DATETIME_FORMAT.getPattern()),
+						getSequence(),
+						CMPPCommonUtil.buildTextMessage(content, msgfmt).getText());
 				return;
 			}
 			// 设置该短信序号已填冲
