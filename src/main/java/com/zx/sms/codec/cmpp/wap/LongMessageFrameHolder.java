@@ -59,6 +59,7 @@ import com.google.common.cache.RemovalNotification;
 import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.util.CMPPCommonUtil;
+import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.common.util.StandardCharsets;
 
 import es.rickyepoderi.wbxml.definition.WbXmlInitialization;
@@ -344,7 +345,7 @@ public enum LongMessageFrameHolder {
 		
 		//这个字段目前只在当分片丢失时方便跟踪
 		private long sequence;
-		private long timestamp = System.currentTimeMillis();
+		private long timestamp = CachedMillisecondClock.INS.now();
 		/**
 		 * 长短信的总分片数量
 		 * */
