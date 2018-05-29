@@ -160,7 +160,7 @@ public enum LongMessageFrameHolder {
 
 		} else if ((frame.getTpudhi() & 0x01) == 1 || (frame.getTpudhi() & 0x40) == 0x40) {
 
-			FrameHolder fh = createFrameHolder(frame);
+			FrameHolder fh = createFrameHolder(serviceNum,frame);
 
 			// 判断是否只有一帧
 			if (fh.isComplete()) {
@@ -244,7 +244,7 @@ public enum LongMessageFrameHolder {
 		return (int) (b & 0x0ff);
 	}
 
-	private FrameHolder createFrameHolder(LongMessageFrame frame) throws NotSupportedException {
+	private FrameHolder createFrameHolder(String serviceNum,LongMessageFrame frame) throws NotSupportedException {
 
 		byte[] msgcontent = frame.getMsgContentBytes();
 
@@ -280,6 +280,7 @@ public enum LongMessageFrameHolder {
 			frameholder.setAppUDHinfo(appudhinfo);
 			frameholder.setMsgfmt(frame.getMsgfmt());
 			frameholder.setSequence(frame.getSequence());
+			frameholder.setServiceNum(serviceNum);
 			return frameholder;
 		}
 
@@ -343,6 +344,7 @@ public enum LongMessageFrameHolder {
 	private class FrameHolder {
 		
 		//这个字段目前只在当分片丢失时方便跟踪
+		private String serviceNum;
 		private long sequence;
 		private long timestamp = CachedMillisecondClock.INS.now();
 		/**
@@ -369,6 +371,10 @@ public enum LongMessageFrameHolder {
 		public InformationElement getAppUDHinfo() {
 			return this.appUDHinfo;
 		}
+		
+		public void setServiceNum(String serviceNum) {
+			this.serviceNum = serviceNum;
+		}
 
 		public long getSequence() {
 			return sequence;
@@ -394,7 +400,8 @@ public enum LongMessageFrameHolder {
 		public synchronized void merge(byte[] content, int idx) {
 
 			if (idxBitset.get(idx)) {
-				logger.warn("have received the same index of Message. do not merge this content.origin:{},{},{},new content:{}",
+				logger.warn("have received the same index of Message. do not merge this content.{},origin:{},{},{},new content:{}",
+						this.serviceNum,
 						CMPPCommonUtil.buildTextMessage(this.content[idx], msgfmt).getText(),
 						DateFormatUtils.format(getTimestamp(),DateFormatUtils.ISO_DATETIME_FORMAT.getPattern()),
 						getSequence(),
@@ -402,9 +409,10 @@ public enum LongMessageFrameHolder {
 				return;
 			}
 			if (this.content.length <= idx) {
-				logger.warn("have received error index:{} of Message content length:{}. do not merge this content.{},{} ,{}", 
+				logger.warn("have received error index:{} of Message content length:{}. do not merge this content.{},{},{},{}", 
 						idx, 
 						this.content.length,
+						this.serviceNum,
 						DateFormatUtils.format(getTimestamp(),DateFormatUtils.ISO_DATETIME_FORMAT.getPattern()),
 						getSequence(),
 						CMPPCommonUtil.buildTextMessage(content, msgfmt).getText());
