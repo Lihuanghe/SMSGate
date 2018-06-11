@@ -65,7 +65,7 @@ public class TestCMPPDBEndPoint {
 		client.setReSendFailMsg(false);
 
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new MessageReceiveHandler());
+		clienthandlers.add( new SessionConnectedHandler(new AtomicInteger(600000)));
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.openEndpoint(client);		
         System.out.println("start.....");
@@ -96,7 +96,7 @@ public class TestCMPPDBEndPoint {
 //			child.setWriteLimit(200);
 //			child.setReadLimit(200);
 			List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-			serverhandlers.add(new SessionConnectedHandler(new AtomicInteger(300000)));
+			serverhandlers.add(new MessageReceiveHandler());
 			child.setBusinessHandlerSet(serverhandlers);
 			return child;
 		}

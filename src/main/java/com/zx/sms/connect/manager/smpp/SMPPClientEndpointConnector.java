@@ -5,7 +5,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -32,7 +32,7 @@ public class SMPPClientEndpointConnector extends AbstractClientEndpointConnector
 		super(endpoint);
 	}
 	@Override
-	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, Map storeMap, boolean preSend) {
+	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, ConcurrentMap storeMap, boolean preSend) {
 		return new SMPPSessionStateManager(entity, storeMap, preSend);
 	}
 

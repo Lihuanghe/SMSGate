@@ -10,6 +10,7 @@ import io.netty.channel.ChannelPromise;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.RunnableScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -46,7 +47,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 	 * @param preSend
 	 *            预发送数据，连接建立后要发送数据
 	 */
-	public AbstractSessionStateManager(EndpointEntity entity, Map<K, VersionObject<T>> storeMap, boolean preSend) {
+	public AbstractSessionStateManager(EndpointEntity entity, ConcurrentMap<K, VersionObject<T>> storeMap, boolean preSend) {
 		this.entity = entity;
 		errlogger = LoggerFactory.getLogger("error." + entity.getId());
 		this.storeMap = storeMap;
@@ -84,7 +85,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 	/**
 	 * 发送未收到resp的消息，需要使用可持久化的Map.
 	 */
-	private final Map<K, VersionObject<T>> storeMap;
+	private final ConcurrentMap<K, VersionObject<T>> storeMap;
 
 	/**
 	 * 会话刚建立时要发送的数据

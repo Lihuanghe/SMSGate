@@ -9,7 +9,7 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.timeout.IdleStateHandler;
 
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -76,7 +76,7 @@ public class SMPPServerChildEndpointConnector extends AbstractEndpointConnector{
 	}
 
 	@Override
-	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, Map storeMap, boolean preSend) {
+	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, ConcurrentMap storeMap, boolean preSend) {
 		return new SMPPSessionStateManager(entity, storeMap, preSend);
 	}
 

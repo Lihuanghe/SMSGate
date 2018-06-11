@@ -1,6 +1,6 @@
 package com.zx.sms.session.cmpp;
 
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.codec.cmpp.msg.Message;
-import com.zx.sms.codec.cmpp.packet.CmppPacketType;
 import com.zx.sms.common.storedMap.VersionObject;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.session.AbstractSessionStateManager;
@@ -19,7 +18,7 @@ import com.zx.sms.session.AbstractSessionStateManager;
 public class SessionStateManager extends AbstractSessionStateManager<Long, Message> {
 	private static final Logger logger = LoggerFactory.getLogger(SessionStateManager.class);
 
-	public SessionStateManager(EndpointEntity entity, Map<Long, VersionObject<Message>> storeMap, boolean preSend) {
+	public SessionStateManager(EndpointEntity entity, ConcurrentMap<Long, VersionObject<Message>> storeMap, boolean preSend) {
 		super(entity, storeMap, preSend);
 	}
 

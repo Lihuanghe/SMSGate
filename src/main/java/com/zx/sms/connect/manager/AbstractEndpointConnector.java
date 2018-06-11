@@ -16,9 +16,9 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -120,7 +120,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		return channels;
 	}
 
-	protected abstract AbstractSessionStateManager createSessionManager(EndpointEntity entity, Map storeMap,boolean presend);
+	protected abstract AbstractSessionStateManager createSessionManager(EndpointEntity entity, ConcurrentMap storeMap,boolean presend);
 
 	protected abstract void doBindHandler(ChannelPipeline pipe, EndpointEntity entity);
 
@@ -203,12 +203,12 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		int cnt = incrementConn();
 
 		EndpointEntity endpoint = getEndpointEntity();
-		Map<Serializable, VersionObject> storedMap = null;
+		ConcurrentMap<Serializable, VersionObject> storedMap = null;
 		if (endpoint.isReSendFailMsg()) {
 			// 如果上次发送失败的消息要重发一次，则要创建持久化Map用于存储发送的message
 			storedMap = BDBStoredMapFactoryImpl.INS.buildMap(endpoint.getId(), "Session_" + endpoint.getId());
 		} else {
-			storedMap = new HashMap();
+			storedMap = new ConcurrentHashMap();
 		}
 
 		logger.info("Channel added To Endpoint {} .totalCnt:{} ,remoteAddress: {}", endpoint, cnt, ch.remoteAddress());

@@ -1,6 +1,6 @@
 package com.zx.sms.session.sgip;
 
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.common.storedMap.VersionObject;
@@ -9,7 +9,7 @@ import com.zx.sms.session.AbstractSessionStateManager;
 
 public class SgipSessionStateManager extends AbstractSessionStateManager<Long, Message> {
 
-	public SgipSessionStateManager(EndpointEntity entity, Map<Long, VersionObject<Message>> storeMap, boolean preSend) {
+	public SgipSessionStateManager(EndpointEntity entity, ConcurrentMap<Long, VersionObject<Message>> storeMap, boolean preSend) {
 		super(entity, storeMap, preSend);
 	}
 

@@ -3,7 +3,7 @@ package com.zx.sms.connect.manager.sgip;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.timeout.IdleStateHandler;
 
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import com.zx.sms.common.GlobalConstance;
@@ -35,7 +35,7 @@ public class SgipServerEndpointConnector extends AbstractServerEndpointConnector
 	}
 
 	@Override
-	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, Map storeMap, boolean preSend) {
+	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, ConcurrentMap storeMap, boolean preSend) {
 		// TODO Auto-generated method stub
 		return null;
 	}

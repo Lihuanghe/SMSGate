@@ -1,8 +1,7 @@
 package com.zx.sms.session.smpp;
 
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
-import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.codec.smpp.msg.Pdu;
 import com.zx.sms.common.storedMap.VersionObject;
 import com.zx.sms.connect.manager.EndpointEntity;
@@ -10,7 +9,7 @@ import com.zx.sms.session.AbstractSessionStateManager;
 
 public class SMPPSessionStateManager extends AbstractSessionStateManager<Integer, Pdu> {
 
-	public SMPPSessionStateManager(EndpointEntity entity, Map<Integer, VersionObject<Pdu>> storeMap, boolean preSend) {
+	public SMPPSessionStateManager(EndpointEntity entity, ConcurrentMap<Integer, VersionObject<Pdu>> storeMap, boolean preSend) {
 		super(entity, storeMap, preSend);
 	}
 
