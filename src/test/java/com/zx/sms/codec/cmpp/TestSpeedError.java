@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.charset.Charset;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -58,7 +58,7 @@ public class TestSpeedError {
 			client.setRetryWaitTimeSec(reSendTime);
 			client.setUseSSL(false);
 			client.setReSendFailMsg(true);
-			pipeline.addLast("session", new SessionStateManager(client, new HashMap(), true));
+			pipeline.addLast("session", new SessionStateManager(client, new ConcurrentHashMap(), true));
 		}
 	});
 

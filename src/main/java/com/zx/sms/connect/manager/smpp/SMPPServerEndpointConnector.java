@@ -1,13 +1,11 @@
 package com.zx.sms.connect.manager.smpp;
 
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.timeout.IdleStateHandler;
 
-import com.zx.sms.codec.smpp.SMPPMessageCodec;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
+
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.AbstractServerEndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
@@ -37,7 +35,7 @@ public class SMPPServerEndpointConnector extends AbstractServerEndpointConnector
 	}
 
 	@Override
-	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, Map storeMap, boolean preSend) {
+	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, ConcurrentMap storeMap, boolean preSend) {
 		// TODO Auto-generated method stub
 		return null;
 	}

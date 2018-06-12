@@ -3,11 +3,11 @@ package com.zx.sms.common.storedMap;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
@@ -23,7 +23,6 @@ import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
-import com.zx.sms.common.queue.BdbQueueMap;
 import com.zx.sms.config.PropertiesUtils;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 
@@ -42,7 +41,7 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Serializable, Ve
 	 * 在保存消息对象信息时，同时保存时间戳。这样就可以区分哪些是历史信息。
 	 */
 	@Override
-	public synchronized Map<Serializable, VersionObject> buildMap(String storedpath, String name) {
+	public synchronized ConcurrentMap<Serializable, VersionObject> buildMap(String storedpath, String name) {
 		QueueEnvironment env = buildBDB(storedpath);
 		FstSerialBinding<Serializable> messageKeyBinding =  new FstSerialBinding<Serializable>();
 		FstSerialBinding<VersionObject> messageValueBinding =  new FstSerialBinding<VersionObject>();

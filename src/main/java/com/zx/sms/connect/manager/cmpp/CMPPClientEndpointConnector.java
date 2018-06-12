@@ -5,14 +5,12 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 
-import java.io.Serializable;
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.AbstractClientEndpointConnector;
 import com.zx.sms.connect.manager.ClientEndpoint;
@@ -78,7 +76,7 @@ public class CMPPClientEndpointConnector extends AbstractClientEndpointConnector
 
 
 	@Override
-	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, Map storeMap,
+	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, ConcurrentMap storeMap,
 			boolean preSend) {
 		return new SessionStateManager(entity, storeMap, preSend);
 	}

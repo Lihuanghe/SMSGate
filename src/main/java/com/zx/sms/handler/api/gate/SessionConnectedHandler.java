@@ -98,15 +98,22 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 				@Override
 				public Boolean call() throws Exception{
 					int cnt = RandomUtils.nextInt() & 0x1f;
-					while(cnt-->0 && totleCnt.decrementAndGet()>0) {
-						ChannelFuture future = ctx.writeAndFlush(createTestReq(UUID.randomUUID().toString()) );
-						if(future == null){
-							break;
-						}
-						try{
-							future.sync();
-						}catch(Exception e){
-							break;
+					while(cnt>0 && totleCnt.get()>0) {
+						if(ctx.channel().isWritable()){
+							
+							ChannelFuture future = ctx.writeAndFlush(createTestReq(UUID.randomUUID().toString()) );
+							if(future == null){
+								break;
+							}
+							try{
+								future.sync();
+								cnt--;
+								totleCnt.decrementAndGet();
+							}catch(Exception e){
+								break;
+							}
+						}else{
+							Thread.sleep(10);
 						}
 					}
 					return true;

@@ -3,7 +3,7 @@ package com.zx.sms.connect.manager.cmpp;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.timeout.IdleStateHandler;
 
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -50,7 +50,7 @@ public class CMPPServerEndpointConnector extends AbstractServerEndpointConnector
 
 
 	@Override
-	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, Map storeMap, boolean preSend) {
+	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, ConcurrentMap storeMap, boolean preSend) {
 		// TODO Auto-generated method stub
 		return null;
 	}

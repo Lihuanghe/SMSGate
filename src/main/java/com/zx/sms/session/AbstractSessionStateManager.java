@@ -5,11 +5,13 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelOutboundBuffer;
 import io.netty.channel.ChannelPromise;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.RunnableScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -47,7 +49,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 	 * @param preSend
 	 *            预发送数据，连接建立后要发送数据
 	 */
-	public AbstractSessionStateManager(EndpointEntity entity, Map<K, VersionObject<T>> storeMap, boolean preSend) {
+	public AbstractSessionStateManager(EndpointEntity entity, ConcurrentMap<K, VersionObject<T>> storeMap, boolean preSend) {
 		this.entity = entity;
 		errlogger = LoggerFactory.getLogger("error." + entity.getId());
 		this.storeMap = storeMap;
@@ -85,7 +87,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 	/**
 	 * 发送未收到resp的消息，需要使用可持久化的Map.
 	 */
-	private final Map<K, VersionObject<T>> storeMap;
+	private final ConcurrentMap<K, VersionObject<T>> storeMap;
 
 	/**
 	 * 会话刚建立时要发送的数据
@@ -105,6 +107,13 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 	public long getWriteCount() {
 		return msgWriteCount;
 	}
+	
+    private void setUserDefinedWritability(ChannelHandlerContext ctx, boolean writable) {
+        ChannelOutboundBuffer cob = ctx.channel().unsafe().outboundBuffer();
+        if (cob != null) {
+            cob.setUserDefinedWritability(31, writable);
+        }
+    }
 
 	public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
 		logger.warn("Connection closed. channel:{}", ctx.channel());
@@ -175,7 +184,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 	protected abstract boolean needSendAgainByResponse(T req, T res);
 
 	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+	public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
 
 		msgReadCount++;
 		if (msg instanceof BaseMessage) {
@@ -193,6 +202,17 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 
 					// 根据Response 判断是否需要重发,比如CMPP协议，如果收到result==8，表示超速，需要重新发送
 					if (needSendAgainByResponse(request, message)) {
+						//网关异常时会发送大量超速错误(result=8),造成大量重发，浪费资源。这里先停止发送，过40毫秒再回恢复
+						if(ctx.channel().isWritable()){
+							setUserDefinedWritability(ctx, false);
+							
+							ctx.executor().schedule(new Runnable() {
+								@Override
+								public void run() {
+										setUserDefinedWritability(ctx, true);
+								}
+							}, 40, TimeUnit.MILLISECONDS);
+						}
 						reWriteLater(ctx, request, ctx.newPromise(), 400);
 					}
 

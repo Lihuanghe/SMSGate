@@ -89,9 +89,9 @@ public class Cmpp7FSubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 
 		requestMessage.setSrcId(bodyBuffer.readCharSequence(CmppSubmitRequest.SRCID.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 
-		requestMessage.setDestUsrtl(bodyBuffer.readUnsignedByte());
-		String[] destTermId = new String[requestMessage.getDestUsrtl()];
-		for (int i = 0; i < requestMessage.getDestUsrtl(); i++) {
+		short destUsrtl = bodyBuffer.readUnsignedByte();
+		String[] destTermId = new String[destUsrtl];
+		for (int i = 0; i < destUsrtl; i++) {
 			destTermId[i] = bodyBuffer.readCharSequence(CmppSubmitRequest.DESTTERMINALID.getLength(),GlobalConstance.defaultTransportCharset).toString().trim();
 		}
 		requestMessage.setDestterminalId(destTermId);

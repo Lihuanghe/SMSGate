@@ -7,6 +7,7 @@ import io.netty.util.concurrent.Future;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.lang.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +72,8 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 		} else if (msg instanceof CmppSubmitRequestMessage) {
 			CmppSubmitRequestMessage e = (CmppSubmitRequestMessage) msg;
 			CmppSubmitResponseMessage resp = new CmppSubmitResponseMessage(e.getHeader().getSequenceId());
-			resp.setResult(0);
+			resp.setResult(RandomUtils.nextInt()%1000 <10 ? 8 : 0);
+//			resp.setResult(0);
 			ctx.channel().writeAndFlush(resp);
 			cnt.incrementAndGet();
 		} else if (msg instanceof CmppSubmitResponseMessage) {
