@@ -44,7 +44,6 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 	private String valIdTime = GlobalConstance.emptyString;
 	private String atTime =GlobalConstance.emptyString;
 	private String srcId = GlobalConstance.emptyString;
-	private short destUsrtl = 0;
 	private String[] destterminalId = GlobalConstance.emptyStringArray;
 	private short destterminaltype = 0;
 
@@ -273,15 +272,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 	 * @return the destUsrtl
 	 */
 	public short getDestUsrtl() {
-		return destUsrtl;
-	}
-
-	/**
-	 * @param destUsrtl
-	 *            the destUsrtl to set
-	 */
-	public void setDestUsrtl(short destUsrtl) {
-		this.destUsrtl = destUsrtl;
+		return (short)this.destterminalId.length;
 	}
 
 	/**
@@ -297,12 +288,10 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 	 */
 	public void setDestterminalId(String[] destterminalId) {
 		this.destterminalId = destterminalId;
-		this.destUsrtl = (short)destterminalId.length;
 	}
 	
 	public void setDestterminalId(String destterminalId) {
 		this.destterminalId = new String[]{destterminalId};
-		this.destUsrtl = (short)1;
 	}
 
 	/**

@@ -1,5 +1,7 @@
 package com.zx.sms.codec.cmpp;
 
+import java.util.UUID;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -26,10 +28,10 @@ public class TestCmpp20SubmitRequestMessageCodec extends AbstractTestMessageCode
 	public void testCodec()
 	{
 		CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
-		msg.setDestterminalId(new String[]{"13800138000"});
+		msg.setDestterminalId(new String[]{"13800138000","13800138001","138001380002"});
 		msg.setLinkID("0000");
-		msg.setMsgContent("abde");
-		System.out.println(msg.getMsgContent().length());
+		String content = UUID.randomUUID().toString();
+		msg.setMsgContent(content);
 		msg.setMsgid(new MsgId());
 		msg.setServiceId("10086");
 		msg.setSrcId("10086");
@@ -50,7 +52,7 @@ public class TestCmpp20SubmitRequestMessageCodec extends AbstractTestMessageCode
 		CmppSubmitRequestMessage result = decode(copybuf);
 		System.out.println(result);
 		Assert.assertEquals(msg.getHeader().getSequenceId(), result.getHeader().getSequenceId());
-
+		Assert.assertArrayEquals(msg.getDestterminalId(), result.getDestterminalId());
 		Assert.assertEquals(msg.getMsgContent(), result.getMsgContent());
 		Assert.assertEquals(msg.getServiceId(), result.getServiceId());
 	}
@@ -71,7 +73,7 @@ public class TestCmpp20SubmitRequestMessageCodec extends AbstractTestMessageCode
 	public void testlongCodec(String content)
 	{
 		CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
-		msg.setDestterminalId(new String[]{"13800138000"});
+		msg.setDestterminalId(new String[]{"13800138000","13800138001","138001380002"});
 		msg.setLinkID("0000");
 		msg.setMsgContent(content);
 		msg.setMsgid(new MsgId());
@@ -98,6 +100,7 @@ public class TestCmpp20SubmitRequestMessageCodec extends AbstractTestMessageCode
 		Assert.assertNotNull(result);
 		System.out.println(result.getMsgContent());
 		Assert.assertEquals(msg.getServiceId(), result.getServiceId());
+		Assert.assertArrayEquals(msg.getDestterminalId(), result.getDestterminalId());
 		Assert.assertEquals(msg.getMsgContent(), result.getMsgContent());
 	}
 }

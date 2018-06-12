@@ -5,6 +5,7 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelOutboundBuffer;
 import io.netty.channel.ChannelPromise;
 
 import java.io.IOException;
@@ -105,6 +106,13 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 	public long getWriteCount() {
 		return msgWriteCount;
 	}
+	
+    private void setUserDefinedWritability(ChannelHandlerContext ctx, boolean writable) {
+        ChannelOutboundBuffer cob = ctx.channel().unsafe().outboundBuffer();
+        if (cob != null) {
+            cob.setUserDefinedWritability(31, writable);
+        }
+    }
 
 	public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
 		logger.warn("Connection closed. channel:{}", ctx.channel());
@@ -175,7 +183,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 	protected abstract boolean needSendAgainByResponse(T req, T res);
 
 	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+	public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
 
 		msgReadCount++;
 		if (msg instanceof BaseMessage) {
@@ -193,6 +201,17 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 
 					// 根据Response 判断是否需要重发,比如CMPP协议，如果收到result==8，表示超速，需要重新发送
 					if (needSendAgainByResponse(request, message)) {
+						//网关异常时会发送大量超速错误(result=8),造成大量重发，浪费资源。这里先停止发送，过40毫秒再回恢复
+						if(ctx.channel().isWritable()){
+							setUserDefinedWritability(ctx, false);
+							
+							ctx.executor().schedule(new Runnable() {
+								@Override
+								public void run() {
+										setUserDefinedWritability(ctx, true);
+								}
+							}, 40, TimeUnit.MILLISECONDS);
+						}
 						reWriteLater(ctx, request, ctx.newPromise(), 400);
 					}
 

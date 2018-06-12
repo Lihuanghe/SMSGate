@@ -72,7 +72,7 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 		} else if (msg instanceof CmppSubmitRequestMessage) {
 			CmppSubmitRequestMessage e = (CmppSubmitRequestMessage) msg;
 			CmppSubmitResponseMessage resp = new CmppSubmitResponseMessage(e.getHeader().getSequenceId());
-			resp.setResult(RandomUtils.nextInt()%2 == 0 ? 8 : 0);
+			resp.setResult(RandomUtils.nextInt()%1000 <10 ? 8 : 0);
 //			resp.setResult(0);
 			ctx.channel().writeAndFlush(resp);
 			cnt.incrementAndGet();

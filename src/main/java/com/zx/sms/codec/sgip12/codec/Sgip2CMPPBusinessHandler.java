@@ -140,7 +140,6 @@ public class Sgip2CMPPBusinessHandler extends AbstractBusinessHandler {
     			SgipSubmitRequestMessage sm = (SgipSubmitRequestMessage)msg;
     			CmppSubmitRequestMessage submit = new CmppSubmitRequestMessage(msg.getHeader());
     			submit.setTimestamp(sm.getTimestamp());
-    			submit.setDestUsrtl(sm.getUsercount());
     			submit.setDestterminalId(sm.getUsernumber().toArray(new String[sm.getUsercount()]));
     			submit.setRegisteredDelivery(sm.getReportflag());
     			submit.setSrcId(sm.getSpnumber());

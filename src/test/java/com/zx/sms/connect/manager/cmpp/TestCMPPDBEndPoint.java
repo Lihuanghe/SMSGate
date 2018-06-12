@@ -65,7 +65,7 @@ public class TestCMPPDBEndPoint {
 		client.setReSendFailMsg(false);
 
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new SessionConnectedHandler(new AtomicInteger(600000)));
+		clienthandlers.add( new SessionConnectedHandler(new AtomicInteger(100000)));
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.openEndpoint(client);		
         System.out.println("start.....");

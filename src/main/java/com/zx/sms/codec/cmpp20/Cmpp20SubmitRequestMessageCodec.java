@@ -93,10 +93,9 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 		requestMessage.setAtTime(bodyBuffer.readCharSequence(Cmpp20SubmitRequest.ATTIME.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 
 		requestMessage.setSrcId(bodyBuffer.readCharSequence(Cmpp20SubmitRequest.SRCID.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
-
-		requestMessage.setDestUsrtl(bodyBuffer.readUnsignedByte());
-		String[] destTermId = new String[requestMessage.getDestUsrtl()];
-		for (int i = 0; i < requestMessage.getDestUsrtl(); i++) {
+		short destUsrtl = bodyBuffer.readUnsignedByte();
+		String[] destTermId = new String[destUsrtl];
+		for (int i = 0; i < destUsrtl; i++) {
 			destTermId[i] = bodyBuffer.readCharSequence(Cmpp20SubmitRequest.DESTTERMINALID.getLength(),GlobalConstance.defaultTransportCharset).toString().trim();
 		}
 		requestMessage.setDestterminalId(destTermId);
