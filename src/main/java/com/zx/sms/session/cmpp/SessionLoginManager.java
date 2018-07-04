@@ -64,9 +64,9 @@ public class SessionLoginManager extends AbstractSessionLoginManager {
 		req.setSourceAddr(cliententity.getUserName());
 		String timestamp = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "MMddHHmmss");
 		req.setTimestamp(Long.parseLong(timestamp));
-		byte[] userBytes = cliententity.getUserName().getBytes(GlobalConstance.defaultTransportCharset);
-		byte[] passwdBytes = cliententity.getPassword().getBytes(GlobalConstance.defaultTransportCharset);
-		byte[] timestampBytes = timestamp.getBytes(GlobalConstance.defaultTransportCharset);
+		byte[] userBytes = cliententity.getUserName().getBytes(cliententity.getChartset());
+		byte[] passwdBytes = cliententity.getPassword().getBytes(cliententity.getChartset());
+		byte[] timestampBytes = timestamp.getBytes(cliententity.getChartset());
 		req.setAuthenticatorSource(DigestUtils.md5(Bytes.concat(userBytes, new byte[9], passwdBytes, timestampBytes)));
 		req.setVersion(cliententity.getVersion());
 		ch.writeAndFlush(req);

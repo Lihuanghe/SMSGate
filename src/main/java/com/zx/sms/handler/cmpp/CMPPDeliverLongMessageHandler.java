@@ -1,15 +1,14 @@
 package com.zx.sms.handler.cmpp;
 
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 
 import org.marre.sms.SmsMessage;
 
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
-import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.codec.cmpp.wap.AbstractLongMessageHandler;
-import com.zx.sms.common.util.DefaultSequenceNumberUtil;
-
+@Sharable
 public class CMPPDeliverLongMessageHandler extends AbstractLongMessageHandler<CmppDeliverRequestMessage> {
 
 	@Override

@@ -17,11 +17,7 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 	private String password;
 	//默认为3.0协议
 	private short version = (short)0x30L;
-
-	private short windows = 16;
 	private Charset chartset = GlobalConstance.defaultTransportCharset;
-	
-
 	
 	/**
 	 *该端口是否支持接收长短信发送 
@@ -76,11 +72,10 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 
 	@Deprecated
 	public short getWindows() {
-		return windows;
+		return 16;
 	}
 	@Deprecated
 	public void setWindows(short windows) {
-		this.windows = windows;
 	}
 
 	public Charset getChartset() {

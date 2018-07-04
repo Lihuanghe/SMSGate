@@ -1,12 +1,8 @@
 package com.zx.sms.connect.manager.cmpp;
 
-import java.lang.management.ManagementFactory;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -14,9 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
-import com.zx.sms.handler.api.gate.SessionConnectedHandler;
 import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
-import com.zx.sms.mbean.ConnState;
 /**
  *经测试，35个连接，每个连接每200/s条消息
  *lenovoX250能承担7000/s消息编码解析无压力。

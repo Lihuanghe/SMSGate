@@ -15,7 +15,7 @@ import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.AbstractClientEndpointConnector;
 import com.zx.sms.connect.manager.ClientEndpoint;
 import com.zx.sms.connect.manager.EndpointEntity;
-import com.zx.sms.handler.cmpp.CMPPMessageLogHandler;
+import com.zx.sms.handler.MessageLogHandler;
 import com.zx.sms.handler.cmpp.ReWriteSubmitMsgSrcHandler;
 import com.zx.sms.session.AbstractSessionStateManager;
 import com.zx.sms.session.cmpp.SessionLoginManager;
@@ -41,7 +41,7 @@ public class CMPPClientEndpointConnector extends AbstractClientEndpointConnector
 		CMPPEndpointEntity entity = (CMPPEndpointEntity)cmppentity;
 
 		pipe.addFirst("socketLog", new LoggingHandler(String.format(GlobalConstance.loggerNamePrefix, entity.getId()), LogLevel.TRACE));
-		pipe.addLast("msgLog", new CMPPMessageLogHandler(entity));
+		pipe.addLast("msgLog", new MessageLogHandler(entity));
 
 		if (entity instanceof ClientEndpoint) {
 			pipe.addLast("reWriteSubmitMsgSrcHandler", new ReWriteSubmitMsgSrcHandler(entity));
