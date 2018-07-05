@@ -17,13 +17,13 @@ public class SgipServerIdleStateHandler extends ChannelDuplexHandler {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent e = (IdleStateEvent) evt;
             if (e.state() == IdleState.ALL_IDLE) {
-            	//如果是CMPP连接未建立，直接关闭
+            	//如果是连接未建立，直接关闭
             	if(ctx.channel().attr(GlobalConstance.attributeKey).get() != SessionState.Connect){
             		ctx.close();
             	}else{
             		ctx.channel().close();
             	}
-            } 
+            }
         }else{
         	ctx.fireUserEventTriggered(evt);
         }

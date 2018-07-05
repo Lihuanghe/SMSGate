@@ -47,6 +47,7 @@ public class SMPPSessionLoginManager extends AbstractSessionLoginManager {
 			if (entity instanceof SMPPServerEndpointEntity) {
 				SMPPServerEndpointEntity serverEntity = (SMPPServerEndpointEntity) entity;
 				EndpointEntity end =  serverEntity.getChild(username.trim());
+				if(end == null) return null;
 				if(end.getChannelType()==ChannelType.DOWN && msg instanceof BindTransmitter){
 					return end;
 				}else if(end.getChannelType()==ChannelType.UP && msg instanceof BindReceiver){

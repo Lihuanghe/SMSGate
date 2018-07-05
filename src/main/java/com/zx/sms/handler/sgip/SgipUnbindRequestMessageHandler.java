@@ -3,6 +3,7 @@ package com.zx.sms.handler.sgip;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
@@ -10,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.zx.sms.codec.sgip12.msg.SgipUnbindRequestMessage;
 import com.zx.sms.codec.sgip12.msg.SgipUnbindResponseMessage;
-
+@Sharable
 public class SgipUnbindRequestMessageHandler extends SimpleChannelInboundHandler<SgipUnbindRequestMessage>{
 
 	@Override

@@ -94,14 +94,14 @@ public class DeliverSmReceipt extends DeliverSm {
 	//不能修改shortMessage字段
 	public byte[] getShortMessage() {
 		StringBuffer sb = new StringBuffer();
-		sb.append("id:").append(id).append(" ");
-		sb.append("sub:").append(sub).append(" ");
-		sb.append("dlvrd:").append(dlvrd).append(" ");
-		sb.append("submit date:").append(submit_date).append(" ");
-		sb.append("done date:").append(done_date).append(" ");
-		sb.append("stat:").append(stat).append(" ");
-		sb.append("err:").append(err).append(" ");
-		sb.append("text:").append(text);
+		sb.append("id:").append(id);
+		sb.append(" sub:").append(sub);
+		sb.append(" dlvrd:").append(dlvrd);
+		sb.append(" submit date:").append(submit_date);
+		sb.append(" done date:").append(done_date);
+		sb.append(" stat:").append(stat);
+		sb.append(" err:").append(err);
+		sb.append(" text:").append(text);
 		try {
 			return sb.toString().getBytes("ISO-8859-1");
 		} catch (UnsupportedEncodingException e) {

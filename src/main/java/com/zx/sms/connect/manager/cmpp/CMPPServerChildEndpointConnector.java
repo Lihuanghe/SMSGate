@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.AbstractEndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
-import com.zx.sms.handler.cmpp.CMPPMessageLogHandler;
+import com.zx.sms.handler.MessageLogHandler;
 import com.zx.sms.session.AbstractSessionStateManager;
 import com.zx.sms.session.cmpp.SessionStateManager;
 
@@ -54,7 +54,7 @@ public class CMPPServerChildEndpointConnector extends AbstractEndpointConnector 
 		}
 
 		pipe.addFirst("socketLog", new LoggingHandler(String.format(GlobalConstance.loggerNamePrefix, entity.getId()), LogLevel.TRACE));
-		pipe.addLast("msgLog", new CMPPMessageLogHandler(entity));
+		pipe.addLast("msgLog", new MessageLogHandler(entity));
 
 		pipe.addLast("CmppActiveTestRequestMessageHandler", GlobalConstance.activeTestHandler);
 		pipe.addLast("CmppActiveTestResponseMessageHandler", GlobalConstance.activeTestRespHandler);

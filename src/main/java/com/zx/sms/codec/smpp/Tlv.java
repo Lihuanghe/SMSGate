@@ -20,6 +20,7 @@ package com.zx.sms.codec.smpp;
  * #L%
  */
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
@@ -31,7 +32,7 @@ import com.zx.sms.common.util.HexUtil;
  * 
  * @author joelauer (twitter: @jjlauer or <a href="http://twitter.com/jjlauer" target=window>http://twitter.com/jjlauer</a>)
  */
-public class Tlv {
+public class Tlv implements Serializable{
     
     private final short tag;
     private final byte[] value;     // length is stored in array

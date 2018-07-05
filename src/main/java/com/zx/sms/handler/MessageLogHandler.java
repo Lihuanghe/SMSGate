@@ -1,4 +1,4 @@
-package com.zx.sms.handler.cmpp;
+package com.zx.sms.handler;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -16,11 +16,11 @@ import com.zx.sms.connect.manager.EndpointEntity;
  *
  */
 
-public class CMPPMessageLogHandler extends ChannelDuplexHandler {
+public class MessageLogHandler extends ChannelDuplexHandler {
 	private final Logger logger;
 	private EndpointEntity entity;
 
-	public CMPPMessageLogHandler(EndpointEntity entity) {
+	public MessageLogHandler(EndpointEntity entity) {
 		this.entity = entity;
 		logger = LoggerFactory.getLogger(String.format(GlobalConstance.loggerNamePrefix, entity.getId()));
 	}

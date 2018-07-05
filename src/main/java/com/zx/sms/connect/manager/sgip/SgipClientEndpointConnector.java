@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.AbstractClientEndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
-import com.zx.sms.handler.cmpp.CMPPMessageLogHandler;
+import com.zx.sms.handler.MessageLogHandler;
 import com.zx.sms.handler.sgip.SgipUnbindRequestMessageHandler;
 import com.zx.sms.handler.sgip.SgipUnbindResponseMessageHandler;
 import com.zx.sms.session.AbstractSessionStateManager;
@@ -37,7 +37,7 @@ public class SgipClientEndpointConnector extends AbstractClientEndpointConnector
 	@Override
 	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity entity) {
 		pipe.addFirst("socketLog", new LoggingHandler(String.format(GlobalConstance.loggerNamePrefix, entity.getId()), LogLevel.TRACE));
-		pipe.addLast("msgLog", new CMPPMessageLogHandler(entity));
+		pipe.addLast("msgLog", new MessageLogHandler(entity));
 		pipe.addLast("SgipUnbindResponseMessageHandler", new SgipUnbindResponseMessageHandler());
 		pipe.addLast("SgipUnbindRequestMessageHandler", new SgipUnbindRequestMessageHandler());
 	}

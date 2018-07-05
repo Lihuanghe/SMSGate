@@ -1,16 +1,16 @@
-package com.zx.sms.handler.smpp;
+package com.zx.sms.handler.smgp;
 
 import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 
-import com.zx.sms.codec.smpp.msg.EnquireLink;
+import com.zx.sms.codec.smgp.msg.SMGPActiveTestMessage;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.session.cmpp.SessionState;
 @Sharable
-public class SmppServerIdleStateHandler extends ChannelDuplexHandler {
+public class SMGPServerIdleStateHandler extends ChannelDuplexHandler {
 	@Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
 		
@@ -21,7 +21,7 @@ public class SmppServerIdleStateHandler extends ChannelDuplexHandler {
             	if(ctx.channel().attr(GlobalConstance.attributeKey).get() != SessionState.Connect){
             		ctx.close();
             	}else{
-            		ctx.channel().writeAndFlush(new EnquireLink());
+            		ctx.channel().writeAndFlush(new SMGPActiveTestMessage());
             	}
             } 
         }else{

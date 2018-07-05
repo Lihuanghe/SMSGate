@@ -24,6 +24,7 @@ import com.zx.sms.codec.cmpp.msg.DefaultHeader;
 import com.zx.sms.codec.cmpp.msg.Header;
 import com.zx.sms.common.util.MsgId;
 import com.zx.sms.connect.manager.smpp.SMPPCodecChannelInitializer;
+import com.zx.sms.handler.smpp.SMPP2CMPPBusinessHandler;
 
 public class TestSMPP2CMPPDeliverCodec extends AbstractSMPPTestMessageCodec<CmppDeliverRequestMessage> {
 	protected void doinitChannel(Channel ch){

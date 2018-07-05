@@ -70,7 +70,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 //						msg.setMsgContent(sb.toString());
 						msg.setMsgContent(content);
 						msg.setMsgId(new MsgId());
-						msg.setRegisteredDelivery((short) 0);
+						msg.setRegisteredDelivery((short) 1);
 						if (msg.getRegisteredDelivery() == 1) {
 							msg.setReportRequestMessage(new CmppReportRequestMessage());
 						}
@@ -101,7 +101,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 					while(cnt>0 && totleCnt.get()>0) {
 						if(ctx.channel().isWritable()){
 							
-							ChannelFuture future = ctx.writeAndFlush(createTestReq(UUID.randomUUID().toString()) );
+							ChannelFuture future = ctx.writeAndFlush(createTestReq("中国"+UUID.randomUUID().toString()) );
 							if(future == null){
 								break;
 							}

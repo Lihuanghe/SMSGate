@@ -1,6 +1,7 @@
 package com.zx.sms.handler.sgip;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelHandler.Sharable;
 
 import org.marre.sms.SmsMessage;
 import org.slf4j.Logger;
@@ -9,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.codec.cmpp.wap.AbstractLongMessageHandler;
 import com.zx.sms.codec.sgip12.msg.SgipDeliverRequestMessage;
 import com.zx.sms.codec.sgip12.msg.SgipDeliverResponseMessage;
-
+@Sharable
 public class SgipDeliverLongMessageHandler extends AbstractLongMessageHandler<SgipDeliverRequestMessage> {
 	private final Logger logger = LoggerFactory.getLogger(SgipDeliverLongMessageHandler.class);
 	@Override
