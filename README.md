@@ -1,4 +1,4 @@
-# CMPPGate , SMPPGate , SGIPGate
+# CMPPGate , SMPPGate , SGIPGate, SMGPGate
 中移短信cmpp协议/smpp协议 netty实现编解码
 
 这是一个在netty4框架下实现的cmpp3.0/cmpp2.0短信协议解析及网关端口管理 (master分支是依赖于netty5的)。
@@ -15,6 +15,10 @@ SMPP的协议解析代码是从  [Twitter-SMPP 的代码](https://github.com/fiz
 新增对sgip协议(联通短信协议)的支持
 
 sgip的协议解析代码是从 [huzorro@gmail.com 的代码 ](https://github.com/huzorro/sgipsgw) copy过来后改造的。
+
+新增对smgp协议(电信短信协议)的支持
+
+smgp的协议解析代码是从 [SMS-China 的代码 ](https://github.com/clonalman/SMS-China) copy过来后改造的。
 
 支持发送彩信通知，WAP短信以及闪信(Flash Message):
 
