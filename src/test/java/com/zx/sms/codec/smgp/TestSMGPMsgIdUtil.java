@@ -8,6 +8,7 @@ import org.junit.Test;
 import com.zx.sms.codec.smgp.msg.MsgId;
 import com.zx.sms.codec.smgp.msg.SMGPReportData;
 import com.zx.sms.codec.smgp.util.SMGPMsgIdUtil;
+import com.zx.sms.common.util.SequenceNumber;
 
 public class TestSMGPMsgIdUtil {
 	
@@ -22,7 +23,7 @@ public class TestSMGPMsgIdUtil {
 	
 		SMGPReportData tmpreport = new SMGPReportData();
 		tmpreport.fromBytes(arr);
-		System.out.println(tmpreport);
+		System.out.println(new SequenceNumber());
 	}
 
 }

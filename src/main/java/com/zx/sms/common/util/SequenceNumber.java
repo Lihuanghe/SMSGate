@@ -112,7 +112,7 @@ public class SequenceNumber implements Serializable{
 	@Override
 	public String toString() {
 		return String
-				.format("%1$010d%2$10d%3$010d",
+				.format("%1$010d%2$10s%3$010d",
 						nodeIds, getTimeString(), sequenceId);
 	}	
 	

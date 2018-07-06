@@ -54,7 +54,7 @@ public class TestSMGPEndPoint {
 		child.setIdleTimeSec((short)15);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
 		serverhandlers.add(new SMGP2CMPPBusinessHandler()); 
-		serverhandlers.add( new SessionConnectedHandler(new AtomicInteger(10)));   // 复用CMPP的Handler
+		serverhandlers.add( new SessionConnectedHandler(new AtomicInteger(10000)));   // 复用CMPP的Handler
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		

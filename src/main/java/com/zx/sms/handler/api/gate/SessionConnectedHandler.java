@@ -70,7 +70,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 //						msg.setMsgContent(sb.toString());
 						msg.setMsgContent(content);
 						msg.setMsgId(new MsgId());
-						msg.setRegisteredDelivery((short) 1);
+						msg.setRegisteredDelivery((short) 0);
 						if (msg.getRegisteredDelivery() == 1) {
 							msg.setReportRequestMessage(new CmppReportRequestMessage());
 						}
