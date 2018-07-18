@@ -12,7 +12,6 @@ import io.netty.util.ReferenceCountUtil;
 
 /**
  * 
- * @author huzorro(huzorro@gmail.com)
  *
  */
 @Sharable

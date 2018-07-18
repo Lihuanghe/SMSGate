@@ -54,7 +54,7 @@ public class TestSMGPEndPoint {
 		child.setIdleTimeSec((short)15);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
 		serverhandlers.add(new SMGP2CMPPBusinessHandler()); 
-		serverhandlers.add( new SessionConnectedHandler(new AtomicInteger(10000)));   // 复用CMPP的Handler
+		serverhandlers.add(new MessageReceiveHandler());   // 复用CMPP的Handler
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
@@ -64,7 +64,7 @@ public class TestSMGPEndPoint {
 		SMGPClientEndpointEntity client = new SMGPClientEndpointEntity();
 		client.setId("smgpclient");
 		client.setHost("127.0.0.1");
-		client.setPort(9890);
+		client.setPort(8890);
 		client.setClientID("333");
 		client.setPassword("0555");
 		client.setChannelType(ChannelType.DUPLEX);
@@ -78,10 +78,10 @@ public class TestSMGPEndPoint {
 //		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new SMGP2CMPPBusinessHandler()); 
-		clienthandlers.add(new MessageReceiveHandler()); //// 复用CMPP的Handler
+		clienthandlers.add( new SessionConnectedHandler(new AtomicInteger(10))); //// 复用CMPP的Handler
 		client.setBusinessHandlerSet(clienthandlers);
 		
-		manager.addEndpointEntity(server);
+//		manager.addEndpointEntity(server);
 		manager.addEndpointEntity(client);
 		manager.openAll();
 		//LockSupport.park();

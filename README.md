@@ -35,6 +35,9 @@ smgp的协议解析代码是从 [SMS-China 的代码 ](https://github.com/clonal
 ## 增加了业务处理API
 业务层实现接口：BusinessHandlerInterface，或者继承AbstractBusinessHandler抽象类实现业务即可。 连接保活，消息重发，消息持久化，连接鉴权都已封装，不须要业务层再实现。
 
+## 如何实现自己的Handler,比如按短短信计费
+参考 CMPPChargingDemoTest 里的扩展位置
+
 # 实体类说明
 
 ## CMPP的连接端口

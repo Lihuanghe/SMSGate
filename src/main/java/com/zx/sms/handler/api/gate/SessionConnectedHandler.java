@@ -101,7 +101,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 					while(cnt>0 && totleCnt.get()>0) {
 						if(ctx.channel().isWritable()){
 							
-							ChannelFuture future = ctx.writeAndFlush(createTestReq("中国"+UUID.randomUUID().toString()) );
+							ChannelFuture future = ctx.writeAndFlush(createTestReq("中msg.setMsgContent(new SmsMmsNotificationMessage(\"http://www.baidu.com/abc/sfd\",50*1024));国"+UUID.randomUUID().toString()) );
 							if(future == null){
 								break;
 							}

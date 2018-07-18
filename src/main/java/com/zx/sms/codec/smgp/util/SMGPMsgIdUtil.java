@@ -13,7 +13,6 @@ import com.zx.sms.common.util.ChannelUtil;
 
 /**
  * 
- * @author huzorro(huzorro@gmail.com)
  *
  */
 public final class SMGPMsgIdUtil {

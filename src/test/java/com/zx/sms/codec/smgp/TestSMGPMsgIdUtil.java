@@ -25,5 +25,12 @@ public class TestSMGPMsgIdUtil {
 		tmpreport.fromBytes(arr);
 		System.out.println(new SequenceNumber());
 	}
+	
+	@Test
+	public void testMsgid1() throws Exception{
+			MsgId m = new MsgId("12345607091206000017");
+			byte[] arr = SMGPMsgIdUtil.msgId2Bytes(m);
+			Assert.assertEquals(m, SMGPMsgIdUtil.bytes2MsgId(arr));
+	}
 
 }
