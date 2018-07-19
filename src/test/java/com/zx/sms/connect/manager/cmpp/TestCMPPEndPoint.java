@@ -38,7 +38,7 @@ public class TestCMPPEndPoint {
 		CMPPServerEndpointEntity server = new CMPPServerEndpointEntity();
 		server.setId("server");
 		server.setHost("127.0.0.1");
-		server.setPort(7892);
+		server.setPort(7891);
 		server.setValid(true);
 		//使用ssl加密数据流
 		server.setUseSSL(false);
@@ -89,7 +89,8 @@ public class TestCMPPEndPoint {
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add( new MessageReceiveHandler());
 		client.setBusinessHandlerSet(clienthandlers);
-//		manager.addEndpointEntity(client);
+		
+		manager.addEndpointEntity(client);
 		
 		manager.openAll();
         System.out.println("start.....");

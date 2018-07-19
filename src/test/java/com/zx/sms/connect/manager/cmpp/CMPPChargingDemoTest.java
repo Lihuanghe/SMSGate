@@ -48,7 +48,9 @@ public class CMPPChargingDemoTest {
 				        ctx.fireChannelRead(msg);
 				        if(msg instanceof BaseMessage){
 				        	if(((BaseMessage) msg).isRequest()){
-				        		 logger.info("read计费啦{},seq={}",cnt.getAndIncrement(),((BaseMessage) msg).getSequenceNo());
+				        		 logger.info("send request {},seq={}",cnt.getAndIncrement(),((BaseMessage) msg).getSequenceNo());
+				        	}else{
+				        		logger.info("read response .seq={}",((BaseMessage) msg).getSequenceNo());
 				        	}
 				        }
 				       
@@ -58,7 +60,9 @@ public class CMPPChargingDemoTest {
 				        ctx.write(msg, promise);
 				        if(msg instanceof BaseMessage){
 				        	if(((BaseMessage) msg).isRequest()){
-				        		logger.info("write计费啦{},seq={}",cnt.getAndIncrement(),((BaseMessage) msg).getSequenceNo());
+				        		 logger.info("send request {},seq={}",cnt.getAndIncrement(),((BaseMessage) msg).getSequenceNo());
+				        	}else{
+				        		logger.info("read response .seq={}",((BaseMessage) msg).getSequenceNo());
 				        	}
 				        }
 				    }
@@ -78,6 +82,7 @@ public class CMPPChargingDemoTest {
 			return new MyCMPPClientEndpointConnector(this);
 		}
 	}
+
 	
 	/*
 	 *使用自己扩展的Entity 

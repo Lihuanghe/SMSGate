@@ -143,7 +143,7 @@ public class TestCMPPEndPoint {
 		child.setReSendFailMsg(false);
 		//child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new SessionConnectedHandler(300000));
+		serverhandlers.add(new SessionConnectedHandler(300000));      //在这个类里发送短信
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
@@ -169,7 +169,7 @@ public class TestCMPPEndPoint {
 		//client.setWriteLimit(200);
 		//client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new MessageReceiveHandler());
+		clienthandlers.add( new MessageReceiveHandler());  //在这个类里接收短信消息
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		
@@ -237,7 +237,7 @@ public class TestSMPPEndPoint {
 		client.setReSendFailMsg(false);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new SMPP2CMPPBusinessHandler()); //  将CMPP的对象转成SMPP对象，然后再经SMPP解码器处理
-		clienthandlers.add(new SessionConnectedHandler(600000)); //// 复用CMPP的Handler
+		clienthandlers.add(new SessionConnectedHandler(600000)); //// 复用CMPP的Handler ，在这个类里发送短信
 		client.setBusinessHandlerSet(clienthandlers);
 		
 		manager.openEndpoint(client);
@@ -304,7 +304,7 @@ public class TestSgipEndPoint {
 		client.setUseSSL(false);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new Sgip2CMPPBusinessHandler()); //  将CMPP的对象转成sgip对象，然后再经sgip解码器处理
-		clienthandlers.add(new SessionConnectedHandler(1)); //// 复用CMPP的Handler
+		clienthandlers.add(new SessionConnectedHandler(1)); //// 复用CMPP的Handler ，在这个类里发送短信
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		manager.openAll();
