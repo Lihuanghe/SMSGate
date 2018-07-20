@@ -3,6 +3,7 @@ package com.zx.sms.connect.manager.cmpp;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
+import com.zx.sms.handler.api.gate.SessionConnectedHandler;
 import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
 /**
  *经测试，35个连接，每个连接每200/s条消息
@@ -33,11 +35,11 @@ public class ClientTestCMPPEndPoint {
 		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
 		client.setId("client");
 		client.setHost("127.0.0.1");
-		client.setPort(7891);
+		client.setPort(20003);
 		client.setChartset(Charset.forName("utf-8"));
 		client.setGroupName("test");
-		client.setUserName("901782");
-		client.setPassword("ICP");
+		client.setUserName("GSDT01");
+		client.setPassword("1qaz2wsx");
 
 
 		client.setMaxChannels((short)12);
@@ -48,7 +50,7 @@ public class ClientTestCMPPEndPoint {
 		client.setReSendFailMsg(false);
 
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new MessageReceiveHandler());
+		clienthandlers.add( new SessionConnectedHandler(new AtomicInteger(100)));
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		

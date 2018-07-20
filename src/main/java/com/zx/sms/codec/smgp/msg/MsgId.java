@@ -11,7 +11,6 @@ import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 
 /**
  * 
- * @author huzorro(huzorro@gmail.com)
  *
  */
 public class MsgId implements Serializable {

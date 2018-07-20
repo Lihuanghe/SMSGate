@@ -35,6 +35,9 @@ smgp的协议解析代码是从 [SMS-China 的代码 ](https://github.com/clonal
 ## 增加了业务处理API
 业务层实现接口：BusinessHandlerInterface，或者继承AbstractBusinessHandler抽象类实现业务即可。 连接保活，消息重发，消息持久化，连接鉴权都已封装，不须要业务层再实现。
 
+## 如何实现自己的Handler,比如按短短信计费
+参考 CMPPChargingDemoTest 里的扩展位置
+
 # 实体类说明
 
 ## CMPP的连接端口
@@ -140,7 +143,7 @@ public class TestCMPPEndPoint {
 		child.setReSendFailMsg(false);
 		//child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new SessionConnectedHandler(300000));
+		serverhandlers.add(new SessionConnectedHandler(300000));      //在这个类里发送短信
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
@@ -166,7 +169,7 @@ public class TestCMPPEndPoint {
 		//client.setWriteLimit(200);
 		//client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new MessageReceiveHandler());
+		clienthandlers.add( new MessageReceiveHandler());  //在这个类里接收短信消息
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		
@@ -234,7 +237,7 @@ public class TestSMPPEndPoint {
 		client.setReSendFailMsg(false);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new SMPP2CMPPBusinessHandler()); //  将CMPP的对象转成SMPP对象，然后再经SMPP解码器处理
-		clienthandlers.add(new SessionConnectedHandler(600000)); //// 复用CMPP的Handler
+		clienthandlers.add(new SessionConnectedHandler(600000)); //// 复用CMPP的Handler ，在这个类里发送短信
 		client.setBusinessHandlerSet(clienthandlers);
 		
 		manager.openEndpoint(client);
@@ -301,7 +304,7 @@ public class TestSgipEndPoint {
 		client.setUseSSL(false);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new Sgip2CMPPBusinessHandler()); //  将CMPP的对象转成sgip对象，然后再经sgip解码器处理
-		clienthandlers.add(new SessionConnectedHandler(1)); //// 复用CMPP的Handler
+		clienthandlers.add(new SessionConnectedHandler(1)); //// 复用CMPP的Handler ，在这个类里发送短信
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		manager.openAll();

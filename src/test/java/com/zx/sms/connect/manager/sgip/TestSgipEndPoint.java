@@ -62,11 +62,11 @@ public class TestSgipEndPoint {
 		
 		serverhandlers.add(new SgipReportRequestMessageHandler());
 		serverhandlers.add(new Sgip2CMPPBusinessHandler());  //  将CMPP的对象转成sgip对象，然后再经sgip解码器处理
-		serverhandlers.add(new SessionConnectedHandler(new AtomicInteger(300000)));   // 复用CMPP的Handler
+		serverhandlers.add(new SessionConnectedHandler(new AtomicInteger(30000)));   // 复用CMPP的Handler
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
-//		manager.addEndpointEntity(server);
+		manager.addEndpointEntity(server);
 		
 		
 		SgipClientEndpointEntity client = new SgipClientEndpointEntity();

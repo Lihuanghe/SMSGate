@@ -12,7 +12,6 @@ import com.zx.sms.connect.manager.EndpointEntity;
 
 /**
  * 
- * @author huzorro(huzorro@gmail.com)
  *
  */
 

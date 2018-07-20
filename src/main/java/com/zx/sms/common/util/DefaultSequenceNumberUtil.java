@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang.math.RandomUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 /**
@@ -17,7 +18,7 @@ import org.apache.commons.lang.time.DateUtils;
  *
  */
 public class DefaultSequenceNumberUtil {
-
+	
 	public static byte[] sequenceN2Bytes(SequenceNumber sn) {
 		byte[] bytes = new byte[12];
 		long t = Long.parseLong(sn.getTimeString());
@@ -25,14 +26,23 @@ public class DefaultSequenceNumberUtil {
 		return bytes;
 
 	}
-	private static final String[] datePattern = new String[]{"MMddHHmmss"};
+	private static final String[] datePattern = new String[]{"yyyyMMddHHmmss"};
 	
 	public static SequenceNumber bytes2SequenceN(byte[] bytes) {
 		long nodeIds = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 0, 4)).getInt() & 0xFFFFFFFFL;
-		String t = String.format("%1$010d", ByteBuffer.wrap(Arrays.copyOfRange(bytes, 4, 8)).getInt() & 0xFFFFFFFFL);
+		
+		//sgip协议里时间不带年份信息，这里判断下年份信息
+		String year = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "yyyy");
+		String t = String.format("%1$s%2$010d",year, ByteBuffer.wrap(Arrays.copyOfRange(bytes, 4, 8)).getInt() & 0xFFFFFFFFL);
+		
 		Date d ;
 		try {
-			d= DateUtils.parseDate(t, datePattern);
+			d = DateUtils.parseDate(t, datePattern);
+			//如果正好是年末，这个时间有可能差一年，则必须取上一年
+			//这里判断取200天，防止因不同主机时间不同步造成误差
+			if(d.getTime() - CachedMillisecondClock.INS.now() > 86400000L * 200){
+				d = DateUtils.addYears(d, -1);
+			}
 		} catch (ParseException e) {
 			d = new Date();
 			e.printStackTrace();

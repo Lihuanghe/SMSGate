@@ -1,7 +1,10 @@
 package com.zx.sms.codec.smgp;
 
 
+import java.util.Date;
+
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -24,6 +27,21 @@ public class TestSMGPMsgIdUtil {
 		SMGPReportData tmpreport = new SMGPReportData();
 		tmpreport.fromBytes(arr);
 		System.out.println(new SequenceNumber());
+		
+	}
+	
+	@Test
+	public void testSequenceNumber() throws Exception{
+		String msgid = "012121111107201141230000000010";
+		SequenceNumber t = new SequenceNumber(msgid);
+		Assert.assertEquals(msgid, t.toString());
+	}
+	
+	@Test
+	public void testMsgid1() throws Exception{
+			MsgId m = new MsgId("12345607091206000017");
+			byte[] arr = SMGPMsgIdUtil.msgId2Bytes(m);
+			Assert.assertEquals(m, SMGPMsgIdUtil.bytes2MsgId(arr));
 	}
 
 }
