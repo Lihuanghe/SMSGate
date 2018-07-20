@@ -50,7 +50,7 @@ public class Sgip2CMPPBusinessHandler extends AbstractBusinessHandler {
     			if(deliver.isReport()){
     				SgipReportRequestMessage pdur = new SgipReportRequestMessage(deliver.getHeader());
     				CmppReportRequestMessage report = deliver.getReportRequestMessage();
-    				pdur.setSequenceId(new SequenceNumber(report.getMsgId().toString()));
+    				pdur.setSequenceId(new SequenceNumber(report.getMsgId()));
     				pdur.setUsernumber(report.getDestterminalId());
     				
     				pdur.setReserve(report.getStat());

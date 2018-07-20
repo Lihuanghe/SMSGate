@@ -32,9 +32,11 @@ public class TestSMGPMsgIdUtil {
 	
 	@Test
 	public void testSequenceNumber() throws Exception{
-		String msgid = "012121111107201141230000000010";
+		com.zx.sms.common.util.MsgId msgid = new com.zx.sms.common.util.MsgId();
 		SequenceNumber t = new SequenceNumber(msgid);
-		Assert.assertEquals(msgid, t.toString());
+		System.out.println(msgid);
+		System.out.println(t);
+		Assert.assertEquals(msgid.toString().substring(0,10), t.toString().subSequence(10, 20));
 	}
 	
 	@Test

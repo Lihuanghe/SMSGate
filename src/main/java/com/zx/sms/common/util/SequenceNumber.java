@@ -44,11 +44,12 @@ public class SequenceNumber implements Serializable{
 	 * 
 	 * @param msgIds
 	 */
-	public SequenceNumber(String msgIds) {
-		setNodeIds(Long.parseLong(msgIds.substring(0, 10)));
+	public SequenceNumber(MsgId msgIds) {
+		String strmsgid = msgIds.toString();
+		setNodeIds(msgIds.getGateId());
 		//sgip协议里时间不带年份信息，这里判断下年份信息
 		String year = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "yyyy");
-		String t = String.format("%1$s%2$s",year, msgIds.substring(10, 20));
+		String t = String.format("%1$s%2$s",year, strmsgid.substring(0, 10));
 		
 		Date d;
 		try {
@@ -63,7 +64,7 @@ public class SequenceNumber implements Serializable{
 			d = new Date();
 		}
 		setTimestamp(d.getTime());		
-		setSequenceId(Long.parseLong(msgIds.substring(20, 30)));
+		setSequenceId(msgIds.getSequenceId());
 	}	
 	/**
 	 * 
