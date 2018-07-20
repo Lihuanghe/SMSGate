@@ -16,7 +16,7 @@ import org.apache.commons.lang.time.DateUtils;
  */
 public class SequenceNumber implements Serializable{
 	private static final long serialVersionUID = 650229326111998772L;
-	private static final String[] datePattern = new String[]{"MMddHHmmss"};
+	private static final String[] datePattern = new String[]{"yyyyMMddHHmmss"};
 	private long nodeIds;
 	private long sequenceId;
 	private long timestamp;
@@ -46,9 +46,18 @@ public class SequenceNumber implements Serializable{
 	 */
 	public SequenceNumber(String msgIds) {
 		setNodeIds(Long.parseLong(msgIds.substring(0, 10)));
+		//sgip协议里时间不带年份信息，这里判断下年份信息
+		String year = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "yyyy");
+		String t = String.format("%1$s%2$s",year, msgIds.substring(10, 20));
+		
 		Date d;
 		try {
-			d = DateUtils.parseDate(msgIds.substring(10, 20), datePattern);
+			d = DateUtils.parseDate(t, datePattern);
+			//如果正好是年末，这个时间有可能差一年，则必须取上一年
+			//这里判断取200天，防止因不同主机时间不同步造成误差
+			if(d.getTime() - CachedMillisecondClock.INS.now() > 86400000L * 200){
+				d = DateUtils.addYears(d, -1);
+			}
 		} catch (ParseException e) {
 			e.printStackTrace();
 			d = new Date();
@@ -95,7 +104,7 @@ public class SequenceNumber implements Serializable{
 	
 	public String getTimeString() {
 		
-		return DateFormatUtils.format(new Date(timestamp), "MMddHHmmss");
+		return DateFormatUtils.format(timestamp, "MMddHHmmss");
 	}
 	
 	public long getTimestamp() {
