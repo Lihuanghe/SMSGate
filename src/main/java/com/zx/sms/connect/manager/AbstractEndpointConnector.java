@@ -229,8 +229,11 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 	public void removeChannel(Channel ch) {
 		
-		if (getChannels().remove(ch))
+		if (getChannels().remove(ch)){
+			ch.attr(GlobalConstance.attributeKey).set(SessionState.DisConnect);
 			decrementConn();
+		}
+			
 	}
 
 	/**

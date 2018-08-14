@@ -3,16 +3,15 @@ package com.zx.sms.connect.manager.cmpp;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 import com.zx.sms.handler.api.gate.SessionConnectedHandler;
-import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
 /**
  *经测试，35个连接，每个连接每200/s条消息
  *lenovoX250能承担7000/s消息编码解析无压力。
@@ -35,28 +34,43 @@ public class ClientTestCMPPEndPoint {
 		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
 		client.setId("client");
 		client.setHost("127.0.0.1");
-		client.setPort(20003);
+		client.setPort(7891);
 		client.setChartset(Charset.forName("utf-8"));
 		client.setGroupName("test");
-		client.setUserName("GSDT01");
-		client.setPassword("1qaz2wsx");
+		client.setUserName("901782");
+		client.setPassword("ICP");
 
 
-		client.setMaxChannels((short)12);
+		client.setMaxChannels((short)6);
 		client.setWindows((short)16);
 		client.setVersion((short)0x20);
 		client.setRetryWaitTimeSec((short)10);
 		client.setUseSSL(false);
 		client.setReSendFailMsg(false);
-
+//		client.setWriteLimit(50);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new SessionConnectedHandler(new AtomicInteger(100)));
+		clienthandlers.add( new SessionConnectedHandler(100000));
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		
 		manager.openAll();
 		//LockSupport.park();
-
+//		Thread.sleep(1000);
+		//manager.openEndpoint(client);Thread.sleep(1000);
+		manager.startConnectionCheckTask();
+		Thread.sleep(1000);
+		
+//		while(true){
+//			
+//			try{
+//				Thread.sleep(20000);
+//			}catch(Exception e){
+//				break;
+//			}
+//			EndpointConnector conn = manager.getEndpointConnector(client);
+//			conn.fetch().close();
+//		}
+		
         System.out.println("start.....");
         
 		Thread.sleep(300000);

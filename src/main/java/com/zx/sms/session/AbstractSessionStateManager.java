@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.BaseMessage;
 import com.zx.sms.common.SmsLifeTerminateException;
 import com.zx.sms.common.storedMap.VersionObject;
+import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.config.PropertiesUtils;
 import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
@@ -116,7 +117,6 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
     }
 
 	public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
-		logger.warn("Connection closed. channel:{}", ctx.channel());
 
 		ctx.executor().execute(new Runnable() {
 
@@ -198,24 +198,22 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 				VersionObject<T> vobj = storeMap.remove(key);
 				if (vobj != null) {
 					T request = vobj.getObj();
+					long sendtime = vobj.getVersion();
+					
+					//响应延迟过大
+					long delay = delaycheck(sendtime);
+					if(delay > 0){
+						errlogger.debug("delaycheck . delay :{} , SequenceId :{}", delay,getSequenceId(message));
+					}
+					
 					Entry cancelentry = cancelRetry(request, ctx.channel());
 
 					// 根据Response 判断是否需要重发,比如CMPP协议，如果收到result==8，表示超速，需要重新发送
 					if (needSendAgainByResponse(request, message)) {
 						//网关异常时会发送大量超速错误(result=8),造成大量重发，浪费资源。这里先停止发送，过40毫秒再回恢复
-						if(ctx.channel().isWritable()){
-							setUserDefinedWritability(ctx, false);
-							
-							ctx.executor().schedule(new Runnable() {
-								@Override
-								public void run() {
-										setUserDefinedWritability(ctx, true);
-								}
-							}, 40, TimeUnit.MILLISECONDS);
-						}
+						setchannelunwritable(ctx,40);
 						reWriteLater(ctx, request, ctx.newPromise(), 400);
 					}
-
 					// 把response关联上request供使用。
 					message.setRequest(request);
 				} else {
@@ -226,6 +224,25 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 		ctx.fireChannelRead(msg);
 	}
 
+	//查检发送req与收到res的时间差
+	private long delaycheck(long sendtime){
+		//当响应延迟超过重试等待时间的1/10
+		return CachedMillisecondClock.INS.now() - sendtime - (long)(entity.getRetryWaitTimeSec() * 1000/5);
+	}
+	
+	private void setchannelunwritable(final ChannelHandlerContext ctx,long millitime){
+		if(ctx.channel().isWritable()){
+			setUserDefinedWritability(ctx, false);
+			
+			ctx.executor().schedule(new Runnable() {
+				@Override
+				public void run() {
+						setUserDefinedWritability(ctx, true);
+				}
+			}, millitime, TimeUnit.MILLISECONDS);
+		}
+	}
+	
 	@Override
 	public void write(ChannelHandlerContext ctx, Object message, ChannelPromise promise) throws Exception {
 

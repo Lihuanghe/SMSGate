@@ -15,4 +15,7 @@ public interface EndpointManagerInterface{
 	public EndpointEntity getEndpointEntity(String id);
 	public void addAllEndpointEntity(List<EndpointEntity> entities);
 	public void close();
+	
+	public void startConnectionCheckTask();
+	public void stopConnectionCheckTask();
 }

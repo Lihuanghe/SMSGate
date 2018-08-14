@@ -19,6 +19,7 @@ import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.Message;
 import com.zx.sms.common.util.MsgId;
 import com.zx.sms.connect.manager.EndpointEntity;
+import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
 import com.zx.sms.connect.manager.ServerEndpoint;
@@ -34,7 +35,8 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 	private static final Logger logger = LoggerFactory.getLogger(SessionConnectedHandler.class);
 
 	private AtomicInteger totleCnt = new AtomicInteger(100000);
-	
+	private volatile boolean inited = false;
+	private long lastNum = 0;
 	public AtomicInteger getTotleCnt() {
 		return totleCnt;
 	}
@@ -55,9 +57,9 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 	
 	@Override
 	public void userEventTriggered(final ChannelHandlerContext ctx, Object evt) throws Exception {
-
+		final AtomicInteger tmptotal = new AtomicInteger(totleCnt.get());
 		if (evt == SessionState.Connect) {
-			
+		
 			final EndpointEntity finalentity = (EndpointEntity) getEndpointEntity();
 			final Channel ch = ctx.channel();
 			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>() {
@@ -97,18 +99,18 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 
 				@Override
 				public Boolean call() throws Exception{
-					int cnt = RandomUtils.nextInt() & 0x1f;
-					while(cnt>0 && totleCnt.get()>0) {
+					int cnt = RandomUtils.nextInt() & 0x4ff;
+					while(cnt>0 && tmptotal.get()>0) {
 						if(ctx.channel().isWritable()){
 							
-							ChannelFuture future = ctx.writeAndFlush(createTestReq("中msg.setMsgContent(new SmsMmsNotificationMessage(\"http://www.baidu.com/abc/sfd\",50*1024));国"+UUID.randomUUID().toString()) );
+							ChannelFuture future = ctx.writeAndFlush(createTestReq("中msg.setMsgContent"+UUID.randomUUID().toString()) );
 							if(future == null){
 								break;
 							}
 							try{
 								future.sync();
 								cnt--;
-								totleCnt.decrementAndGet();
+								tmptotal.decrementAndGet();
 							}catch(Exception e){
 								break;
 							}
@@ -121,14 +123,38 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 			}, new ExitUnlimitCirclePolicy() {
 				@Override
 				public boolean notOver(Future future) {
-					boolean over =   ch.isActive() && totleCnt.get() > 0;
-					if(!over)logger.info("========send over.============");
+					boolean over =   ch.isActive() && tmptotal.get() > 0;
+					if(!over) {
+						logger.info("========send over.============");
+					
+//						ch.writeAndFlush(new CmppTerminateRequestMessage());
+					}
 					return over;
 				}
 			},1);
+			
+			
+		}
+		
+		if (evt == SessionState.Connect && !inited) {
+			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>(){
+				
+				@Override
+				public Boolean call() throws Exception {
+					long nowcnt = tmptotal.get();
+					logger.info("Totle Send Msg Num:{},   speed : {}/s", nowcnt, (lastNum - nowcnt )/1);
+					lastNum = nowcnt;
+					return true;
+				}
+			},new ExitUnlimitCirclePolicy() {
+				@Override
+				public boolean notOver(Future future) {
+					return true;
+				}
+			},1*1000);
+			inited = true;
 		}
 		ctx.fireUserEventTriggered(evt);
-
 	}
 
 	

@@ -8,7 +8,6 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -59,21 +58,20 @@ EventLoopGroup.submit(callable)方法不能提交阻塞任务。
 	 *@param delay
 	 *任务的执行间隔
 	 */
-	public void submitUnlimitCircleTask(Callable<?> task,ExitUnlimitCirclePolicy exitCondition,long delay){
+	public <T> void submitUnlimitCircleTask(Callable<T> task,ExitUnlimitCirclePolicy<T> exitCondition,long delay){
 		addtask(busiWork,task,exitCondition,delay);
 	}
 	
-	private void addtask(final ListeningScheduledExecutorService executor ,final Callable<?> task ,final ExitUnlimitCirclePolicy exitCondition,final long delay) {
+	private <T> void addtask(final ListeningScheduledExecutorService executor ,final Callable<T> task ,final ExitUnlimitCirclePolicy<T> exitCondition,final long delay) {
 	
 		if(executor.isShutdown()) return ;
-		final ListenableScheduledFuture<?> future = executor.schedule(task, delay, TimeUnit.MILLISECONDS);
+		final ListenableScheduledFuture<T> future = executor.schedule(task, delay, TimeUnit.MILLISECONDS);
 		future.addListener(new Runnable(){
 
 			@Override
 			public void run() {
 				
-				DefaultPromise nettyfuture = new DefaultPromise(GlobalEventExecutor.INSTANCE);
-				
+				DefaultPromise<T> nettyfuture = new DefaultPromise<T>(GlobalEventExecutor.INSTANCE);
 				try {
 					nettyfuture.setSuccess(future.get());
 				} catch (InterruptedException e) {

@@ -2,7 +2,9 @@ package com.zx.sms.session;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.concurrent.GenericFutureListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,14 +64,12 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {	
     	Channel ch = ctx.channel();
     	
-		if(entity!=null){
-		
-			EndpointConnector conn = EndpointManager.INS.getEndpointConnector(entity);
+		if(state == SessionState.Connect){
+			final EndpointConnector conn = EndpointManager.INS.getEndpointConnector(entity);
 			if(conn!=null)conn.removeChannel(ch);
-			ch.attr(GlobalConstance.attributeKey).set(SessionState.DisConnect);
 			logger.warn("Connection closed . {} , connect count : {}" ,entity,conn==null?0:conn.getConnectionNum());
 		}else{
-			logger.debug("session is not created. the entity is {}.channel remote is {}" ,entity ,ctx.channel().remoteAddress());
+			logger.warn("session is not created. the entity is {}.channel remote is {}" ,entity ,ctx.channel().remoteAddress());
 		}
 		ctx.fireChannelInactive();
 	}
@@ -120,7 +120,7 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 			//绑定端口为对应账号的端口
 			entity = childentity;
 			
-			state = SessionState.Connect;
+			
 			
 			// 打开连接，并把连接加入管理 器
 			EndpointManager.INS.openEndpoint(childentity);
@@ -135,6 +135,7 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 			
 			//检查是否超过最大连接数
 			if(validMaxChannel(childentity,conn)){
+				state = SessionState.Connect;
 				//把连接加入连接管理 器，该方法是同步方法
 				conn.addChannel(ctx.channel());
 				
@@ -162,7 +163,7 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 	private void receiveConnectResponseMessage(ChannelHandlerContext ctx, Object message) throws Exception {
 		int status = validServermsg(message);
 		if (status == 0) {
-			state = SessionState.Connect;
+			
 			EndpointConnector conn = EndpointManager.INS.getEndpointConnector(entity);
 			if(conn==null){
 				logger.warn("entity may closed. {}" ,entity);
@@ -174,7 +175,7 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 				ctx.close();
 				return;
 			}
-			
+			state = SessionState.Connect;
 			//如果没有超过最大连接数配置，建立连接
 			conn.addChannel(ctx.channel());
 			notifyChannelConnected(ctx);
@@ -192,7 +193,7 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 		int maxChannels = entity.getMaxChannels();
 
 		if (maxChannels != 0 && maxChannels <= conn.getConnectionNum()) {
-			logger.warn("MaxChannels config is {}. no more channel will be created . ", maxChannels);
+			logger.warn("MaxChannels config is {} ,now connection is {}. no more channel will be created . ", maxChannels,conn.getConnectionNum());
 			
 			return false;
 		}

@@ -89,4 +89,13 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 	public void close() {
 		manager.close();
 	}
+
+	@Override
+	public void startConnectionCheckTask() {
+		manager.startConnectionCheckTask();
+	}
+	@Override
+	public void stopConnectionCheckTask() {
+		manager.stopConnectionCheckTask();
+	}
 }

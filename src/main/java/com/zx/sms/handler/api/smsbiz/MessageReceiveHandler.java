@@ -3,11 +3,11 @@ package com.zx.sms.handler.api.smsbiz;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.lang.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +15,8 @@ import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
+import com.zx.sms.common.GlobalConstance;
+import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
@@ -27,13 +29,13 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 
 	private AtomicLong cnt = new AtomicLong();
 	private long lastNum = 0;
-	private boolean inited = false;
+	private volatile boolean inited = false;
 	@Override
 	public String name() {
 		return "MessageReceiveHandler-smsBiz";
 	}
 
-	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+	public synchronized void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
 		if (evt == SessionState.Connect && !inited) {
 			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>(){
 				
@@ -41,7 +43,7 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 				public Boolean call() throws Exception {
 				
 					long nowcnt = cnt.get();
-					logger.info("Totle Receive Msg Num:{},   speed : {}/s", nowcnt, (nowcnt - lastNum)/rate);
+					logger.info("channels : {},Totle Receive Msg Num:{},   speed : {}/s", EndpointManager.INS.getEndpointConnector(getEndpointEntity()).getConnectionNum(),nowcnt, (nowcnt - lastNum)/rate);
 					lastNum = nowcnt;
 					return true;
 				}
@@ -63,7 +65,7 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 			CmppDeliverRequestMessage e = (CmppDeliverRequestMessage) msg;
 			CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(e.getHeader().getSequenceId());
 			responseMessage.setResult(0);
-			ctx.channel().writeAndFlush(responseMessage);
+			ctx.channel().writeAndFlush(responseMessage).sync();
 			cnt.incrementAndGet();
 
 		} else if (msg instanceof CmppDeliverResponseMessage) {
@@ -71,10 +73,16 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 
 		} else if (msg instanceof CmppSubmitRequestMessage) {
 			CmppSubmitRequestMessage e = (CmppSubmitRequestMessage) msg;
-			CmppSubmitResponseMessage resp = new CmppSubmitResponseMessage(e.getHeader().getSequenceId());
-			resp.setResult(RandomUtils.nextInt()%1000 <10 ? 8 : 0);
-//			resp.setResult(0);
-			ctx.channel().writeAndFlush(resp);
+			final CmppSubmitResponseMessage resp = new CmppSubmitResponseMessage(e.getHeader().getSequenceId());
+//			resp.setResult(RandomUtils.nextInt()%1000 <10 ? 8 : 0);
+			resp.setResult(0);
+			ctx.channel().writeAndFlush(resp).addListener(new GenericFutureListener(){
+				@Override
+				public void operationComplete(Future future) throws Exception {
+					Logger logger = LoggerFactory.getLogger(String.format(GlobalConstance.loggerNamePrefix, getEndpointEntity().getId()));
+					logger.debug("Send Complete:{}", resp);
+				}
+			});
 			cnt.incrementAndGet();
 		} else if (msg instanceof CmppSubmitResponseMessage) {
 			CmppSubmitResponseMessage e = (CmppSubmitResponseMessage) msg;

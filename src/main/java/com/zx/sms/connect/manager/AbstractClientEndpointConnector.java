@@ -22,6 +22,7 @@ public abstract class AbstractClientEndpointConnector extends AbstractEndpointCo
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractClientEndpointConnector.class);
 	private Bootstrap bootstrap = new Bootstrap();
+	
 	public AbstractClientEndpointConnector(EndpointEntity endpoint) {
 		super(endpoint);
 		bootstrap.group(EventLoopGroupFactory.INS.getWorker()).channel(NioSocketChannel.class).option(ChannelOption.TCP_NODELAY, true)
@@ -44,6 +45,7 @@ public abstract class AbstractClientEndpointConnector extends AbstractEndpointCo
 			logger.error("remote host is blank");
 			return null;
 		}
+		
 		return doConnect(host.split(","),0,getEndpointEntity().getPort(),localaddr);
 	}
 	
@@ -52,7 +54,7 @@ public abstract class AbstractClientEndpointConnector extends AbstractEndpointCo
 			logger.error("hosts.length is {} ,but idx is {}.",hosts.length,idx);
 			return null;
 		}
-		
+	
 		ChannelFuture future = bootstrap.connect(SocketUtils.socketAddress(hosts[idx],port),localaddress);
 		
 		future.addListener(new GenericFutureListener<ChannelFuture>(){
@@ -61,18 +63,16 @@ public abstract class AbstractClientEndpointConnector extends AbstractEndpointCo
 			public void operationComplete(ChannelFuture f) throws Exception {
 				if(!f.isSuccess()){
 					if(idx+1 < hosts.length){
-						logger.info("retry next host {}",hosts[idx+1]);
+						logger.info("retry connect to next host {}:{}",hosts[idx+1],port);
 						doConnect(hosts,idx+1, port,localaddress);
 					}else{
 						logger.error("Connect to {}:{} failed. cause by {}.",getEndpointEntity().getHost(),port,f.cause().getMessage());
 					}
 				}
 		}});
+		
 		return future;
 	}
-
-
-
 	
 	@Override
 	protected SslContext createSslCtx() {
@@ -96,5 +96,4 @@ public abstract class AbstractClientEndpointConnector extends AbstractEndpointCo
 			pipeline.addLast(getSslCtx().newHandler(ch.alloc(), entity.getHost(), entity.getPort()));
 		}
 	}
-
 }

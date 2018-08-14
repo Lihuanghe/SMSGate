@@ -1,9 +1,13 @@
 package com.zx.sms.connect.manager;
 
+import io.netty.util.concurrent.Future;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -21,6 +25,8 @@ public enum EndpointManager implements EndpointManagerInterface {
 	private ConcurrentHashMap<String, EndpointEntity> idMap = new ConcurrentHashMap<String, EndpointEntity>();
 
 	private ConcurrentHashMap<String, EndpointConnector<?>> map = new ConcurrentHashMap<String, EndpointConnector<?>>();
+	
+	private volatile boolean started = false;
 
 	public synchronized void openEndpoint(EndpointEntity entity) {
 		if (!entity.isValid())
@@ -107,5 +113,39 @@ public enum EndpointManager implements EndpointManagerInterface {
 			close(en);
 		}
 	}
+	
+	public void stopConnectionCheckTask(){
+		started = false;
+	}
+	public void startConnectionCheckTask(){
+		if(started) return ;
+		
+		started = true;
+		//每秒检查一次所有连接，不足数目的就新建一个连接
+		EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>(){
 
+			@Override
+			public Boolean call() throws Exception {
+				for(Map.Entry<String, EndpointConnector<?>> entry: map.entrySet()){
+					EndpointConnector conn = entry.getValue();
+					EndpointEntity entity = conn.getEndpointEntity();
+					int max = entity.getMaxChannels();
+					int actual = conn.getConnectionNum();
+					if(actual < max){
+						logger.debug("open connection {}",entity);
+						conn.open();
+					}
+				}
+				return started;
+			}
+			
+		}, new ExitUnlimitCirclePolicy<Boolean>(){
+
+			@Override
+			public boolean notOver(Future<Boolean> future) {
+				return started;
+			}
+			
+		}, 1000);
+	}
 }
