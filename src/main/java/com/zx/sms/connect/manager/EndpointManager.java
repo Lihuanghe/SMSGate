@@ -131,7 +131,9 @@ public enum EndpointManager implements EndpointManagerInterface {
 					EndpointEntity entity = conn.getEndpointEntity();
 					int max = entity.getMaxChannels();
 					int actual = conn.getConnectionNum();
-					if(actual < max){
+					
+					//客户端重连
+					if(entity instanceof ClientEndpoint && actual < max){
 						logger.debug("open connection {}",entity);
 						conn.open();
 					}

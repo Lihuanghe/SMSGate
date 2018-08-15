@@ -16,6 +16,6 @@ public interface EndpointManagerInterface{
 	public void addAllEndpointEntity(List<EndpointEntity> entities);
 	public void close();
 	
-	public void startConnectionCheckTask();
-	public void stopConnectionCheckTask();
+	public void startConnectionCheckTask(); //启动自动重连任务
+	public void stopConnectionCheckTask();  //关闭自动重连任务
 }
