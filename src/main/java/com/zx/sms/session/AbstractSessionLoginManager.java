@@ -37,7 +37,7 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 	
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
     	if(state == SessionState.DisConnect){
-    		logger.error("connection error until login.",cause);
+    		logger.error("login error entity : " + entity.toString(),cause);
     		ctx.close();
     	}else{
     		ctx.fireExceptionCaught(cause);

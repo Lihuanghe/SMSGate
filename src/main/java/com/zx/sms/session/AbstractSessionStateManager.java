@@ -203,7 +203,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 					//响应延迟过大
 					long delay = delaycheck(sendtime);
 					if(delay > 0){
-						errlogger.debug("delaycheck . delay :{} , SequenceId :{}", delay,getSequenceId(message));
+						errlogger.warn("delaycheck . delay :{} , SequenceId :{}", delay,getSequenceId(message));
 					}
 					
 					Entry cancelentry = cancelRetry(request, ctx.channel());
