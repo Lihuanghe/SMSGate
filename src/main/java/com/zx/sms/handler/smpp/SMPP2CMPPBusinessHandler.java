@@ -73,7 +73,7 @@ public class SMPP2CMPPBusinessHandler extends AbstractBusinessHandler {
     		        pdu.setServiceType("");
     		        pdu.setSourceAddress(new Address((byte)0,(byte)0,deliver.getSrcterminalId()));
     		        pdu.setDestAddress(new Address((byte)0,(byte)0,deliver.getDestId()));
-    		        pdu.setSmsMsg(deliver.getMsg());
+    		        pdu.setSmsMsg(deliver.getSmsMessage());
     		        out.add(pdu);
     			
     		}else if(msg instanceof CmppDeliverResponseMessage){
@@ -91,7 +91,7 @@ public class SMPP2CMPPBusinessHandler extends AbstractBusinessHandler {
     	        pdu.setServiceType("");
     	        pdu.setSourceAddress(new Address((byte)0,(byte)0,submit.getSrcId()));
     	        pdu.setDestAddress(new Address((byte)0,(byte)0,submit.getDestterminalId()[0]));
-    	        pdu.setSmsMsg(submit.getMsg());
+    	        pdu.setSmsMsg(submit.getSmsMessage());
     	        out.add(pdu);
     			
     			
@@ -110,7 +110,7 @@ public class SMPP2CMPPBusinessHandler extends AbstractBusinessHandler {
     			DeliverSm deli = (DeliverSm)msg;
     			CmppDeliverRequestMessage deliver = new CmppDeliverRequestMessage();
     			deliver.getHeader().setSequenceId(deli.getSequenceNumber());
-    			deliver.setMsgContent(deli.getSmsMsg());
+    			deliver.setMsgContent(deli.getSmsMessage());
     			deliver.setSrcterminalId(deli.getSourceAddress().getAddress());
     			deliver.setDestId(deli.getDestAddress().getAddress());
     			deliver.setMsgfmt(new SmsDcs(deli.getDataCoding()));
@@ -137,7 +137,7 @@ public class SMPP2CMPPBusinessHandler extends AbstractBusinessHandler {
     			submit.getHeader().setSequenceId(sm.getSequenceNumber());
     			submit.setDestterminalId(sm.getDestAddress().getAddress());
     			submit.setSrcId(sm.getSourceAddress().getAddress());
-    			submit.setMsgContent(sm.getSmsMsg());
+    			submit.setMsgContent(sm.getSmsMessage());
     			submit.setMsgfmt(new SmsDcs(sm.getDataCoding()));
     			submit.setTppid(sm.getProtocolId());
     			submit.setTpudhi((short)((sm.getEsmClass()>>6)&0x01));

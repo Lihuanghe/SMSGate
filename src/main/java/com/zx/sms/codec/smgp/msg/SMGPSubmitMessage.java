@@ -463,7 +463,7 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 		this.msg = msg;
 	}
 
-	public SmsMessage getMsg() {
+	public SmsMessage getSmsMessage() {
 		return msg;
 	}
 
@@ -561,7 +561,7 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 		if(frame.getPknumber()!=1){
 			requestMessage.setSequenceNumber(DefaultSequenceNumberUtil.getSequenceNo());
 		}
-		
+		requestMessage.setMsgContent((SmsMessage)null);
 		return requestMessage;
 	}
 }

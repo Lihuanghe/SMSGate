@@ -7,8 +7,11 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOutboundBuffer;
 import io.netty.channel.ChannelPromise;
+import io.netty.util.concurrent.DefaultPromise;
+import io.netty.util.concurrent.Promise;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -25,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.BaseMessage;
+import com.zx.sms.common.SendFailException;
 import com.zx.sms.common.SmsLifeTerminateException;
 import com.zx.sms.common.storedMap.VersionObject;
 import com.zx.sms.common.util.CachedMillisecondClock;
@@ -89,6 +93,8 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 	 * 发送未收到resp的消息，需要使用可持久化的Map.
 	 */
 	private final ConcurrentMap<K, VersionObject<T>> storeMap;
+	
+	private ChannelHandlerContext ctx;
 
 	/**
 	 * 会话刚建立时要发送的数据
@@ -96,7 +102,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 	private boolean preSend;
 
 	private boolean preSendover = false;
-
+	
 	public int getWaittingResp() {
 		return storeMap.size();
 	}
@@ -107,6 +113,10 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 
 	public long getWriteCount() {
 		return msgWriteCount;
+	}
+	
+	public void handlerAdded(ChannelHandlerContext ctx) throws Exception{
+		this.ctx = ctx;
 	}
 	
     private void setUserDefinedWritability(ChannelHandlerContext ctx, boolean writable) {
@@ -123,16 +133,16 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 			@Override
 			public void run() {
 				// 取消重试队列里的任务
-				for (Map.Entry<K, Entry> entry : msgRetryMap.entrySet()) {
+				Map.Entry<K, Entry> entry = null;
+				EndpointConnector conn = EndpointManager.INS.getEndpointConnector(entity);
+				for (Iterator<Map.Entry<K, Entry>> itor = msgRetryMap.entrySet().iterator();itor.hasNext(); entry = itor.next()) {
 					T requestmsg = entry.getValue().request;
-
-					EndpointConnector conn = EndpointManager.INS.getEndpointConnector(entity);
+					
 					// 所有连接都已关闭
 					if (conn != null){
 						Channel ch = conn.fetch();
 
 						if (ch != null && ch.isActive()) {
-
 							if (entity.isReSendFailMsg()) {
 								// 连接断连，但是未收到Resp的消息，通过其它连接再发送一次
 								ch.writeAndFlush(requestmsg);
@@ -142,13 +152,14 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 							}
 						}
 					}
-					cancelRetry(requestmsg, ctx.channel());
+					cancelRetry(entry.getValue(), ctx.channel());
+					responseFutureDone(entry.getValue(), new IOException("channel closed."));
+					itor.remove();
 				}
 
 				// 如果重发的消息没有发送完毕。从其它连接发送
 				if (preSend && (!preSendover)) {
-					for (Map.Entry<K, VersionObject<T>> entry : storeMap.entrySet()) {
-						EndpointConnector conn = EndpointManager.INS.getEndpointConnector(entity);
+					for (Map.Entry<K, VersionObject<T>> storeentry : storeMap.entrySet()) {
 						// 所有连接都已关闭
 						if (conn == null)
 							break;
@@ -156,9 +167,9 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 						Channel ch = conn.fetch();
 
 						if (ch != null && ch.isActive()) {
-							K key = entry.getKey();
+							K key = storeentry.getKey();
 
-							VersionObject<T> vobj = entry.getValue();
+							VersionObject<T> vobj = storeentry.getValue();
 							long v = vobj.getVersion();
 							T msg = vobj.getObj();
 							
@@ -188,13 +199,11 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 
 		msgReadCount++;
 		if (msg instanceof BaseMessage) {
-			final T message = (T) msg;
-			// 设置消息的生命周期
-
-			// 如果是resp，取消息消息重发
-			if (message.isResponse()) {
+			// 如果是resp，取消 消息重发
+			if (((T)msg).isResponse()) {
 				// 删除发送成功的消息
-				K key = getSequenceId(message);
+				final T response =  (T) msg;
+				K key = getSequenceId(response);
 				VersionObject<T> vobj = storeMap.remove(key);
 				if (vobj != null) {
 					T request = vobj.getObj();
@@ -202,22 +211,33 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 					
 					//响应延迟过大
 					long delay = delaycheck(sendtime);
-					if(delay > 0){
-						errlogger.warn("delaycheck . delay :{} , SequenceId :{}", delay,getSequenceId(message));
+					if(delay > (entity.getRetryWaitTimeSec() * 1000/2)){
+						errlogger.warn("delaycheck . delay :{} , SequenceId :{}", delay,getSequenceId(response));
 					}
 					
-					Entry cancelentry = cancelRetry(request, ctx.channel());
-
+					Entry entry = msgRetryMap.get(key);
+					
 					// 根据Response 判断是否需要重发,比如CMPP协议，如果收到result==8，表示超速，需要重新发送
-					if (needSendAgainByResponse(request, message)) {
+					if (needSendAgainByResponse(request, response)) {
+						//取消息重发任务,再次发送时重新注册任务
+						cancelRetry(entry, ctx.channel());
+						
 						//网关异常时会发送大量超速错误(result=8),造成大量重发，浪费资源。这里先停止发送，过40毫秒再回恢复
 						setchannelunwritable(ctx,40);
+						//400ms后重发
 						reWriteLater(ctx, request, ctx.newPromise(), 400);
+						
+					}else{
+						cancelRetry(entry, ctx.channel());
+						//给同步发送的promise响应resonse
+						responseFutureDone(entry, response);
+						msgRetryMap.remove(key);
 					}
+					
 					// 把response关联上request供使用。
-					message.setRequest(request);
+					response.setRequest(request);
 				} else {
-					errlogger.warn("receive ResponseMessage ,but not found related Request Msg. {}", message);
+					errlogger.warn("receive ResponseMessage ,but not found related Request Msg. response:{}", response);
 				}
 			}
 		}
@@ -227,7 +247,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 	//查检发送req与收到res的时间差
 	private long delaycheck(long sendtime){
 		//当响应延迟超过重试等待时间的1/10
-		return CachedMillisecondClock.INS.now() - sendtime - (long)(entity.getRetryWaitTimeSec() * 1000/5);
+		return CachedMillisecondClock.INS.now() - sendtime ;
 	}
 	
 	private void setchannelunwritable(final ChannelHandlerContext ctx,long millitime){
@@ -290,7 +310,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 	 **/
 	private boolean writeWithWindow(final ChannelHandlerContext ctx, final T message, final ChannelPromise promise) {
 		try {
-			safewrite(ctx, message, promise);
+			safewrite(ctx, message, promise,false);
 		} catch (Exception e) {
 			promise.setFailure(e);
 			logger.error("writeWithWindow: ", e.getCause() != null ? e.getCause() : e);
@@ -304,8 +324,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 
 		final Entry entry = msgRetryMap.get(seq);
 
-		// 发送次数大于1时要重发
-		if (entry != null && entity.getMaxRetryCnt() > 1) {
+		if (entry != null) {
 
 			/*
 			 * TODO bugfix:不知道什么原因，会导致 下面的future任务没有cancel掉。
@@ -332,9 +351,10 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 							if (future != null)
 								future.cancel(false);
 
-							cancelRetry(message, ctx.channel());
-
-							// 删除发送成功的消息
+							cancelRetry(entry,ctx.channel());
+							responseFutureDone(entry,new SendFailException("retry send msg over "+times+" times"));
+							msgRetryMap.remove(seq);
+							// 删除消息
 							storeMap.remove(seq);
 							// 发送3次都失败的消息要记录
 
@@ -363,7 +383,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 			ref.set(future);
 
 			entry.future = future;
-
+			
 			// 这里增加一次判断，是否已收到resp消息,已到resp后，msgRetryMap里的entry会被 remove掉。
 			if (msgRetryMap.get(seq) == null) {
 				future.cancel(false);
@@ -376,19 +396,35 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 
 	}
 
-	private Entry cancelRetry(T requestMsg, Channel channel) {
-		Entry entry = msgRetryMap.remove(getSequenceId(requestMsg));
-
+	private Entry responseFutureDone(Entry entry,T response){
+		if(entry!=null &&entry.resfuture!=null){
+			entry.resfuture.setSuccess(response);
+			return entry;
+		}
+		return null;
+	}
+	
+	private Entry responseFutureDone(Entry entry,Throwable cause){
+		if(entry!=null &&entry.resfuture!=null){
+			entry.resfuture.setFailure(cause);
+			return entry;
+		}
+		return null;
+	}
+	
+	private Entry cancelRetry(Entry entry, Channel channel) {
+//		Entry entry = msgRetryMap.remove(getSequenceId(requestMsg));
 		if (entry != null && entry.future != null) {
 			entry.future.cancel(false);
 			// 删除任务
 			if (entry.future instanceof RunnableScheduledFuture) {
 				msgResend.remove((RunnableScheduledFuture) entry.future);
 			}
-
+			entry.future = null;
 		} else {
 			logger.debug("cancelRetry task failed.");
 		}
+		
 		return entry;
 	}
 
@@ -422,47 +458,75 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 	/**
 	 * 发送msg,首先做消息持久化
 	 */
-	private void safewrite(final ChannelHandlerContext ctx, final T message, final ChannelPromise promise) {
+	private Promise safewrite(final ChannelHandlerContext ctx, final T message, final ChannelPromise promise,boolean syn) {
 		if (ctx.channel().isActive()) {
 			final K seq = getSequenceId(message);
-
+		
 			// 记录已发送的请求,在发送msg前生记录到map里。防止生成retryTask前就收到resp的情况发生
+			boolean has = msgRetryMap.containsKey(seq);
 			Entry tmpentry = new Entry(message);
-			Entry old = msgRetryMap.putIfAbsent(seq, tmpentry);
-
-			if (old != null) {
-				// bugfix: 集群环境下可能产生相同的seq. 如果已经存在一个相同的seq.
-				// 此消息延迟250ms再发
-				logger.error("has repeat Sequense {}", seq);
-
-				reWriteLater(ctx, message, promise, 250);
-
-			} else {
-				msgWriteCount++;
-				// 持久化到队列
-				storeMap.put(seq, new VersionObject<T>(message));
-
-				promise.addListener(new ChannelFutureListener() {
-
-					@Override
-					public void operationComplete(ChannelFuture future) throws Exception {
-
-						if (future.isSuccess()) {
-							// 注册重试任务
-							scheduleRetryMsg(ctx, message);
-						}
+			if (has) {
+				Entry old = msgRetryMap.get(seq);
+				//2018-08-27 当网关返回超速错时，也会存在想同的seq
+				//消息相同表示此消息是因为超速错导致的重发,什么都不做。
+				//否则
+				if(!message.equals(old.request)){
+					// bugfix: 集群环境下可能产生相同的seq. 如果已经存在一个相同的seq.
+					// 此消息延迟250ms再发
+					logger.error("has repeat Sequense {}", seq);
+					if(syn){
+						//同步调用时，立即返回失败。
+						StringBuilder sb = new StringBuilder();
+						sb.append("seqId:").append(seq);
+						sb.append(".it Has a same sequenceId with another message:").append(old.request).append(". wait it complete.");
+						IOException cause = new IOException(sb.toString());
+						DefaultPromise failed = new DefaultPromise<T>(ctx.executor());
+						failed.tryFailure(cause);
+						return failed;
+					}else{
+						//异步调用时等250ms后再试发一次
+						reWriteLater(ctx, message, promise, 250);
+						return null;
 					}
-
-				});
-				ctx.writeAndFlush(message, promise);
+				}
+			} else{
+				//收到响应时将此对象设置为完成状态
+				tmpentry.resfuture = new DefaultPromise<T>(ctx.executor());
+				msgRetryMap.put(seq, tmpentry);
 			}
+			
+			msgWriteCount++;
+			// 持久化到队列
+			storeMap.put(seq, new VersionObject<T>(message));
 
+			promise.addListener(new ChannelFutureListener() {
+
+				@Override
+				public void operationComplete(ChannelFuture future) throws Exception {
+
+					if (future.isSuccess()) {
+						// 注册重试任务
+						scheduleRetryMsg(ctx, message);
+					}
+				}
+
+			});
+			ctx.writeAndFlush(message, promise);
+			
+			return tmpentry.resfuture;
 		} else {
 			// 如果连接已关闭，通知上层应用
+			StringBuilder sb = new StringBuilder();
+			sb.append("Connection ").append(ctx.channel()).append(" has closed");
+			IOException cause = new IOException(sb.toString());
+			
 			if (promise != null && (!promise.isDone())) {
-				StringBuilder sb = new StringBuilder();
-				sb.append("Connection ").append(ctx.channel()).append(" has closed");
-				promise.setFailure(new IOException(sb.toString()));
+				promise.setFailure(cause);
+				return promise;
+			}else{
+				DefaultPromise failed = new DefaultPromise<T>(ctx.executor());
+				failed.tryFailure(cause);
+				return failed;
 			}
 		}
 	}
@@ -486,10 +550,14 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 		volatile Future future;
 		AtomicInteger cnt = new AtomicInteger(1);
 		T request;
-
+		
+		DefaultPromise<T> resfuture ;
 		Entry(T request) {
 			this.request = request;
 		}
 	}
-
+	
+	public Promise writeMessagesync(T message){
+		return safewrite(ctx,message,ctx.newPromise(),true);
+	}
 }

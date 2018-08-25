@@ -31,10 +31,7 @@ public class CMPPDeliverLongMessageHandler extends AbstractLongMessageHandler<Cm
 		return msg.getSrcterminalId();
 	}
 
-	@Override
-	protected SmsMessage getSmsMessage(CmppDeliverRequestMessage t) {
-		return t.getMsg();
-	}
+
 
 	@Override
 	protected void resetMessageContent(CmppDeliverRequestMessage t, SmsMessage content) {

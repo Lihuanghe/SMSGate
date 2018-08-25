@@ -34,11 +34,6 @@ public class SMGPDeliverLongMessageHandler extends AbstractLongMessageHandler<SM
 	}
 
 	@Override
-	protected SmsMessage getSmsMessage(SMGPDeliverMessage t) {
-		return t.getMsg();
-	}
-
-	@Override
 	protected void resetMessageContent(SMGPDeliverMessage t, SmsMessage content) {
 		t.setMsgContent(content);
 	}

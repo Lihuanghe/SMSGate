@@ -32,12 +32,6 @@ public class CMPPSubmitLongMessageHandler extends AbstractLongMessageHandler<Cmp
 	}
 
 	@Override
-	protected SmsMessage getSmsMessage(CmppSubmitRequestMessage t) {
-		
-		return t.getMsg();
-	}
-
-	@Override
 	protected void resetMessageContent(CmppSubmitRequestMessage t, SmsMessage content) {
 		t.setMsg(content);
 	}

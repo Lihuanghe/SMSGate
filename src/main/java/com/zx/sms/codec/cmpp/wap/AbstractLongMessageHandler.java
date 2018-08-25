@@ -46,13 +46,15 @@ public abstract class AbstractLongMessageHandler<T> extends MessageToMessageCode
 	@Override
 	protected void encode(ChannelHandlerContext ctx, T requestMessage, List<Object> out) throws Exception {
 		if (requestMessage instanceof LongSMSMessage  && needHandleLongMessage(requestMessage)) {
-			SmsMessage msgcontent = getSmsMessage(requestMessage);
+			SmsMessage msgcontent = ((LongSMSMessage)requestMessage).getSmsMessage();
 			List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(msgcontent);
 			boolean first = true;
 			LongSMSMessage lmsg = (LongSMSMessage)requestMessage;
 			for (LongMessageFrame frame : frameList) {
 				
 				T t = (T)lmsg.generateMessage(frame);
+				
+				
 				out.add(t);
 			}
 
@@ -66,13 +68,7 @@ public abstract class AbstractLongMessageHandler<T> extends MessageToMessageCode
 
 	protected abstract boolean needHandleLongMessage(T msg);
 
-//	protected abstract LongMessageFrame generateFrame(T msg);
-
 	protected abstract String generateFrameKey(T msg) throws Exception;
-
-//	protected abstract T generateMessage(T t, LongMessageFrame frame) throws Exception;
-
-	protected abstract SmsMessage getSmsMessage(T t);
 
 	protected abstract void resetMessageContent(T t, SmsMessage content);
 }

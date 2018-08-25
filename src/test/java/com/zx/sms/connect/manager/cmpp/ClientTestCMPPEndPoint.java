@@ -3,12 +3,12 @@ package com.zx.sms.connect.manager.cmpp;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.LockSupport;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 import com.zx.sms.handler.api.gate.SessionConnectedHandler;
@@ -41,13 +41,13 @@ public class ClientTestCMPPEndPoint {
 		client.setPassword("ICP");
 
 
-		client.setMaxChannels((short)6);
+		client.setMaxChannels((short)1);
 		client.setWindows((short)16);
-		client.setVersion((short)0x20);
-		client.setRetryWaitTimeSec((short)10);
+		client.setVersion((short)0x30);
+		client.setRetryWaitTimeSec((short)30);
 		client.setUseSSL(false);
-		client.setReSendFailMsg(false);
-//		client.setWriteLimit(50);
+		client.setReSendFailMsg(true);
+//		client.setWriteLimit(500);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add( new SessionConnectedHandler(100000));
 		client.setBusinessHandlerSet(clienthandlers);
@@ -73,7 +73,7 @@ public class ClientTestCMPPEndPoint {
 		
         System.out.println("start.....");
         
-		Thread.sleep(300000);
+        LockSupport.park();
 		EndpointManager.INS.close();
 	}
 }

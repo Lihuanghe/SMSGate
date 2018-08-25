@@ -184,7 +184,7 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
         this.destAddress = value;
     }
     
-    public SmsMessage getSmsMsg() {
+    public SmsMessage getSmsMessage() {
 		return smsMsg;
 	}
 
@@ -284,6 +284,7 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
 		if(frame.getPknumber()!=1){
 			requestMessage.setSequenceNumber((int)DefaultSequenceNumberUtil.getSequenceNo());
 		}
+		requestMessage.setSmsMsg((SmsMessage)null);
 		return requestMessage;
 	}
     

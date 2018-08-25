@@ -52,7 +52,7 @@ public class TestCMPPEndPoint {
 
 		child.setValid(true);
 		child.setWindows((short)16);
-		child.setVersion((short)0x20);
+		child.setVersion((short)0x30);
 
 		child.setMaxChannels((short)20);
 		child.setRetryWaitTimeSec((short)30);
@@ -79,21 +79,22 @@ public class TestCMPPEndPoint {
 		client.setPassword("ICP");
 
 
-		client.setMaxChannels((short)12);
+		client.setMaxChannels((short)1);
 		client.setWindows((short)16);
-		client.setVersion((short)0x20);
-		client.setRetryWaitTimeSec((short)10);
+		client.setVersion((short)0x30);
+		client.setRetryWaitTimeSec((short)30);
 		client.setUseSSL(false);
 //		client.setWriteLimit(100);
-		client.setReSendFailMsg(false);
+		client.setReSendFailMsg(true);
 
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new SessionConnectedHandler(1000000));
+		clienthandlers.add( new SessionConnectedHandler(100));
 		client.setBusinessHandlerSet(clienthandlers);
 		
 //		manager.addEndpointEntity(client);
 		
 		manager.openAll();
+		manager.startConnectionCheckTask();
 
         System.out.println("start.....");
         

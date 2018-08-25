@@ -173,7 +173,8 @@ public abstract class EndpointEntity implements Serializable {
 	}
 
 	public void setMaxRetryCnt(short maxRetryCnt) {
-		this.maxRetryCnt = maxRetryCnt;
+		
+		this.maxRetryCnt = maxRetryCnt < 0 ? 0 : maxRetryCnt;
 	}
 	public short getRetryWaitTimeSec() {
 		return retryWaitTimeSec;

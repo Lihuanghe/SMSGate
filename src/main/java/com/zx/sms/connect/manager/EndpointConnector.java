@@ -2,6 +2,9 @@ package com.zx.sms.connect.manager;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.util.concurrent.Promise;
+
+import com.zx.sms.BaseMessage;
 
 /**
  * @author Lihuanghe(18852780@qq.com)
@@ -45,4 +48,14 @@ public interface EndpointConnector<T extends EndpointEntity> {
 	public void addChannel(Channel ch);
 	public void removeChannel(Channel ch);
 	public Channel[] getallChannel();
+	
+	/**
+	 *异步发送消息，消息发送至网卡（写入tcp协议栈即表示完成）
+	 */
+	ChannelFuture asynwrite(Object msg);
+	
+	/**
+	 *同步发送消息，消息收到回复表示完成
+	 */
+	Promise synwrite(BaseMessage msg);
 }

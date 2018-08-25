@@ -122,7 +122,7 @@ public class TestSMPP2CMPPDeliverCodec extends AbstractSMPPTestMessageCodec<Cmpp
 		SmsMessage wap = new SmsWapPushMessage(sl);
 		msg.setMsgContent(wap);
 		CmppDeliverRequestMessage result = testWapCodec(msg);
-		SmsWapPushMessage smsmsg = (SmsWapPushMessage)result.getMsg();
+		SmsWapPushMessage smsmsg = (SmsWapPushMessage)result.getSmsMessage();
 		WapSLPush actsl = (WapSLPush)smsmsg.getWbxml();
 		Assert.assertEquals(sl.getUri(), actsl.getUri());
 	}
@@ -135,7 +135,7 @@ public class TestSMPP2CMPPDeliverCodec extends AbstractSMPPTestMessageCodec<Cmpp
 		SmsMessage wap = new SmsWapPushMessage(si);
 		msg.setMsgContent(wap);
 		CmppDeliverRequestMessage result = testWapCodec(msg);
-		SmsWapPushMessage smsmsg = (SmsWapPushMessage)result.getMsg();
+		SmsWapPushMessage smsmsg = (SmsWapPushMessage)result.getSmsMessage();
 		WapSIPush actsi = (WapSIPush)smsmsg.getWbxml();
 		Assert.assertEquals(si.getUri(), actsi.getUri());
 		Assert.assertEquals(si.getMessage(), actsi.getMessage());
@@ -149,7 +149,7 @@ public class TestSMPP2CMPPDeliverCodec extends AbstractSMPPTestMessageCodec<Cmpp
 		msg.setMsgContent(mms);
 		mms.setTransactionId("ABC");
 		CmppDeliverRequestMessage result =testWapCodec(msg);
-		SmsMmsNotificationMessage smsmsg = (SmsMmsNotificationMessage)result.getMsg();
+		SmsMmsNotificationMessage smsmsg = (SmsMmsNotificationMessage)result.getSmsMessage();
 		Assert.assertEquals(smsmsg.getContentLocation_(), smsmsg.getContentLocation_());
 	}
 	
@@ -174,7 +174,7 @@ public class TestSMPP2CMPPDeliverCodec extends AbstractSMPPTestMessageCodec<Cmpp
 	    
 	    CmppDeliverRequestMessage result = decode(copybuf);
 		System.out.println(result);
-		Assert.assertTrue(result.getMsg() instanceof SmsMessage);
+		Assert.assertTrue(result.getSmsMessage() instanceof SmsMessage);
 		return result;
 	}
 	

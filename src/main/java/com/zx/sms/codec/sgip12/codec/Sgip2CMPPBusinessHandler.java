@@ -63,7 +63,7 @@ public class Sgip2CMPPBusinessHandler extends AbstractBusinessHandler {
         			sgipmsg.setTppid(deliver.getTppid());
         			sgipmsg.setTpudhi(deliver.getTpudhi());
         			sgipmsg.setMsgfmt(deliver.getMsgfmt());
-        			sgipmsg.setMsgContent(deliver.getMsg());
+        			sgipmsg.setMsgContent(deliver.getSmsMessage());
         			pdu = sgipmsg;
     			}
     		    out.add(pdu);
@@ -90,7 +90,7 @@ public class Sgip2CMPPBusinessHandler extends AbstractBusinessHandler {
     			requestMessage.setTppid(submit.getTppid());
     			requestMessage.setTpudhi(submit.getTpudhi());
     			requestMessage.setMsgfmt(submit.getMsgfmt());
-    			requestMessage.setMsgContent(submit.getMsg());
+    			requestMessage.setMsgContent(submit.getSmsMessage());
     			requestMessage.setMessagelength(submit.getMsgLength());
     	        out.add(requestMessage);
     			
@@ -113,7 +113,7 @@ public class Sgip2CMPPBusinessHandler extends AbstractBusinessHandler {
     			SgipDeliverRequestMessage deli = (SgipDeliverRequestMessage)msg;
     			CmppDeliverRequestMessage deliver = new CmppDeliverRequestMessage(deli.getHeader());
     			deliver.setTimestamp(deli.getTimestamp());
-    			deliver.setMsgContent(deli.getMsg());
+    			deliver.setMsgContent(deli.getSmsMessage());
     			deliver.setSrcterminalId(deli.getSpnumber());
     			deliver.setDestId(deli.getUsernumber());
     			deliver.setMsgfmt(deli.getMsgfmt());
@@ -144,7 +144,7 @@ public class Sgip2CMPPBusinessHandler extends AbstractBusinessHandler {
     			submit.setRegisteredDelivery(sm.getReportflag());
     			submit.setSrcId(sm.getSpnumber());
     			submit.setMsgsrc(sm.getCorpid());
-    			submit.setMsgContent(sm.getMsg());
+    			submit.setMsgContent(sm.getSmsMessage());
     			submit.setMsgfmt(sm.getMsgfmt());
     			submit.setTppid(sm.getTppid());
     			submit.setTpudhi(sm.getTpudhi());

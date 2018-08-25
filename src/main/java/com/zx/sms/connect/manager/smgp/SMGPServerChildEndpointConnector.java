@@ -58,8 +58,6 @@ public class SMGPServerChildEndpointConnector extends AbstractEndpointConnector{
 				pipe.replace(handler, GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, entity.getIdleTimeSec(), TimeUnit.SECONDS));
 			}
 		}
-		pipe.addFirst("socketLog", new LoggingHandler(String.format(GlobalConstance.loggerNamePrefix, entity.getId()), LogLevel.TRACE));
-		pipe.addLast("msgLog", new MessageLogHandler(entity));
 		
 		pipe.addLast("SMGPActiveTestMessageHandler",new SMGPActiveTestMessageHandler());
 		pipe.addLast("SMGPActiveTestRespMessageHandler",new SMGPActiveTestRespMessageHandler());

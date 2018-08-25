@@ -8,6 +8,7 @@ import io.netty.util.concurrent.GenericFutureListener;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.lang.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,6 @@ import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
-import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
@@ -65,8 +65,12 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 			CmppDeliverRequestMessage e = (CmppDeliverRequestMessage) msg;
 			CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(e.getHeader().getSequenceId());
 			responseMessage.setResult(0);
-			ctx.channel().writeAndFlush(responseMessage).sync();
-			cnt.incrementAndGet();
+			ctx.channel().writeAndFlush(responseMessage).addListener(new GenericFutureListener() {
+			@Override
+			public void operationComplete(Future future) throws Exception {
+				cnt.incrementAndGet();
+			}
+		});
 
 		} else if (msg instanceof CmppDeliverResponseMessage) {
 			CmppDeliverResponseMessage e = (CmppDeliverResponseMessage) msg;
@@ -74,16 +78,14 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 		} else if (msg instanceof CmppSubmitRequestMessage) {
 			CmppSubmitRequestMessage e = (CmppSubmitRequestMessage) msg;
 			final CmppSubmitResponseMessage resp = new CmppSubmitResponseMessage(e.getHeader().getSequenceId());
-//			resp.setResult(RandomUtils.nextInt()%1000 <10 ? 8 : 0);
+//			resp.setResult(RandomUtils.nextInt()%2 <1 ? 8 : 0);
 			resp.setResult(0);
-			ctx.channel().writeAndFlush(resp).addListener(new GenericFutureListener(){
+			ctx.channel().writeAndFlush(resp).addListener(new GenericFutureListener() {
 				@Override
 				public void operationComplete(Future future) throws Exception {
-					Logger logger = LoggerFactory.getLogger(String.format(GlobalConstance.loggerNamePrefix, getEndpointEntity().getId()));
-					logger.debug("Send Complete:{}", resp);
+					cnt.incrementAndGet();
 				}
 			});
-			cnt.incrementAndGet();
 		} else if (msg instanceof CmppSubmitResponseMessage) {
 			CmppSubmitResponseMessage e = (CmppSubmitResponseMessage) msg;
 		} else {

@@ -1,5 +1,7 @@
 package com.zx.sms.connect.manager;
 
+import java.util.concurrent.ConcurrentMap;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -14,6 +16,8 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.zx.sms.session.AbstractSessionStateManager;
 /**
  *@author Lihuanghe(18852780@qq.com)
  */
@@ -75,6 +79,18 @@ public abstract class AbstractServerEndpointConnector extends AbstractEndpointCo
 			logger.info("EndpointEntity {} Use SSL.",entity);
 			pipeline.addLast(getSslCtx().newHandler(ch.alloc()));
 		}
+	}
+	
+	@Override
+	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity entity) {
+
+	}
+	
+
+	@Override
+	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, ConcurrentMap storeMap, boolean preSend) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

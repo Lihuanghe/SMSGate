@@ -106,6 +106,48 @@ CMPPMessageCodecAggregator [这是3.0协议]
 11. 业务处理类收到SessionState.Connect事件，开始业务处理，如下发短信。
 12. SessionStateManager会拦截所有read()和write()的消息，进行消息持久化，消息重发，流量控制。
 
+## 增加同步调用api
+smsgate自开发以来，一直使用netty的异步发送消息，但实际使用场景中同步发送消息的更方便，或者能方便的取到response。因此增加一个同步调用的api。即：发送消息后等接收到对应的响应后才完成。
+使用方法如下：
+
+```java
+
+	//因为长短信要拆分，因此返回一个promiseList.每个拆分后的短信对应一个promise
+	List<Promise> futures = ChannelUtil.syncWriteLongMsgToEntity("client",submitmessage);
+	for(Promise  future: futures){
+		//调用sync()方法，阻塞线程。等待接收response
+		future.sync(); 
+		//接收成功，如果失败可以获取失败原因，比如遇到连接突然中断错误等等
+		if(future.isSuccess()){
+			//打印收到的response消息
+			logger.info("response:{}",future.get());
+		}else{
+			打印错误原因
+			logger.error("response:{}",future.cause());
+		}
+	}
+
+	//或者不阻塞进程，不调用sync()方法。
+	List<Promise> promises = ChannelUtil.syncWriteLongMsgToEntity("client",submitmessage);
+	for(Promise  promise: promises){
+		//接收到response后回调Listener方法
+		promise.addListener(new GenericFutureListener() {
+			@Override
+			public void operationComplete(Future future) throws Exception {
+				//接收成功，如果失败可以获取失败原因，比如遇到连接突然中断错误等等
+				if(future.isSuccess()){
+					//打印收到的response消息
+					logger.info("response:{}",future.get());
+				}else{
+					打印错误原因
+					logger.error("response:{}",future.cause());
+				}
+			}
+		});
+	}
+
+```
+
 ## CMPP Api使用举例
 
 ```java

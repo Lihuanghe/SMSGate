@@ -86,7 +86,7 @@ public class SMGP2CMPPBusinessHandler extends AbstractBusinessHandler {
 		        pdu.setSequenceNumber((int)deliver.getHeader().getSequenceId());
 		        pdu.setLinkId(deliver.getLinkid());
 		        pdu.setDestTermId(deliver.getDestId());
-		        pdu.setMsgContent(deliver.getMsg());
+		        pdu.setMsgContent(deliver.getSmsMessage());
 		        pdu.setMsgId(msgid);
 		        pdu.setSrcTermId(deliver.getSrcterminalId());
 		        out.add(pdu);
@@ -105,7 +105,7 @@ public class SMGP2CMPPBusinessHandler extends AbstractBusinessHandler {
     	        
     	        pdu.setDestTermIdArray(submit.getDestterminalId());
     	        pdu.setLinkId(submit.getLinkID());
-    	        pdu.setMsgContent(submit.getMsg());
+    	        pdu.setMsgContent(submit.getSmsMessage());
     	        pdu.setSrcTermId(submit.getSrcId());
     	        pdu.setMsgSrc(submit.getMsgsrc());
     	        out.add(pdu);
@@ -150,7 +150,7 @@ public class SMGP2CMPPBusinessHandler extends AbstractBusinessHandler {
     			}else{
         			CmppDeliverRequestMessage deliver = new CmppDeliverRequestMessage();
         			deliver.getHeader().setSequenceId(deli.getSequenceNo());
-        			deliver.setMsgContent(deli.getMsg());
+        			deliver.setMsgContent(deli.getSmsMessage());
         			deliver.setSrcterminalId(deli.getSrcTermId());
         			deliver.setDestId(deli.getDestTermId());
         			deliver.setMsgfmt(deli.getMsgFmt());
@@ -168,7 +168,7 @@ public class SMGP2CMPPBusinessHandler extends AbstractBusinessHandler {
     			submit.getHeader().setSequenceId(sm.getSequenceNo());
     			submit.setDestterminalId(sm.getDestTermIdArray());
     			submit.setSrcId(sm.getSrcTermId());
-    			submit.setMsgContent(sm.getMsg());
+    			submit.setMsgContent(sm.getSmsMessage());
     			submit.setMsgfmt(sm.getMsgFmt());
     			out.add(submit);
     			

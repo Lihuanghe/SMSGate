@@ -410,7 +410,7 @@ public enum LongMessageFrameHolder {
 		public synchronized void merge(byte[] content, int idx) throws NotSupportedException {
 
 			if (idxBitset.get(idx)) {
-				logger.warn("have received the same index of Message. do not merge this content.{},origin:{},{},{},new content:{}", this.serviceNum,
+				logger.warn("have received the same index:{} of Message. do not merge this content.{},origin:{},{},{},new content:{}", idx,this.serviceNum,
 						CMPPCommonUtil.buildTextMessage(this.content[idx], msgfmt).getText(), DateFormatUtils.format(getTimestamp(),
 								DateFormatUtils.ISO_DATETIME_FORMAT.getPattern()), getSequence(), CMPPCommonUtil.buildTextMessage(content, msgfmt).getText());
 				throw new NotSupportedException("received the same index");

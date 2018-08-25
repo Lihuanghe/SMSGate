@@ -301,7 +301,7 @@ public class SMGPDeliverMessage extends SMGPBaseMessage implements LongSMSMessag
 		this.msg = msg;
 	}
 
-	public SmsMessage getMsg() {
+	public SmsMessage getSmsMessage() {
 		return msg;
 	}
 	
@@ -407,7 +407,7 @@ public class SMGPDeliverMessage extends SMGPBaseMessage implements LongSMSMessag
 		if(frame.getPknumber()!=1){
 			requestMessage.setSequenceNumber(DefaultSequenceNumberUtil.getSequenceNo());
 		}
-		
+		requestMessage.setMsgContent((SmsMessage)null);
 		return requestMessage;
 	}
 }

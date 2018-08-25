@@ -72,11 +72,6 @@ public class SMPPCodecChannelInitializer extends ChannelInitializer<Channel> {
 		}
 
 		@Override
-		protected SmsMessage getSmsMessage(BaseSm t) {
-			return t.getSmsMsg();
-		}
-
-		@Override
 		protected void resetMessageContent(BaseSm t, SmsMessage content) {
 			t.setSmsMsg(content);
 		}

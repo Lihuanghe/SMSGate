@@ -3,13 +3,17 @@ package com.zx.sms.connect.manager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufHolder;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.proxy.HttpProxyHandler;
 import io.netty.handler.proxy.Socks4ProxyHandler;
 import io.netty.handler.proxy.Socks5ProxyHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.traffic.ChannelTrafficShapingHandler;
+import io.netty.util.concurrent.Promise;
 
 import java.io.Serializable;
 import java.net.InetSocketAddress;
@@ -30,6 +34,8 @@ import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.storedMap.BDBStoredMapFactoryImpl;
 import com.zx.sms.common.storedMap.VersionObject;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
+import com.zx.sms.connect.manager.cmpp.CMPPServerEndpointEntity;
+import com.zx.sms.handler.MessageLogHandler;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 import com.zx.sms.session.AbstractSessionStateManager;
@@ -50,7 +56,9 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	private EndpointEntity endpoint;
 
 	private CircularList channels = new CircularList();
-
+	
+	private final static String sessionHandler = "sessionStateManager";
+	
 	public AbstractEndpointConnector(EndpointEntity endpoint) {
 		this.endpoint = endpoint;
 		this.sslCtx = createSslCtx();
@@ -215,9 +223,9 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 		if (cnt == 1 && endpoint.isReSendFailMsg()) {
 			// 如果是第一个连接。要把上次发送失败的消息取出，再次发送一次
-			ch.pipeline().addAfter(GlobalConstance.codecName, "sessionStateManager", createSessionManager(endpoint, storedMap, true));
+			ch.pipeline().addAfter(GlobalConstance.codecName, sessionHandler,createSessionManager(endpoint, storedMap, true) );
 		}else{
-			ch.pipeline().addAfter(GlobalConstance.codecName, "sessionStateManager", createSessionManager(endpoint, storedMap, false));
+			ch.pipeline().addAfter(GlobalConstance.codecName, sessionHandler, createSessionManager(endpoint, storedMap, false) );
 		}
 		
 		// 增加流量整形 ，每个连接每秒发送，接收消息数不超过配置的值
@@ -241,9 +249,16 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	 */
 	protected void bindHandler(ChannelPipeline pipe, EndpointEntity entity) {
 
+		if(entity instanceof CMPPServerEndpointEntity){
+			return;
+		}
+		pipe.addFirst("socketLog", new LoggingHandler(String.format(GlobalConstance.loggerNamePrefix, entity.getId()), LogLevel.TRACE));
+		
 		// 调用子类的bind方法
 		doBindHandler(pipe, entity);
-
+		
+		pipe.addAfter(GlobalConstance.codecName,"msgLog", new MessageLogHandler(entity));
+		
 		List<BusinessHandlerInterface> handlers = entity.getBusinessHandlerSet();
 		if (handlers != null && handlers.size() > 0) {
 			for (BusinessHandlerInterface handler : handlers) {
@@ -361,6 +376,30 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			}
 			return doCalculateSize(msg);
 		}
+	}
+	
+	public ChannelFuture asynwrite(Object msg){
+		Channel ch = fetchOneWritable();
+		ChannelFuture future = ch.writeAndFlush(msg);
+		return future;
+	}
+		
+	public Promise synwrite(BaseMessage message){
+		Channel ch = fetchOneWritable();
+		AbstractSessionStateManager session = (AbstractSessionStateManager)ch.pipeline().get(sessionHandler);
+		return session.writeMessagesync( message);
+	}
+	
+	private Channel fetchOneWritable(){
+		Channel ch = fetch();
+		// 端口上还没有可用连接
+		if (ch == null)
+			return null;
+
+		if (ch.isActive() && ch.isWritable()) {
+			return ch;
+		}
+		return null;
 	}
 
 }

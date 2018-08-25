@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.Promise;
 
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -13,13 +14,14 @@ import org.apache.commons.lang.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.zx.sms.BaseMessage;
+import com.zx.sms.LongSMSMessage;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppReportRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
-import com.zx.sms.codec.cmpp.msg.Message;
+import com.zx.sms.common.util.ChannelUtil;
 import com.zx.sms.common.util.MsgId;
 import com.zx.sms.connect.manager.EndpointEntity;
-import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
 import com.zx.sms.connect.manager.ServerEndpoint;
@@ -34,7 +36,7 @@ import com.zx.sms.session.cmpp.SessionState;
 public class SessionConnectedHandler extends AbstractBusinessHandler {
 	private static final Logger logger = LoggerFactory.getLogger(SessionConnectedHandler.class);
 
-	private AtomicInteger totleCnt = new AtomicInteger(100000);
+	private AtomicInteger totleCnt = new AtomicInteger(10);
 	private volatile boolean inited = false;
 	private long lastNum = 0;
 	public AtomicInteger getTotleCnt() {
@@ -63,7 +65,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 			final EndpointEntity finalentity = (EndpointEntity) getEndpointEntity();
 			final Channel ch = ctx.channel();
 			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>() {
-				private Message createTestReq(String content) {
+				private LongSMSMessage<BaseMessage> createTestReq(String content) {
 					
 					if (finalentity instanceof ServerEndpoint) {
 						CmppDeliverRequestMessage msg = new CmppDeliverRequestMessage();
@@ -81,7 +83,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						msg.setSrcterminalType((short) 1);
 //						msg.setMsgContent(new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd",50*1024));
 						
-						return msg;
+						return (LongSMSMessage)msg;
 					} else {
 						CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
 						msg.setDestterminalId(String.valueOf(System.nanoTime()));
@@ -102,16 +104,26 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 					int cnt = RandomUtils.nextInt() & 0x4ff;
 					while(cnt>0 && tmptotal.get()>0) {
 						if(ctx.channel().isWritable()){
+//							List<Promise> futures = ChannelUtil.syncWriteLongMsgToEntity(getEndpointEntity().getId(), createTestReq("中msg"+UUID.randomUUID().toString()));\
+							ChannelFuture future = ChannelUtil.asyncWriteToEntity(getEndpointEntity().getId(), createTestReq("中msg"+UUID.randomUUID().toString()));
+//							ChannelFuture future = ctx.writeAndFlush( );
 							
-							ChannelFuture future = ctx.writeAndFlush(createTestReq("中msg.setMsgContent"+UUID.randomUUID().toString()) );
-							if(future == null){
-								break;
-							}
 							try{
-								future.sync();
+//								for(Promise  future: futures){
+									future.sync();
+									if(future.isSuccess()){
+//										logger.info("response:{}",future.get());
+									}else{
+//										logger.error("response:{}",future.cause());
+									}
+//								}
+									
 								cnt--;
 								tmptotal.decrementAndGet();
 							}catch(Exception e){
+								e.printStackTrace();
+								cnt--;
+								tmptotal.decrementAndGet();
 								break;
 							}
 						}else{
@@ -137,12 +149,13 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 		}
 		
 		if (evt == SessionState.Connect && !inited) {
+			lastNum = tmptotal.get();
 			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>(){
 				
 				@Override
 				public Boolean call() throws Exception {
 					long nowcnt = tmptotal.get();
-					logger.info("Totle Send Msg Num:{},   speed : {}/s", nowcnt, (lastNum - nowcnt )/1);
+					logger.info("Totle Send Msg Num:{},   speed : {}/s", totleCnt.get() - nowcnt, (lastNum - nowcnt )/1);
 					lastNum = nowcnt;
 					return true;
 				}

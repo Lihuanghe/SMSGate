@@ -367,7 +367,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 
 		return "";
 	}
-	public SmsMessage getMsg() {
+	public SmsMessage getSmsMessage() {
 		return msg;
 	}
 	/**
@@ -497,6 +497,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 		if(frame.getPknumber()!=1){
 			requestMessage.getHeader().setSequenceId(DefaultSequenceNumberUtil.getSequenceNo());
 		}
+		requestMessage.setMsg(null);
 		return requestMessage;
 	}
 }

@@ -28,7 +28,7 @@ import com.zx.sms.common.util.MsgId;
  * @author Lihuanghe(18852780@qq.com)
  *
  */
-public class CmppDeliverRequestMessage extends DefaultMessage  implements LongSMSMessage{
+public class CmppDeliverRequestMessage extends DefaultMessage  implements LongSMSMessage<CmppDeliverRequestMessage>{
 	private static final long serialVersionUID = 4851585208067281751L;
 	private MsgId msgId = new MsgId();
 	private String destId = GlobalConstance.emptyString;
@@ -308,7 +308,7 @@ public class CmppDeliverRequestMessage extends DefaultMessage  implements LongSM
 		this.msg = msg;
 	}
 
-	public SmsMessage getMsg() {
+	public SmsMessage getSmsMessage() {
 		return msg;
 	}
 
@@ -354,7 +354,7 @@ public class CmppDeliverRequestMessage extends DefaultMessage  implements LongSM
 		if(frame.getPknumber()!=1){
 			requestMessage.getHeader().setSequenceId(DefaultSequenceNumberUtil.getSequenceNo());
 		}
-		
+		requestMessage.setMsg(null);
 		return requestMessage;
 	}
 }

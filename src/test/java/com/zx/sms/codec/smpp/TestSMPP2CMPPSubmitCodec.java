@@ -86,7 +86,7 @@ public class TestSMPP2CMPPSubmitCodec extends AbstractSMPPTestMessageCodec<CmppS
 		SmsMessage wap = new SmsWapPushMessage(sl);
 		msg.setMsgContent(wap);
 		CmppSubmitRequestMessage result = testWapCodec(msg);
-		SmsWapPushMessage smsmsg = (SmsWapPushMessage)result.getMsg();
+		SmsWapPushMessage smsmsg = (SmsWapPushMessage)result.getSmsMessage();
 		WapSLPush actsl = (WapSLPush)smsmsg.getWbxml();
 		Assert.assertEquals(sl.getUri(), actsl.getUri());
 	}
@@ -99,7 +99,7 @@ public class TestSMPP2CMPPSubmitCodec extends AbstractSMPPTestMessageCodec<CmppS
 		SmsMessage wap = new SmsWapPushMessage(si);
 		msg.setMsgContent(wap);
 		CmppSubmitRequestMessage result = testWapCodec(msg);
-		SmsWapPushMessage smsmsg = (SmsWapPushMessage)result.getMsg();
+		SmsWapPushMessage smsmsg = (SmsWapPushMessage)result.getSmsMessage();
 		WapSIPush actsi = (WapSIPush)smsmsg.getWbxml();
 		Assert.assertEquals(si.getUri(), actsi.getUri());
 		Assert.assertEquals(si.getMessage(), actsi.getMessage());
@@ -112,7 +112,7 @@ public class TestSMPP2CMPPSubmitCodec extends AbstractSMPPTestMessageCodec<CmppS
 		SmsPortAddressedTextMessage textMsg =new SmsPortAddressedTextMessage(new SmsPort(rnd_.nextInt() &0xffff,"")  ,new SmsPort(rnd_.nextInt()&0xffff,""),"这是一条端口文本短信");
 		msg.setMsgContent(textMsg);
 		CmppSubmitRequestMessage result =testWapCodec(msg);
-		SmsPortAddressedTextMessage smsmsg = (SmsPortAddressedTextMessage)result.getMsg();
+		SmsPortAddressedTextMessage smsmsg = (SmsPortAddressedTextMessage)result.getSmsMessage();
 		Assert.assertEquals(textMsg.getDestPort_(), smsmsg.getDestPort_());
 		Assert.assertEquals(textMsg.getOrigPort_(), smsmsg.getOrigPort_());
 		Assert.assertEquals(textMsg.getText(), smsmsg.getText());
@@ -126,7 +126,7 @@ public class TestSMPP2CMPPSubmitCodec extends AbstractSMPPTestMessageCodec<CmppS
 		mms.setSubject("这是一条测试彩信，彩信消息ID是：121241");
 		msg.setMsgContent(mms);
 		CmppSubmitRequestMessage result =testWapCodec(msg);
-		SmsMmsNotificationMessage smsmsg = (SmsMmsNotificationMessage)result.getMsg();
+		SmsMmsNotificationMessage smsmsg = (SmsMmsNotificationMessage)result.getSmsMessage();
 		Assert.assertEquals(mms.getSubject_(), smsmsg.getSubject_());
 		Assert.assertEquals(mms.getContentLocation_(), smsmsg.getContentLocation_());
 		Assert.assertEquals(mms.getFrom_(), smsmsg.getFrom_());
@@ -178,7 +178,7 @@ public class TestSMPP2CMPPSubmitCodec extends AbstractSMPPTestMessageCodec<CmppS
 	    
 		CmppSubmitRequestMessage result = decode(copybuf);
 		System.out.println(result);
-		Assert.assertTrue(result.getMsg() instanceof SmsMessage);
+		Assert.assertTrue(result.getSmsMessage() instanceof SmsMessage);
 		return result;
 	}
 	

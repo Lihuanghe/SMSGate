@@ -177,7 +177,7 @@ public class SgipDeliverRequestMessage extends DefaultMessage implements LongSMS
 		this.msg = msg;
 	}
 
-	public SmsMessage getMsg() {
+	public SmsMessage getSmsMessage() {
 		return msg;
 	}
 	
@@ -232,7 +232,7 @@ public class SgipDeliverRequestMessage extends DefaultMessage implements LongSMS
 		if(frame.getPknumber()!=1){
 			requestMessage.getHeader().setSequenceId(DefaultSequenceNumberUtil.getSequenceNo());
 		}
-		
+		requestMessage.setMsgContent((SmsMessage)null);
 		return requestMessage;
 	}
 	

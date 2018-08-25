@@ -53,9 +53,6 @@ public class CMPPServerChildEndpointConnector extends AbstractEndpointConnector 
 			}
 		}
 
-		pipe.addFirst("socketLog", new LoggingHandler(String.format(GlobalConstance.loggerNamePrefix, entity.getId()), LogLevel.TRACE));
-		pipe.addLast("msgLog", new MessageLogHandler(entity));
-
 		pipe.addLast("CmppActiveTestRequestMessageHandler", GlobalConstance.activeTestHandler);
 		pipe.addLast("CmppActiveTestResponseMessageHandler", GlobalConstance.activeTestRespHandler);
 		pipe.addLast("CmppTerminateRequestMessageHandler", GlobalConstance.terminateHandler);

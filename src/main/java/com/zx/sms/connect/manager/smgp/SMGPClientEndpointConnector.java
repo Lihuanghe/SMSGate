@@ -38,8 +38,6 @@ public class SMGPClientEndpointConnector extends AbstractClientEndpointConnector
 
 	@Override
 	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity entity) {
-		pipe.addFirst("socketLog", new LoggingHandler(String.format(GlobalConstance.loggerNamePrefix, entity.getId()), LogLevel.TRACE));
-		pipe.addLast("msgLog", new MessageLogHandler(entity));
 		pipe.addLast("SMGPActiveTestMessageHandler",new SMGPActiveTestMessageHandler());
 		pipe.addLast("SMGPActiveTestRespMessageHandler",new SMGPActiveTestRespMessageHandler());
 		pipe.addLast("SMGPExitRespMessageHandler", new SMGPExitRespMessageHandler());

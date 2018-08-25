@@ -3,6 +3,8 @@ package com.zx.sms.handler;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +34,19 @@ public class MessageLogHandler extends ChannelDuplexHandler {
 
 	@Override
 	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-			logger.debug("Send:{}", msg);
+		final Object finalmsg = msg;
 		ctx.write(msg, promise);
+		promise.addListener(new GenericFutureListener() {
+			@Override
+			public void operationComplete(Future future) throws Exception {
+				// 如果发送消息失败，记录失败日志
+				if (!future.isSuccess()) {
+					logger.error("ErrSend:{},cause by {}", finalmsg , future.cause().getMessage());
+				}else{
+					logger.debug("Send:{}", finalmsg);
+				}
+			}
+		});
 	}
 
 }

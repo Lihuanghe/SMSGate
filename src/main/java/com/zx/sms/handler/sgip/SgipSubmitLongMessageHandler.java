@@ -30,12 +30,6 @@ public class SgipSubmitLongMessageHandler extends AbstractLongMessageHandler<Sgi
 	}
 
 	@Override
-	protected SmsMessage getSmsMessage(SgipSubmitRequestMessage t) {
-		
-		return t.getMsg();
-	}
-
-	@Override
 	protected void resetMessageContent(SgipSubmitRequestMessage t, SmsMessage content) {
 		t.setMsgContent(content);
 		

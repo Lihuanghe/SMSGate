@@ -34,11 +34,6 @@ public class SgipDeliverLongMessageHandler extends AbstractLongMessageHandler<Sg
 	}
 
 	@Override
-	protected SmsMessage getSmsMessage(SgipDeliverRequestMessage t) {
-		return t.getMsg();
-	}
-
-	@Override
 	protected void resetMessageContent(SgipDeliverRequestMessage t, SmsMessage content) {
 		t.setMsgContent(content);
 	}

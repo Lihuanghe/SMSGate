@@ -18,11 +18,6 @@ public class SgipServerEndpointConnector extends AbstractServerEndpointConnector
 		super(e);
 	}
 
-	@Override
-	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity entity) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	protected void doinitPipeLine(ChannelPipeline pipeline) {
@@ -34,9 +29,4 @@ public class SgipServerEndpointConnector extends AbstractServerEndpointConnector
 		
 	}
 
-	@Override
-	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, ConcurrentMap storeMap, boolean preSend) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

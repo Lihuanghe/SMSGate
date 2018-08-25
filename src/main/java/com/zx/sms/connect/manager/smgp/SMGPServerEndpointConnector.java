@@ -19,12 +19,6 @@ public class SMGPServerEndpointConnector extends AbstractServerEndpointConnector
 	}
 
 	@Override
-	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity entity) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	protected void doinitPipeLine(ChannelPipeline pipeline) {
 		EndpointEntity entity = getEndpointEntity();
 		pipeline.addLast(GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, entity.getIdleTimeSec(), TimeUnit.SECONDS));
@@ -34,9 +28,4 @@ public class SMGPServerEndpointConnector extends AbstractServerEndpointConnector
 		
 	}
 
-	@Override
-	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, ConcurrentMap storeMap, boolean preSend) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

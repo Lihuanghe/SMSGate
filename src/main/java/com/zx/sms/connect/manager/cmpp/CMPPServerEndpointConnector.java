@@ -23,12 +23,6 @@ public class CMPPServerEndpointConnector extends AbstractServerEndpointConnector
 		super(e);
 	}
 
-
-	@Override
-	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity entity) {
-
-	}
-
 	@Override
 	protected void doinitPipeLine(ChannelPipeline pipeline) {
 		CMPPCodecChannelInitializer codec = null;
@@ -46,13 +40,6 @@ public class CMPPServerEndpointConnector extends AbstractServerEndpointConnector
 		pipeline.addLast(codec.pipeName(), codec);
 
 		pipeline.addLast("sessionLoginManager", new SessionLoginManager(getEndpointEntity()));
-	}
-
-
-	@Override
-	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, ConcurrentMap storeMap, boolean preSend) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

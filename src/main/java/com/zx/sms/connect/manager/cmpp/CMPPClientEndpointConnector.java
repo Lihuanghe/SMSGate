@@ -40,9 +40,6 @@ public class CMPPClientEndpointConnector extends AbstractClientEndpointConnector
 	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity cmppentity) {
 		CMPPEndpointEntity entity = (CMPPEndpointEntity)cmppentity;
 
-		pipe.addFirst("socketLog", new LoggingHandler(String.format(GlobalConstance.loggerNamePrefix, entity.getId()), LogLevel.TRACE));
-		pipe.addLast("msgLog", new MessageLogHandler(entity));
-
 		if (entity instanceof ClientEndpoint) {
 			pipe.addLast("reWriteSubmitMsgSrcHandler", new ReWriteSubmitMsgSrcHandler(entity));
 		}
