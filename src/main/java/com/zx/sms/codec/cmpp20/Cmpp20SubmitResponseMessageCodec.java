@@ -57,7 +57,7 @@ public class Cmpp20SubmitResponseMessageCodec extends MessageToMessageCodec<Mess
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppSubmitResponseMessage msg, List<Object> out) throws Exception {
-		ByteBuf bodyBuffer = Unpooled.buffer(Cmpp20SubmitResponse.RESULT.getBodyLength());
+		ByteBuf bodyBuffer = ctx.alloc().buffer(Cmpp20SubmitResponse.RESULT.getBodyLength());
 
 		bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(msg.getMsgId()));
 		bodyBuffer.writeByte((int) msg.getResult());

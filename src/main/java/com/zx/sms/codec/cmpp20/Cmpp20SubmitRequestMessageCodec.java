@@ -119,7 +119,7 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 	protected void encode(ChannelHandlerContext ctx, CmppSubmitRequestMessage requestMessage, List<Object> out) throws Exception {
 		
 
-			ByteBuf bodyBuffer = Unpooled.buffer(Cmpp20SubmitRequest.ATTIME.getBodyLength() + requestMessage.getMsgLength() + requestMessage.getDestUsrtl()
+			ByteBuf bodyBuffer = ctx.alloc().buffer(Cmpp20SubmitRequest.ATTIME.getBodyLength() + requestMessage.getMsgLength() + requestMessage.getDestUsrtl()
 					* Cmpp20SubmitRequest.DESTTERMINALID.getLength());
 
 			bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(requestMessage.getMsgid()));

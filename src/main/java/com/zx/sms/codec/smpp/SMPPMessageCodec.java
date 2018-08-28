@@ -12,7 +12,7 @@ public class SMPPMessageCodec extends MessageToMessageCodec<ByteBuf, Pdu> {
 	private static final PduTranscoder transcoder = new DefaultPduTranscoder(new DefaultPduTranscoderContext());
 	@Override
 	protected void encode(ChannelHandlerContext ctx, Pdu msg, List<Object> out) throws Exception {
-		ByteBuf buf = transcoder.encode(msg);
+		ByteBuf buf = transcoder.encode(msg,ctx.alloc());
 		out.add(buf);
 	}
 

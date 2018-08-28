@@ -66,7 +66,7 @@ public class CmppQueryResponseMessageCodec extends MessageToMessageCodec<Message
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppQueryResponseMessage responseMessage, List<Object> out) throws Exception {
 
-		ByteBuf bodyBuffer =Unpooled.buffer(CmppQueryResponse.MOFL.getBodyLength());
+		ByteBuf bodyBuffer =ctx.alloc().buffer(CmppQueryResponse.MOFL.getBodyLength());
 
 		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(responseMessage.getTime().getBytes(GlobalConstance.defaultTransportCharset),
 				CmppQueryResponse.TIME.getLength(), 0));

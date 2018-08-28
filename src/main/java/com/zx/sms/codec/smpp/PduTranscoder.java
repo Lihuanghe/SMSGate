@@ -21,6 +21,7 @@ package com.zx.sms.codec.smpp;
  */
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 
 import com.zx.sms.codec.smpp.msg.Pdu;
 
@@ -42,7 +43,7 @@ public interface PduTranscoder {
      *      error while encoding the buffer. A good example is an optional parameter
      *      that is invalid or a terminating null byte wasn't found.
      */
-    public ByteBuf encode(Pdu pdu) throws UnrecoverablePduException, RecoverablePduException;
+    public ByteBuf encode(Pdu pdu,ByteBufAllocator allocator) throws UnrecoverablePduException, RecoverablePduException;
 
     /**
      * Decodes a ByteBuf into a new PDU.

@@ -1,8 +1,7 @@
 package com.zx.sms.connect.manager;
 
-import java.util.concurrent.ConcurrentMap;
-
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -13,6 +12,8 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
+
+import java.util.concurrent.ConcurrentMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,8 @@ public abstract class AbstractServerEndpointConnector extends AbstractEndpointCo
 		super(e);
 		bootstrap.group(EventLoopGroupFactory.INS.getBoss(), EventLoopGroupFactory.INS.getWorker()).channel(NioServerSocketChannel.class)
 		.option(ChannelOption.SO_BACKLOG, 100).childOption(ChannelOption.SO_RCVBUF, 2048).childOption(ChannelOption.SO_SNDBUF, 2048)
+		.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)       
+        .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)  
 		.childOption(ChannelOption.TCP_NODELAY, true).handler(new LoggingHandler(LogLevel.DEBUG)).childHandler(initPipeLine());
 
 	}

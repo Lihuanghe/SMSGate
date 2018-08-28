@@ -21,7 +21,7 @@ package com.zx.sms.codec.smpp;
  */
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.ByteBufAllocator;
 
 import com.zx.sms.codec.smpp.msg.AlertNotification;
 import com.zx.sms.codec.smpp.msg.BindReceiver;
@@ -54,7 +54,6 @@ import com.zx.sms.codec.smpp.msg.UnbindResp;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 import com.zx.sms.common.util.HexUtil;
 import com.zx.sms.common.util.PduUtil;
-import com.zx.sms.common.util.SequenceNumber;
 
 /**
  * 
@@ -69,7 +68,7 @@ public class DefaultPduTranscoder implements PduTranscoder {
     }
 
     @Override
-    public ByteBuf encode(Pdu pdu) throws UnrecoverablePduException, RecoverablePduException {
+    public ByteBuf encode(Pdu pdu,ByteBufAllocator allocator) throws UnrecoverablePduException, RecoverablePduException {
         // see if we can map the command status into a message
         if (pdu instanceof PduResponse) {
             PduResponse response = (PduResponse)pdu;
@@ -102,7 +101,7 @@ public class DefaultPduTranscoder implements PduTranscoder {
 	//             ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
 
         // create the buffer and add the header
-        ByteBuf buffer = Unpooled.buffer(pdu.getCommandLength());
+        ByteBuf buffer = allocator.buffer(pdu.getCommandLength());
         //TODO: directBuffer?
         //buffer.order(ByteOrder.BIG_ENDIAN);
         buffer.writeInt(pdu.getCommandLength());

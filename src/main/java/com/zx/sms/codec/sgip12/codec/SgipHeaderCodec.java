@@ -66,7 +66,7 @@ public class SgipHeaderCodec extends MessageToMessageCodec<ByteBuf, Message> {
 		int packetLength = message.getBodyBuffer().length + headerLength;
 
 		// buf由netty写channel的时候释放
-		ByteBuf buf = Unpooled.buffer(packetLength);
+		ByteBuf buf = ctx.alloc().buffer(packetLength);
 		buf.writeInt(packetLength);
 		buf.writeInt((int) message.getHeader().getCommandId());
 		String timeString = DateFormatUtils.format(message.getTimestamp(), "MMddHHmmss");

@@ -121,7 +121,7 @@ public class Cmpp7FDeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 		
 
 			// bodyBuffer 会在CmppHeaderCodec.encode里释放
-			ByteBuf bodyBuffer = Unpooled.buffer(CmppDeliverRequest.DESTID.getBodyLength() + requestMessage.getMsgLength());
+			ByteBuf bodyBuffer = ctx.alloc().buffer(CmppDeliverRequest.DESTID.getBodyLength() + requestMessage.getMsgLength());
 
 			bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(requestMessage.getMsgId()));
 			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getDestId().getBytes(GlobalConstance.defaultTransportCharset),

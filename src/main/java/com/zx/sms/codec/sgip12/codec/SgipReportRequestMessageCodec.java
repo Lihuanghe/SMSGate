@@ -67,7 +67,7 @@ public class SgipReportRequestMessageCodec extends MessageToMessageCodec<Message
 	@Override
 	protected void encode(ChannelHandlerContext ctx, SgipReportRequestMessage msg, List<Object> out) throws Exception {
 
-		ByteBuf bodyBuffer = Unpooled.buffer(SgipReportRequest.USERNUMBER.getBodyLength());
+		ByteBuf bodyBuffer = ctx.alloc().buffer(SgipReportRequest.USERNUMBER.getBodyLength());
 		bodyBuffer.writeBytes(DefaultSequenceNumberUtil.sequenceN2Bytes(msg.getSequenceId()));
 		bodyBuffer.writeByte(msg.getReporttype());
 		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(msg.getUsernumber().getBytes(GlobalConstance.defaultTransportCharset),

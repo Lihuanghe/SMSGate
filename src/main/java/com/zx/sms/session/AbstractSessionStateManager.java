@@ -136,6 +136,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 				Map.Entry<K, Entry> entry = null;
 				EndpointConnector conn = EndpointManager.INS.getEndpointConnector(entity);
 				for (Iterator<Map.Entry<K, Entry>> itor = msgRetryMap.entrySet().iterator();itor.hasNext(); entry = itor.next()) {
+					if(entry == null) continue;
 					T requestmsg = entry.getValue().request;
 					
 					// 所有连接都已关闭

@@ -6,6 +6,7 @@ import io.netty.util.ResourceLeakDetector.Level;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.LockSupport;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -54,15 +55,15 @@ public class TestSgipEndPoint {
 		child.setMaxChannels((short)20);
 		child.setRetryWaitTimeSec((short)30);
 		child.setMaxRetryCnt((short)3);
-		child.setReSendFailMsg(true);
-		child.setIdleTimeSec((short)15);
+		child.setReSendFailMsg(false);
+		child.setIdleTimeSec((short)5);
 //		child.setWriteLimit(200);
 //		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
 		
 		serverhandlers.add(new SgipReportRequestMessageHandler());
 		serverhandlers.add(new Sgip2CMPPBusinessHandler());  //  将CMPP的对象转成sgip对象，然后再经sgip解码器处理
-		serverhandlers.add(new SessionConnectedHandler(new AtomicInteger(30000)));   // 复用CMPP的Handler
+		serverhandlers.add(new MessageReceiveHandler());   // 复用CMPP的Handler
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
@@ -85,15 +86,14 @@ public class TestSgipEndPoint {
 //		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new Sgip2CMPPBusinessHandler()); //  将CMPP的对象转成sgip对象，然后再经sgip解码器处理
-		clienthandlers.add(new MessageReceiveHandler()); //// 复用CMPP的Handler
+		clienthandlers.add(new SessionConnectedHandler(new AtomicInteger(0))); //// 复用CMPP的Handler
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		manager.openAll();
-		//LockSupport.park();
-
+//		manager.openEndpoint(client);
         System.out.println("start.....");
-        
-		Thread.sleep(300000);
+        LockSupport.park();
+
 		EndpointManager.INS.close();
 	}
 }

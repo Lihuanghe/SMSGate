@@ -108,7 +108,7 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 	protected void encode(ChannelHandlerContext ctx, CmppDeliverRequestMessage requestMessage, List<Object> out) throws Exception {
 		
 			// bodyBuffer 会在CmppHeaderCodec.encode里释放
-			ByteBuf bodyBuffer = Unpooled.buffer(Cmpp20DeliverRequest.DESTID.getBodyLength() + requestMessage.getMsgLength());
+			ByteBuf bodyBuffer = ctx.alloc().buffer(Cmpp20DeliverRequest.DESTID.getBodyLength() + requestMessage.getMsgLength());
 
 			bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(requestMessage.getMsgId()));
 			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getDestId().getBytes(GlobalConstance.defaultTransportCharset),

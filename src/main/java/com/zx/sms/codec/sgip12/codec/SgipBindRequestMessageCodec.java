@@ -59,7 +59,7 @@ public class SgipBindRequestMessageCodec extends MessageToMessageCodec<Message, 
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, SgipBindRequestMessage requestMessage, List<Object> out) throws Exception {
-		ByteBuf bodyBuffer = Unpooled.buffer(SgipBindRequest.LOGINNAME.getBodyLength());
+		ByteBuf bodyBuffer = ctx.alloc().buffer(SgipBindRequest.LOGINNAME.getBodyLength());
 		bodyBuffer.writeByte(requestMessage.getLoginType());
 		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getLoginName().getBytes(GlobalConstance.defaultTransportCharset),
 				SgipBindRequest.LOGINNAME.getLength(), 0));

@@ -108,8 +108,7 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 		
 		
 			// bodyBuffer 会在CmppHeaderCodec.encode里释放
-			ByteBuf bodyBuffer = Unpooled.buffer(CmppDeliverRequest.DESTID.getBodyLength() + requestMessage.getMsgLength());
-
+			ByteBuf bodyBuffer = ctx.alloc().buffer(CmppDeliverRequest.DESTID.getBodyLength() + requestMessage.getMsgLength());
 			bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(requestMessage.getMsgId()));
 			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getDestId().getBytes(GlobalConstance.defaultTransportCharset),
 					CmppDeliverRequest.DESTID.getLength(), 0));

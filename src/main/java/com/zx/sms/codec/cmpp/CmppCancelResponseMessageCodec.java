@@ -52,7 +52,7 @@ public class CmppCancelResponseMessageCodec extends MessageToMessageCodec<Messag
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppCancelResponseMessage msg, List<Object> out) throws Exception {
 
-		ByteBuf bodyBuffer =  Unpooled.buffer(CmppCancelResponse.SUCCESSID.getBodyLength());
+		ByteBuf bodyBuffer =  ctx.alloc().buffer(CmppCancelResponse.SUCCESSID.getBodyLength());
         bodyBuffer.writeInt((int) msg.getSuccessId());
 		
 		msg.setBodyBuffer(toArray(bodyBuffer,bodyBuffer.readableBytes()));

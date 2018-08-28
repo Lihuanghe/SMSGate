@@ -58,7 +58,7 @@ public class CmppConnectRequestMessageCodec extends MessageToMessageCodec<Messag
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppConnectRequestMessage msg, List<Object> out) throws Exception {
 
-		ByteBuf bodyBuffer =  Unpooled.buffer(CmppConnectRequest.AUTHENTICATORSOURCE.getBodyLength());
+		ByteBuf bodyBuffer =  ctx.alloc().buffer(CmppConnectRequest.AUTHENTICATORSOURCE.getBodyLength());
 
 		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(msg.getSourceAddr().getBytes(GlobalConstance.defaultTransportCharset),
 				CmppConnectRequest.SOURCEADDR.getLength(), 0));

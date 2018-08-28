@@ -1,10 +1,11 @@
 package com.zx.sms.session;
 
+import java.util.concurrent.TimeUnit;
+
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.concurrent.GenericFutureListener;
+import io.netty.handler.timeout.IdleStateHandler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import com.zx.sms.connect.manager.ClientEndpoint;
 import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EndpointManager;
+import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 import com.zx.sms.session.cmpp.SessionState;
 
 
@@ -135,6 +137,8 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 			
 			//检查是否超过最大连接数
 			if(validMaxChannel(childentity,conn)){
+				IdleStateHandler idlehandler = (IdleStateHandler)ctx.pipeline().get(GlobalConstance.IdleCheckerHandlerName);
+				ctx.pipeline().replace(idlehandler, GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, childentity.getIdleTimeSec(), TimeUnit.SECONDS));
 				state = SessionState.Connect;
 				//把连接加入连接管理 器，该方法是同步方法
 				conn.addChannel(ctx.channel());

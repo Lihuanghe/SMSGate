@@ -60,7 +60,7 @@ public class SgipSubmitResponseMessageCodec extends MessageToMessageCodec<Messag
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, SgipSubmitResponseMessage msg, List<Object> out) throws Exception {
-		ByteBuf bodyBuffer = Unpooled.buffer(SgipSubmitResponse.RESULT.getBodyLength());
+		ByteBuf bodyBuffer = ctx.alloc().buffer(SgipSubmitResponse.RESULT.getBodyLength());
 
 		bodyBuffer.writeByte(msg.getResult());
 		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(msg.getReserve().getBytes(GlobalConstance.defaultTransportCharset),

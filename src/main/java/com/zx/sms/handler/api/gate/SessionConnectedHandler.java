@@ -1,11 +1,11 @@
 package com.zx.sms.handler.api.gate;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.Promise;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,6 +19,7 @@ import com.zx.sms.LongSMSMessage;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppReportRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
+import com.zx.sms.codec.sgip12.msg.SgipSubmitRequestMessage;
 import com.zx.sms.common.util.ChannelUtil;
 import com.zx.sms.common.util.MsgId;
 import com.zx.sms.connect.manager.EndpointEntity;
@@ -95,7 +96,20 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						msg.setSrcId("10086");
 						msg.setMsgsrc("927165");
 //						msg.setMsgContent(new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd",50*1024));
-						return msg;
+						
+						SgipSubmitRequestMessage requestMessage = new SgipSubmitRequestMessage();
+		    			requestMessage.setTimestamp(msg.getTimestamp());
+		    			requestMessage.setSpnumber("10086");
+		    			requestMessage.setUsercount((short)2);
+		    			for (int i = 0; i < requestMessage.getUsercount(); i++) {
+		    				requestMessage.addUsernumber(String.valueOf(System.nanoTime()));
+		    			}
+		    			requestMessage.addUsernumber(String.valueOf(System.nanoTime()));
+		    			requestMessage.setCorpid("927165");
+		    			requestMessage.setReportflag((short)1);
+		    		
+		    			requestMessage.setMsgContent(content);
+						return requestMessage;
 					}
 				}
 
@@ -104,19 +118,19 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 					int cnt = RandomUtils.nextInt() & 0x4ff;
 					while(cnt>0 && tmptotal.get()>0) {
 						if(ctx.channel().isWritable()){
-//							List<Promise> futures = ChannelUtil.syncWriteLongMsgToEntity(getEndpointEntity().getId(), createTestReq("中msg"+UUID.randomUUID().toString()));\
-							ChannelFuture future = ChannelUtil.asyncWriteToEntity(getEndpointEntity().getId(), createTestReq("中msg"+UUID.randomUUID().toString()));
+							List<Promise> futures = ChannelUtil.syncWriteLongMsgToEntity(getEndpointEntity().getId(), createTestReq("中createT"+UUID.randomUUID().toString()));
+//							ChannelFuture future = ChannelUtil.asyncWriteToEntity(getEndpointEntity().getId(), createTestReq("中msg"+UUID.randomUUID().toString()));
 //							ChannelFuture future = ctx.writeAndFlush( );
 							
 							try{
-//								for(Promise  future: futures){
+								for(Promise  future: futures){
 									future.sync();
 									if(future.isSuccess()){
 //										logger.info("response:{}",future.get());
 									}else{
-//										logger.error("response:{}",future.cause());
+										logger.error("response:{}",future.cause());
 									}
-//								}
+								}
 									
 								cnt--;
 								tmptotal.decrementAndGet();
@@ -148,25 +162,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 			
 		}
 		
-		if (evt == SessionState.Connect && !inited) {
-			lastNum = tmptotal.get();
-			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>(){
-				
-				@Override
-				public Boolean call() throws Exception {
-					long nowcnt = tmptotal.get();
-					logger.info("Totle Send Msg Num:{},   speed : {}/s", totleCnt.get() - nowcnt, (lastNum - nowcnt )/1);
-					lastNum = nowcnt;
-					return true;
-				}
-			},new ExitUnlimitCirclePolicy() {
-				@Override
-				public boolean notOver(Future future) {
-					return true;
-				}
-			},1*1000);
-			inited = true;
-		}
+	
 		ctx.fireUserEventTriggered(evt);
 	}
 

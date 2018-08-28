@@ -59,7 +59,7 @@ public class CmppActiveTestResponseMessageCodec extends MessageToMessageCodec<Me
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppActiveTestResponseMessage msg, List<Object> out) throws Exception {
 		
-		ByteBuf bodyBuffer = Unpooled.buffer(CmppActiveTestResponse.RESERVED.getBodyLength());
+		ByteBuf bodyBuffer = ctx.alloc().buffer(CmppActiveTestResponse.RESERVED.getBodyLength());
 		bodyBuffer.writeByte(msg.getReserved());
 		msg.setBodyBuffer(toArray(bodyBuffer,bodyBuffer.readableBytes()));
 		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);

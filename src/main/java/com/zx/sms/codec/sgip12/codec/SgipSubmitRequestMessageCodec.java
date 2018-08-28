@@ -109,7 +109,7 @@ public class SgipSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 
 		assert (requestMessage.getUsercount() > 0);
 
-		ByteBuf bodyBuffer = Unpooled.buffer(SgipSubmitRequest.SPNUMBER.getBodyLength() + (requestMessage.getUsercount() - 1)
+		ByteBuf bodyBuffer = ctx.alloc().buffer(SgipSubmitRequest.SPNUMBER.getBodyLength() + (requestMessage.getUsercount() - 1)
 				* SgipSubmitRequest.USERNUMBER.getLength() + requestMessage.getMessagelength());
 
 		bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getSpnumber().getBytes(GlobalConstance.defaultTransportCharset),

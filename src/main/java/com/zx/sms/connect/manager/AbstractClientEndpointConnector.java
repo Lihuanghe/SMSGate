@@ -1,6 +1,7 @@
 package com.zx.sms.connect.manager;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -26,7 +27,7 @@ public abstract class AbstractClientEndpointConnector extends AbstractEndpointCo
 	public AbstractClientEndpointConnector(EndpointEntity endpoint) {
 		super(endpoint);
 		bootstrap.group(EventLoopGroupFactory.INS.getWorker()).channel(NioSocketChannel.class).option(ChannelOption.TCP_NODELAY, true)
-		.option(ChannelOption.SO_RCVBUF, 2048).option(ChannelOption.SO_SNDBUF, 2048)
+		.option(ChannelOption.SO_RCVBUF, 2048).option(ChannelOption.SO_SNDBUF, 2048).option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)   
 		.handler(initPipeLine());
 	}
 
