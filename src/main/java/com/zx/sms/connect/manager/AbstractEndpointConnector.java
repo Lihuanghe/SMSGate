@@ -380,12 +380,14 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	
 	public ChannelFuture asynwrite(Object msg){
 		Channel ch = fetchOneWritable();
+		if(ch == null) return null;
 		ChannelFuture future = ch.writeAndFlush(msg);
 		return future;
 	}
 		
 	public Promise synwrite(BaseMessage message){
 		Channel ch = fetchOneWritable();
+		if(ch == null) return null;
 		AbstractSessionStateManager session = (AbstractSessionStateManager)ch.pipeline().get(sessionHandler);
 		return session.writeMessagesync( message);
 	}

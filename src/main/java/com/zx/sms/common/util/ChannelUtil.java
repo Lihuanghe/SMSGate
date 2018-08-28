@@ -50,7 +50,12 @@ public class ChannelUtil {
 	}
 
 	private static ChannelFuture asyncWriteToEntity(EndpointConnector connector, final Object msg, GenericFutureListener listner) {
+		if(connector == null || msg == null) return null;
+		
 		ChannelFuture promise = connector.asynwrite(msg);
+		
+		if(promise == null) return null;
+		
 		if (listner == null) {
 			promise.addListener(new GenericFutureListener() {
 				@Override
