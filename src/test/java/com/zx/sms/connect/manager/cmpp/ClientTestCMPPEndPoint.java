@@ -34,22 +34,22 @@ public class ClientTestCMPPEndPoint {
 		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
 		client.setId("client");
 		client.setHost("127.0.0.1");
-		client.setPort(7891);
+		client.setPort(20003);
 		client.setChartset(Charset.forName("utf-8"));
 		client.setGroupName("test");
-		client.setUserName("901782");
-		client.setPassword("ICP");
+		client.setUserName("GSDT01");
+		client.setPassword("1234567");
 
 
 		client.setMaxChannels((short)1);
 		client.setWindows((short)16);
-		client.setVersion((short)0x30);
+		client.setVersion((short)0x20);
 		client.setRetryWaitTimeSec((short)30);
 		client.setUseSSL(false);
 		client.setReSendFailMsg(true);
 //		client.setWriteLimit(500);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new SessionConnectedHandler(100000));
+		clienthandlers.add( new SessionConnectedHandler(1000));
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		

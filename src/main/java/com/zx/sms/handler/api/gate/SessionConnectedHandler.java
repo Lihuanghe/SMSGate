@@ -66,7 +66,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 			final EndpointEntity finalentity = (EndpointEntity) getEndpointEntity();
 			final Channel ch = ctx.channel();
 			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>() {
-				private LongSMSMessage<BaseMessage> createTestReq(String content) {
+				private BaseMessage createTestReq(String content) {
 					
 					if (finalentity instanceof ServerEndpoint) {
 						CmppDeliverRequestMessage msg = new CmppDeliverRequestMessage();
@@ -84,7 +84,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						msg.setSrcterminalType((short) 1);
 //						msg.setMsgContent(new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd",50*1024));
 						
-						return (LongSMSMessage)msg;
+						return msg;
 					} else {
 						CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
 						msg.setDestterminalId(String.valueOf(System.nanoTime()));
@@ -96,7 +96,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						msg.setSrcId("10086");
 						msg.setMsgsrc("927165");
 //						msg.setMsgContent(new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd",50*1024));
-						
+						/*
 						SgipSubmitRequestMessage requestMessage = new SgipSubmitRequestMessage();
 		    			requestMessage.setTimestamp(msg.getTimestamp());
 		    			requestMessage.setSpnumber("10086");
@@ -108,8 +108,8 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 		    			requestMessage.setCorpid("927165");
 		    			requestMessage.setReportflag((short)1);
 		    		
-		    			requestMessage.setMsgContent(content);
-						return requestMessage;
+		    			requestMessage.setMsgContent(content);*/
+						return msg;
 					}
 				}
 

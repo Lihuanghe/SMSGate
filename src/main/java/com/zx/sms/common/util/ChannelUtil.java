@@ -79,20 +79,34 @@ public class ChannelUtil {
 	 * 同步发送长短信类型 <br/>
 	 * 注意：该方法将拆分后的短信直接发送，不会再调用BusinessHandler里的write方法了。
 	 */
-	 public static List<Promise> syncWriteLongMsgToEntity( String entity, final LongSMSMessage<BaseMessage> msg) throws Exception {
+	 public static List<Promise> syncWriteLongMsgToEntity( String entity, BaseMessage msg) throws Exception {
 
 		EndpointConnector connector = EndpointManager.INS.getEndpointConnector(entity);
-		SmsMessage msgcontent = msg.getSmsMessage();
-		List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(msgcontent);
-		boolean first = true;
-		
 		List<Promise> arrPromise = new ArrayList<Promise>();
-		for (LongMessageFrame frame : frameList) {
-			BaseMessage basemsg = msg.generateMessage(frame);
-			Promise promise = connector.synwrite(basemsg);
+		if(msg instanceof LongSMSMessage) {
+			LongSMSMessage<BaseMessage> lmsg = (LongSMSMessage<BaseMessage>)msg;
+			SmsMessage msgcontent = lmsg.getSmsMessage();
+			List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(msgcontent);
+			for (LongMessageFrame frame : frameList) {
+				BaseMessage basemsg = (BaseMessage)lmsg.generateMessage(frame);
+				Promise promise = connector.synwrite(basemsg);
+				if(promise==null) {
+					//为空，可能是连接断了,直接返回
+					return null;
+				}
+				arrPromise.add(promise);
+			}
+			return arrPromise;
+			
+		}else{
+			
+			Promise promise = connector.synwrite(msg);
+			if(promise==null) {
+				//为空，可能是连接断了,直接返回
+				return null;
+			}
 			arrPromise.add(promise);
+			return arrPromise;
 		}
-		return arrPromise;
 	}
-
 }

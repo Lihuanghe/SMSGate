@@ -1,19 +1,15 @@
 package com.zx.sms.handler.api.smsbiz;
 
-import io.netty.channel.ChannelHandler.Sharable;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.lang.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
+import com.zx.sms.codec.cmpp.msg.CmppQueryRequestMessage;
+import com.zx.sms.codec.cmpp.msg.CmppQueryResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.connect.manager.EndpointManager;
@@ -21,6 +17,11 @@ import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.session.cmpp.SessionState;
+
+import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 @Sharable
 public class MessageReceiveHandler extends AbstractBusinessHandler {
@@ -88,6 +89,15 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 			});
 		} else if (msg instanceof CmppSubmitResponseMessage) {
 			CmppSubmitResponseMessage e = (CmppSubmitResponseMessage) msg;
+		} else if (msg instanceof CmppQueryRequestMessage) {
+			CmppQueryRequestMessage e = (CmppQueryRequestMessage) msg;
+			CmppQueryResponseMessage res = new CmppQueryResponseMessage(e.getHeader().getSequenceId());
+			ctx.channel().writeAndFlush(res).addListener(new GenericFutureListener() {
+				@Override
+				public void operationComplete(Future future) throws Exception {
+					cnt.incrementAndGet();
+				}
+			});
 		} else {
 			ctx.fireChannelRead(msg);
 		}

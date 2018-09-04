@@ -26,7 +26,6 @@ import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
  *
  */
 
-
 public class TestCMPPEndPoint {
 	private static final Logger logger = LoggerFactory.getLogger(TestCMPPEndPoint.class);
 
@@ -91,7 +90,7 @@ public class TestCMPPEndPoint {
 		clienthandlers.add( new SessionConnectedHandler(100));
 		client.setBusinessHandlerSet(clienthandlers);
 		
-//		manager.addEndpointEntity(client);
+		manager.addEndpointEntity(client);
 		
 		manager.openAll();
 		manager.startConnectionCheckTask();
