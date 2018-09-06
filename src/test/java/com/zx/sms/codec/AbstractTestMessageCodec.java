@@ -1,5 +1,7 @@
 package com.zx.sms.codec;
 
+import com.zx.sms.connect.manager.cmpp.CMPPCodecChannelInitializer;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -9,8 +11,6 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.ResourceLeakDetector;
 import io.netty.util.ResourceLeakDetector.Level;
-
-import com.zx.sms.connect.manager.cmpp.CMPPCodecChannelInitializer;
 
 public abstract class AbstractTestMessageCodec<T> {
 	

@@ -63,7 +63,6 @@ public class TestCmppDeliverRequestMessageCodec extends AbstractTestMessageCodec
 		reportRequestMessage.setDestterminalId("13800138000");
 		reportRequestMessage.setStat("9876");
 		msg.setReportRequestMessage(reportRequestMessage);
-		msg.setRegisteredDelivery((short) 1);
 		test0(msg);
 	}
 
@@ -103,7 +102,6 @@ public class TestCmppDeliverRequestMessageCodec extends AbstractTestMessageCodec
 		// 70个汉字
 		msg.setMsgContent(content);
 		msg.setMsgId(new MsgId());
-		msg.setRegisteredDelivery((short) 0);
 		msg.setServiceid("10086");
 		msg.setSrcterminalId("13800138000");
 		msg.setSrcterminalType((short) 1);

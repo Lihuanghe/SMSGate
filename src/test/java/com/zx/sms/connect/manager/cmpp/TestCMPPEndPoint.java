@@ -87,7 +87,7 @@ public class TestCMPPEndPoint {
 		client.setReSendFailMsg(true);
 
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new SessionConnectedHandler(10000));
+		clienthandlers.add( new SessionConnectedHandler(10));
 		client.setBusinessHandlerSet(clienthandlers);
 		
 		manager.addEndpointEntity(client);

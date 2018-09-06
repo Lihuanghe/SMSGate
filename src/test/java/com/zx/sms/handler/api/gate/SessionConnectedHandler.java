@@ -3,23 +3,31 @@ package com.zx.sms.handler.api.gate;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.Promise;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.math.RandomUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.BaseMessage;
 import com.zx.sms.LongSMSMessage;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
+import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
+import com.zx.sms.codec.cmpp.msg.CmppQueryRequestMessage;
+import com.zx.sms.codec.cmpp.msg.CmppQueryResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppReportRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
+import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.codec.sgip12.msg.SgipSubmitRequestMessage;
+import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.common.util.ChannelUtil;
 import com.zx.sms.common.util.MsgId;
 import com.zx.sms.connect.manager.EndpointEntity;
@@ -75,10 +83,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 //						msg.setMsgContent(sb.toString());
 						msg.setMsgContent(content);
 						msg.setMsgId(new MsgId());
-						msg.setRegisteredDelivery((short) 0);
-						if (msg.getRegisteredDelivery() == 1) {
-							msg.setReportRequestMessage(new CmppReportRequestMessage());
-						}
+						
 						msg.setServiceid("10086");
 						msg.setSrcterminalId(String.valueOf(System.nanoTime()));
 						msg.setSrcterminalType((short) 1);
@@ -159,13 +164,61 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 				}
 			},1);
 			
-			
 		}
 		
 	
 		ctx.fireUserEventTriggered(evt);
 	}
 
+	public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
+
+		if (msg instanceof CmppDeliverRequestMessage) {
+			CmppDeliverRequestMessage e = (CmppDeliverRequestMessage) msg;
+			CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(e.getHeader().getSequenceId());
+			responseMessage.setResult(0);
+			responseMessage.setMsgId(e.getMsgId());
+			ctx.channel().writeAndFlush(responseMessage);
+
+		} else if (msg instanceof CmppDeliverResponseMessage) {
+			CmppDeliverResponseMessage e = (CmppDeliverResponseMessage) msg;
+
+		} else if (msg instanceof CmppSubmitRequestMessage) {
+			CmppSubmitRequestMessage e = (CmppSubmitRequestMessage) msg;
+			final CmppSubmitResponseMessage resp = new CmppSubmitResponseMessage(e.getHeader().getSequenceId());
+//			resp.setResult(RandomUtils.nextInt()%2 <1 ? 8 : 0);
+			resp.setResult(0);
+			ctx.channel().writeAndFlush(resp);
+			
+			//回复状态报告
+			final CmppDeliverRequestMessage deliver = new CmppDeliverRequestMessage();
+			deliver.setDestId(e.getSrcId());
+			deliver.setSrcterminalId(e.getDestterminalId()[0]);
+			CmppReportRequestMessage report = new CmppReportRequestMessage();
+			report.setDestterminalId(deliver.getSrcterminalId());
+			report.setMsgId(resp.getMsgId());
+			String t = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "yyMMddHHMM");
+			report.setSubmitTime(t);
+			report.setDoneTime(t);
+			report.setStat("DELIVRD");
+			report.setSmscSequence(0);
+			deliver.setReportRequestMessage(report);
+			
+			ctx.executor().schedule(new Runnable() {
+				public void run() {
+					ctx.channel().writeAndFlush(deliver);
+				}
+			}, 5, TimeUnit.SECONDS);
+			
+		} else if (msg instanceof CmppSubmitResponseMessage) {
+			CmppSubmitResponseMessage e = (CmppSubmitResponseMessage) msg;
+		} else if (msg instanceof CmppQueryRequestMessage) {
+			CmppQueryRequestMessage e = (CmppQueryRequestMessage) msg;
+			CmppQueryResponseMessage res = new CmppQueryResponseMessage(e.getHeader().getSequenceId());
+			ctx.channel().writeAndFlush(res);
+		} else {
+			ctx.fireChannelRead(msg);
+		}
+	}
 	
 	@Override
 	public String name() {

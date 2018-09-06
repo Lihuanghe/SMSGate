@@ -8,7 +8,10 @@ import java.nio.ByteBuffer;
 
 import java.nio.ByteOrder;
 
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.junit.Test;
+
+import com.zx.sms.common.util.CachedMillisecondClock;
 
 public class TestBDBQueueMap {
 
@@ -26,5 +29,6 @@ public class TestBDBQueueMap {
 		ByteBuf nettybf = Unpooled.buffer();
 		System.out.println(ByteOrder.nativeOrder());
 		System.out.println(nettybf.order());
+		System.out.println(DateFormatUtils.format(CachedMillisecondClock.INS.now(), "yyMMddHHMM"));
 	}
 }

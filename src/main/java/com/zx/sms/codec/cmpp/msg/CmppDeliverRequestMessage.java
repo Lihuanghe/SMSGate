@@ -43,8 +43,6 @@ public class CmppDeliverRequestMessage extends DefaultMessage  implements LongSM
 
 	private String reserved = GlobalConstance.emptyString;
 
-	private boolean isReport = false;
-	
 	private SmsMessage msg;
 
 	private boolean supportLongMsg = true;
@@ -139,25 +137,6 @@ public class CmppDeliverRequestMessage extends DefaultMessage  implements LongSM
 	}
 
 	/**
-	 * @return the registeredDelivery
-	 */
-	public short getRegisteredDelivery() {
-		return registeredDelivery;
-	}
-
-	/**
-	 * @param registeredDelivery
-	 *            the registeredDelivery to set
-	 */
-	public void setRegisteredDelivery(short registeredDelivery) {
-		this.registeredDelivery = registeredDelivery;
-		if (this.registeredDelivery != 0) {
-			setReport(true);
-			setReportRequestMessage(this.reportRequestMessage);
-		}
-	}
-
-	/**
 	 * @return the reserved
 	 */
 	public String getReserved() {
@@ -185,6 +164,9 @@ public class CmppDeliverRequestMessage extends DefaultMessage  implements LongSM
 	 */
 	public void setReportRequestMessage(CmppReportRequestMessage reportRequestMessage) {
 		this.reportRequestMessage = reportRequestMessage;
+		if(reportRequestMessage!=null) {
+			this.registeredDelivery = (short)1;
+		}
 	}
 
 	/**
@@ -206,15 +188,7 @@ public class CmppDeliverRequestMessage extends DefaultMessage  implements LongSM
 	 * @return the isReport
 	 */
 	public boolean isReport() {
-		return isReport;
-	}
-
-	/**
-	 * @param isReport
-	 *            the isReport to set
-	 */
-	public void setReport(boolean isReport) {
-		this.isReport = isReport;
+		return this.registeredDelivery != 0;
 	}
 
 	public String getMsgContent() {

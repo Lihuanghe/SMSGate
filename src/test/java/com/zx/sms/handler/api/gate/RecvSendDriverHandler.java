@@ -67,10 +67,6 @@ public class RecvSendDriverHandler extends AbstractBusinessHandler {
 						msg.setMsgContent("SMRZ");
 
 						msg.setMsgId(new MsgId());
-						msg.setRegisteredDelivery((short) 0);
-						if (msg.getRegisteredDelivery() == 1) {
-							msg.setReportRequestMessage(new CmppReportRequestMessage());
-						}
 						//msg.setServiceid("10085101");
 						msg.setSrcterminalId("13800138000");
 						msg.setSrcterminalType((short) 1);

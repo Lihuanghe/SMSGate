@@ -71,10 +71,10 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 
 		// requestMessage.setSrcterminalType(bodyBuffer.readUnsignedByte());//CMPP2.0
 		// SrcterminalType不进行编解码
-		requestMessage.setRegisteredDelivery(bodyBuffer.readUnsignedByte());
+		short registeredDelivery =bodyBuffer.readUnsignedByte();
 		short frameLength = (short)(LongMessageFrameHolder.getPayloadLength(requestMessage.getMsgfmt().getAlphabet(),bodyBuffer.readUnsignedByte()) & 0xffff);
 
-		if (requestMessage.getRegisteredDelivery() == 0) {
+		if (registeredDelivery == 0) {
 			byte[] contentbytes = new byte[frameLength];
 			bodyBuffer.readBytes(contentbytes);
 			requestMessage.setMsgContentBytes(contentbytes);
@@ -122,7 +122,7 @@ public class Cmpp20DeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 					Cmpp20DeliverRequest.SRCTERMINALID.getLength(), 0));
 
 			// bodyBuffer.writeByte(requestMessage.getSrcterminalType());//CMPP2.0不编解码
-			bodyBuffer.writeByte(requestMessage.getRegisteredDelivery());
+			bodyBuffer.writeByte(requestMessage.isReport()?1:0);
 
 			if (!requestMessage.isReport()) {
 			

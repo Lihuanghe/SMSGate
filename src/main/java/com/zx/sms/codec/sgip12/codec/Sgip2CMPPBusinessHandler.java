@@ -128,7 +128,6 @@ public class Sgip2CMPPBusinessHandler extends AbstractBusinessHandler {
 				CmppDeliverRequestMessage deliver = new CmppDeliverRequestMessage(rece.getHeader());
 				deliver.setTimestamp(rece.getTimestamp());
 				deliver.setReportRequestMessage(report);
-				deliver.setRegisteredDelivery((short)1);
 				deliver.setDestId(rece.getUsernumber());
 				
 				out.add(deliver);

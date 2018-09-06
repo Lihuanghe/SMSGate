@@ -1,8 +1,10 @@
 package com.zx.sms.handler.api.smsbiz;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,8 +12,11 @@ import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppQueryRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppQueryResponseMessage;
+import com.zx.sms.codec.cmpp.msg.CmppReportRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
+import com.zx.sms.common.util.CachedMillisecondClock;
+import com.zx.sms.common.util.MsgId;
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
@@ -60,12 +65,13 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 	}
 
 	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+	public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
 
 		if (msg instanceof CmppDeliverRequestMessage) {
 			CmppDeliverRequestMessage e = (CmppDeliverRequestMessage) msg;
 			CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(e.getHeader().getSequenceId());
 			responseMessage.setResult(0);
+			responseMessage.setMsgId(e.getMsgId());
 			ctx.channel().writeAndFlush(responseMessage).addListener(new GenericFutureListener() {
 			@Override
 			public void operationComplete(Future future) throws Exception {
@@ -87,6 +93,27 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 					cnt.incrementAndGet();
 				}
 			});
+			
+			//回复状态报告
+			final CmppDeliverRequestMessage deliver = new CmppDeliverRequestMessage();
+			deliver.setDestId(e.getSrcId());
+			deliver.setSrcterminalId(e.getDestterminalId()[0]);
+			CmppReportRequestMessage report = new CmppReportRequestMessage();
+			report.setDestterminalId(deliver.getSrcterminalId());
+			report.setMsgId(resp.getMsgId());
+			String t = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "yyMMddHHMM");
+			report.setSubmitTime(t);
+			report.setDoneTime(t);
+			report.setStat("DELIVRD");
+			report.setSmscSequence(0);
+			deliver.setReportRequestMessage(report);
+			
+			ctx.executor().submit(new Runnable() {
+				public void run() {
+					ctx.channel().writeAndFlush(deliver);
+				}
+			});
+			
 		} else if (msg instanceof CmppSubmitResponseMessage) {
 			CmppSubmitResponseMessage e = (CmppSubmitResponseMessage) msg;
 		} else if (msg instanceof CmppQueryRequestMessage) {

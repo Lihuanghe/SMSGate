@@ -76,11 +76,11 @@ public class Cmpp7FDeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 
 		requestMessage.setSrcterminalId(bodyBuffer.readCharSequence(CmppDeliverRequest.SRCTERMINALID.getLength(),GlobalConstance.defaultTransportCharset).toString().trim());
 		requestMessage.setSrcterminalType(bodyBuffer.readUnsignedByte());
-		requestMessage.setRegisteredDelivery(bodyBuffer.readUnsignedByte());
+		short registeredDelivery = bodyBuffer.readUnsignedByte();
 		
 		short frameLength = (short)(LongMessageFrameHolder.getPayloadLength(requestMessage.getMsgfmt().getAlphabet(),bodyBuffer.readUnsignedByte()) & 0xffff);
 
-		if (requestMessage.getRegisteredDelivery() == 0) {
+		if (registeredDelivery == 0) {
 			byte[] contentbytes = new byte[frameLength];
 			bodyBuffer.readBytes(contentbytes);
 			requestMessage.setMsgContentBytes(contentbytes);
@@ -134,7 +134,7 @@ public class Cmpp7FDeliverRequestMessageCodec extends MessageToMessageCodec<Mess
 			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getSrcterminalId().getBytes(GlobalConstance.defaultTransportCharset),
 					CmppDeliverRequest.SRCTERMINALID.getLength(), 0));
 			bodyBuffer.writeByte(requestMessage.getSrcterminalType());
-			bodyBuffer.writeByte(requestMessage.getRegisteredDelivery());
+			bodyBuffer.writeByte(requestMessage.isReport()?1:0);
 			
 
 			if (!requestMessage.isReport()) {

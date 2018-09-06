@@ -21,7 +21,7 @@ public class CmppReportRequestMessage extends DefaultMessage {
 	private String submitTime = String.format("%ty%<tm%<td%<tH%<tM", CachedMillisecondClock.INS.now());
 	private String doneTime = String.format("%ty%<tm%<td%<tH%<tM", CachedMillisecondClock.INS.now());
 	private String destterminalId = GlobalConstance.emptyString;
-	private long smscSequence = DefaultSequenceNumberUtil.getSequenceNo();
+	private long smscSequence = 0;
 
 	/**
 	 * @return the msgId
