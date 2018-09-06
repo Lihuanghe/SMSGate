@@ -41,8 +41,8 @@ import es.rickyepoderi.wbxml.document.WbXmlElement;
 import es.rickyepoderi.wbxml.document.WbXmlEncoder;
 import es.rickyepoderi.wbxml.document.WbXmlParser;
 import java.io.IOException;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * <p>OTA definition has a property which is an icon (binary image). In
@@ -71,8 +71,7 @@ public class OtaBase64Opaque implements OpaqueAttributePlugin {
             WbXmlAttribute name = element.getAttribute("NAME");
             if (name != null && name.getValue().equals("ICON")) {
                 isIcon = true;
-                BASE64Decoder dec = new BASE64Decoder();
-                encoder.writeOpaque(dec.decodeBuffer(value));
+                encoder.writeOpaque(Base64.decodeBase64(value));
             }
         }
         if (!isIcon) {
@@ -93,8 +92,7 @@ public class OtaBase64Opaque implements OpaqueAttributePlugin {
     @Override
     public String parse(WbXmlParser parser, byte[] data) throws IOException {
         // get the data and show it as Base64
-        BASE64Encoder enc = new BASE64Encoder();
-        return enc.encode(data).replaceAll(System.getProperty("line.separator"), "");
+        return Base64.encodeBase64String(data).replaceAll(System.getProperty("line.separator"), "");
     }
     
 }
