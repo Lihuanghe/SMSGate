@@ -67,6 +67,10 @@ public class SgipSubmitRequestMessage extends DefaultMessage implements LongSMSM
 	public SgipSubmitRequestMessage(Header header) {
 		super(SgipPacketType.SUBMITREQUEST,header);
 	}
+	
+	public boolean isReport() {
+		return false;
+	}
 
 	/**
 	 * @return the spnumber

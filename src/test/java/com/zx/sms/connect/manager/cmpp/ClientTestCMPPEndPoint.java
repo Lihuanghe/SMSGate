@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 import com.zx.sms.handler.api.gate.SessionConnectedHandler;
+import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
 /**
  *经测试，35个连接，每个连接每200/s条消息
  *lenovoX250能承担7000/s消息编码解析无压力。
@@ -32,7 +33,7 @@ public class ClientTestCMPPEndPoint {
 	
 	
 		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
-		client.setId("client");
+		client.setId("GSDT01");
 		client.setHost("127.0.0.1");
 		client.setPort(20003);
 		client.setChartset(Charset.forName("utf-8"));
@@ -49,9 +50,31 @@ public class ClientTestCMPPEndPoint {
 		client.setReSendFailMsg(true);
 //		client.setWriteLimit(500);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new SessionConnectedHandler(1000));
+		clienthandlers.add( new MessageReceiveHandler());
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
+		
+		CMPPClientEndpointEntity client1 = new CMPPClientEndpointEntity();
+		client1.setId("GSDT02");
+		client1.setHost("127.0.0.1");
+		client1.setPort(20003);
+		client1.setChartset(Charset.forName("utf-8"));
+		client1.setGroupName("test");
+		client1.setUserName("GSDT02");
+		client1.setPassword("1qaz2wsx");
+
+
+		client1.setMaxChannels((short)1);
+		client1.setWindows((short)16);
+		client1.setVersion((short)0x20);
+		client1.setRetryWaitTimeSec((short)30);
+		client1.setUseSSL(false);
+		client1.setReSendFailMsg(true);
+//		client.setWriteLimit(500);
+		List<BusinessHandlerInterface> clienthandlers1 = new ArrayList<BusinessHandlerInterface>();
+		clienthandlers1.add( new MessageReceiveHandler());
+		client1.setBusinessHandlerSet(clienthandlers1);
+		manager.addEndpointEntity(client1);
 		
 		manager.openAll();
 		//LockSupport.park();

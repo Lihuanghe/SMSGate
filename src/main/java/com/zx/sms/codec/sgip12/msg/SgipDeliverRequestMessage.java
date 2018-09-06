@@ -133,6 +133,10 @@ public class SgipDeliverRequestMessage extends DefaultMessage implements LongSMS
 	public String getReserve() {
 		return reserve;
 	}
+	
+	public boolean isReport() {
+		return false;
+	}
 
 	/**
 	 * @param reserve the reserve to set

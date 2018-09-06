@@ -243,12 +243,6 @@ public class SMGPDeliverMessage extends SMGPBaseMessage implements LongSMSMessag
 		return isReport;
 	}
 
-	public void setReport(boolean isReport) {
-		this.isReport = isReport;
-	}
-
-
-
 	public SmsDcs getMsgFmt() {
 		return this.msgFmt;
 	}

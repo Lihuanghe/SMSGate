@@ -163,6 +163,10 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
     public String getServiceType() {
         return this.serviceType;
     }
+    
+    public boolean isReport() {
+		return false;
+	}
 
     public void setServiceType(String value) {
         this.serviceType = value;

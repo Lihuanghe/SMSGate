@@ -86,7 +86,9 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 		this.msgid = msgid;
 	}
 
-
+	public boolean isReport() {
+		return false;
+	}
 
 	/**
 	 * @return the registeredDelivery

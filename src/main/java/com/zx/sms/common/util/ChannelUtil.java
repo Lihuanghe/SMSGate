@@ -83,30 +83,32 @@ public class ChannelUtil {
 
 		EndpointConnector connector = EndpointManager.INS.getEndpointConnector(entity);
 		List<Promise> arrPromise = new ArrayList<Promise>();
-		if(msg instanceof LongSMSMessage) {
+		if(msg instanceof LongSMSMessage ) {
 			LongSMSMessage<BaseMessage> lmsg = (LongSMSMessage<BaseMessage>)msg;
-			SmsMessage msgcontent = lmsg.getSmsMessage();
-			List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(msgcontent);
-			for (LongMessageFrame frame : frameList) {
-				BaseMessage basemsg = (BaseMessage)lmsg.generateMessage(frame);
-				Promise promise = connector.synwrite(basemsg);
-				if(promise==null) {
-					//为空，可能是连接断了,直接返回
-					return null;
+			if(!lmsg.isReport()) {
+				//长短信拆分
+				SmsMessage msgcontent = lmsg.getSmsMessage();
+				List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(msgcontent);
+				for (LongMessageFrame frame : frameList) {
+					BaseMessage basemsg = (BaseMessage)lmsg.generateMessage(frame);
+					Promise promise = connector.synwrite(basemsg);
+					if(promise==null) {
+						//为空，可能是连接断了,直接返回
+						return null;
+					}
+					arrPromise.add(promise);
 				}
-				arrPromise.add(promise);
+				return arrPromise;
 			}
-			return arrPromise;
-			
-		}else{
-			
-			Promise promise = connector.synwrite(msg);
-			if(promise==null) {
-				//为空，可能是连接断了,直接返回
-				return null;
-			}
-			arrPromise.add(promise);
-			return arrPromise;
 		}
+			
+		Promise promise = connector.synwrite(msg);
+		if(promise==null) {
+			//为空，可能是连接断了,直接返回
+			return null;
+		}
+		arrPromise.add(promise);
+		return arrPromise;
+		
 	}
 }

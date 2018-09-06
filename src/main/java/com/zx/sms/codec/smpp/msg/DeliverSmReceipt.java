@@ -87,6 +87,10 @@ public class DeliverSmReceipt extends DeliverSm {
 		this.text = text;
 	}
 	
+	public boolean isReport() {
+		return true;
+	}
+	
     public byte getEsmClass() {
         return 0x04;
     }

@@ -8,4 +8,5 @@ public interface LongSMSMessage<T> {
 	public LongMessageFrame generateFrame();
 	public T generateMessage(LongMessageFrame frame) throws Exception;
 	public SmsMessage getSmsMessage();
+	public boolean isReport();
 }

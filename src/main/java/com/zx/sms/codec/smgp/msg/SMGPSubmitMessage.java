@@ -140,6 +140,9 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 	public String getChargeTermPseudo(){
 		return chargeTermPseudo.getValue();
 	}
+	public boolean isReport() {
+		return false;
+	}
 	
 	public void setDestTermType(byte value){
 		destTermType.setValue(value);
