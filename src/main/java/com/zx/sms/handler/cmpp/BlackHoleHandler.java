@@ -3,8 +3,6 @@ package com.zx.sms.handler.cmpp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.zx.sms.handler.api.gate.SessionConnectedHandler;
-
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
