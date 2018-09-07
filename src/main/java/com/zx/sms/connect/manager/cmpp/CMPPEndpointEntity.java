@@ -13,8 +13,12 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 	
 	private long liftTime;
 	private String groupName="";
+	
 	private String userName;
 	private String password;
+	
+	
+	private String spCode = ""; 
 	//默认为3.0协议
 	private short version = (short)0x30L;
 	private Charset chartset = GlobalConstance.defaultTransportCharset;
@@ -44,11 +48,28 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
 	}
+	/**
+	 *服务代码：如10696101 
+	 */
+	public String getSpCode() {
+		return spCode;
+	}
 
+	/**
+	 *服务代码：如10696101 
+	 */
+	public void setSpCode(String spCode) {
+		this.spCode = spCode;
+	}
+	/**
+	 *企业代码：如902104
+	 */
 	public String getUserName() {
 		return userName;
 	}
-
+	/**
+	 *企业代码：如902104
+	 */
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}

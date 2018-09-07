@@ -95,24 +95,26 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 			});
 			
 			//回复状态报告
-			final CmppDeliverRequestMessage deliver = new CmppDeliverRequestMessage();
-			deliver.setDestId(e.getSrcId());
-			deliver.setSrcterminalId(e.getDestterminalId()[0]);
-			CmppReportRequestMessage report = new CmppReportRequestMessage();
-			report.setDestterminalId(deliver.getSrcterminalId());
-			report.setMsgId(resp.getMsgId());
-			String t = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "yyMMddHHMM");
-			report.setSubmitTime(t);
-			report.setDoneTime(t);
-			report.setStat("DELIVRD");
-			report.setSmscSequence(0);
-			deliver.setReportRequestMessage(report);
-			
-			ctx.executor().submit(new Runnable() {
-				public void run() {
-					ctx.channel().writeAndFlush(deliver);
-				}
-			});
+			if(e.getRegisteredDelivery()==1) {
+				final CmppDeliverRequestMessage deliver = new CmppDeliverRequestMessage();
+				deliver.setDestId(e.getSrcId());
+				deliver.setSrcterminalId(e.getDestterminalId()[0]);
+				CmppReportRequestMessage report = new CmppReportRequestMessage();
+				report.setDestterminalId(deliver.getSrcterminalId());
+				report.setMsgId(resp.getMsgId());
+				String t = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "yyMMddHHMM");
+				report.setSubmitTime(t);
+				report.setDoneTime(t);
+				report.setStat("DELIVRD");
+				report.setSmscSequence(0);
+				deliver.setReportRequestMessage(report);
+				
+				ctx.executor().submit(new Runnable() {
+					public void run() {
+						ctx.channel().writeAndFlush(deliver);
+					}
+				});
+			}
 			
 		} else if (msg instanceof CmppSubmitResponseMessage) {
 			CmppSubmitResponseMessage e = (CmppSubmitResponseMessage) msg;

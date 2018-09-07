@@ -50,9 +50,9 @@ public class ClientTestCMPPEndPoint {
 		client.setReSendFailMsg(true);
 //		client.setWriteLimit(500);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new MessageReceiveHandler());
+		clienthandlers.add( new SessionConnectedHandler(100));
 		client.setBusinessHandlerSet(clienthandlers);
-		manager.addEndpointEntity(client);
+//		manager.addEndpointEntity(client);
 		
 		CMPPClientEndpointEntity client1 = new CMPPClientEndpointEntity();
 		client1.setId("GSDT02");
@@ -60,6 +60,7 @@ public class ClientTestCMPPEndPoint {
 		client1.setPort(20003);
 		client1.setChartset(Charset.forName("utf-8"));
 		client1.setGroupName("test");
+		client1.setSpCode("1069039129129");
 		client1.setUserName("GSDT02");
 		client1.setPassword("1qaz2wsx");
 
@@ -72,7 +73,7 @@ public class ClientTestCMPPEndPoint {
 		client1.setReSendFailMsg(true);
 //		client.setWriteLimit(500);
 		List<BusinessHandlerInterface> clienthandlers1 = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers1.add( new MessageReceiveHandler());
+		clienthandlers1.add( new SessionConnectedHandler(1));
 		client1.setBusinessHandlerSet(clienthandlers1);
 		manager.addEndpointEntity(client1);
 		

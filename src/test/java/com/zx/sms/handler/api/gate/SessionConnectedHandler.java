@@ -1,11 +1,5 @@
 package com.zx.sms.handler.api.gate;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
-import io.netty.util.concurrent.Promise;
-
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -18,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.BaseMessage;
-import com.zx.sms.LongSMSMessage;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppQueryRequestMessage;
@@ -26,7 +19,6 @@ import com.zx.sms.codec.cmpp.msg.CmppQueryResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppReportRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
-import com.zx.sms.codec.sgip12.msg.SgipSubmitRequestMessage;
 import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.common.util.ChannelUtil;
 import com.zx.sms.common.util.MsgId;
@@ -34,8 +26,14 @@ import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
 import com.zx.sms.connect.manager.ServerEndpoint;
+import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.session.cmpp.SessionState;
+
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.Promise;
 
 /**
  * 
@@ -71,7 +69,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 		final AtomicInteger tmptotal = new AtomicInteger(totleCnt.get());
 		if (evt == SessionState.Connect) {
 		
-			final EndpointEntity finalentity = (EndpointEntity) getEndpointEntity();
+			final CMPPEndpointEntity finalentity = (CMPPEndpointEntity) getEndpointEntity();
 			final Channel ch = ctx.channel();
 			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>() {
 				private BaseMessage createTestReq(String content) {
@@ -98,8 +96,8 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						msg.setRegisteredDelivery((short)1);
 						msg.setMsgid(new MsgId());
 						msg.setServiceId("10086");
-						msg.setSrcId("10086");
-						msg.setMsgsrc("927165");
+						msg.setSrcId("1069039129");
+						msg.setMsgsrc(finalentity.getUserName());
 //						msg.setMsgContent(new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd",50*1024));
 						/*
 						SgipSubmitRequestMessage requestMessage = new SgipSubmitRequestMessage();
@@ -131,7 +129,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 								for(Promise  future: futures){
 									future.sync();
 									if(future.isSuccess()){
-//										logger.info("response:{}",future.get());
+										logger.info("response:{}",future.get());
 									}else{
 										logger.error("response:{}",future.cause());
 									}
@@ -171,14 +169,14 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 	}
 
 	public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
-
+		logger.info("Receive : {}" ,msg);
 		if (msg instanceof CmppDeliverRequestMessage) {
 			CmppDeliverRequestMessage e = (CmppDeliverRequestMessage) msg;
 			CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(e.getHeader().getSequenceId());
 			responseMessage.setResult(0);
 			responseMessage.setMsgId(e.getMsgId());
 			ctx.channel().writeAndFlush(responseMessage);
-
+			
 		} else if (msg instanceof CmppDeliverResponseMessage) {
 			CmppDeliverResponseMessage e = (CmppDeliverResponseMessage) msg;
 
