@@ -56,24 +56,24 @@ public class ClientTestCMPPEndPoint {
 		
 		CMPPClientEndpointEntity client1 = new CMPPClientEndpointEntity();
 		client1.setId("GSDT02");
-		client1.setHost("127.0.0.1");
-		client1.setPort(20003);
+		client1.setHost("107.170.242.210");
+		client1.setPort(7890);
 		client1.setChartset(Charset.forName("utf-8"));
 		client1.setGroupName("test");
 		client1.setSpCode("1069039129129");
-		client1.setUserName("GSDT02");
-		client1.setPassword("1qaz2wsx");
-
+		client1.setUserName("901783");
+		client1.setPassword("ICP001");
+//		client1.setProxy("http://127.0.0.1:1080");
 
 		client1.setMaxChannels((short)1);
 		client1.setWindows((short)16);
-		client1.setVersion((short)0x20);
+		client1.setVersion((short)0x30);
 		client1.setRetryWaitTimeSec((short)30);
 		client1.setUseSSL(false);
 		client1.setReSendFailMsg(true);
-//		client.setWriteLimit(500);
+//		client.setWriteLimit(10);
 		List<BusinessHandlerInterface> clienthandlers1 = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers1.add( new SessionConnectedHandler(1));
+		clienthandlers1.add( new SessionConnectedHandler(1000));
 		client1.setBusinessHandlerSet(clienthandlers1);
 		manager.addEndpointEntity(client1);
 		
@@ -81,7 +81,7 @@ public class ClientTestCMPPEndPoint {
 		//LockSupport.park();
 //		Thread.sleep(1000);
 		//manager.openEndpoint(client);Thread.sleep(1000);
-		manager.startConnectionCheckTask();
+//		manager.startConnectionCheckTask();
 		Thread.sleep(1000);
 		
 //		while(true){

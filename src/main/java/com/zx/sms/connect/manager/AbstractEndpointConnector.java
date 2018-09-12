@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.zx.sms.BaseMessage;
 import com.zx.sms.common.GlobalConstance;
+import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.storedMap.BDBStoredMapFactoryImpl;
 import com.zx.sms.common.storedMap.VersionObject;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
@@ -135,7 +136,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	protected abstract void doinitPipeLine(ChannelPipeline pipeline);
 	
 	
-	protected void addProxyHandler(Channel ch,URI proxy){
+	protected void addProxyHandler(Channel ch,URI proxy) throws NotSupportedException{
 		if(proxy==null) return;
 		String scheme = proxy.getScheme();
 		String userinfo = proxy.getUserInfo();
@@ -173,6 +174,8 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			}else{
 				pipeline.addLast(new Socks4ProxyHandler(new InetSocketAddress(host,port),username));
 			}
+		}else {
+			throw new NotSupportedException("not support proxy protocol "+ scheme);
 		}
 	}
 

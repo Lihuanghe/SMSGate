@@ -90,9 +90,9 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						return msg;
 					} else {
 						CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
-						msg.setDestterminalId(String.valueOf(System.nanoTime()));
+						msg.setDestterminalId(String.valueOf(System.currentTimeMillis()/1000));
 						msg.setLinkID("0000");
-						msg.setMsgContent(content);
+						msg.setMsgContent("======1 ========");
 						msg.setRegisteredDelivery((short)1);
 						msg.setMsgid(new MsgId());
 						msg.setServiceId("10086");
@@ -121,22 +121,25 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 					int cnt = RandomUtils.nextInt() & 0x4ff;
 					while(cnt>0 && tmptotal.get()>0) {
 						if(ctx.channel().isWritable()){
-							List<Promise> futures = ChannelUtil.syncWriteLongMsgToEntity(getEndpointEntity().getId(), createTestReq("中createT"+UUID.randomUUID().toString()));
+							List<Promise> futures = null;
+							ChannelUtil.asyncWriteToEntity(getEndpointEntity().getId(), createTestReq("中createT"+UUID.randomUUID().toString()));
 //							ChannelFuture future = ChannelUtil.asyncWriteToEntity(getEndpointEntity().getId(), createTestReq("中msg"+UUID.randomUUID().toString()));
 //							ChannelFuture future = ctx.writeAndFlush( );
+							cnt--;
+							tmptotal.decrementAndGet();
 							
+							if(futures==null) continue;
 							try{
 								for(Promise  future: futures){
-									future.sync();
+//									future.sync();
 									if(future.isSuccess()){
-										logger.info("response:{}",future.get());
+//										logger.info("response:{}",future.get());
 									}else{
-										logger.error("response:{}",future.cause());
+//										logger.error("response:{}",future.cause());
 									}
 								}
-									
-								cnt--;
-								tmptotal.decrementAndGet();
+
+
 							}catch(Exception e){
 								e.printStackTrace();
 								cnt--;
@@ -169,7 +172,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 	}
 
 	public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
-		logger.info("Receive : {}" ,msg);
+//		logger.info("Receive : {}" ,msg);
 		if (msg instanceof CmppDeliverRequestMessage) {
 			CmppDeliverRequestMessage e = (CmppDeliverRequestMessage) msg;
 			CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(e.getHeader().getSequenceId());

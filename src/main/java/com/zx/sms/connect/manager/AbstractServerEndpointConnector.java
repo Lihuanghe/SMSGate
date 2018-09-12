@@ -55,7 +55,8 @@ public abstract class AbstractServerEndpointConnector extends AbstractEndpointCo
 	public void close() throws Exception {
 
 		super.close();
-		acceptorChannel.close();
+		if(acceptorChannel==null)
+			acceptorChannel.close();
 		acceptorChannel = null;
 	}
 
