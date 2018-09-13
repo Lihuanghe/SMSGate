@@ -86,14 +86,6 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 		this.version = version;
 	}
 
-	@Deprecated
-	public short getWindows() {
-		return 16;
-	}
-	@Deprecated
-	public void setWindows(short windows) {
-	}
-
 	public Charset getChartset() {
 		return chartset;
 	}

@@ -12,7 +12,7 @@ import org.marre.sms.SmsTextMessage;
 
 import com.zx.sms.codec.AbstractTestMessageCodec;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
-import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
+import com.zx.sms.codec.cmpp.wap.LongMessageFrame;
 import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
 
 public class TestLongMessageFrameHolder extends AbstractTestMessageCodec<CmppSubmitRequestMessage>{

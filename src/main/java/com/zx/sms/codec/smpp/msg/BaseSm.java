@@ -33,7 +33,7 @@ import org.marre.wap.push.WapSIPush;
 import org.marre.wap.push.WapSLPush;
 import org.marre.wap.wbxml.WbxmlDocument;
 
-import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
+import com.zx.sms.codec.cmpp.wap.LongMessageFrame;
 import com.zx.sms.codec.smpp.Address;
 import com.zx.sms.codec.smpp.RecoverablePduException;
 import com.zx.sms.codec.smpp.SmppInvalidArgumentException;

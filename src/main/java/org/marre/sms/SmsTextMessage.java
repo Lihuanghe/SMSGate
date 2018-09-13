@@ -38,6 +38,7 @@ import java.io.Serializable;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CMPPCommonUtil;
 
 /**
@@ -91,7 +92,7 @@ public class SmsTextMessage extends SmsConcatMessage implements Serializable
     	if(haswidthChar(msg))
     		 setText(msg, SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.UCS2, SmsMsgClass.CLASS_UNKNOWN));
     	else
-    		 setText(msg, SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.ASCII, SmsMsgClass.CLASS_UNKNOWN));
+    		 setText(msg, GlobalConstance.defaultmsgfmt);
     }
     
     /**

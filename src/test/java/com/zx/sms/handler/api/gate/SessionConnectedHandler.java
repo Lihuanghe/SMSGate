@@ -22,10 +22,10 @@ import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.common.util.ChannelUtil;
 import com.zx.sms.common.util.MsgId;
-import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
 import com.zx.sms.connect.manager.ServerEndpoint;
+import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.session.cmpp.SessionState;
 
@@ -69,7 +69,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 		final AtomicInteger tmptotal = new AtomicInteger(totleCnt.get());
 		if (evt == SessionState.Connect) {
 		
-			final EndpointEntity finalentity = getEndpointEntity();
+			final CMPPEndpointEntity finalentity = (CMPPEndpointEntity)getEndpointEntity();
 			final Channel ch = ctx.channel();
 			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>() {
 				private BaseMessage createTestReq(String content) {
@@ -92,12 +92,12 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
 						msg.setDestterminalId(String.valueOf(System.currentTimeMillis()/1000));
 						msg.setLinkID("0000");
-						msg.setMsgContent("======1 ==msg.setMsgContent(new SmsMmsNotetMsgContent(new SmsMmsNotificationMessage(\\\"http://www.baidu.comificationMessage(\"http://www.baidu.com/abc/sfd\",50*1024));======"+System.currentTimeMillis());
+						msg.setMsgContent(System.nanoTime()+"|||21==21==ｋ===看=1==ms21======1.是服务器内部的重定向，服务器直接访问目标地址的 url网址，把里面的东西读取出来，但是客户端并不知道，因此用forward的话，客户端浏览器的网址是不会发生变化的。NotetMsgContent(newSmsMmsNotificationMessage");
 						msg.setRegisteredDelivery((short)1);
 						msg.setMsgid(new MsgId());
 						msg.setServiceId("10086");
-						msg.setSrcId("1069039129");
-//						msg.setMsgsrc(finalentity.getUserName());
+						msg.setSrcId(finalentity.getSpCode());
+						msg.setMsgsrc(finalentity.getUserName());
 //						msg.setMsgContent(new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd",50*1024));
 						/*
 						SgipSubmitRequestMessage requestMessage = new SgipSubmitRequestMessage();
@@ -128,7 +128,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 //							ChannelFuture future = ctx.writeAndFlush( );
 							cnt--;
 							tmptotal.decrementAndGet();
-							if(chfuture==null)chfuture.sync();
+							if(chfuture!=null)chfuture.sync();
 							
 							if(futures==null) continue;
 							try{

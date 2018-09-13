@@ -28,7 +28,7 @@ public class MessageLogHandler extends ChannelDuplexHandler {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-			logger.debug("Receive:{}", msg);
+		logger.debug("Receive:{}", msg);
 		ctx.fireChannelRead(msg);
 	}
 

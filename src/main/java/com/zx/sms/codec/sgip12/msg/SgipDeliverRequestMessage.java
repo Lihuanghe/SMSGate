@@ -3,6 +3,9 @@
  */
 package com.zx.sms.codec.sgip12.msg;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.marre.sms.SmsAlphabet;
 import org.marre.sms.SmsDcs;
 import org.marre.sms.SmsMessage;
@@ -18,7 +21,7 @@ import org.marre.wap.wbxml.WbxmlDocument;
 import com.zx.sms.LongSMSMessage;
 import com.zx.sms.codec.cmpp.msg.DefaultMessage;
 import com.zx.sms.codec.cmpp.msg.Header;
-import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
+import com.zx.sms.codec.cmpp.wap.LongMessageFrame;
 import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
 import com.zx.sms.codec.sgip12.packet.SgipPacketType;
 import com.zx.sms.common.GlobalConstance;
@@ -29,14 +32,14 @@ import com.zx.sms.common.util.DefaultSequenceNumberUtil;
  * @author huzorro(huzorro@gmail.com)
  * 
  */
-public class SgipDeliverRequestMessage extends DefaultMessage implements LongSMSMessage{
+public class SgipDeliverRequestMessage extends DefaultMessage implements LongSMSMessage<SgipDeliverRequestMessage>{
 	private static final long serialVersionUID = -605827022369453415L;
 
 	private String usernumber = GlobalConstance.emptyString;
 	private String spnumber = GlobalConstance.emptyString;
 	private short tppid = 0;
 	private short tpudhi = 0;
-	private SmsDcs msgfmt = SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.ASCII, SmsMsgClass.CLASS_UNKNOWN);
+	private SmsDcs msgfmt = GlobalConstance.defaultmsgfmt;
 	private int messagelength = 120;
 	private String reserve = GlobalConstance.emptyString;
 	private byte[] msgContentBytes = GlobalConstance.emptyBytes;
@@ -239,6 +242,19 @@ public class SgipDeliverRequestMessage extends DefaultMessage implements LongSMS
 		requestMessage.setMsgContent((SmsMessage)null);
 		return requestMessage;
 	}
+	private List<SgipDeliverRequestMessage> fragments = null;
 	
+	@Override
+	public List<SgipDeliverRequestMessage> getFragments() {
+		return fragments;
+	}
+
+	@Override
+	public void addFragment(SgipDeliverRequestMessage fragment) {
+		if(fragments==null)
+			fragments = new ArrayList<SgipDeliverRequestMessage>();
+		
+		fragments.add(fragment);
+	}
 	
 }

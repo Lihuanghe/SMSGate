@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.zx.sms.BaseMessage;
 import com.zx.sms.LongSMSMessage;
-import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
+import com.zx.sms.codec.cmpp.wap.LongMessageFrame;
 import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
 import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.connect.manager.EndpointConnector;
@@ -50,12 +50,14 @@ public class ChannelUtil {
 	}
 
 	private static ChannelFuture asyncWriteToEntity(EndpointConnector connector, final Object msg, GenericFutureListener listner) {
-		if(connector == null || msg == null) return null;
-		
+		if (connector == null || msg == null)
+			return null;
+
 		ChannelFuture promise = connector.asynwrite(msg);
-		
-		if(promise == null) return null;
-		
+
+		if (promise == null)
+			return null;
+
 		if (listner == null) {
 			promise.addListener(new GenericFutureListener() {
 				@Override
@@ -79,21 +81,21 @@ public class ChannelUtil {
 	 * 同步发送长短信类型 <br/>
 	 * 注意：该方法将拆分后的短信直接发送，不会再调用BusinessHandler里的write方法了。
 	 */
-	 public static List<Promise> syncWriteLongMsgToEntity( String entity, BaseMessage msg) throws Exception {
+	public static List<Promise> syncWriteLongMsgToEntity(String entity, BaseMessage msg) throws Exception {
 
 		EndpointConnector connector = EndpointManager.INS.getEndpointConnector(entity);
 		List<Promise> arrPromise = new ArrayList<Promise>();
-		if(msg instanceof LongSMSMessage ) {
-			LongSMSMessage<BaseMessage> lmsg = (LongSMSMessage<BaseMessage>)msg;
-			if(!lmsg.isReport()) {
-				//长短信拆分
+		if (msg instanceof LongSMSMessage) {
+			LongSMSMessage<BaseMessage> lmsg = (LongSMSMessage<BaseMessage>) msg;
+			if (!lmsg.isReport()) {
+				// 长短信拆分
 				SmsMessage msgcontent = lmsg.getSmsMessage();
 				List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(msgcontent);
 				for (LongMessageFrame frame : frameList) {
-					BaseMessage basemsg = (BaseMessage)lmsg.generateMessage(frame);
+					BaseMessage basemsg = (BaseMessage) lmsg.generateMessage(frame);
 					Promise promise = connector.synwrite(basemsg);
-					if(promise==null) {
-						//为空，可能是连接断了,直接返回
+					if (promise == null) {
+						// 为空，可能是连接断了,直接返回
 						return null;
 					}
 					arrPromise.add(promise);
@@ -101,14 +103,31 @@ public class ChannelUtil {
 				return arrPromise;
 			}
 		}
-			
+
 		Promise promise = connector.synwrite(msg);
-		if(promise==null) {
-			//为空，可能是连接断了,直接返回
+		if (promise == null) {
+			// 为空，可能是连接断了,直接返回
 			return null;
 		}
 		arrPromise.add(promise);
 		return arrPromise;
-		
+
+	}
+
+	/**
+	 * 同步发送消息类型 <br/>
+	 * 注意：该方法将直接发送，不会再调用BusinessHandler里的write方法了。
+	 */
+	public static Promise syncWriteMsgToEntity(String entity, BaseMessage msg) throws Exception {
+
+		EndpointConnector connector = EndpointManager.INS.getEndpointConnector(entity);
+
+		Promise promise = connector.synwrite(msg);
+		if (promise == null) {
+			// 为空，可能是连接断了,直接返回
+			return null;
+		}
+
+		return promise;
 	}
 }

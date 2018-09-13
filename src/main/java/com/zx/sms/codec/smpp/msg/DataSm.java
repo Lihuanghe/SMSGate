@@ -22,8 +22,12 @@ package com.zx.sms.codec.smpp.msg;
 
 import io.netty.buffer.ByteBuf;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.zx.sms.LongSMSMessage;
-import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
+import com.zx.sms.codec.cmpp.wap.LongMessageFrame;
+import com.zx.sms.codec.smgp.msg.SMGPSubmitMessage;
 import com.zx.sms.codec.smpp.RecoverablePduException;
 import com.zx.sms.codec.smpp.SmppConstants;
 import com.zx.sms.codec.smpp.UnrecoverablePduException;
@@ -94,4 +98,20 @@ public class DataSm extends BaseSm<DataSmResp>  implements LongSMSMessage<DataSm
 			return null;
 		}
 	}
+	
+	private List<DataSm> fragments = null;
+	
+	@Override
+	public List<DataSm> getFragments() {
+		return fragments;
+	}
+
+	@Override
+	public void addFragment(DataSm fragment) {
+		if(fragments==null)
+			fragments = new ArrayList<DataSm>();
+		
+		fragments.add(fragment);
+	}
+	
 }

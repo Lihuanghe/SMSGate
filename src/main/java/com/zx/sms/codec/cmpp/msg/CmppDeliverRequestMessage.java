@@ -3,6 +3,9 @@
  */
 package com.zx.sms.codec.cmpp.msg;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.marre.sms.SmsAlphabet;
 import org.marre.sms.SmsDcs;
 import org.marre.sms.SmsMessage;
@@ -17,6 +20,7 @@ import org.marre.wap.wbxml.WbxmlDocument;
 
 import com.zx.sms.LongSMSMessage;
 import com.zx.sms.codec.cmpp.packet.CmppPacketType;
+import com.zx.sms.codec.cmpp.wap.LongMessageFrame;
 import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CMPPCommonUtil;
@@ -47,10 +51,12 @@ public class CmppDeliverRequestMessage extends DefaultMessage  implements LongSM
 
 	private short tppid = 0;// 0是普通GSM 类型，点到点方式 ,127 :写sim卡
 	private short tpudhi = 0; // 0:msgcontent不带协议头。1:带有协议头
-	private SmsDcs msgfmt = SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.ASCII, SmsMsgClass.CLASS_UNKNOWN);
+	private SmsDcs msgfmt = GlobalConstance.defaultmsgfmt;
 	private short msgLength = 140;
 	private byte[] msgContentBytes = GlobalConstance.emptyBytes;
 
+	
+	
 	public CmppDeliverRequestMessage(Header header) {
 		super(CmppPacketType.CMPPDELIVERREQUEST, header);
 	}
@@ -320,5 +326,20 @@ public class CmppDeliverRequestMessage extends DefaultMessage  implements LongSM
 		}
 		requestMessage.setMsg(null);
 		return requestMessage;
+	}
+	
+	private List<CmppDeliverRequestMessage> fragments = null;
+	
+	@Override
+	public List<CmppDeliverRequestMessage> getFragments() {
+		return fragments;
+	}
+
+	@Override
+	public void addFragment(CmppDeliverRequestMessage fragment) {
+		if(fragments==null)
+			fragments = new ArrayList<CmppDeliverRequestMessage>();
+		
+		fragments.add(fragment);
 	}
 }

@@ -1,5 +1,8 @@
 package com.zx.sms.codec.smpp.msg;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /*
  * #%L
  * ch-smpp
@@ -21,7 +24,7 @@ package com.zx.sms.codec.smpp.msg;
  */
 
 import com.zx.sms.LongSMSMessage;
-import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
+import com.zx.sms.codec.cmpp.wap.LongMessageFrame;
 import com.zx.sms.codec.smpp.SmppConstants;
 
 public class DeliverSm extends BaseSm<DeliverSmResp> implements LongSMSMessage<DeliverSm> {
@@ -61,5 +64,18 @@ public class DeliverSm extends BaseSm<DeliverSmResp> implements LongSMSMessage<D
 			return null;
 		}
 	}
-    
+	private List<DeliverSm> fragments = null;
+	
+	@Override
+	public List<DeliverSm> getFragments() {
+		return fragments;
+	}
+
+	@Override
+	public void addFragment(DeliverSm fragment) {
+		if(fragments==null)
+			fragments = new ArrayList<DeliverSm>();
+		
+		fragments.add(fragment);
+	}
 }

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -48,10 +47,9 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalCause;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
-import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
+import com.zx.sms.LongSMSMessage;
 import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.util.CMPPCommonUtil;
-import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.common.util.StandardCharsets;
 
 import PduParser.GenericPdu;
@@ -62,8 +60,10 @@ import es.rickyepoderi.wbxml.definition.WbXmlInitialization;
 import es.rickyepoderi.wbxml.stream.WbXmlInputFactory;
 import io.netty.buffer.ByteBufUtil;
 
+
 //短信片断持久化需要集中保存，因为同一短信的不同分片会从不同的连接发送。可能不在同一台主机。
 //可以使用 Redis.Memcached等。
+
 public enum LongMessageFrameHolder {
 	INS;
 	private static final Logger logger = LoggerFactory.getLogger(LongMessageFrameHolder.class);
@@ -129,7 +129,7 @@ public enum LongMessageFrameHolder {
 		}
 	}
 	
-	private static SmsTextMessage buildTextMessage(byte[] bytes,SmsDcs msgfmt){
+	static SmsTextMessage buildTextMessage(byte[] bytes,SmsDcs msgfmt){
 		String text = null;
 		switch(msgfmt.getAlphabet()){
 		case GSM:
@@ -156,20 +156,18 @@ public enum LongMessageFrameHolder {
 		return null;
 
 	}
-
 	
 	/**
 	 * 获取一条完整的长短信，如果长短信组装未完成，返回null
 	 **/
-	public SmsMessage putAndget(String serviceNum, LongMessageFrame frame) throws NotSupportedException {
-
-		// assert (frame.getTppid() == 0);
+	public SmsMessageHolder putAndget(String serviceNum, LongSMSMessage msg) throws NotSupportedException {
+		LongMessageFrame frame = msg.generateFrame();
 
 		// 短信内容不带协议头，直接获取短信内容
 		// udhi只取第一个bit
 		if (frame.getTpudhi() == 0) {
-			return buildTextMessage(frame.getPayloadbytes(0), frame.getMsgfmt());
-
+			SmsTextMessage smsmsg =  buildTextMessage(frame.getPayloadbytes(0), frame.getMsgfmt());
+			return new SmsMessageHolder(smsmsg,msg);
 		} else if ((frame.getTpudhi() & 0x01) == 1 || (frame.getTpudhi() & 0x40) == 0x40) {
 
 			try {
@@ -180,8 +178,7 @@ public enum LongMessageFrameHolder {
 				
 				// 判断是否只有一帧
 				if (fh.isComplete()) {
-
-					return generatorSmsMessage(fh, frame);
+					return new SmsMessageHolder(generatorSmsMessage(fh, frame),msg);
 				}
 
 				// 超过一帧的，进行长短信合并
@@ -192,13 +189,16 @@ public enum LongMessageFrameHolder {
 				if (oldframeHolder != null) {
 
 					mergeFrameHolder(oldframeHolder, frame);
+					oldframeHolder.getMsg().addFragment(msg); //后续收到的片断加入列表
 				} else {
+					//保存第一个收到的短信片断
+					fh.setMsg(msg);
 					oldframeHolder = fh;
 				}
 
 				if (oldframeHolder.isComplete()) {
 					map.remove(mapKey);
-					return generatorSmsMessage(oldframeHolder, frame);
+					return new SmsMessageHolder(generatorSmsMessage(oldframeHolder, frame),oldframeHolder.getMsg());
 				}
 			} catch (Exception ex) {
 				return null;
@@ -207,9 +207,7 @@ public enum LongMessageFrameHolder {
 		} else {
 			throw new NotSupportedException("Not Support LongMsg.Tpudhi");
 		}
-
 		return null;
-
 	}
 
 	public List<LongMessageFrame> splitmsgcontent(SmsMessage content) throws SmsException {
@@ -330,143 +328,7 @@ public enum LongMessageFrameHolder {
 		List<InformationElement> infoElement;
 	}
 
-	private class InformationElement {
 
-		SmsUdhIei udhIei;
-		int infoEleLength;
-		byte[] infoEleData;
-	}
-
-	// 用来保存一条短信的各个片断
-	/**
-	 * TP_udhi ：0代表内容体里不含有协议头信息
-	 * 1代表内容含有协议头信息（长短信，push短信等都是在内容体上含有头内容的）当设置内容体包含协议头
-	 * ，需要根据协议写入相应的信息，长短信协议头有两种：<br/>
-	 * 6位协议头格式：05 00 03 XX MM NN<br/>
-	 * byte 1 : 05, 表示剩余协议头的长度<br/>
-	 * byte 2 : 00, 这个值在GSM 03.40规范9.2.3.24.1中规定，表示随后的这批超长短信的标识位长度为1（格式中的XX值）。<br/>
-	 * byte 3 : 03, 这个值表示剩下短信标识的长度<br/>
-	 * byte 4 : XX，这批短信的唯一标志，事实上，SME(手机或者SP)把消息合并完之后，就重新记录，所以这个标志是否唯 一并不是很 重要。<br/>
-	 * byte 5 : MM, 这批短信的数量。如果一个超长短信总共5条，这里的值就是5。<br/>
-	 * byte 6 : NN, 这批短信的数量。如果当前短信是这批短信中的第一条的值是1，第二条的值是2。<br/>
-	 * 例如：05 00 03 39 02 01 <br/>
-	 * 
-	 * 7 位的协议头格式：06 08 04 XX XX MM NN<br/>
-	 * byte 1 : 06, 表示剩余协议头的长度<br/>
-	 * byte 2 : 08, 这个值在GSM 03.40规范9.2.3.24.1中规定，表示随后的这批超长短信的标识位长度为2（格式中的XX值）。<br/>
-	 * byte 3 : 04, 这个值表示剩下短信标识的长度<br/>
-	 * byte 4-5 : XX
-	 * XX，这批短信的唯一标志，事实上，SME(手机或者SP)把消息合并完之后，就重新记录，所以这个标志是否唯一并不是很重要。<br/>
-	 * byte 6 : MM, 这批短信的数量。如果一个超长短信总共5条，这里的值就是5。<br/>
-	 * byte 7 : NN, 这批短信的数量。如果当前短信是这批短信中的第一条的值是1，第二条的值是2。<br/>
-	 * 例如：06 08 04 00 39 02 01 <br/>
-	 **/
-	private class FrameHolder {
-
-		// 这个字段目前只在当分片丢失时方便跟踪
-		private String serviceNum;
-		private long sequence;
-		private long timestamp = CachedMillisecondClock.INS.now();
-		/**
-		 * 长短信的总分片数量
-		 * */
-		private int totalLength = 0;
-		private int frameKey;
-		// 保存帧的Map,每帧都有一个唯一码。以这个唯一码做key
-		private byte[][] content;
-
-		private int totalbyteLength = 0;
-
-		private BitSet idxBitset;
-
-		private SmsDcs msgfmt;
-
-		private InformationElement appUDHinfo;
-
-		// 用来保存应用类型，如文本短信或者wap短信
-		public void setAppUDHinfo(InformationElement appUDHinfo) {
-			this.appUDHinfo = appUDHinfo;
-		}
-
-		public InformationElement getAppUDHinfo() {
-			return this.appUDHinfo;
-		}
-
-		public void setServiceNum(String serviceNum) {
-			this.serviceNum = serviceNum;
-		}
-
-		public long getSequence() {
-			return sequence;
-		}
-
-		public void setSequence(long sequence) {
-			this.sequence = sequence;
-		}
-
-		public long getTimestamp() {
-			return timestamp;
-		}
-
-		public FrameHolder(int frameKey, int totalLength) {
-			this.frameKey = frameKey;
-			this.totalLength = totalLength;
-
-			this.content = new byte[totalLength][];
-			this.idxBitset = new BitSet(totalLength);
-		}
-
-		public synchronized void merge(byte[] content, int idx) throws NotSupportedException {
-
-			if (idxBitset.get(idx)) {
-				logger.warn("have received the same index:{} of Message. do not merge this content.{},origin:{},{},{},new content:{}", idx,this.serviceNum,
-						buildTextMessage(this.content[idx], msgfmt).getText(), DateFormatUtils.format(getTimestamp(),
-								DateFormatUtils.ISO_DATETIME_FORMAT.getPattern()), getSequence(), buildTextMessage(content, msgfmt).getText());
-				throw new NotSupportedException("received the same index");
-			}
-			if (this.content.length <= idx || idx < 0) {
-				logger.warn("have received error index:{} of Message content length:{}. do not merge this content.{},{},{},{}", idx, this.content.length,
-						this.serviceNum, DateFormatUtils.format(getTimestamp(), DateFormatUtils.ISO_DATETIME_FORMAT.getPattern()), getSequence(),
-						buildTextMessage(content, msgfmt).getText());
-				throw new NotSupportedException("have received error index");
-			}
-			// 设置该短信序号已填冲
-			idxBitset.set(idx);
-
-			this.content[idx] = content;
-
-			this.totalbyteLength += this.content[idx].length;
-		}
-
-		public synchronized boolean isComplete() {
-			return totalLength == idxBitset.cardinality();
-		}
-
-		public synchronized byte[] mergeAllcontent() {
-			if (totalLength == 1) {
-				return content[0];
-			}
-			byte[] ret = new byte[totalbyteLength];
-			int idx = 0;
-			for (int i = 0; i < totalLength; i++) {
-				if (content[i] != null && content[i].length > 0) {
-					System.arraycopy(content[i], 0, ret, idx, content[i].length);
-					idx += content[i].length;
-				}
-			}
-
-			return ret;
-		}
-
-		public SmsDcs getMsgfmt() {
-			return msgfmt;
-		}
-
-		public void setMsgfmt(SmsDcs msgfmt) {
-			this.msgfmt = msgfmt;
-		}
-
-	}
 
 	/**
 	 * Convert a stream of septets read as octets into a byte array containing

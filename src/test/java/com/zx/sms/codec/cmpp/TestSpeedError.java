@@ -53,7 +53,6 @@ public class TestSpeedError {
 			client.setPassword("ICP");
 
 			client.setMaxChannels((short) 12);
-			client.setWindows((short) 16);
 			client.setVersion((short) 0x20);
 			client.setRetryWaitTimeSec(reSendTime);
 			client.setUseSSL(false);

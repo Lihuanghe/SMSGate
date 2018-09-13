@@ -1,6 +1,8 @@
 package com.zx.sms.codec.smgp.msg;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.time.DateFormatUtils;
@@ -19,16 +21,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.LongSMSMessage;
-import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
+import com.zx.sms.codec.cmpp.wap.LongMessageFrame;
 import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
+import com.zx.sms.codec.sgip12.msg.SgipSubmitRequestMessage;
 import com.zx.sms.codec.smgp.tlv.TLVByte;
 import com.zx.sms.codec.smgp.tlv.TLVString;
 import com.zx.sms.codec.smgp.util.ByteUtil;
 import com.zx.sms.codec.smgp.util.SMGPMsgIdUtil;
+import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 
-public class SMGPDeliverMessage extends SMGPBaseMessage implements LongSMSMessage{
+public class SMGPDeliverMessage extends SMGPBaseMessage implements LongSMSMessage<SMGPDeliverMessage>{
 	private static final Logger logger = LoggerFactory.getLogger(SMGPDeliverMessage.class);
 	/**
 	 * 
@@ -39,7 +43,7 @@ public class SMGPDeliverMessage extends SMGPBaseMessage implements LongSMSMessag
 
 	private boolean isReport; // 1
 
-	private SmsDcs msgFmt = SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.ASCII, SmsMsgClass.CLASS_UNKNOWN);
+	private SmsDcs msgFmt = GlobalConstance.defaultmsgfmt;
 
 	private String recvTime = DateFormatUtils.format((new Date()), "yyyyMMddHHmmss"); // 14
 
@@ -390,7 +394,7 @@ public class SMGPDeliverMessage extends SMGPBaseMessage implements LongSMSMessag
 	}
 
 	@Override
-	public Object generateMessage(LongMessageFrame frame) throws Exception {
+	public SMGPDeliverMessage generateMessage(LongMessageFrame frame) throws Exception {
 		SMGPDeliverMessage requestMessage = this.clone();
 		
 		requestMessage.setTpPid((byte)frame.getTppid());
@@ -404,4 +408,20 @@ public class SMGPDeliverMessage extends SMGPBaseMessage implements LongSMSMessag
 		requestMessage.setMsgContent((SmsMessage)null);
 		return requestMessage;
 	}
+	
+	private List<SMGPDeliverMessage> fragments = null;
+	
+	@Override
+	public List<SMGPDeliverMessage> getFragments() {
+		return fragments;
+	}
+
+	@Override
+	public void addFragment(SMGPDeliverMessage fragment) {
+		if(fragments==null)
+			fragments = new ArrayList<SMGPDeliverMessage>();
+		
+		fragments.add(fragment);
+	}
+	
 }

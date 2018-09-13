@@ -1,5 +1,8 @@
 package com.zx.sms.codec.smgp.msg;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.marre.sms.SmsAlphabet;
 import org.marre.sms.SmsDcs;
 import org.marre.sms.SmsMessage;
@@ -13,15 +16,16 @@ import org.marre.wap.push.WapSLPush;
 import org.marre.wap.wbxml.WbxmlDocument;
 
 import com.zx.sms.LongSMSMessage;
-import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
+import com.zx.sms.codec.cmpp.wap.LongMessageFrame;
 import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
 import com.zx.sms.codec.smgp.tlv.TLVByte;
 import com.zx.sms.codec.smgp.tlv.TLVString;
 import com.zx.sms.codec.smgp.util.ByteUtil;
+import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 
-public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage{
+public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage<SMGPSubmitMessage>{
 
 	/**
 	 * 
@@ -42,7 +46,7 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 
 	private String fixedFee="000000"; // 6
 
-	private SmsDcs msgFmt = SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.ASCII, SmsMsgClass.CLASS_UNKNOWN);
+	private SmsDcs msgFmt = GlobalConstance.defaultmsgfmt;
 
 	private String validTime=""; // 17
 
@@ -552,7 +556,7 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 		return frame;
 	}
 	@Override
-	public Object generateMessage(LongMessageFrame frame) throws Exception {
+	public SMGPSubmitMessage generateMessage(LongMessageFrame frame) throws Exception {
 		SMGPSubmitMessage requestMessage = this.clone();
 
 		requestMessage.setTpPid((byte)frame.getTppid());
@@ -566,5 +570,20 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 		}
 		requestMessage.setMsgContent((SmsMessage)null);
 		return requestMessage;
+	}
+	
+	private List<SMGPSubmitMessage> fragments = null;
+	
+	@Override
+	public List<SMGPSubmitMessage> getFragments() {
+		return fragments;
+	}
+
+	@Override
+	public void addFragment(SMGPSubmitMessage fragment) {
+		if(fragments==null)
+			fragments = new ArrayList<SMGPSubmitMessage>();
+		
+		fragments.add(fragment);
 	}
 }

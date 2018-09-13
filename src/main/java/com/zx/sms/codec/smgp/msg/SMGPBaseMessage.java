@@ -247,6 +247,10 @@ public abstract class SMGPBaseMessage implements BaseMessage ,Cloneable{
 	public long getSequenceNo() {
 		return sequenceNumber;
 	}
+	
+	public void setSequenceNo(long seq) {
+		 sequenceNumber=seq;
+	}
 
 	protected SMGPBaseMessage clone() throws CloneNotSupportedException {
 		SMGPBaseMessage msg =  (SMGPBaseMessage) super.clone();

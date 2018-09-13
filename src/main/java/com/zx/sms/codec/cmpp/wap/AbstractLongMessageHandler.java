@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import com.zx.sms.BaseMessage;
 import com.zx.sms.LongSMSMessage;
-import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EndpointEntity.SupportLongMessage;
 
@@ -29,33 +28,24 @@ public abstract class AbstractLongMessageHandler<T extends BaseMessage> extends 
 	protected void decode(ChannelHandlerContext ctx, T msg, List<Object> out) throws Exception {
 		if ((entity==null || entity.getSupportLongmsg() == SupportLongMessage.BOTH||entity.getSupportLongmsg() == SupportLongMessage.RECV) && msg instanceof LongSMSMessage && needHandleLongMessage(msg)) {
 			
-			LongMessageFrame frame = ((LongSMSMessage)msg).generateFrame();
 			String key = generateFrameKey(msg);
 			try {
-				SmsMessage content = LongMessageFrameHolder.INS.putAndget(key, frame);
+				SmsMessageHolder hoder = LongMessageFrameHolder.INS.putAndget(key, ((LongSMSMessage)msg));
 
-				if (content != null) {
-					resetMessageContent(msg, content);
-					out.add(msg);
-				} else {
-					// 短信片断未接收完全，直接给网关回复resp，等待其它片断
-					BaseMessage res = response(msg);
-					res.setRequest(msg);
-					ctx.writeAndFlush(res);
+				if (hoder != null) {
 					
-					//为了能让业务hander知道合并长短信时生成的msgId，这里将res 和req都做为userEvent抛出来
-					ctx.fireUserEventTriggered(res);
-				}
+					resetMessageContent((T)hoder.msg, hoder.smsMessage);
+					
+					//长短信合并完成，返回的这个msg里已经包含了所有的短信短断。后边的handler响应response时要包含这些片断。
+					out.add(hoder.msg);
+				} 
 			} catch (Exception ex) {
 				logger.error("", ex);
 				// 长短信解析失败，直接给网关回复 resp . 并丢弃这个短信
-				logger.error("Decode Message Error ,msg dump :{}", ByteBufUtil.hexDump(frame.getMsgContentBytes()));
+				logger.error("Decode Message Error ,msg dump :{}", ByteBufUtil.hexDump(((LongSMSMessage)msg).generateFrame().getMsgContentBytes()));
 				BaseMessage res = response(msg);
 				res.setRequest(msg);
 				ctx.writeAndFlush(res);
-				
-				//为了能让业务hander知道合并长短信时生成的msgId，这里将res 和req都做为userEvent抛出来
-				ctx.fireUserEventTriggered(res);
 			}
 		} else {
 			out.add(msg);

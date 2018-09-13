@@ -39,7 +39,6 @@ public class TestCMPPEndPointOnSmsUser {
 		client.setGroupName("test");
 		client.setUserName("400437");
 		client.setPassword("400437");
-		client.setWindows((short)16);
 		client.setVersion((short)48);
 		client.setRetryWaitTimeSec((short)10);
 		client.setMaxChannels((short)10);

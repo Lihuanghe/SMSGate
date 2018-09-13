@@ -22,7 +22,7 @@ import org.marre.wap.wbxml.WbxmlDocument;
 import com.zx.sms.LongSMSMessage;
 import com.zx.sms.codec.cmpp.msg.DefaultMessage;
 import com.zx.sms.codec.cmpp.msg.Header;
-import com.zx.sms.codec.cmpp.msg.LongMessageFrame;
+import com.zx.sms.codec.cmpp.wap.LongMessageFrame;
 import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
 import com.zx.sms.codec.sgip12.packet.SgipPacketType;
 import com.zx.sms.common.GlobalConstance;
@@ -33,7 +33,7 @@ import com.zx.sms.common.util.DefaultSequenceNumberUtil;
  * @author huzorro(huzorro@gmail.com)
  * 
  */
-public class SgipSubmitRequestMessage extends DefaultMessage implements LongSMSMessage{
+public class SgipSubmitRequestMessage extends DefaultMessage implements LongSMSMessage<SgipSubmitRequestMessage>{
 	private static final long serialVersionUID = 5265747696709571791L;
 
 	private String spnumber = GlobalConstance.emptyString;
@@ -52,7 +52,7 @@ public class SgipSubmitRequestMessage extends DefaultMessage implements LongSMSM
 	private short reportflag = 1;
 	private short tppid = 0;
 	private short tpudhi = 0;
-	private SmsDcs msgfmt = SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.ASCII, SmsMsgClass.CLASS_UNKNOWN);
+	private SmsDcs msgfmt = GlobalConstance.defaultmsgfmt;
 	private short messagetype = 0;
 	private int messagelength = 120;
 	private String reserve = GlobalConstance.emptyString;
@@ -453,6 +453,19 @@ public class SgipSubmitRequestMessage extends DefaultMessage implements LongSMSM
 		.append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
 		return sb.toString();
 	}
+	private List<SgipSubmitRequestMessage> fragments = null;
+	
+	@Override
+	public List<SgipSubmitRequestMessage> getFragments() {
+		return fragments;
+	}
 
+	@Override
+	public void addFragment(SgipSubmitRequestMessage fragment) {
+		if(fragments==null)
+			fragments = new ArrayList<SgipSubmitRequestMessage>();
+		
+		fragments.add(fragment);
+	}
 
 }

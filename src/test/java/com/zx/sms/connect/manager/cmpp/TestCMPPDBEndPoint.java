@@ -58,7 +58,6 @@ public class TestCMPPDBEndPoint {
 
 
 		client.setMaxChannels((short)12);
-		client.setWindows((short)16);
 		client.setVersion((short)0x20);
 		client.setRetryWaitTimeSec((short)10);
 		client.setUseSSL(false);
@@ -86,7 +85,6 @@ public class TestCMPPDBEndPoint {
 			child.setPassword("ICP");
 
 			child.setValid(true);
-			child.setWindows((short)16);
 			child.setVersion((short)0x20);
 
 			child.setMaxChannels((short)20);

@@ -4,6 +4,10 @@ import io.netty.util.AttributeKey;
 
 import java.nio.charset.Charset;
 
+import org.marre.sms.SmsAlphabet;
+import org.marre.sms.SmsDcs;
+import org.marre.sms.SmsMsgClass;
+
 import com.zx.sms.config.PropertiesUtils;
 import com.zx.sms.handler.cmpp.BlackHoleHandler;
 import com.zx.sms.handler.cmpp.CmppActiveTestRequestMessageHandler;
@@ -23,7 +27,7 @@ public interface GlobalConstance {
 	public final static String[] emptyStringArray= new String[0];
   
     public static final Charset defaultTransportCharset = Charset.forName(PropertiesUtils.getdefaultTransportCharset());
-
+    public static final SmsDcs defaultmsgfmt = SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.ASCII, SmsMsgClass.CLASS_UNKNOWN);
     public final static  CmppActiveTestRequestMessageHandler activeTestHandler =  new CmppActiveTestRequestMessageHandler();
     public final static  CmppActiveTestResponseMessageHandler activeTestRespHandler =  new CmppActiveTestResponseMessageHandler();
     public final static  CmppTerminateRequestMessageHandler terminateHandler =  new CmppTerminateRequestMessageHandler();

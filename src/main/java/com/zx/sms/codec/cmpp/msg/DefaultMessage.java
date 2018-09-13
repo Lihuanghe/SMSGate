@@ -158,4 +158,9 @@ public class DefaultMessage implements Message ,Cloneable {
 	public long getSequenceNo() {
 		return getHeader().getSequenceId();
 	}
+
+	@Override
+	public void setSequenceNo(long seq) {
+		getHeader().setSequenceId(seq);
+	}
 }

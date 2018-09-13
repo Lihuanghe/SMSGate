@@ -1,10 +1,10 @@
-package com.zx.sms.codec.cmpp.msg;
+package com.zx.sms.codec.cmpp.wap;
 
 import org.marre.sms.SmsAlphabet;
 import org.marre.sms.SmsDcs;
 import org.marre.sms.SmsMsgClass;
 
-import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
+import com.zx.sms.LongSMSMessage;
 import com.zx.sms.common.GlobalConstance;
 
 /**
@@ -16,7 +16,7 @@ public class LongMessageFrame {
 	private short pknumber = 1;
 	private short tppid = 0;// 0是普通GSM 类型，点到点方式 ,127 :写sim卡
 	private short tpudhi = 0; // 0:msgcontent不带协议头。1:带有协议头
-	private SmsDcs msgfmt = SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.ASCII, SmsMsgClass.CLASS_UNKNOWN);
+	private SmsDcs msgfmt = GlobalConstance.defaultmsgfmt;
 	private short msgLength = 140;
 	// encode septet
 	private byte[] msgContentBytes = GlobalConstance.emptyBytes;
@@ -24,7 +24,7 @@ public class LongMessageFrame {
 	private String contentPart;
 	
 	private long sequence;
-
+	
 	/**
 	 * @return the pktotal
 	 */

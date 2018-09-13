@@ -41,7 +41,12 @@ public abstract class EndpointEntity implements Serializable {
 	 */
 	private SupportLongMessage supportLongmsg = SupportLongMessage.BOTH;
 	
-	
+	/**
+	 *NONE : 接收与发送都不处理长短信 <br/>
+	 *BOTH：接收与发送都处理长短信，自动合并，拆分<br/>
+	 *SEND：发送是自动拆分长短信<br/>
+	 *RECV ：接收时自动合并长短信<br/>
+	 */
 	public enum SupportLongMessage {NONE,SEND,RECV,BOTH};
 	
 	/**

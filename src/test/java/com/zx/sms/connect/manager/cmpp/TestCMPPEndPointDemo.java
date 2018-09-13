@@ -45,9 +45,6 @@ public class TestCMPPEndPointDemo {
 		child.setValid(true);
 		child.setChannelType(ChannelType.DUPLEX);
 
-		
-		child.setWindows((short)16);
-
 		child.setVersion((short)0x30);
 
 		child.setMaxChannels((short)20);
