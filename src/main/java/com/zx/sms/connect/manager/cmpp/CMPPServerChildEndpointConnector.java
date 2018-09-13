@@ -19,6 +19,8 @@ import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.AbstractEndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.handler.MessageLogHandler;
+import com.zx.sms.handler.cmpp.CMPPDeliverLongMessageHandler;
+import com.zx.sms.handler.cmpp.CMPPSubmitLongMessageHandler;
 import com.zx.sms.session.AbstractSessionStateManager;
 import com.zx.sms.session.cmpp.SessionStateManager;
 
@@ -52,7 +54,10 @@ public class CMPPServerChildEndpointConnector extends AbstractEndpointConnector 
 				pipe.replace(handler, GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, entity.getIdleTimeSec(), TimeUnit.SECONDS));
 			}
 		}
-
+		//处理长短信
+		pipe.addLast( "CMPPDeliverLongMessageHandler", new CMPPDeliverLongMessageHandler(entity));
+		pipe.addLast("CMPPSubmitLongMessageHandler",  new CMPPSubmitLongMessageHandler(entity));
+		
 		pipe.addLast("CmppActiveTestRequestMessageHandler", GlobalConstance.activeTestHandler);
 		pipe.addLast("CmppActiveTestResponseMessageHandler", GlobalConstance.activeTestRespHandler);
 		pipe.addLast("CmppTerminateRequestMessageHandler", GlobalConstance.terminateHandler);

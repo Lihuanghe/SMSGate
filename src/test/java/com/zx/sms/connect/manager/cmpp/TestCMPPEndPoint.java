@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.zx.sms.connect.manager.EndpointEntity.SupportLongMessage;
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 import com.zx.sms.handler.api.gate.SessionConnectedHandler;
@@ -84,8 +85,8 @@ public class TestCMPPEndPoint {
 		client.setRetryWaitTimeSec((short)30);
 		client.setUseSSL(false);
 //		client.setWriteLimit(100);
-		client.setReSendFailMsg(true);
-
+		client.setReSendFailMsg(false);
+		client.setSupportLongmsg(SupportLongMessage.NONE);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add( new SessionConnectedHandler(10));
 		client.setBusinessHandlerSet(clienthandlers);

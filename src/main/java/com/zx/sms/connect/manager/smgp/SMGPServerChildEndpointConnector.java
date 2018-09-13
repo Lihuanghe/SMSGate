@@ -21,8 +21,10 @@ import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.handler.MessageLogHandler;
 import com.zx.sms.handler.smgp.SMGPActiveTestMessageHandler;
 import com.zx.sms.handler.smgp.SMGPActiveTestRespMessageHandler;
+import com.zx.sms.handler.smgp.SMGPDeliverLongMessageHandler;
 import com.zx.sms.handler.smgp.SMGPExitMessageHandler;
 import com.zx.sms.handler.smgp.SMGPExitRespMessageHandler;
+import com.zx.sms.handler.smgp.SMGPSubmitLongMessageHandler;
 import com.zx.sms.handler.smpp.EnquireLinkMessageHandler;
 import com.zx.sms.handler.smpp.EnquireLinkRespMessageHandler;
 import com.zx.sms.handler.smpp.UnbindMessageHandler;
@@ -58,7 +60,9 @@ public class SMGPServerChildEndpointConnector extends AbstractEndpointConnector{
 				pipe.replace(handler, GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, entity.getIdleTimeSec(), TimeUnit.SECONDS));
 			}
 		}
-		
+		//处理长短信
+		pipe.addLast("SMGPDeliverLongMessageHandler", new SMGPDeliverLongMessageHandler(entity));
+		pipe.addLast("SMGPSubmitLongMessageHandler",  new SMGPSubmitLongMessageHandler(entity));
 		pipe.addLast("SMGPActiveTestMessageHandler",new SMGPActiveTestMessageHandler());
 		pipe.addLast("SMGPActiveTestRespMessageHandler",new SMGPActiveTestRespMessageHandler());
 		pipe.addLast("SMGPExitRespMessageHandler", new SMGPExitRespMessageHandler());

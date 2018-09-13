@@ -27,6 +27,7 @@ import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.common.util.MsgId;
 import com.zx.sms.connect.manager.smpp.SMPPCodecChannelInitializer;
 import com.zx.sms.handler.smpp.SMPP2CMPPBusinessHandler;
+import com.zx.sms.handler.smpp.SMPPLongMessageHandler;
 
 public class TestSMPP2CMPPSubmitCodec extends AbstractSMPPTestMessageCodec<CmppSubmitRequestMessage> {
 	protected void doinitChannel(Channel ch){
@@ -35,6 +36,7 @@ public class TestSMPP2CMPPSubmitCodec extends AbstractSMPPTestMessageCodec<CmppS
 		SMPPCodecChannelInitializer codec = new SMPPCodecChannelInitializer();
 		pipeline.addLast("serverLog", new LoggingHandler(LogLevel.DEBUG));
 		pipeline.addLast(codec.pipeName(), codec);
+		pipeline.addLast( "SMPPLongMessageHandler", new SMPPLongMessageHandler(null));
 		pipeline.addLast("SMPP2CMPPCodec", new SMPP2CMPPBusinessHandler());
 	}
 	
@@ -159,7 +161,6 @@ public class TestSMPP2CMPPSubmitCodec extends AbstractSMPPTestMessageCodec<CmppS
 	public CmppSubmitRequestMessage  testWapCodec(CmppSubmitRequestMessage msg)
 	{
 
-		msg.setSupportLongMsg(true);
 		channel().writeOutbound(msg);
 		ByteBuf buf =(ByteBuf)channel().readOutbound();
 		ByteBuf copybuf = Unpooled.buffer();
@@ -184,20 +185,16 @@ public class TestSMPP2CMPPSubmitCodec extends AbstractSMPPTestMessageCodec<CmppS
 	
 	public void testlongCodec(CmppSubmitRequestMessage msg)
 	{
-
-		msg.setSupportLongMsg(true);
 		channel().writeOutbound(msg);
 		ByteBuf buf =(ByteBuf)channel().readOutbound();
 		ByteBuf copybuf = Unpooled.buffer();
 	    while(buf!=null){
-			
 			
 	    	copybuf.writeBytes(buf.copy());
 			int length = buf.readableBytes();
 			
 			Assert.assertEquals(length, buf.readUnsignedInt());
 			Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
-			
 
 			buf =(ByteBuf)channel().readOutbound();
 	    }

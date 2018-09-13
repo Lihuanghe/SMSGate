@@ -1,6 +1,7 @@
 package com.zx.sms.codec;
 
 import com.zx.sms.connect.manager.smpp.SMPPCodecChannelInitializer;
+import com.zx.sms.handler.smpp.SMPPLongMessageHandler;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -27,6 +28,7 @@ public  abstract class AbstractSMPPTestMessageCodec<T> {
 		SMPPCodecChannelInitializer codec = new SMPPCodecChannelInitializer();
 		pipeline.addLast("serverLog", new LoggingHandler(this.getClass(),LogLevel.DEBUG));
 		pipeline.addLast(codec.pipeName(), codec);
+		pipeline.addLast( "SMPPLongMessageHandler", new SMPPLongMessageHandler(null));
 	}
 
 	protected ByteBuf encode(T msg){

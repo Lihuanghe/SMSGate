@@ -3,8 +3,6 @@ package com.zx.sms.common.util;
 import java.nio.charset.Charset;
 
 import org.marre.sms.SmsAlphabet;
-import org.marre.sms.SmsDcs;
-import org.marre.sms.SmsPduUtil;
 import org.marre.sms.SmsTextMessage;
 
 import com.google.common.base.Preconditions;
@@ -52,18 +50,6 @@ public final class CMPPCommonUtil {
 		default:
 			return GlobalConstance.defaultTransportCharset;
 		}
-	}
-	
-	public static SmsTextMessage buildTextMessage(byte[] bytes,SmsDcs msgfmt){
-		String text = null;
-		switch(msgfmt.getAlphabet()){
-		case GSM:
-			text = SmsPduUtil.unencodedSeptetsToString(bytes);
-			break;
-		default:
-			text = new String(bytes,switchCharset(msgfmt.getAlphabet()));
-		}
-		return new SmsTextMessage(text, msgfmt);
 	}
 
 }

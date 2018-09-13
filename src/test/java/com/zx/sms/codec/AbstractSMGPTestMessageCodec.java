@@ -12,6 +12,8 @@ import io.netty.util.ResourceLeakDetector.Level;
 
 import com.zx.sms.connect.manager.smgp.SMGPCodecChannelInitializer;
 import com.zx.sms.connect.manager.smpp.SMPPCodecChannelInitializer;
+import com.zx.sms.handler.smgp.SMGPDeliverLongMessageHandler;
+import com.zx.sms.handler.smgp.SMGPSubmitLongMessageHandler;
 
 public  abstract class AbstractSMGPTestMessageCodec<T> {
 	
@@ -28,6 +30,9 @@ public  abstract class AbstractSMGPTestMessageCodec<T> {
 		SMGPCodecChannelInitializer codec = new SMGPCodecChannelInitializer();
 		pipeline.addLast("serverLog", new LoggingHandler(this.getClass(),LogLevel.INFO));
 		pipeline.addLast(codec.pipeName(), codec);
+		//处理长短信
+		pipeline.addLast("SMGPDeliverLongMessageHandler", new SMGPDeliverLongMessageHandler(null));
+		pipeline.addLast("SMGPSubmitLongMessageHandler",  new SMGPSubmitLongMessageHandler(null));
 	}
 
 	protected ByteBuf encode(T msg){

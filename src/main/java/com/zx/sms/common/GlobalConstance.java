@@ -35,8 +35,6 @@ public interface GlobalConstance {
     public final static AttributeKey<SessionState> attributeKey = AttributeKey.newInstance(SessionState.Connect.name());
     public final static BlackHoleHandler blackhole = new BlackHoleHandler();
     public final static String IdleCheckerHandlerName = "IdleStateHandler";
-    public final static boolean isSupportLongMsg = PropertiesUtils.getisSupportLongMsg();
-    
     public final static String loggerNamePrefix = "entity.%s";
     public final static String codecName = "codecName";
 }

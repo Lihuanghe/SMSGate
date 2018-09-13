@@ -21,6 +21,7 @@ import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.handler.MessageLogHandler;
 import com.zx.sms.handler.smpp.EnquireLinkMessageHandler;
 import com.zx.sms.handler.smpp.EnquireLinkRespMessageHandler;
+import com.zx.sms.handler.smpp.SMPPLongMessageHandler;
 import com.zx.sms.handler.smpp.UnbindMessageHandler;
 import com.zx.sms.handler.smpp.UnbindRespMessageHandler;
 import com.zx.sms.session.AbstractSessionStateManager;
@@ -54,6 +55,7 @@ public class SMPPServerChildEndpointConnector extends AbstractEndpointConnector{
 				pipe.replace(handler, GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, entity.getIdleTimeSec(), TimeUnit.SECONDS));
 			}
 		}
+		pipe.addLast("SMPPLongMessageHandler", new SMPPLongMessageHandler(entity));
 		pipe.addLast("EnquireLinkMessageHandler",new EnquireLinkMessageHandler());
 		pipe.addLast("EnquireLinkRespMessageHandler",new EnquireLinkRespMessageHandler());
 		pipe.addLast("UnbindRespMessageHandler", new UnbindRespMessageHandler());

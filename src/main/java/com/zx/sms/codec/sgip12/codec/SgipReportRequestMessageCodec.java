@@ -78,6 +78,7 @@ public class SgipReportRequestMessageCodec extends MessageToMessageCodec<Message
 				SgipReportRequest.RESERVE.getLength(), 0));
 
 		msg.setBodyBuffer(toArray(bodyBuffer, bodyBuffer.readableBytes()));
+		ReferenceCountUtil.release(bodyBuffer);
 		msg.getHeader().setBodyLength(msg.getBodyBuffer().length);
 		out.add(msg);
 	}

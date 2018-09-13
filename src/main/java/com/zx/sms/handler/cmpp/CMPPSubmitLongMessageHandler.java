@@ -1,24 +1,29 @@
 package com.zx.sms.handler.cmpp;
 
-import io.netty.channel.ChannelHandler.Sharable;
-import io.netty.channel.ChannelHandlerContext;
-
 import org.apache.commons.lang.StringUtils;
 import org.marre.sms.SmsMessage;
 
+import com.zx.sms.BaseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.codec.cmpp.wap.AbstractLongMessageHandler;
+import com.zx.sms.connect.manager.EndpointEntity;
+
+import io.netty.channel.ChannelHandler.Sharable;
 
 @Sharable
 public class CMPPSubmitLongMessageHandler extends AbstractLongMessageHandler<CmppSubmitRequestMessage> {
 
+	public CMPPSubmitLongMessageHandler(EndpointEntity entity) {
+		super(entity);
+	}
+
 	@Override
-	protected void response(ChannelHandlerContext ctx, CmppSubmitRequestMessage msg) {
+	protected BaseMessage response( CmppSubmitRequestMessage msg) {
 		//短信片断未接收完全，直接给网关回复resp，等待其它片断
 		CmppSubmitResponseMessage responseMessage = new CmppSubmitResponseMessage(msg.getHeader());
 		responseMessage.setResult(0);
-		ctx.writeAndFlush(responseMessage);
+		return responseMessage;
 	}
 
 	@Override

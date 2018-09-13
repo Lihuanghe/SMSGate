@@ -37,6 +37,18 @@ public abstract class EndpointEntity implements Serializable {
 	private boolean valid = true;
 	
 	/**
+	 *该端口是否支持接收长短信发送 
+	 */
+	private SupportLongMessage supportLongmsg = SupportLongMessage.BOTH;
+	
+	
+	public enum SupportLongMessage {NONE,SEND,RECV,BOTH};
+	
+	/**
+     *表示TCP连接是单工，或者又工
+     */
+    public enum ChannelType {UP,DOWN,DUPLEX};
+	/**
 	 *该端口业务处理的handler集合， 
 	 **/
 	private List<BusinessHandlerInterface> businessHandlerSet;
@@ -139,11 +151,6 @@ public abstract class EndpointEntity implements Serializable {
 	public void setUseSSL(boolean useSSL) {
 		this.useSSL = useSSL;
 	}
-	/**
-     *表示TCP连接是单工，或者又工
-     */
-    public enum ChannelType {UP,DOWN,DUPLEX};
-    
     
     public short getMaxChannels() {
 		return maxChannels;
@@ -184,6 +191,12 @@ public abstract class EndpointEntity implements Serializable {
 		this.retryWaitTimeSec = retryWaitTimeSec;
 	}
 	
+	public SupportLongMessage getSupportLongmsg() {
+		return supportLongmsg;
+	}
+	public void setSupportLongmsg(SupportLongMessage supportLongmsg) {
+		this.supportLongmsg = supportLongmsg;
+	}
 	
 	@Override
 	public int hashCode() {

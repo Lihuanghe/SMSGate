@@ -56,7 +56,7 @@ public class TestSgipEndPoint {
 		child.setRetryWaitTimeSec((short)30);
 		child.setMaxRetryCnt((short)3);
 		child.setReSendFailMsg(false);
-		child.setIdleTimeSec((short)5);
+		child.setIdleTimeSec((short)30);
 //		child.setWriteLimit(200);
 //		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
@@ -78,7 +78,7 @@ public class TestSgipEndPoint {
 		client.setLoginPassowrd("0555");
 		client.setChannelType(ChannelType.DOWN);
 
-		client.setMaxChannels((short)12);
+		client.setMaxChannels((short)1);
 		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);
 //		client.setReSendFailMsg(true);
@@ -86,7 +86,7 @@ public class TestSgipEndPoint {
 //		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new Sgip2CMPPBusinessHandler()); //  将CMPP的对象转成sgip对象，然后再经sgip解码器处理
-		clienthandlers.add(new SessionConnectedHandler(new AtomicInteger(0))); //// 复用CMPP的Handler
+		clienthandlers.add(new SessionConnectedHandler(new AtomicInteger(100000))); //// 复用CMPP的Handler
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		manager.openAll();

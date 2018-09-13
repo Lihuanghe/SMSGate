@@ -147,7 +147,6 @@ public class TestCmppSubmitRequestMessageCodec  extends AbstractTestMessageCodec
 	public CmppSubmitRequestMessage  testWapCodec(CmppSubmitRequestMessage msg)
 	{
 
-		msg.setSupportLongMsg(true);
 		channel().writeOutbound(msg);
 		ByteBuf buf =(ByteBuf)channel().readOutbound();
 		ByteBuf copybuf = Unpooled.buffer();
@@ -174,7 +173,6 @@ public class TestCmppSubmitRequestMessageCodec  extends AbstractTestMessageCodec
 	public void testlongCodec(CmppSubmitRequestMessage msg)
 	{
 
-		msg.setSupportLongMsg(true);
 		channel().writeOutbound(msg);
 		ByteBuf buf =(ByteBuf)channel().readOutbound();
 		ByteBuf copybuf = Unpooled.buffer();

@@ -29,7 +29,6 @@ public class TestMsgCmppSubmit7FDecoder extends AbstractTestMessageCodec<CmppSub
 		msg.setMsgid(new MsgId());
 		msg.setServiceId("10086");
 		msg.setSrcId("10086");
-		msg.setSupportLongMsg(true);
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("a", 1);
 		map.put("b", "adf");

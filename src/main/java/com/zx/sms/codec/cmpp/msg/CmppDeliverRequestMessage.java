@@ -45,8 +45,6 @@ public class CmppDeliverRequestMessage extends DefaultMessage  implements LongSM
 
 	private SmsMessage msg;
 
-	private boolean supportLongMsg = true;
-	
 	private short tppid = 0;// 0是普通GSM 类型，点到点方式 ,127 :写sim卡
 	private short tpudhi = 0; // 0:msgcontent不带协议头。1:带有协议头
 	private SmsDcs msgfmt = SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.ASCII, SmsMsgClass.CLASS_UNKNOWN);
@@ -217,14 +215,6 @@ public class CmppDeliverRequestMessage extends DefaultMessage  implements LongSM
 			}
 		
 		return "";
-	}
-
-	public boolean isSupportLongMsg() {
-		return supportLongMsg;
-	}
-
-	public void setSupportLongMsg(boolean supportLongMsg) {
-		this.supportLongMsg = true;
 	}
 
 	public short getTppid() {

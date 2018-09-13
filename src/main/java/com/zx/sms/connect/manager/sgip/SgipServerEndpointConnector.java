@@ -26,7 +26,6 @@ public class SgipServerEndpointConnector extends AbstractServerEndpointConnector
 		pipeline.addLast("SgipServerIdleStateHandler", GlobalConstance.sgipidleHandler);
 		pipeline.addLast(SgipCodecChannelInitializer.pipeName(), new SgipCodecChannelInitializer());
 		pipeline.addLast("sessionLoginManager", new SgipSessionLoginManager(getEndpointEntity()));
-		
 	}
 
 }

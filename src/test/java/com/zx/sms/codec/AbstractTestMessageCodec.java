@@ -1,6 +1,8 @@
 package com.zx.sms.codec;
 
 import com.zx.sms.connect.manager.cmpp.CMPPCodecChannelInitializer;
+import com.zx.sms.handler.cmpp.CMPPDeliverLongMessageHandler;
+import com.zx.sms.handler.cmpp.CMPPSubmitLongMessageHandler;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -24,6 +26,8 @@ public abstract class AbstractTestMessageCodec<T> {
 			CMPPCodecChannelInitializer codec = new CMPPCodecChannelInitializer(getVersion());
 			pipeline.addLast("serverLog", new LoggingHandler(LogLevel.DEBUG));
 			pipeline.addLast(codec.pipeName(), codec);
+			pipeline.addLast( "CMPPDeliverLongMessageHandler", new CMPPDeliverLongMessageHandler(null));
+			pipeline.addLast("CMPPSubmitLongMessageHandler",  new CMPPSubmitLongMessageHandler(null));
 		}
 	});
 	

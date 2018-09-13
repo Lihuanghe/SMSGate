@@ -1,10 +1,5 @@
 package com.zx.sms.connect.manager.sgip;
 
-import io.netty.channel.ChannelPipeline;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.timeout.IdleStateHandler;
-
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
@@ -14,12 +9,16 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.AbstractClientEndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
-import com.zx.sms.handler.MessageLogHandler;
+import com.zx.sms.handler.sgip.SgipDeliverLongMessageHandler;
+import com.zx.sms.handler.sgip.SgipSubmitLongMessageHandler;
 import com.zx.sms.handler.sgip.SgipUnbindRequestMessageHandler;
 import com.zx.sms.handler.sgip.SgipUnbindResponseMessageHandler;
 import com.zx.sms.session.AbstractSessionStateManager;
 import com.zx.sms.session.sgip.SgipSessionLoginManager;
 import com.zx.sms.session.sgip.SgipSessionStateManager;
+
+import io.netty.channel.ChannelPipeline;
+import io.netty.handler.timeout.IdleStateHandler;
 
 public class SgipClientEndpointConnector extends AbstractClientEndpointConnector {
 
@@ -36,6 +35,9 @@ public class SgipClientEndpointConnector extends AbstractClientEndpointConnector
 
 	@Override
 	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity entity) {
+		//处理长短信
+		pipe.addLast( "SgipDeliverLongMessageHandler", new SgipDeliverLongMessageHandler(entity));
+		pipe.addLast("SgipSubmitLongMessageHandler",  new SgipSubmitLongMessageHandler(entity));
 		pipe.addLast("SgipUnbindResponseMessageHandler", new SgipUnbindResponseMessageHandler());
 		pipe.addLast("SgipUnbindRequestMessageHandler", new SgipUnbindRequestMessageHandler());
 	}

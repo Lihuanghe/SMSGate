@@ -53,8 +53,6 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 
 	private SmsMessage msg;
 	
-	private boolean supportLongMsg =  true;
-	
 	private short pktotal = 1;
 	private short pknumber = 1;
 	private short tppid = 0;// 0是普通GSM 类型，点到点方式 ,127 :写sim卡
@@ -383,14 +381,6 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 		this.msg = msg;
 	}
 
-	public boolean isSupportLongMsg() {
-		return supportLongMsg;
-	}
-
-	public void setSupportLongMsg(boolean supportLongMsg) {
-		this.supportLongMsg = true;
-	}
-
 	public byte[] getMsgContentBytes() {
 		return msgContentBytes;
 	}
@@ -467,6 +457,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("CmppSubmitRequestMessage [msgid=").append(msgid)
+		.append(", serviceId=").append(serviceId)
 		.append(", srcId=").append(srcId)
 		.append(", msgsrc=").append(msgsrc)
 		.append(", destterminalId=").append(Arrays.toString(destterminalId)).append(", msgContent=")

@@ -1,22 +1,27 @@
 package com.zx.sms.handler.sgip;
 
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelHandler.Sharable;
-
 import org.apache.commons.lang.StringUtils;
 import org.marre.sms.SmsMessage;
 
+import com.zx.sms.BaseMessage;
 import com.zx.sms.codec.cmpp.wap.AbstractLongMessageHandler;
 import com.zx.sms.codec.sgip12.msg.SgipSubmitRequestMessage;
 import com.zx.sms.codec.sgip12.msg.SgipSubmitResponseMessage;
+import com.zx.sms.connect.manager.EndpointEntity;
+
+import io.netty.channel.ChannelHandler.Sharable;
 @Sharable
 public class SgipSubmitLongMessageHandler extends AbstractLongMessageHandler<SgipSubmitRequestMessage> {
 
+	public SgipSubmitLongMessageHandler(EndpointEntity entity) {
+		super(entity);
+	}
+
 	@Override
-	protected void response(ChannelHandlerContext ctx, SgipSubmitRequestMessage msg) {
+	protected BaseMessage response(SgipSubmitRequestMessage msg) {
 		//短信片断未接收完全，直接给网关回复resp，等待其它片断
 		SgipSubmitResponseMessage responseMessage = new SgipSubmitResponseMessage(msg.getHeader());
-		ctx.writeAndFlush(responseMessage);
+		return responseMessage;
 	}
 
 	@Override

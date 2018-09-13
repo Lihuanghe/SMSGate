@@ -17,8 +17,10 @@ import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.handler.MessageLogHandler;
 import com.zx.sms.handler.smgp.SMGPActiveTestMessageHandler;
 import com.zx.sms.handler.smgp.SMGPActiveTestRespMessageHandler;
+import com.zx.sms.handler.smgp.SMGPDeliverLongMessageHandler;
 import com.zx.sms.handler.smgp.SMGPExitMessageHandler;
 import com.zx.sms.handler.smgp.SMGPExitRespMessageHandler;
+import com.zx.sms.handler.smgp.SMGPSubmitLongMessageHandler;
 import com.zx.sms.session.AbstractSessionStateManager;
 import com.zx.sms.session.smgp.SMGPSessionLoginManager;
 import com.zx.sms.session.smgp.SMGPSessionStateManager;
@@ -38,6 +40,9 @@ public class SMGPClientEndpointConnector extends AbstractClientEndpointConnector
 
 	@Override
 	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity entity) {
+		//处理长短信
+		pipe.addLast( "SMGPDeliverLongMessageHandler", new SMGPDeliverLongMessageHandler(entity));
+		pipe.addLast("SMGPSubmitLongMessageHandler",  new SMGPSubmitLongMessageHandler(entity));
 		pipe.addLast("SMGPActiveTestMessageHandler",new SMGPActiveTestMessageHandler());
 		pipe.addLast("SMGPActiveTestRespMessageHandler",new SMGPActiveTestRespMessageHandler());
 		pipe.addLast("SMGPExitRespMessageHandler", new SMGPExitRespMessageHandler());

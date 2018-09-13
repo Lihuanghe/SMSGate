@@ -1,7 +1,5 @@
 package com.zx.sms.codec.cmpp.wap;
 
-import io.netty.buffer.ByteBufUtil;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -45,11 +43,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import PduParser.GenericPdu;
-import PduParser.NotificationInd;
-import PduParser.PduHeaders;
-import PduParser.PduParser;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalCause;
@@ -61,8 +54,13 @@ import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.common.util.StandardCharsets;
 
+import PduParser.GenericPdu;
+import PduParser.NotificationInd;
+import PduParser.PduHeaders;
+import PduParser.PduParser;
 import es.rickyepoderi.wbxml.definition.WbXmlInitialization;
 import es.rickyepoderi.wbxml.stream.WbXmlInputFactory;
+import io.netty.buffer.ByteBufUtil;
 
 //短信片断持久化需要集中保存，因为同一短信的不同分片会从不同的连接发送。可能不在同一台主机。
 //可以使用 Redis.Memcached等。
@@ -82,7 +80,7 @@ public enum LongMessageFrameHolder {
 			case COLLECTED:
 				logger.error("Long Message Lost cause by {}. {}|{}|{}|{}", cause,
 						DateFormatUtils.format(h.getTimestamp(), DateFormatUtils.ISO_DATETIME_FORMAT.getPattern()), notification.getKey(), h.getSequence(),
-						CMPPCommonUtil.buildTextMessage(h.mergeAllcontent(), h.getMsgfmt()).getText());
+						buildTextMessage(h.mergeAllcontent(), h.getMsgfmt()).getText());
 			default:
 				return;
 			}
@@ -101,7 +99,7 @@ public enum LongMessageFrameHolder {
 		InformationElement udheader = fh.getAppUDHinfo();
 		// udh为空表示文本短信
 		if (udheader == null) {
-			return CMPPCommonUtil.buildTextMessage(contents, frame.getMsgfmt());
+			return buildTextMessage(contents, frame.getMsgfmt());
 		} else {
 			if (SmsUdhIei.APP_PORT_16BIT.equals(udheader.udhIei)) {
 				// 2948 wap_push 0x0B84
@@ -121,32 +119,45 @@ public enum LongMessageFrameHolder {
 				logger.warn("UnsupportedportMessage UDH:{} udhdata:{},pdu:[{}]", udheader.udhIei, ByteBufUtil.hexDump(udheader.infoEleData),
 						ByteBufUtil.hexDump(contents));
 
-				SmsTextMessage text = CMPPCommonUtil.buildTextMessage(contents, frame.getMsgfmt());
+				SmsTextMessage text = buildTextMessage(contents, frame.getMsgfmt());
 				return new SmsPortAddressedTextMessage(new SmsPort(destport), new SmsPort(srcport), text);
 			} else {
 				// 其它都当成文本短信
 				logger.warn("Unsupported UDH:{} udhdata:{},pdu:[{}]", udheader.udhIei, ByteBufUtil.hexDump(udheader.infoEleData), ByteBufUtil.hexDump(contents));
-				return CMPPCommonUtil.buildTextMessage(contents, frame.getMsgfmt());
+				return buildTextMessage(contents, frame.getMsgfmt());
 			}
 		}
 	}
-
+	
+	private static SmsTextMessage buildTextMessage(byte[] bytes,SmsDcs msgfmt){
+		String text = null;
+		switch(msgfmt.getAlphabet()){
+		case GSM:
+			text = SmsPduUtil.unencodedSeptetsToString(bytes);
+			break;
+		default:
+			text = new String(bytes,CMPPCommonUtil.switchCharset(msgfmt.getAlphabet()));
+		}
+		return new SmsTextMessage(text, msgfmt);
+	}
+	
 	/**
 	 * 获取长短信切分后的短信片断内容
 	 * 
 	 **/
 	public String getPartTextMsg(LongMessageFrame frame) {
 		if (frame.getTpudhi() == 0) {
-			return CMPPCommonUtil.buildTextMessage(frame.getPayloadbytes(0), frame.getMsgfmt()).getText();
+			return buildTextMessage(frame.getPayloadbytes(0), frame.getMsgfmt()).getText();
 		} else if ((frame.getTpudhi() & 0x01) == 1 || (frame.getTpudhi() & 0x40) == 0x40) {
 			UserDataHeader header = parseUserDataHeader(frame.getMsgContentBytes());
 			byte[] payload = frame.getPayloadbytes(header.headerlength);
-			return CMPPCommonUtil.buildTextMessage(payload, frame.getMsgfmt()).getText();
+			return buildTextMessage(payload, frame.getMsgfmt()).getText();
 		}
 		return null;
 
 	}
 
+	
 	/**
 	 * 获取一条完整的长短信，如果长短信组装未完成，返回null
 	 **/
@@ -157,7 +168,7 @@ public enum LongMessageFrameHolder {
 		// 短信内容不带协议头，直接获取短信内容
 		// udhi只取第一个bit
 		if (frame.getTpudhi() == 0) {
-			return CMPPCommonUtil.buildTextMessage(frame.getPayloadbytes(0), frame.getMsgfmt());
+			return buildTextMessage(frame.getPayloadbytes(0), frame.getMsgfmt());
 
 		} else if ((frame.getTpudhi() & 0x01) == 1 || (frame.getTpudhi() & 0x40) == 0x40) {
 
@@ -186,9 +197,7 @@ public enum LongMessageFrameHolder {
 				}
 
 				if (oldframeHolder.isComplete()) {
-
 					map.remove(mapKey);
-
 					return generatorSmsMessage(oldframeHolder, frame);
 				}
 			} catch (Exception ex) {
@@ -411,14 +420,14 @@ public enum LongMessageFrameHolder {
 
 			if (idxBitset.get(idx)) {
 				logger.warn("have received the same index:{} of Message. do not merge this content.{},origin:{},{},{},new content:{}", idx,this.serviceNum,
-						CMPPCommonUtil.buildTextMessage(this.content[idx], msgfmt).getText(), DateFormatUtils.format(getTimestamp(),
-								DateFormatUtils.ISO_DATETIME_FORMAT.getPattern()), getSequence(), CMPPCommonUtil.buildTextMessage(content, msgfmt).getText());
+						buildTextMessage(this.content[idx], msgfmt).getText(), DateFormatUtils.format(getTimestamp(),
+								DateFormatUtils.ISO_DATETIME_FORMAT.getPattern()), getSequence(), buildTextMessage(content, msgfmt).getText());
 				throw new NotSupportedException("received the same index");
 			}
 			if (this.content.length <= idx || idx < 0) {
 				logger.warn("have received error index:{} of Message content length:{}. do not merge this content.{},{},{},{}", idx, this.content.length,
 						this.serviceNum, DateFormatUtils.format(getTimestamp(), DateFormatUtils.ISO_DATETIME_FORMAT.getPattern()), getSequence(),
-						CMPPCommonUtil.buildTextMessage(content, msgfmt).getText());
+						buildTextMessage(content, msgfmt).getText());
 				throw new NotSupportedException("have received error index");
 			}
 			// 设置该短信序号已填冲

@@ -79,7 +79,6 @@ public class TestCmpp20SubmitRequestMessageCodec extends AbstractTestMessageCode
 		msg.setMsgid(new MsgId());
 		msg.setServiceId("10086");
 		msg.setSrcId("10086");
-		msg.setSupportLongMsg(true);
 		channel().writeOutbound(msg);
 		ByteBuf buf =(ByteBuf)channel().readOutbound();
 		ByteBuf copybuf = Unpooled.buffer();

@@ -26,11 +26,11 @@ import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
 import com.zx.sms.connect.manager.ServerEndpoint;
-import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.session.cmpp.SessionState;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.Promise;
@@ -69,7 +69,7 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 		final AtomicInteger tmptotal = new AtomicInteger(totleCnt.get());
 		if (evt == SessionState.Connect) {
 		
-			final CMPPEndpointEntity finalentity = (CMPPEndpointEntity) getEndpointEntity();
+			final EndpointEntity finalentity = getEndpointEntity();
 			final Channel ch = ctx.channel();
 			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>() {
 				private BaseMessage createTestReq(String content) {
@@ -92,12 +92,12 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
 						msg.setDestterminalId(String.valueOf(System.currentTimeMillis()/1000));
 						msg.setLinkID("0000");
-						msg.setMsgContent("======1 ========");
+						msg.setMsgContent("======1 ==msg.setMsgContent(new SmsMmsNotetMsgContent(new SmsMmsNotificationMessage(\\\"http://www.baidu.comificationMessage(\"http://www.baidu.com/abc/sfd\",50*1024));======"+System.currentTimeMillis());
 						msg.setRegisteredDelivery((short)1);
 						msg.setMsgid(new MsgId());
 						msg.setServiceId("10086");
 						msg.setSrcId("1069039129");
-						msg.setMsgsrc(finalentity.getUserName());
+//						msg.setMsgsrc(finalentity.getUserName());
 //						msg.setMsgContent(new SmsMmsNotificationMessage("http://www.baidu.com/abc/sfd",50*1024));
 						/*
 						SgipSubmitRequestMessage requestMessage = new SgipSubmitRequestMessage();
@@ -122,16 +122,18 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 					while(cnt>0 && tmptotal.get()>0) {
 						if(ctx.channel().isWritable()){
 							List<Promise> futures = null;
-							ChannelUtil.asyncWriteToEntity(getEndpointEntity().getId(), createTestReq("中createT"+UUID.randomUUID().toString()));
-//							ChannelFuture future = ChannelUtil.asyncWriteToEntity(getEndpointEntity().getId(), createTestReq("中msg"+UUID.randomUUID().toString()));
+							ChannelFuture chfuture = null;
+//							chfuture = ChannelUtil.asyncWriteToEntity(getEndpointEntity().getId(), createTestReq("中createT"+UUID.randomUUID().toString()));
+							futures = ChannelUtil.syncWriteLongMsgToEntity(getEndpointEntity().getId(), createTestReq("中msg"+UUID.randomUUID().toString()));
 //							ChannelFuture future = ctx.writeAndFlush( );
 							cnt--;
 							tmptotal.decrementAndGet();
+							if(chfuture==null)chfuture.sync();
 							
 							if(futures==null) continue;
 							try{
 								for(Promise  future: futures){
-//									future.sync();
+									future.sync();
 									if(future.isSuccess()){
 //										logger.info("response:{}",future.get());
 									}else{

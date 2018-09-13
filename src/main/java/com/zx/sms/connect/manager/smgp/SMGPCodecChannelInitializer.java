@@ -25,9 +25,7 @@ public class SMGPCodecChannelInitializer extends ChannelInitializer<Channel> {
 		pipeline.addBefore(pipeName(), "FrameDecoder", new LengthFieldBasedFrameDecoder(4 * 1024 , 0, 4, -4, 0, true));
 
 		pipeline.addBefore(pipeName(), GlobalConstance.codecName, new SMGPMessageCodec());
-		//处理长短信
-		pipeline.addBefore(pipeName(), "SMGPDeliverLongMessageHandler", new SMGPDeliverLongMessageHandler());
-		pipeline.addBefore(pipeName(),"SMGPSubmitLongMessageHandler",  new SMGPSubmitLongMessageHandler());
+
 	}
 	
 }

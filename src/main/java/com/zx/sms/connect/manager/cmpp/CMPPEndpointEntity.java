@@ -24,11 +24,6 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 	private Charset chartset = GlobalConstance.defaultTransportCharset;
 	
 	/**
-	 *该端口是否支持接收长短信发送 
-	 */
-	private boolean supportLongMsg = GlobalConstance.isSupportLongMsg;
-	
-	/**
 	 * 最大消息序列数
 	 */
 	private short maxMsgQueue;
@@ -105,14 +100,6 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 
 	public void setChartset(Charset chartset) {
 		this.chartset = chartset;
-	}
-	
-	public boolean isSupportLongMsg() {
-		return supportLongMsg;
-	}
-
-	public void setSupportLongMsg(boolean supportLongMsg) {
-		this.supportLongMsg = supportLongMsg;
 	}
 	
     public short getMaxMsgQueue() {

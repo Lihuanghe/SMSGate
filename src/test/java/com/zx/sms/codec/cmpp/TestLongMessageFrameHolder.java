@@ -43,7 +43,6 @@ public class TestLongMessageFrameHolder extends AbstractTestMessageCodec<CmppSub
 			
 			Assert.assertNotNull(result);
 			System.out.println(result);
-			result.setSupportLongMsg(true);
 			ch.writeOutbound(result);
 			success = true;
 		}

@@ -16,6 +16,8 @@ import com.zx.sms.connect.manager.AbstractClientEndpointConnector;
 import com.zx.sms.connect.manager.ClientEndpoint;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.handler.MessageLogHandler;
+import com.zx.sms.handler.cmpp.CMPPDeliverLongMessageHandler;
+import com.zx.sms.handler.cmpp.CMPPSubmitLongMessageHandler;
 import com.zx.sms.handler.cmpp.ReWriteSubmitMsgSrcHandler;
 import com.zx.sms.session.AbstractSessionStateManager;
 import com.zx.sms.session.cmpp.SessionLoginManager;
@@ -43,7 +45,10 @@ public class CMPPClientEndpointConnector extends AbstractClientEndpointConnector
 		if (entity instanceof ClientEndpoint) {
 			pipe.addLast("reWriteSubmitMsgSrcHandler", new ReWriteSubmitMsgSrcHandler(entity));
 		}
-
+		//处理长短信
+		pipe.addLast( "CMPPDeliverLongMessageHandler", new CMPPDeliverLongMessageHandler(entity));
+		pipe.addLast("CMPPSubmitLongMessageHandler",  new CMPPSubmitLongMessageHandler(entity));
+		
 		pipe.addLast("CmppActiveTestRequestMessageHandler", GlobalConstance.activeTestHandler);
 		pipe.addLast("CmppActiveTestResponseMessageHandler", GlobalConstance.activeTestRespHandler);
 		pipe.addLast("CmppTerminateRequestMessageHandler", GlobalConstance.terminateHandler);

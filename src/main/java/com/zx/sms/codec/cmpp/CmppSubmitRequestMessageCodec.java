@@ -112,7 +112,7 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, CmppSubmitRequestMessage requestMessage, List<Object> out) throws Exception {
-		assert(requestMessage.getDestUsrtl()>0);
+			assert(requestMessage.getDestUsrtl()>0);
 			ByteBuf bodyBuffer = ctx.alloc().buffer(CmppSubmitRequest.ATTIME.getBodyLength() + requestMessage.getMsgLength() + (requestMessage.getDestUsrtl()-1)
 					* CmppSubmitRequest.DESTTERMINALID.getLength());
 
@@ -160,7 +160,7 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 						CmppSubmitRequest.DESTTERMINALID.getLength(), 0));
 			}
 			bodyBuffer.writeByte(requestMessage.getDestterminaltype());
-
+			
 			bodyBuffer.writeByte(requestMessage.getMsgLength());
 
 			bodyBuffer.writeBytes(requestMessage.getMsgContentBytes());

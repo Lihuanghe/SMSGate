@@ -52,9 +52,6 @@ public class CMPPCodecChannelInitializer extends ChannelInitializer<Channel> {
 
 		pipeline.addBefore(pipeName(), GlobalConstance.codecName, getCodecHandler(version));
 		
-		//处理长短信
-		pipeline.addBefore(pipeName(), "CMPPDeliverLongMessageHandler", new CMPPDeliverLongMessageHandler());
-		pipeline.addBefore(pipeName(),"CMPPSubmitLongMessageHandler",  new CMPPSubmitLongMessageHandler());
 	}
 
 	public static ChannelDuplexHandler getCodecHandler(int version) throws Exception {
