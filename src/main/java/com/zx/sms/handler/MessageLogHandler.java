@@ -1,16 +1,16 @@
 package com.zx.sms.handler;
 
-import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPromise;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.EndpointEntity;
+
+import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPromise;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 /**
  * 
@@ -25,7 +25,15 @@ public class MessageLogHandler extends ChannelDuplexHandler {
 		this.entity = entity;
 		logger = LoggerFactory.getLogger(String.format(GlobalConstance.loggerNamePrefix, entity.getId()));
 	}
-
+	public void handlerAdded(ChannelHandlerContext ctx) throws Exception{
+		logger.warn("handlerAdded . {}", entity);
+	}
+    @Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {	
+    	logger.warn("Connection close . {}", entity);
+		ctx.fireChannelInactive();
+	}
+    
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		logger.debug("Receive:{}", msg);

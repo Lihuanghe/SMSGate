@@ -344,7 +344,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 						
 						int times = entry.cnt.get();
 						
-						logger.warn("retry Send Msg : {}", message);
+						logger.warn("entity : {} , retry Send Msg : {}", entity.getId(),message);
 						if (times >= entity.getMaxRetryCnt()) {
 
 							// 会有future泄漏的情况发生，这里cancel掉自己，来规避泄漏
@@ -358,12 +358,9 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 							// 删除消息
 							storeMap.remove(seq);
 							// 发送3次都失败的消息要记录
+							errlogger.error("entity : {} , RetryFailed: {}", entity.getId(),message);
 
-							logger.error("retry send msg {} times。cancel retry task", times);
-
-							errlogger.error("RetryFailed: {}", message);
-
-							logger.error("retry send Message {} 3 times,the connection may die.close it", message);
+							logger.error("entity : {} , retry send {} times Message {} ,the connection may die.close it", entity.getId(),times,message);
 							ctx.close();
 
 						} else {
