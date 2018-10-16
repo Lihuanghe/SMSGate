@@ -559,7 +559,6 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 	public SMGPSubmitMessage generateMessage(LongMessageFrame frame) throws Exception {
 		SMGPSubmitMessage requestMessage = this.clone();
 
-		requestMessage.setTpPid((byte)frame.getTppid());
 		requestMessage.setTpUdhi((byte)frame.getTpudhi());
 		requestMessage.setMsgFmt(frame.getMsgfmt());
 		requestMessage.setBMsgContent(frame.getMsgContentBytes());

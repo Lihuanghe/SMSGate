@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.marre.sms.SmsAlphabet;
 import org.marre.sms.SmsDcs;
 import org.marre.sms.SmsMessage;
-import org.marre.sms.SmsMsgClass;
 import org.marre.sms.SmsPortAddressedTextMessage;
+import org.marre.sms.SmsSimTookitSecurityMessage;
 import org.marre.sms.SmsTextMessage;
 import org.marre.wap.push.SmsMmsNotificationMessage;
 import org.marre.wap.push.SmsWapPushMessage;
@@ -361,6 +360,8 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 				}else if(wbxml instanceof WapSLPush){
 					return ((WapSLPush)wbxml).getUri();
 				}
+			}else if(msg instanceof SmsSimTookitSecurityMessage) {
+				return SmsSimTookitSecurityMessage.class.toString();
 			}
 
 			if(msgContentBytes!=null && msgContentBytes.length>0){
@@ -485,7 +486,6 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 		CmppSubmitRequestMessage requestMessage = this.clone();
 		requestMessage.setPknumber(frame.getPknumber());
 		requestMessage.setPktotal(frame.getPktotal());
-		requestMessage.setTppid(frame.getTppid());
 		requestMessage.setTpudhi(frame.getTpudhi());
 		requestMessage.setMsgfmt(frame.getMsgfmt());
 		requestMessage.setMsgContentBytes(frame.getMsgContentBytes());

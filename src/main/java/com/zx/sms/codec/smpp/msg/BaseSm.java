@@ -279,7 +279,6 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
     protected BaseSm doGenerateMessage(LongMessageFrame frame) throws Exception {
 		BaseSm requestMessage = (BaseSm)this.clone();
 		
-		requestMessage.setProtocolId((byte)frame.getTppid());
 		byte old = requestMessage.getEsmClass();
 		requestMessage.setEsmClass((byte)((frame.getTpudhi()<<6) | old));
 		requestMessage.setDataCoding(frame.getMsgfmt().getValue());
@@ -295,8 +294,8 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
 
 	protected LongMessageFrame doGenerateFrame() {
 		LongMessageFrame frame = new LongMessageFrame();
-		frame.setTppid(getProtocolId());
 		//udhi bit : x1xxxxxx 表示要处理长短信  
+		frame.setTppid(getProtocolId());
 		frame.setTpudhi((short)((getEsmClass()>>6) & 0x01));
 		frame.setMsgfmt(new SmsDcs(getDataCoding()));
 		frame.setMsgContentBytes(getShortMessage());

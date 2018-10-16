@@ -26,6 +26,10 @@ public final class SmsUdhIei {
     /** Hyperlink format element. */
     public static final SmsUdhIei HYPERLINK_FORMAT = new SmsUdhIei((byte)0x21, "HYPERLINK_FORMAT");
 
+    /**SIM Toolkit Security Headers*/
+    public static final SmsUdhIei COMMAND_PACKET = new SmsUdhIei((byte)0x70, "(U)SIM Toolkit Security,Headers-Command Packet Identifier.");
+    public static final SmsUdhIei COMMAND_RESPONSE_PACKET = new SmsUdhIei((byte)0x71, "(U)SIM Toolkit Security Headers,Response Packet Identifier.");
+
     private final byte value;
     private final String name;
 
@@ -51,6 +55,8 @@ public final class SmsUdhIei {
             case 0x09: return WCMP;
             case 0x20: return RFC822_EMAIL_HEADER;
             case 0x21: return HYPERLINK_FORMAT;
+            case 0x70: return COMMAND_PACKET;
+            case 0x71: return COMMAND_RESPONSE_PACKET;
             default: {
             	if(value < InfoEleNameList.length){
             		return new SmsUdhIei(value, InfoEleNameList[value]);
@@ -100,7 +106,8 @@ public final class SmsUdhIei {
 	 * 参考：
 	 * <a href="https://en.wikipedia.org/wiki/User_Data_Header">协议</a>
 	 */
-	final static String[] InfoEleNameList =  new String[]{"0	Concatenated short messages, 8-bit reference number",
+	final static String[] InfoEleNameList =  new String[]{
+		"0	Concatenated short messages, 8-bit reference number",
 		"1	Special SMS Message Indication",
 		"2	Reserved",
 		"3	Not used to avoid misinterpretation as <LF> character",

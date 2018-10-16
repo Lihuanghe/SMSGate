@@ -92,8 +92,8 @@ public class SessionConnectedHandler extends AbstractBusinessHandler {
 						CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
 						msg.setDestterminalId(String.valueOf(System.currentTimeMillis()/1000));
 						msg.setLinkID("0000");
-						msg.setMsgContent(System.nanoTime()+"|||21==21==ｋ===看=1==ms21======1.是服务器内部的重定向，服务器直接访问目标地址的 url网址，把里面的东西读取出来，但是客户端并不知道，因此用forward的话，客户端浏览器的网址是不会发生变化的。NotetMsgContent(newSmsMmsNotificationMessage");
-						msg.setRegisteredDelivery((short)1);
+						msg.setMsgContent(System.nanoTime()+"|||21==21==ｋ===看=1==ms21======1.");
+						msg.setRegisteredDelivery((short)0);
 						msg.setMsgid(new MsgId());
 						msg.setServiceId("10086");
 						msg.setSrcId(finalentity.getSpCode());

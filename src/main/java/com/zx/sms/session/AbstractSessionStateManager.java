@@ -212,8 +212,10 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 					
 					//响应延迟过大
 					long delay = delaycheck(sendtime);
-					if(delay > (entity.getRetryWaitTimeSec() * 1000/2)){
+					if(delay > (entity.getRetryWaitTimeSec() * 1000/4)){
 						errlogger.warn("delaycheck . delay :{} , SequenceId :{}", delay,getSequenceId(response));
+						//接收response回复时延太高，有可能对端已经开始积压了，暂停发送1秒钟。
+						setchannelunwritable(ctx,1000);
 					}
 					
 					Entry entry = msgRetryMap.get(key);
@@ -247,7 +249,6 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 
 	//查检发送req与收到res的时间差
 	private long delaycheck(long sendtime){
-		//当响应延迟超过重试等待时间的1/10
 		return CachedMillisecondClock.INS.now() - sendtime ;
 	}
 	

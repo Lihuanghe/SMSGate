@@ -230,7 +230,6 @@ public class SgipDeliverRequestMessage extends DefaultMessage implements LongSMS
 	public SgipDeliverRequestMessage generateMessage(LongMessageFrame frame) throws Exception {
 		SgipDeliverRequestMessage requestMessage = this.clone();
 		
-		requestMessage.setTppid(frame.getTppid());
 		requestMessage.setTpudhi(frame.getTpudhi());
 		requestMessage.setMsgfmt(frame.getMsgfmt());
 		requestMessage.setMsgContentBytes(frame.getMsgContentBytes());

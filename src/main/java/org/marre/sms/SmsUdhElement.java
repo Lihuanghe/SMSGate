@@ -56,7 +56,7 @@ public final class SmsUdhElement
     public SmsUdhElement(SmsUdhIei udhIei, byte[] udhIeiData)
     {
         udhIei_ = udhIei;
-        udhIeiData_ = udhIeiData;
+        udhIeiData_ = udhIeiData==null?new byte[0]:udhIeiData;
     }
 
     /**

@@ -27,7 +27,9 @@ import org.marre.sms.SmsPdu;
 import org.marre.sms.SmsPduUtil;
 import org.marre.sms.SmsPort;
 import org.marre.sms.SmsPortAddressedTextMessage;
+import org.marre.sms.SmsSimTookitSecurityMessage;
 import org.marre.sms.SmsTextMessage;
+import org.marre.sms.SmsUdhElement;
 import org.marre.sms.SmsUdhIei;
 import org.marre.sms.SmsUserData;
 import org.marre.wap.mms.MmsConstants;
@@ -116,14 +118,20 @@ public enum LongMessageFrameHolder {
 					throw new NotSupportedException("Nokia手机支持的OTA浏览器书签,无法解析");
 				}
 
-				logger.warn("UnsupportedportMessage UDH:{} udhdata:{},pdu:[{}]", udheader.udhIei, ByteBufUtil.hexDump(udheader.infoEleData),
+				logger.warn("UnsupportedportMessage UDH:0x{} udhdata:{},pdu:[{}]", ByteBufUtil.hexDump(new byte[] {udheader.udhIei.getValue()}), ByteBufUtil.hexDump(udheader.infoEleData),
 						ByteBufUtil.hexDump(contents));
 
 				SmsTextMessage text = buildTextMessage(contents, frame.getMsgfmt());
 				return new SmsPortAddressedTextMessage(new SmsPort(destport), new SmsPort(srcport), text);
-			} else {
+			} else if(frame.getTppid()==0x7f && (SmsUdhIei.COMMAND_PACKET.equals(udheader.udhIei)||SmsUdhIei.COMMAND_RESPONSE_PACKET.equals(udheader.udhIei))){
+				//Tppid()==0x7f sim data download
+				//(U)SIM Toolkit Securit 用于远程写卡
+				SmsSimTookitSecurityMessage  sts = new SmsSimTookitSecurityMessage(udheader.udhIei.getValue() ,udheader.infoEleData,contents);
+				return sts;
+			}
+			else {
 				// 其它都当成文本短信
-				logger.warn("Unsupported UDH:{} udhdata:{},pdu:[{}]", udheader.udhIei, ByteBufUtil.hexDump(udheader.infoEleData), ByteBufUtil.hexDump(contents));
+				logger.warn("Unsupported UDH:0x{} udhdata:{},pdu:[{}]", ByteBufUtil.hexDump(new byte[] {udheader.udhIei.getValue()}), ByteBufUtil.hexDump(udheader.infoEleData), ByteBufUtil.hexDump(contents));
 				return buildTextMessage(contents, frame.getMsgfmt());
 			}
 		}
@@ -221,7 +229,7 @@ public enum LongMessageFrameHolder {
 			frame.setPktotal((short) pdus.length);
 			frame.setPknumber((short) i++);
 			frame.setMsgfmt(aMsgPdu.getDcs());
-			frame.setTppid((short) 0);
+			
 			frame.setTpudhi(udh != null ? (short) 1 : (short) 0);
 
 			ByteArrayOutputStream btos = new ByteArrayOutputStream(200);
@@ -316,8 +324,10 @@ public enum LongMessageFrameHolder {
 			t.udhIei = SmsUdhIei.valueOf(pdu[i++]); // 00
 			t.infoEleLength = pdu[i++]; // 03
 			t.infoEleData = new byte[t.infoEleLength];
-			System.arraycopy(pdu, i, t.infoEleData, 0, t.infoEleLength);
-			i += t.infoEleLength;
+			if(t.infoEleLength>0) {
+				System.arraycopy(pdu, i, t.infoEleData, 0, t.infoEleLength);
+				i += t.infoEleLength;
+			}
 			udh.infoElement.add(t);
 		}
 		return udh;

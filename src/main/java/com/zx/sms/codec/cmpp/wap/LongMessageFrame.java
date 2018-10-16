@@ -1,10 +1,7 @@
 package com.zx.sms.codec.cmpp.wap;
 
-import org.marre.sms.SmsAlphabet;
 import org.marre.sms.SmsDcs;
-import org.marre.sms.SmsMsgClass;
 
-import com.zx.sms.LongSMSMessage;
 import com.zx.sms.common.GlobalConstance;
 
 /**
@@ -55,17 +52,10 @@ public class LongMessageFrame {
 		this.pknumber = pknumber;
 	}
 
-	/**
-	 * @return the tppid
-	 */
-	public short getTppid() {
+	short getTppid() {
 		return tppid;
 	}
 
-	/**
-	 * @param tppid
-	 *            the tppid to set
-	 */
 	public void setTppid(short tppid) {
 		this.tppid = tppid;
 	}

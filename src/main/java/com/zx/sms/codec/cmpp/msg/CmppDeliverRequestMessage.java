@@ -314,8 +314,6 @@ public class CmppDeliverRequestMessage extends DefaultMessage  implements LongSM
 	@Override
 	public CmppDeliverRequestMessage generateMessage(LongMessageFrame frame)  throws Exception{
 		CmppDeliverRequestMessage requestMessage = this.clone();
-		
-		requestMessage.setTppid(frame.getTppid());
 		requestMessage.setTpudhi(frame.getTpudhi());
 		requestMessage.setMsgfmt(frame.getMsgfmt());
 		requestMessage.setMsgContentBytes(frame.getMsgContentBytes());
