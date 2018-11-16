@@ -23,7 +23,10 @@ public class MessageLogHandler extends ChannelDuplexHandler {
 
 	public MessageLogHandler(EndpointEntity entity) {
 		this.entity = entity;
-		logger = LoggerFactory.getLogger(String.format(GlobalConstance.loggerNamePrefix, entity.getId()));
+		if(entity!=null)
+			logger = LoggerFactory.getLogger(String.format(GlobalConstance.loggerNamePrefix, entity.getId()));
+		else
+			logger = LoggerFactory.getLogger(MessageLogHandler.class);
 	}
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception{
 		logger.warn("handlerAdded . {}", entity);

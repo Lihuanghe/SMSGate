@@ -467,10 +467,10 @@ public enum LongMessageFrameHolder {
 
 		switch (binaryContentType) {
 		case WspTypeDecoder.CONTENT_TYPE_B_PUSH_SI:
-			return dispatchWapPdu_PushWBXML(pdu, transactionId, pduType, headerStartIndex, headerLength, SIinFact);
+			return dispatchWapPdu_PushWBXML(pdu, transactionId, pduType, headerStartIndex, headerLength, XMLFact.INS.SIinFact);
 
 		case WspTypeDecoder.CONTENT_TYPE_B_PUSH_SL:
-			return dispatchWapPdu_PushWBXML(pdu, transactionId, pduType, headerStartIndex, headerLength, SLinFact);
+			return dispatchWapPdu_PushWBXML(pdu, transactionId, pduType, headerStartIndex, headerLength, XMLFact.INS.SLinFact);
 
 		case WspTypeDecoder.CONTENT_TYPE_B_MMS:
 			return dispatchWapPdu_MMS(pdu, transactionId, pduType, headerStartIndex, headerLength);
@@ -478,7 +478,25 @@ public enum LongMessageFrameHolder {
 			return null;
 		}
 	}
+	
+	private enum XMLFact {
+		INS;
+		private final static XMLInputFactory SLinFact = createSLinFact();
+		private final static XMLInputFactory SIinFact = createSIinFact();
+		private static XMLInputFactory createSLinFact() {
+			XMLInputFactory inFact = new WbXmlInputFactory();
+			inFact.setProperty(WbXmlInputFactory.DEFINITION_PROPERTY, WbXmlInitialization.getDefinitionByName("SL 1.0"));
+			return inFact;
+		}
 
+		private static XMLInputFactory createSIinFact() {
+			XMLInputFactory inFact = new WbXmlInputFactory();
+			inFact.setProperty(WbXmlInputFactory.DEFINITION_PROPERTY, WbXmlInitialization.getDefinitionByName("SI 1.0"));
+			return inFact;
+		}
+	}
+
+	
 	private SmsMessage dispatchWapPdu_PushWBXML(byte[] pdu, int transactionId, int pduType, int headerStartIndex, int headerLength, XMLInputFactory inFact) {
 		byte[] header = new byte[headerLength];
 		System.arraycopy(pdu, headerStartIndex, header, 0, header.length);
@@ -573,20 +591,9 @@ public enum LongMessageFrameHolder {
 		return null;
 	}
 
-	private static final XMLInputFactory SLinFact = createSLinFact();
-	private static final XMLInputFactory SIinFact = createSIinFact();
 
-	private static XMLInputFactory createSLinFact() {
-		XMLInputFactory inFact = new WbXmlInputFactory();
-		inFact.setProperty(WbXmlInputFactory.DEFINITION_PROPERTY, WbXmlInitialization.getDefinitionByName("SL 1.0"));
-		return inFact;
-	}
 
-	private static XMLInputFactory createSIinFact() {
-		XMLInputFactory inFact = new WbXmlInputFactory();
-		inFact.setProperty(WbXmlInputFactory.DEFINITION_PROPERTY, WbXmlInitialization.getDefinitionByName("SI 1.0"));
-		return inFact;
-	}
+
 
 	protected Document wbxmlStream2Doc(XMLInputFactory inFact, InputStream in, boolean event) throws Exception {
 		XMLStreamReader xmlStreamReader = null;
