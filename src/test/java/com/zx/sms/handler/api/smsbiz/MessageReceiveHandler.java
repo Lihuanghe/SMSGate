@@ -17,6 +17,7 @@ import com.zx.sms.codec.cmpp.msg.CmppReportRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.common.util.CachedMillisecondClock;
+import com.zx.sms.common.util.MsgId;
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
@@ -155,6 +156,19 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 							ctx.channel().writeAndFlush(t);
 					}
 				});
+				
+				//将短信以MO方式发回去
+				CmppDeliverRequestMessage tmp = new CmppDeliverRequestMessage();
+				tmp.setDestId(e.getSrcId());
+				tmp.setLinkid("0000");
+//				msg.setMsgContent(sb.toString());
+				tmp.setMsgContent(e.getMsgContent());
+				tmp.setMsgId(new MsgId());
+				
+				tmp.setServiceid("10086");
+				tmp.setSrcterminalId(e.getDestterminalId()[0]);
+				tmp.setSrcterminalType((short) 1);
+//				ctx.channel().writeAndFlush(tmp);
 			}
 			
 		} else if (msg instanceof CmppSubmitResponseMessage) {

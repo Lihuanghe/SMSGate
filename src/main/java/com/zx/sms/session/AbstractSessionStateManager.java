@@ -210,6 +210,9 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 					T request = vobj.getObj();
 					long sendtime = vobj.getVersion();
 					
+					// 把response关联上request供使用。
+					response.setRequest(request);
+					
 					//响应延迟过大
 					long delay = delaycheck(sendtime);
 					if(delay > (entity.getRetryWaitTimeSec() * 1000/4)){
@@ -236,9 +239,6 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 						responseFutureDone(entry, response);
 						msgRetryMap.remove(key);
 					}
-					
-					// 把response关联上request供使用。
-					response.setRequest(request);
 				} else {
 					errlogger.warn("receive ResponseMessage ,but not found related Request Msg. response:{}", response);
 				}
@@ -270,13 +270,6 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 
 		if (message instanceof BaseMessage) {
 			BaseMessage msg = (BaseMessage) message;
-			// 发送消息超过生命周期
-
-			if (msg.isTerminated()) {
-				errlogger.error("Msg Life over .{}", msg);
-				promise.setFailure(new SmsLifeTerminateException("Msg Life over"));
-				return;
-			}
 
 			if (msg.isRequest()) {
 				// 发送，未收到Response时，60秒后重试,
@@ -459,6 +452,17 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 	 */
 	private Promise safewrite(final ChannelHandlerContext ctx, final T message, final ChannelPromise promise,boolean syn) {
 		if (ctx.channel().isActive()) {
+			
+			// 发送消息超过生命周期
+			if (message.isTerminated()) {
+				errlogger.error("Msg Life over .{}", message);
+				promise.setFailure(new SmsLifeTerminateException("Msg Life over"));
+				
+				DefaultPromise failed = new DefaultPromise<T>(ctx.executor());
+				failed.tryFailure(new SmsLifeTerminateException("Msg Life over"));
+				return failed;
+			}
+			
 			final K seq = getSequenceId(message);
 		
 			// 记录已发送的请求,在发送msg前生记录到map里。防止生成retryTask前就收到resp的情况发生

@@ -42,14 +42,14 @@ public class ClientTestCMPPEndPoint {
 		client.setPassword("1234567");
 
 		client.setSpCode("1069039128");
-		client.setMaxChannels((short)1);
+		client.setMaxChannels((short)10);
 		client.setVersion((short)0x20);
 		client.setRetryWaitTimeSec((short)30);
 		client.setUseSSL(false);
-		client.setReSendFailMsg(true);
+		client.setReSendFailMsg(false);
 //		client.setWriteLimit(500);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new SessionConnectedHandler(100));
+		clienthandlers.add( new SessionConnectedHandler(10000));
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		
@@ -71,16 +71,17 @@ public class ClientTestCMPPEndPoint {
 		client1.setReSendFailMsg(true);
 //		client.setWriteLimit(10);
 		List<BusinessHandlerInterface> clienthandlers1 = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers1.add( new SessionConnectedHandler(100));
+		clienthandlers1.add( new SessionConnectedHandler(0));
 		client1.setBusinessHandlerSet(clienthandlers1);
-		manager.addEndpointEntity(client1);
+//		manager.addEndpointEntity(client1);
 		
 		manager.openAll();
 		//LockSupport.park();
-//		Thread.sleep(1000);
+		Thread.sleep(1000);
+		manager.openEndpoint(client);
+
 		//manager.openEndpoint(client);Thread.sleep(1000);
 //		manager.startConnectionCheckTask();
-		Thread.sleep(1000);
 		
 //		while(true){
 //			

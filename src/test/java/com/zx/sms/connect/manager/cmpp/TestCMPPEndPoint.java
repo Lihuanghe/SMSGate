@@ -38,7 +38,7 @@ public class TestCMPPEndPoint {
 		CMPPServerEndpointEntity server = new CMPPServerEndpointEntity();
 		server.setId("server");
 		server.setHost("127.0.0.1");
-		server.setPort(7891);
+		server.setPort(7890);
 		server.setValid(true);
 		//使用ssl加密数据流
 		server.setUseSSL(false);
@@ -47,8 +47,8 @@ public class TestCMPPEndPoint {
 		child.setId("child");
 		child.setChartset(Charset.forName("utf-8"));
 		child.setGroupName("test");
-		child.setUserName("901782");
-		child.setPassword("ICP");
+		child.setUserName("901783");
+		child.setPassword("ICP001");
 
 		child.setValid(true);
 		child.setVersion((short)0x30);
@@ -88,7 +88,7 @@ public class TestCMPPEndPoint {
 		clienthandlers.add( new SessionConnectedHandler(1));
 		client.setBusinessHandlerSet(clienthandlers);
 		
-		manager.addEndpointEntity(client);
+//		manager.addEndpointEntity(client);
 		
 		manager.openAll();
 		manager.startConnectionCheckTask();

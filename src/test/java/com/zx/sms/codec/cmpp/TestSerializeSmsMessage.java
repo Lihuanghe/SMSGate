@@ -8,6 +8,8 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.marre.sms.SmsMessage;
@@ -19,8 +21,10 @@ import org.marre.wap.push.SmsWapPushMessage;
 import org.marre.wap.push.WapSIPush;
 import org.marre.wap.push.WapSLPush;
 
+import com.google.common.primitives.Bytes;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.common.util.CMPPCommonUtil;
+import com.zx.sms.common.util.CachedMillisecondClock;
 
 public class TestSerializeSmsMessage {
 
@@ -84,6 +88,16 @@ public class TestSerializeSmsMessage {
 	        
 	        Assert.assertTrue(m.isTerminated());
 	        Assert.assertTrue(result.isTerminated());
+	}
+	@Test
+	public void testLogin() {
+		String timestamp = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "MMddHHmmss");
+		byte[] userBytes = "GSDT01".getBytes();
+		byte[] passwdBytes = "1234567".getBytes();
+		byte[] timestampBytes = "1204110405".getBytes();
+//		System.out.println(timestamp);
+		System.out.println(DigestUtils.md5Hex(Bytes.concat(userBytes, new byte[9], passwdBytes, timestampBytes)));
+	
 	}
 	
 }
