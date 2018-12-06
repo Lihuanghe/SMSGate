@@ -35,7 +35,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 
 	private short registeredDelivery = 0;
 	private short msglevel = 9;
-	private String serviceId = "cmcczx_sms";
+	private String serviceId = GlobalConstance.emptyString;
 	private short feeUserType = 2;
 	private String feeterminalId = GlobalConstance.emptyString;
 	private short feeterminaltype = 0;

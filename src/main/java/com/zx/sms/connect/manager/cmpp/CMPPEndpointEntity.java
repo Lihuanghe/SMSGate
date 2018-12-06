@@ -19,6 +19,7 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 	
 	
 	private String spCode = ""; 
+	private String serviceId = "";
 	//默认为3.0协议
 	private short version = (short)0x30L;
 	private Charset chartset = GlobalConstance.defaultTransportCharset;
@@ -42,6 +43,17 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
+	}
+	
+	/**
+	 * 业务代码 ：填写进submit的service_id里
+	 */
+	public String getServiceId() {
+		return serviceId;
+	}
+
+	public void setServiceId(String serviceId) {
+		this.serviceId = serviceId;
 	}
 	/**
 	 *服务代码：如10696101 

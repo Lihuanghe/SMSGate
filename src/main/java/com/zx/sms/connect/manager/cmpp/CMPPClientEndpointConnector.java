@@ -41,9 +41,9 @@ public class CMPPClientEndpointConnector extends AbstractClientEndpointConnector
 	@Override
 	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity cmppentity) {
 		CMPPEndpointEntity entity = (CMPPEndpointEntity)cmppentity;
-
+		
 		if (entity instanceof ClientEndpoint) {
-			pipe.addLast("reWriteSubmitMsgSrcHandler", new ReWriteSubmitMsgSrcHandler(entity));
+			pipe.addAfter(GlobalConstance.codecName, "reWriteSubmitMsgSrcHandler", new ReWriteSubmitMsgSrcHandler(entity) );
 		}
 		//处理长短信
 		pipe.addLast( "CMPPDeliverLongMessageHandler", new CMPPDeliverLongMessageHandler(entity));
@@ -59,7 +59,8 @@ public class CMPPClientEndpointConnector extends AbstractClientEndpointConnector
 	@Override
 	protected void doinitPipeLine(ChannelPipeline pipeline) {
 		CMPPCodecChannelInitializer codec = null;
-		if (getEndpointEntity() instanceof CMPPEndpointEntity) {
+		EndpointEntity entity = getEndpointEntity();
+		if (entity instanceof CMPPEndpointEntity) {
 			pipeline.addLast(GlobalConstance.IdleCheckerHandlerName,
 					new IdleStateHandler(0, 0, ((CMPPEndpointEntity) getEndpointEntity()).getIdleTimeSec(), TimeUnit.SECONDS));
 			
