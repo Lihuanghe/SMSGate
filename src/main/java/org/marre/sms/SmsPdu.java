@@ -125,20 +125,22 @@ public class SmsPdu
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream(100);
 
-        baos.write((byte) SmsUdhUtil.getTotalSize(udhElements_));
-
-        try
-        {
-            for (SmsUdhElement anUdhElements_ : udhElements_) {
-                anUdhElements_.writeTo(baos);
+        byte length = (byte) SmsUdhUtil.getTotalSize(udhElements_);
+        
+        if(length>0) {
+            baos.write(length);
+            try
+            {
+                for (SmsUdhElement anUdhElements_ : udhElements_) {
+                    anUdhElements_.writeTo(baos);
+                }
+            }
+            catch (IOException ioe)
+            {
+                // Shouldn't happen.
+                throw new RuntimeException("Failed to write to ByteArrayOutputStream");
             }
         }
-        catch (IOException ioe)
-        {
-            // Shouldn't happen.
-            throw new RuntimeException("Failed to write to ByteArrayOutputStream");
-        }
-
         return baos.toByteArray();
     }
 
