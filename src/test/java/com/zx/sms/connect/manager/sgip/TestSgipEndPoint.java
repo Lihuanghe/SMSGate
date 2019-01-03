@@ -55,8 +55,8 @@ public class TestSgipEndPoint {
 		child.setMaxRetryCnt((short)3);
 		child.setReSendFailMsg(false);
 		child.setIdleTimeSec((short)30);
-		child.setWriteLimit(200);
-		child.setReadLimit(200);
+//		child.setWriteLimit(200);
+//		child.setReadLimit(200);
 		child.setSupportLongmsg(SupportLongMessage.SEND);  //接收长短信时不自动合并
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
 		
@@ -80,10 +80,10 @@ public class TestSgipEndPoint {
 		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);
 		client.setReSendFailMsg(true);
-		client.setWriteLimit(200);
-		client.setReadLimit(200);
+//		client.setWriteLimit(200);
+//		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add(new SGIPSessionConnectedHandler(10));
+		clienthandlers.add(new SGIPSessionConnectedHandler(10000));
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		manager.openAll();

@@ -50,15 +50,12 @@ public class TestSMPPEndPoint {
 		child.setMaxRetryCnt((short)3);
 		child.setReSendFailMsg(true);
 		child.setIdleTimeSec((short)15);
-		child.setWriteLimit(200);
-		child.setReadLimit(200);
+//		child.setWriteLimit(200);
+//		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new SMPPSessionConnectedHandler(10));   
+		serverhandlers.add(new SMPPSessionConnectedHandler(10000));   
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
-		
-
-		
 		
 		SMPPClientEndpointEntity client = new SMPPClientEndpointEntity();
 		client.setId("smppclient");
@@ -72,8 +69,8 @@ public class TestSMPPEndPoint {
 		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);
 		client.setReSendFailMsg(true);
-		client.setWriteLimit(200);
-		client.setReadLimit(200);
+//		client.setWriteLimit(200);
+//		client.setReadLimit(200);
 		client.setSupportLongmsg(SupportLongMessage.SEND);  //接收长短信时不自动合并
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add( new SMPPMessageReceiveHandler()); 

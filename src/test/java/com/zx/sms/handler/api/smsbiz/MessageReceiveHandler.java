@@ -43,7 +43,7 @@ public abstract class MessageReceiveHandler extends AbstractBusinessHandler {
 		return "MessageReceiveHandler-smsBiz";
 	}
 
-	public synchronized void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+	public synchronized void userEventTriggered(final ChannelHandlerContext ctx, Object evt) throws Exception {
 		if (evt == SessionState.Connect && !inited) {
 			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>(){
 				
@@ -58,7 +58,7 @@ public abstract class MessageReceiveHandler extends AbstractBusinessHandler {
 			},new ExitUnlimitCirclePolicy() {
 				@Override
 				public boolean notOver(Future future) {
-					return true;
+					return ctx.channel().isActive();
 				}
 			},rate*1000);
 			inited = true;

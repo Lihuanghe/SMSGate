@@ -81,9 +81,12 @@ EventLoopGroup.submit(callable)方法不能提交阻塞任务。
 				}catch(Exception e){
 					nettyfuture.setFailure(e);
 				}
-				
+				try {
 				if(exitCondition.notOver(nettyfuture))			
 					addtask(executor,task ,exitCondition,delay);
+				}catch(Exception ex) {
+					ex.printStackTrace();
+				}
 			}
 			
 		}, executor);

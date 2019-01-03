@@ -68,9 +68,10 @@ public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 						if(ctx.channel().isWritable()){
 							List<Promise> futures = null;
 							ChannelFuture chfuture = null;
-//							chfuture = ChannelUtil.asyncWriteToEntity(getEndpointEntity().getId(), createTestReq("中createT"+UUID.randomUUID().toString()));
-							futures = ChannelUtil.syncWriteLongMsgToEntity(getEndpointEntity().getId(), createTestReq("中msgfutures = ChannelUtil.syncWriteLongMsgToEntity(getEndpointEntity().getId(), createTestReq(\"中msg\"+UUID.randomUUID().toString()));"+UUID.randomUUID().toString()));
-//							ChannelFuture future = ctx.writeAndFlush( );
+							BaseMessage msg = createTestReq("中msgfutures = ChannelUtil.syncWriteLongMsgToEntity(getEndpointEntity().getId(), createTestReq(\"中msg\"+UUID.randomUUID().toString()));"+UUID.randomUUID().toString());
+//							chfuture = ChannelUtil.asyncWriteToEntity(getEndpointEntity().getId(), msg);
+							futures = ChannelUtil.syncWriteLongMsgToEntity(getEndpointEntity().getId(), msg);
+//							ChannelFuture cfuture = ctx.writeAndFlush(msg);
 							cnt--;
 							tmptotal.decrementAndGet();
 							if(chfuture!=null)chfuture.sync();
@@ -102,7 +103,9 @@ public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 			}, new ExitUnlimitCirclePolicy() {
 				@Override
 				public boolean notOver(Future future) {
-					future.cause().printStackTrace();
+					if(future.cause()!=null)
+						future.cause().printStackTrace();
+					
 					boolean over =   ch.isActive() && tmptotal.get() > 0;
 					if(!over) {
 						logger.info("========send over.============");

@@ -70,10 +70,10 @@ public class TestSMGPEndPoint {
 		client.setUseSSL(false);
 		client.setReSendFailMsg(false);
 		client.setClientVersion((byte)0x30);
-		client.setWriteLimit(200);
-		client.setReadLimit(200);
+//		client.setWriteLimit(200);
+//		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new SMGPSessionConnectedHandler(10)); 
+		clienthandlers.add( new SMGPSessionConnectedHandler(10000)); 
 		client.setBusinessHandlerSet(clienthandlers);
 		
 		manager.addEndpointEntity(client);
