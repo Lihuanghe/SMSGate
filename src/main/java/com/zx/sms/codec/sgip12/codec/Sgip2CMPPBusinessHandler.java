@@ -80,11 +80,12 @@ public class Sgip2CMPPBusinessHandler extends AbstractBusinessHandler {
     			SgipSubmitRequestMessage requestMessage = new SgipSubmitRequestMessage(submit.getHeader());
     			requestMessage.setTimestamp(msg.getTimestamp());
     			requestMessage.setSpnumber(submit.getSrcId());
-    			requestMessage.setUsercount((short) submit.getDestUsrtl());
-    			for (int i = 0; i < submit.getDestUsrtl(); i++) {
-    				requestMessage.addUsernumber(submit.getDestterminalId()[i]);
+    			short cnt = (short) submit.getDestUsrtl();
+    			String[] nums = new String[cnt];
+    			for (int i = 0; i < cnt; i++) {
+    				nums[i]= submit.getDestterminalId()[i];
     			}
-    			
+    			requestMessage.setUsernumber(nums);
     			requestMessage.setCorpid(submit.getMsgsrc());
     			requestMessage.setReportflag(submit.getRegisteredDelivery());
     			requestMessage.setTppid(submit.getTppid());
@@ -140,7 +141,7 @@ public class Sgip2CMPPBusinessHandler extends AbstractBusinessHandler {
     			SgipSubmitRequestMessage sm = (SgipSubmitRequestMessage)msg;
     			CmppSubmitRequestMessage submit = new CmppSubmitRequestMessage(msg.getHeader());
     			submit.setTimestamp(sm.getTimestamp());
-    			submit.setDestterminalId(sm.getUsernumber().toArray(new String[sm.getUsercount()]));
+    			submit.setDestterminalId(sm.getUsernumber());
     			submit.setRegisteredDelivery(sm.getReportflag());
     			submit.setSrcId(sm.getSpnumber());
     			submit.setMsgsrc(sm.getCorpid());

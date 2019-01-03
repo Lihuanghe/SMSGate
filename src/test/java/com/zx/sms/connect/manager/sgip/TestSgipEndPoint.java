@@ -1,11 +1,7 @@
 package com.zx.sms.connect.manager.sgip;
 
-import io.netty.util.ResourceLeakDetector;
-import io.netty.util.ResourceLeakDetector.Level;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
 
 import org.junit.Test;
@@ -14,11 +10,13 @@ import org.slf4j.LoggerFactory;
 
 import com.zx.sms.codec.sgip12.codec.Sgip2CMPPBusinessHandler;
 import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
+import com.zx.sms.connect.manager.EndpointEntity.SupportLongMessage;
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
-import com.zx.sms.handler.api.gate.SessionConnectedHandler;
-import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
 import com.zx.sms.handler.sgip.SgipReportRequestMessageHandler;
+
+import io.netty.util.ResourceLeakDetector;
+import io.netty.util.ResourceLeakDetector.Level;
 /**
  *经测试，35个连接，每个连接每200/s条消息
  *lenovoX250能承担7000/s消息编码解析无压力。
@@ -51,19 +49,19 @@ public class TestSgipEndPoint {
 		child.setLoginPassowrd("0555");
 
 		child.setValid(true);
-		child.setChannelType(ChannelType.DOWN);
+		child.setChannelType(ChannelType.DUPLEX);
 		child.setMaxChannels((short)20);
 		child.setRetryWaitTimeSec((short)30);
 		child.setMaxRetryCnt((short)3);
 		child.setReSendFailMsg(false);
 		child.setIdleTimeSec((short)30);
-//		child.setWriteLimit(200);
-//		child.setReadLimit(200);
+		child.setWriteLimit(200);
+		child.setReadLimit(200);
+		child.setSupportLongmsg(SupportLongMessage.SEND);  //接收长短信时不自动合并
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
 		
 		serverhandlers.add(new SgipReportRequestMessageHandler());
-		serverhandlers.add(new Sgip2CMPPBusinessHandler());  //  将CMPP的对象转成sgip对象，然后再经sgip解码器处理
-		serverhandlers.add(new MessageReceiveHandler());   // 复用CMPP的Handler
+		serverhandlers.add(new SGIPMessageReceiveHandler());   
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
@@ -76,22 +74,21 @@ public class TestSgipEndPoint {
 		client.setPort(8001);
 		client.setLoginName("333");
 		client.setLoginPassowrd("0555");
-		client.setChannelType(ChannelType.DOWN);
+		client.setChannelType(ChannelType.DUPLEX);
 
 		client.setMaxChannels((short)1);
 		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);
-//		client.setReSendFailMsg(true);
-//		client.setWriteLimit(200);
-//		client.setReadLimit(200);
+		client.setReSendFailMsg(true);
+		client.setWriteLimit(200);
+		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add(new Sgip2CMPPBusinessHandler()); //  将CMPP的对象转成sgip对象，然后再经sgip解码器处理
-		clienthandlers.add(new SessionConnectedHandler(new AtomicInteger(1))); //// 复用CMPP的Handler
+		clienthandlers.add(new SGIPSessionConnectedHandler(10));
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		manager.openAll();
-//		manager.openEndpoint(client);
-        System.out.println("start.....");
+		System.out.println("start.....");
+      
         LockSupport.park();
 
 		EndpointManager.INS.close();

@@ -117,7 +117,7 @@ public class CMPPChargingDemoTest {
 //		child.setWriteLimit(200);
 //		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new MessageReceiveHandler());
+		serverhandlers.add(new CMPPMessageReceiveHandler());
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
@@ -142,7 +142,7 @@ public class CMPPChargingDemoTest {
 		client.setReSendFailMsg(false);
 
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new SessionConnectedHandler(new AtomicInteger(10)));
+		clienthandlers.add( new CMPPSessionConnectedHandler(10));
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		

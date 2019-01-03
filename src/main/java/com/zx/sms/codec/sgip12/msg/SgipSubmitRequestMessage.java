@@ -38,7 +38,7 @@ public class SgipSubmitRequestMessage extends DefaultMessage implements LongSMSM
 
 	private String spnumber = GlobalConstance.emptyString;
 	private String chargenumber = GlobalConstance.emptyString;
-	private List<String> usernumber ;
+	private String[] usernumber = null;
 	private String corpid = GlobalConstance.emptyString;
 	private String servicetype = GlobalConstance.emptyString;
 	private short feetype = 2;
@@ -104,27 +104,19 @@ public class SgipSubmitRequestMessage extends DefaultMessage implements LongSMSM
 	 * @return the usercount
 	 */
 	public short getUsercount() {
-		return (short) usernumber.size();
+		return (short) usernumber.length;
 	}
-
-	/**
-	 * @param usercount the usercount to set
-	 */
-	public void setUsercount(short usercount) {
-		this.usernumber = new ArrayList<String>(usercount);
-	}
-
-	/**
-	 * @return the usernumber
-	 */
-	public List<String> getUsernumber() {
+	
+	public String[] getUsernumber() {
 		return usernumber;
 	}
-	
-	public void addUsernumber(String usernumber) {
-		this.usernumber.add(usernumber);
+
+	public void setUsernumber(String[] usernumber) {
+		this.usernumber = usernumber;
 	}
-	
+	public void setUsernumber(String usernumber) {
+		this.usernumber = new String [] {usernumber};
+	}
 	/**
 	 * @return the corpid
 	 */
@@ -447,7 +439,7 @@ public class SgipSubmitRequestMessage extends DefaultMessage implements LongSMSM
 		StringBuilder sb = new StringBuilder();
 		sb.append("SgipSubmitRequestMessage [corpid=").append(corpid)
 		.append(", spnumber=").append(spnumber)
-		.append(", destterminalId=").append(Arrays.toString(usernumber.toArray()))
+		.append(", destterminalId=").append(Arrays.toString(usernumber))
 		.append(", msgContent=").append(getMsgContent())
 		.append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
 		return sb.toString();

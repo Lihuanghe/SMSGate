@@ -91,7 +91,6 @@ public class SgipSessionLoginManager extends AbstractSessionLoginManager {
 		
 		SgipBindResponseMessage resp = new SgipBindResponseMessage(((Message)message).getHeader());
 		resp.setResult((short)0);
-		
 		ctx.channel().writeAndFlush(resp);
 
 	}

@@ -2,18 +2,16 @@ package com.zx.sms.connect.manager.smgp;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.LockSupport;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
+import com.zx.sms.connect.manager.EndpointEntity.SupportLongMessage;
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
-import com.zx.sms.handler.api.gate.SessionConnectedHandler;
-import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
-import com.zx.sms.handler.smgp.SMGP2CMPPBusinessHandler;
 /**
  *经测试，35个连接，每个连接每200/s条消息
  *lenovoX250能承担7000/s消息编码解析无压力。
@@ -52,19 +50,17 @@ public class TestSMGPEndPoint {
 		child.setMaxRetryCnt((short)3);
 		child.setReSendFailMsg(false);
 		child.setIdleTimeSec((short)15);
+		child.setSupportLongmsg(SupportLongMessage.SEND);  //接收长短信时不自动合并
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new SMGP2CMPPBusinessHandler()); 
-		serverhandlers.add(new MessageReceiveHandler());   // 复用CMPP的Handler
+		serverhandlers.add(new SMGPMessageReceiveHandler());   
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
-		
-
-		
+		manager.addEndpointEntity(server);
 		
 		SMGPClientEndpointEntity client = new SMGPClientEndpointEntity();
 		client.setId("smgpclient");
 		client.setHost("127.0.0.1");
-		client.setPort(8890);
+		client.setPort(9890);
 		client.setClientID("333");
 		client.setPassword("0555");
 		client.setChannelType(ChannelType.DUPLEX);
@@ -74,19 +70,18 @@ public class TestSMGPEndPoint {
 		client.setUseSSL(false);
 		client.setReSendFailMsg(false);
 		client.setClientVersion((byte)0x30);
-//		client.setWriteLimit(200);
-//		client.setReadLimit(200);
+		client.setWriteLimit(200);
+		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add(new SMGP2CMPPBusinessHandler()); 
-		clienthandlers.add( new SessionConnectedHandler(new AtomicInteger(10))); //// 复用CMPP的Handler
+		clienthandlers.add( new SMGPSessionConnectedHandler(10)); 
 		client.setBusinessHandlerSet(clienthandlers);
 		
-//		manager.addEndpointEntity(server);
 		manager.addEndpointEntity(client);
+		
 		manager.openAll();
-		//LockSupport.park();
-        System.out.println("start.....");
-		Thread.sleep(300000);
+		 System.out.println("start.....");
+		LockSupport.park();
+       
 		EndpointManager.INS.close();
 	}
 	

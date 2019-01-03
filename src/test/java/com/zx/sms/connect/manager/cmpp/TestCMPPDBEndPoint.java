@@ -1,8 +1,5 @@
 package com.zx.sms.connect.manager.cmpp;
 
-import io.netty.util.ResourceLeakDetector;
-import io.netty.util.ResourceLeakDetector.Level;
-
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +13,10 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
-import com.zx.sms.handler.api.gate.SessionConnectedHandler;
 import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
+
+import io.netty.util.ResourceLeakDetector;
+import io.netty.util.ResourceLeakDetector.Level;
 /**
  *经测试，35个连接，每个连接每200/s条消息
  *lenovoX250能承担7000/s消息编码解析无压力。
@@ -64,7 +63,7 @@ public class TestCMPPDBEndPoint {
 		client.setReSendFailMsg(false);
 
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new MessageReceiveHandler());
+		clienthandlers.add( new CMPPMessageReceiveHandler());
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.openEndpoint(client);		
         System.out.println("start.....");
@@ -94,7 +93,7 @@ public class TestCMPPDBEndPoint {
 			child.setWriteLimit(200);
 			child.setReadLimit(200);
 			List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-			serverhandlers.add(new SessionConnectedHandler(new AtomicInteger(100000)));
+			serverhandlers.add(new CMPPSessionConnectedHandler(100000));
 			child.setBusinessHandlerSet(serverhandlers);
 			return child;
 		}

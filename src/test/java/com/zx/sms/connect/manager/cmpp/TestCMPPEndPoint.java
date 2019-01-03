@@ -60,7 +60,7 @@ public class TestCMPPEndPoint {
 //		child.setWriteLimit(200);
 //		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new MessageReceiveHandler());
+		serverhandlers.add(new CMPPMessageReceiveHandler());
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
@@ -71,11 +71,11 @@ public class TestCMPPEndPoint {
 		client.setHost("127.0.0.1");
 //		client.setLocalhost("127.0.0.1");
 //		client.setLocalport(65521);
-		client.setPort(7891);
+		client.setPort(7890);
 		client.setChartset(Charset.forName("utf-8"));
 		client.setGroupName("test");
-		client.setUserName("901782");
-		client.setPassword("ICP");
+		client.setUserName("901783");
+		client.setPassword("ICP001");
 
 		client.setMaxChannels((short)1);
 		client.setVersion((short)0x30);
@@ -85,10 +85,10 @@ public class TestCMPPEndPoint {
 		client.setReSendFailMsg(false);
 		client.setSupportLongmsg(SupportLongMessage.BOTH);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new SessionConnectedHandler(1));
+		clienthandlers.add( new CMPPSessionConnectedHandler(100));
 		client.setBusinessHandlerSet(clienthandlers);
 		
-//		manager.addEndpointEntity(client);
+		manager.addEndpointEntity(client);
 		
 		manager.openAll();
 		manager.startConnectionCheckTask();

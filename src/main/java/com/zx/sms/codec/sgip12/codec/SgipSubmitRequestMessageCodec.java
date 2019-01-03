@@ -63,11 +63,13 @@ public class SgipSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 				.toString().trim());
 
 		int usercount = bodyBuffer.readUnsignedByte();
-		requestMessage.setUsercount((short) usercount);
+		
+		String[] nums = new String[usercount];
 		for (int i = 0; i < usercount; i++) {
-			requestMessage.addUsernumber(bodyBuffer.readCharSequence(SgipSubmitRequest.USERNUMBER.getLength(), GlobalConstance.defaultTransportCharset)
-					.toString().trim());
+			nums[i] = bodyBuffer.readCharSequence(SgipSubmitRequest.USERNUMBER.getLength(), GlobalConstance.defaultTransportCharset)
+					.toString().trim();
 		}
+		requestMessage.setUsernumber(nums);
 
 		requestMessage.setCorpid(bodyBuffer.readCharSequence(SgipSubmitRequest.CORPID.getLength(), GlobalConstance.defaultTransportCharset).toString().trim());
 		requestMessage.setServicetype(bodyBuffer.readCharSequence(SgipSubmitRequest.SERVICETYPE.getLength(), GlobalConstance.defaultTransportCharset)
@@ -119,7 +121,7 @@ public class SgipSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 		int usercount = requestMessage.getUsercount();
 		bodyBuffer.writeByte(usercount);
 		for (int i = 0; i < usercount; i++) {
-			String[] destTermId = requestMessage.getUsernumber().toArray(new String[usercount]);
+			String[] destTermId = requestMessage.getUsernumber();
 			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(destTermId[i].getBytes(GlobalConstance.defaultTransportCharset),
 					SgipSubmitRequest.USERNUMBER.getLength(), 0));
 		}

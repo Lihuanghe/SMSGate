@@ -457,6 +457,11 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 		return destTermIdArray;
 	}
 
+	public void setDestTermIdArray(String destTermIdArray) {
+		this.destTermIdArray = new String[] { destTermIdArray};
+		this.destTermIdCount=(byte)1;
+	}
+	
 	public void setDestTermIdArray(String[] destTermIdArray) {
 		this.destTermIdArray = destTermIdArray;
 		this.destTermIdCount=(byte)(destTermIdArray==null?0:destTermIdArray.length);

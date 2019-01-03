@@ -24,13 +24,14 @@ import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.session.cmpp.SessionState;
 
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 @Sharable
-public class MessageReceiveHandler extends AbstractBusinessHandler {
+public abstract class MessageReceiveHandler extends AbstractBusinessHandler {
 	private static final Logger logger = LoggerFactory.getLogger(MessageReceiveHandler.class);
 	private int rate = 1;
 
@@ -64,127 +65,19 @@ public class MessageReceiveHandler extends AbstractBusinessHandler {
 		}
 		ctx.fireUserEventTriggered(evt);
 	}
+	
+	protected abstract ChannelFuture reponse(final ChannelHandlerContext ctx ,Object msg);
 
 	@Override
 	public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
-
-		if (msg instanceof CmppDeliverRequestMessage) {
-			CmppDeliverRequestMessage e = (CmppDeliverRequestMessage) msg;
-			
-			if(e.getFragments()!=null) {
-				//长短信会带有片断
-				for(CmppDeliverRequestMessage frag:e.getFragments()) {
-					CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(frag.getHeader().getSequenceId());
-					responseMessage.setResult(0);
-					responseMessage.setMsgId(frag.getMsgId());
-					ctx.channel().write(responseMessage);
-				}
-			}
-			
-			CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(e.getHeader().getSequenceId());
-			responseMessage.setResult(0);
-			responseMessage.setMsgId(e.getMsgId());
-			ctx.channel().writeAndFlush(responseMessage).addListener(new GenericFutureListener() {
+		
+		ChannelFuture future = reponse(ctx,msg);
+		if(future!=null) future.addListener(new GenericFutureListener() {
 			@Override
 			public void operationComplete(Future future) throws Exception {
 				cnt.incrementAndGet();
 			}
 		});
-
-		} else if (msg instanceof CmppDeliverResponseMessage) {
-			CmppDeliverResponseMessage e = (CmppDeliverResponseMessage) msg;
-
-		} else if (msg instanceof CmppSubmitRequestMessage) {
-			//接收到 CmppSubmitRequestMessage 消息
-			CmppSubmitRequestMessage e = (CmppSubmitRequestMessage) msg;
-			
-			final List<CmppDeliverRequestMessage> reportlist = new ArrayList<CmppDeliverRequestMessage>();
-			
-			if(e.getFragments()!=null) {
-				//长短信会可能带有片断，每个片断都要回复一个response
-				for(CmppSubmitRequestMessage frag:e.getFragments()) {
-					CmppSubmitResponseMessage responseMessage = new CmppSubmitResponseMessage(frag.getHeader().getSequenceId());
-					responseMessage.setResult(0);
-					ctx.channel().write(responseMessage);
-					
-					CmppDeliverRequestMessage deliver = new CmppDeliverRequestMessage();
-					deliver.setDestId(e.getSrcId());
-					deliver.setSrcterminalId(e.getDestterminalId()[0]);
-					CmppReportRequestMessage report = new CmppReportRequestMessage();
-					report.setDestterminalId(deliver.getSrcterminalId());
-					report.setMsgId(responseMessage.getMsgId());
-					String t = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "yyMMddHHMM");
-					report.setSubmitTime(t);
-					report.setDoneTime(t);
-					report.setStat("DELIVRD");
-					report.setSmscSequence(0);
-					deliver.setReportRequestMessage(report);
-					reportlist.add(deliver);
-				}
-			}
-			
-			final CmppSubmitResponseMessage resp = new CmppSubmitResponseMessage(e.getHeader().getSequenceId());
-			resp.setResult(0);
-			
-			ctx.channel().writeAndFlush(resp).addListener(new GenericFutureListener() {
-				@Override
-				public void operationComplete(Future future) throws Exception {
-					cnt.incrementAndGet();
-				}
-			});
-			
-			//回复状态报告
-			if(e.getRegisteredDelivery()==1) {
-				
-				final CmppDeliverRequestMessage deliver = new CmppDeliverRequestMessage();
-				deliver.setDestId(e.getSrcId());
-				deliver.setSrcterminalId(e.getDestterminalId()[0]);
-				CmppReportRequestMessage report = new CmppReportRequestMessage();
-				report.setDestterminalId(deliver.getSrcterminalId());
-				report.setMsgId(resp.getMsgId());
-				String t = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "yyMMddHHMM");
-				report.setSubmitTime(t);
-				report.setDoneTime(t);
-				report.setStat("DELIVRD");
-				report.setSmscSequence(0);
-				deliver.setReportRequestMessage(report);
-				reportlist.add(deliver);
-				
-				ctx.executor().submit(new Runnable() {
-					public void run() {
-						for(CmppDeliverRequestMessage t : reportlist)
-							ctx.channel().writeAndFlush(t);
-					}
-				});
-				
-				//将短信以MO方式发回去
-				CmppDeliverRequestMessage tmp = new CmppDeliverRequestMessage();
-				tmp.setDestId(e.getSrcId());
-				tmp.setLinkid("0000");
-//				msg.setMsgContent(sb.toString());
-				tmp.setMsgContent(e.getMsgContent());
-				tmp.setMsgId(new MsgId());
-				
-				tmp.setServiceid("10086");
-				tmp.setSrcterminalId(e.getDestterminalId()[0]);
-				tmp.setSrcterminalType((short) 1);
-//				ctx.channel().writeAndFlush(tmp);
-			}
-			
-		} else if (msg instanceof CmppSubmitResponseMessage) {
-			CmppSubmitResponseMessage e = (CmppSubmitResponseMessage) msg;
-		} else if (msg instanceof CmppQueryRequestMessage) {
-			CmppQueryRequestMessage e = (CmppQueryRequestMessage) msg;
-			CmppQueryResponseMessage res = new CmppQueryResponseMessage(e.getHeader().getSequenceId());
-			ctx.channel().writeAndFlush(res).addListener(new GenericFutureListener() {
-				@Override
-				public void operationComplete(Future future) throws Exception {
-					cnt.incrementAndGet();
-				}
-			});
-		} else {
-			ctx.fireChannelRead(msg);
-		}
 	}
 	
 	public MessageReceiveHandler clone() throws CloneNotSupportedException {

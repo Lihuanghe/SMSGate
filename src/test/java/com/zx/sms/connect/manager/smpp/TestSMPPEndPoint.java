@@ -2,18 +2,16 @@ package com.zx.sms.connect.manager.smpp;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.LockSupport;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
+import com.zx.sms.connect.manager.EndpointEntity.SupportLongMessage;
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
-import com.zx.sms.handler.api.gate.SessionConnectedHandler;
-import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
-import com.zx.sms.handler.smpp.SMPP2CMPPBusinessHandler;
 /**
  *经测试，35个连接，每个连接每200/s条消息
  *lenovoX250能承担7000/s消息编码解析无压力。
@@ -52,11 +50,10 @@ public class TestSMPPEndPoint {
 		child.setMaxRetryCnt((short)3);
 		child.setReSendFailMsg(true);
 		child.setIdleTimeSec((short)15);
-//		child.setWriteLimit(200);
-//		child.setReadLimit(200);
+		child.setWriteLimit(200);
+		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new SMPP2CMPPBusinessHandler());  //  将CMPP的对象转成SMPP对象，然后再经SMPP解码器处理
-		serverhandlers.add(new SessionConnectedHandler(new AtomicInteger(300000)));   // 复用CMPP的Handler
+		serverhandlers.add(new SMPPSessionConnectedHandler(10));   
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
@@ -74,21 +71,20 @@ public class TestSMPPEndPoint {
 		client.setMaxChannels((short)12);
 		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);
-//		client.setReSendFailMsg(true);
-//		client.setWriteLimit(200);
-//		client.setReadLimit(200);
+		client.setReSendFailMsg(true);
+		client.setWriteLimit(200);
+		client.setReadLimit(200);
+		client.setSupportLongmsg(SupportLongMessage.SEND);  //接收长短信时不自动合并
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add(new SMPP2CMPPBusinessHandler()); //  将CMPP的对象转成SMPP对象，然后再经SMPP解码器处理
-		clienthandlers.add( new MessageReceiveHandler()); //// 复用CMPP的Handler
+		clienthandlers.add( new SMPPMessageReceiveHandler()); 
 		client.setBusinessHandlerSet(clienthandlers);
 		
 		
-//		manager.addEndpointEntity(server);
+		manager.addEndpointEntity(server);
 		manager.addEndpointEntity(client);
 		manager.openAll();
-		//LockSupport.park();
-        System.out.println("start.....");
-		Thread.sleep(300000);
+		System.out.println("start.....");
+		LockSupport.park();
 		EndpointManager.INS.close();
 	}
 }

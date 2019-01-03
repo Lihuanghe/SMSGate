@@ -34,6 +34,7 @@ import org.marre.wap.push.WapSLPush;
 import org.marre.wap.wbxml.WbxmlDocument;
 
 import com.zx.sms.codec.cmpp.wap.LongMessageFrame;
+import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
 import com.zx.sms.codec.smpp.Address;
 import com.zx.sms.codec.smpp.RecoverablePduException;
 import com.zx.sms.codec.smpp.SmppInvalidArgumentException;
@@ -218,6 +219,10 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
 			}else if(wbxml instanceof WapSLPush){
 				return ((WapSLPush)wbxml).getUri();
 			}
+		}
+		if(shortMessage!=null && shortMessage.length>0){
+			LongMessageFrame frame = doGenerateFrame();
+			return LongMessageFrameHolder.INS.getPartTextMsg(frame);
 		}
 		return "";
 	}

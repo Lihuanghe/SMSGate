@@ -11,8 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
-import com.zx.sms.handler.api.gate.SessionConnectedHandler;
-import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
 /**
  *经测试，35个连接，每个连接每200/s条消息
  *lenovoX250能承担7000/s消息编码解析无压力。
@@ -49,7 +47,7 @@ public class ClientTestCMPPEndPoint {
 		client.setReSendFailMsg(false);
 //		client.setWriteLimit(500);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new SessionConnectedHandler(10000));
+		clienthandlers.add( new CMPPSessionConnectedHandler(10000));
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		
@@ -71,7 +69,7 @@ public class ClientTestCMPPEndPoint {
 		client1.setReSendFailMsg(true);
 //		client.setWriteLimit(10);
 		List<BusinessHandlerInterface> clienthandlers1 = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers1.add( new SessionConnectedHandler(0));
+		clienthandlers1.add( new CMPPSessionConnectedHandler(0));
 		client1.setBusinessHandlerSet(clienthandlers1);
 //		manager.addEndpointEntity(client1);
 		
