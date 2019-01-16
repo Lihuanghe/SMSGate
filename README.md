@@ -4,6 +4,15 @@
 群名称：cmppGate短信
 <br/>群   号：770738500
 
+# How To Use
+
+```xml
+<dependency>
+  <groupId>com.chinamobile.cmos</groupId>
+  <artifactId>sms-core</artifactId>
+</dependency>
+```
+
 # CMPPGate , SMPPGate , SGIPGate, SMGPGate
 中移短信cmpp协议/smpp协议 netty实现编解码
 

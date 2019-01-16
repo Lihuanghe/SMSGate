@@ -38,8 +38,8 @@ public class CMPPChargingDemoTest {
 		public MyCMPPClientEndpointConnector(CMPPClientEndpointEntity e) {
 			super(e);
 		}
-		private final AtomicInteger cnt = new AtomicInteger(0);
-		
+		private final AtomicInteger sendcnt = new AtomicInteger(0);
+		private final AtomicInteger readcnt = new AtomicInteger(0);
 		@Override
 		protected void doBindHandler(ChannelPipeline pipe, EndpointEntity cmppentity) { 
 			//这个handler加在协议解析的后边
@@ -48,9 +48,9 @@ public class CMPPChargingDemoTest {
 				        ctx.fireChannelRead(msg);
 				        if(msg instanceof BaseMessage){
 				        	if(((BaseMessage) msg).isRequest()){
-				        		 logger.info("send request {},seq={}",cnt.getAndIncrement(),((BaseMessage) msg).getSequenceNo());
+				        		 logger.info("read request {},seq={}",readcnt.getAndIncrement(),((BaseMessage) msg).getSequenceNo());
 				        	}else{
-				        		logger.info("read response .seq={}",((BaseMessage) msg).getSequenceNo());
+				        		logger.info("read response.seq={}",((BaseMessage) msg).getSequenceNo());
 				        	}
 				        }
 				       
@@ -60,9 +60,9 @@ public class CMPPChargingDemoTest {
 				        ctx.write(msg, promise);
 				        if(msg instanceof BaseMessage){
 				        	if(((BaseMessage) msg).isRequest()){
-				        		 logger.info("send request {},seq={}",cnt.getAndIncrement(),((BaseMessage) msg).getSequenceNo());
+				        		 logger.info("send request {},seq={}",sendcnt.getAndIncrement(),((BaseMessage) msg).getSequenceNo());
 				        	}else{
-				        		logger.info("read response .seq={}",((BaseMessage) msg).getSequenceNo());
+				        		logger.info("send response.seq={}",((BaseMessage) msg).getSequenceNo());
 				        	}
 				        }
 				    }

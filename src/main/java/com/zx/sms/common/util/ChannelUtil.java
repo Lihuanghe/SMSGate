@@ -117,6 +117,7 @@ public class ChannelUtil {
 	/**
 	 * 同步发送消息类型 <br/>
 	 * 注意：该方法将直接发送，不会再调用BusinessHandler里的write方法了。
+	 * 因此对于Deliver和Submit消息必须自己进行长短信拆分
 	 */
 	public static Promise syncWriteMsgToEntity(String entity, BaseMessage msg) throws Exception {
 
