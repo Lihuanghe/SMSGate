@@ -201,4 +201,11 @@ public class SmsTextMessage extends SmsConcatMessage implements Serializable
 		}
 		return false;
 	}
+
+	@Override
+	public String toString() {
+		return getText();
+	}
+	
+	
 }

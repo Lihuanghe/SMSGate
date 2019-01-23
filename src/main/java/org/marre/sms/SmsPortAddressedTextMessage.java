@@ -138,4 +138,8 @@ public class SmsPortAddressedTextMessage extends SmsPortAddressedMessage impleme
     {
         return smsTextMessage_.getDcs();
     }
+	@Override
+	public String toString() {
+		return getText();
+	}
 }

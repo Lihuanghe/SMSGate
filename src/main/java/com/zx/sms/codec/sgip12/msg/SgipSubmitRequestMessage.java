@@ -355,23 +355,8 @@ public class SgipSubmitRequestMessage extends DefaultMessage implements LongSMSM
 	
 	
 	public String getMsgContent() {
-		if(msg instanceof SmsTextMessage){
-			SmsTextMessage textMsg = (SmsTextMessage) msg;
-			return textMsg.getText();
-		}else if(msg instanceof SmsPortAddressedTextMessage){
-			SmsPortAddressedTextMessage textMsg = (SmsPortAddressedTextMessage) msg;
-			return textMsg.getText();
-		}else if(msg instanceof SmsMmsNotificationMessage){
-			SmsMmsNotificationMessage mms = (SmsMmsNotificationMessage) msg;
-			return mms.getContentLocation_();
-		}else if(msg instanceof SmsWapPushMessage){
-			SmsWapPushMessage wap = (SmsWapPushMessage) msg;
-			WbxmlDocument wbxml = wap.getWbxml();
-			if(wbxml instanceof WapSIPush){
-				return ((WapSIPush)wbxml).getUri();
-			}else if(wbxml instanceof WapSLPush){
-				return ((WapSLPush)wbxml).getUri();
-			}
+		if(msg instanceof SmsMessage){
+			return msg.toString();
 		}
 		
 		if(msgContentBytes!=null && msgContentBytes.length>0){

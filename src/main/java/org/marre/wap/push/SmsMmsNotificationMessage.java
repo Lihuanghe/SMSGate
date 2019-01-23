@@ -171,5 +171,8 @@ public class SmsMmsNotificationMessage extends SmsWapPushMessage implements Seri
 	public String getContentLocation_() {
 		return contentLocation_;
 	}
-    
+	@Override
+	public String toString() {
+		return getContentLocation_();
+	}
 }

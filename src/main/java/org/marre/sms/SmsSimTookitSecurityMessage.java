@@ -27,5 +27,8 @@ public class SmsSimTookitSecurityMessage extends SmsConcatMessage implements Ser
 	public SmsUdhElement[] getUdhElements() {
 		return new SmsUdhElement[] {new SmsUdhElement(SmsUdhIei.valueOf(udhIei),udhIeiData)};
 	}
-
+	@Override
+	public String toString() {
+		return SmsSimTookitSecurityMessage.class.toString();
+	}
 }

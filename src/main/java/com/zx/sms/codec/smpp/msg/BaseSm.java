@@ -202,23 +202,8 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
 	}
 	
     public String getMsgContent() {
-		if(smsMsg instanceof SmsTextMessage){
-			SmsTextMessage textMsg = (SmsTextMessage) smsMsg;
-			return textMsg.getText();
-		}else if(smsMsg instanceof SmsPortAddressedTextMessage){
-			SmsPortAddressedTextMessage textMsg = (SmsPortAddressedTextMessage) smsMsg;
-			return textMsg.getText();
-		}else if(smsMsg instanceof SmsMmsNotificationMessage){
-			SmsMmsNotificationMessage mms = (SmsMmsNotificationMessage) smsMsg;
-			return mms.getContentLocation_();
-		}else if(smsMsg instanceof SmsWapPushMessage){
-			SmsWapPushMessage wap = (SmsWapPushMessage) smsMsg;
-			WbxmlDocument wbxml = wap.getWbxml();
-			if(wbxml instanceof WapSIPush){
-				return ((WapSIPush)wbxml).getUri();
-			}else if(wbxml instanceof WapSLPush){
-				return ((WapSLPush)wbxml).getUri();
-			}
+		if(smsMsg instanceof SmsMessage){
+			return smsMsg.toString();
 		}
 		if(shortMessage!=null && shortMessage.length>0){
 			LongMessageFrame frame = doGenerateFrame();

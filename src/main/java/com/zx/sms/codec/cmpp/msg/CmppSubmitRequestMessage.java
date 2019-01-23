@@ -29,7 +29,7 @@ import com.zx.sms.common.util.MsgId;
  * @author huzorro(huzorro@gmail.com)
  * @author Lihuanghe(18852780@qq.com)
  */
-public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMSMessage<CmppSubmitRequestMessage>{
+public class CmppSubmitRequestMessage extends DefaultMessage implements LongSMSMessage<CmppSubmitRequestMessage> {
 	private static final long serialVersionUID = 1369427662600486133L;
 	private MsgId msgid = new MsgId();
 
@@ -44,7 +44,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 	private String feeType = "01";
 	private String feeCode = "000000";
 	private String valIdTime = GlobalConstance.emptyString;
-	private String atTime =GlobalConstance.emptyString;
+	private String atTime = GlobalConstance.emptyString;
 	private String srcId = GlobalConstance.emptyString;
 	private String[] destterminalId = GlobalConstance.emptyStringArray;
 	private short destterminaltype = 0;
@@ -54,7 +54,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 	private String reserve = GlobalConstance.emptyString;
 
 	private SmsMessage msg;
-	
+
 	private short pktotal = 1;
 	private short pknumber = 1;
 	private short tppid = 0;// 0是普通GSM 类型，点到点方式 ,127 :写sim卡
@@ -62,7 +62,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 	private SmsDcs msgfmt = GlobalConstance.defaultmsgfmt;
 	private short msgLength = 140;
 	private byte[] msgContentBytes = GlobalConstance.emptyBytes;
-	
+
 	public CmppSubmitRequestMessage(Header header) {
 		super(CmppPacketType.CMPPSUBMITREQUEST, header);
 	}
@@ -274,7 +274,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 	 * @return the destUsrtl
 	 */
 	public short getDestUsrtl() {
-		return (short)this.destterminalId.length;
+		return (short) this.destterminalId.length;
 	}
 
 	/**
@@ -291,9 +291,9 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 	public void setDestterminalId(String[] destterminalId) {
 		this.destterminalId = destterminalId;
 	}
-	
+
 	public void setDestterminalId(String destterminalId) {
-		this.destterminalId = new String[]{destterminalId};
+		this.destterminalId = new String[] { destterminalId };
 	}
 
 	/**
@@ -341,47 +341,31 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 		this.reserve = reserve;
 	}
 
-	
 	public String getMsgContent() {
-			if(msg instanceof SmsTextMessage){
-				SmsTextMessage textMsg = (SmsTextMessage) msg;
-				return textMsg.getText();
-			}else if(msg instanceof SmsPortAddressedTextMessage){
-				SmsPortAddressedTextMessage textMsg = (SmsPortAddressedTextMessage) msg;
-				return textMsg.getText();
-			}else if(msg instanceof SmsMmsNotificationMessage){
-				SmsMmsNotificationMessage mms = (SmsMmsNotificationMessage) msg;
-				return mms.getContentLocation_();
-			}else if(msg instanceof SmsWapPushMessage){
-				SmsWapPushMessage wap = (SmsWapPushMessage) msg;
-				WbxmlDocument wbxml = wap.getWbxml();
-				if(wbxml instanceof WapSIPush){
-					return ((WapSIPush)wbxml).getUri();
-				}else if(wbxml instanceof WapSLPush){
-					return ((WapSLPush)wbxml).getUri();
-				}
-			}else if(msg instanceof SmsSimTookitSecurityMessage) {
-				return SmsSimTookitSecurityMessage.class.toString();
-			}
+		if (msg instanceof SmsMessage) {
+			return msg.toString();
+		}
 
-			if(msgContentBytes!=null && msgContentBytes.length>0){
-				LongMessageFrame frame = generateFrame();
-				return LongMessageFrameHolder.INS.getPartTextMsg(frame);
-			}
+		if (msgContentBytes != null && msgContentBytes.length > 0) {
+			LongMessageFrame frame = generateFrame();
+			return LongMessageFrameHolder.INS.getPartTextMsg(frame);
+		}
 
 		return "";
 	}
+
 	public SmsMessage getSmsMessage() {
 		return msg;
 	}
+
 	/**
 	 * @return the msgContent
 	 */
 	public void setMsgContent(String msgContent) {
 		setMsgContent(CMPPCommonUtil.buildTextMessage(msgContent));
 	}
-	
-	public void setMsgContent(SmsMessage msg){
+
+	public void setMsgContent(SmsMessage msg) {
 		this.msg = msg;
 	}
 
@@ -392,6 +376,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 	public void setMsgContentBytes(byte[] msgContentBytes) {
 		this.msgContentBytes = msgContentBytes;
 	}
+
 	public short getPktotal() {
 		return pktotal;
 	}
@@ -444,28 +429,24 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 		this.msg = msg;
 	}
 
-	public static CmppSubmitRequestMessage create(String phone ,String spid,String text){
+	public static CmppSubmitRequestMessage create(String phone, String spid, String text) {
 		CmppSubmitRequestMessage ret = new CmppSubmitRequestMessage();
-		ret.setDestterminalId(new String[]{phone});
+		ret.setDestterminalId(new String[] { phone });
 		ret.setSrcId(spid);
 		ret.setMsgContent(text);
 		return ret;
 	}
-	
+
 	public CmppSubmitRequestMessage clone() throws CloneNotSupportedException {
-		return   (CmppSubmitRequestMessage) super.clone();
+		return (CmppSubmitRequestMessage) super.clone();
 	}
-	
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("CmppSubmitRequestMessage [msgid=").append(msgid)
-		.append(", serviceId=").append(serviceId)
-		.append(", srcId=").append(srcId)
-		.append(", msgsrc=").append(msgsrc)
-		.append(", destterminalId=").append(Arrays.toString(destterminalId)).append(", msgContent=")
-		.append(getMsgContent()).append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
+		sb.append("CmppSubmitRequestMessage [msgid=").append(msgid).append(", serviceId=").append(serviceId).append(", srcId=").append(srcId)
+				.append(", msgsrc=").append(msgsrc).append(", destterminalId=").append(Arrays.toString(destterminalId)).append(", msgContent=")
+				.append(getMsgContent()).append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
 		return sb.toString();
 	}
 
@@ -476,29 +457,29 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 		frame.setTpudhi(getTpudhi());
 		frame.setMsgfmt(getMsgfmt());
 		frame.setMsgContentBytes(getMsgContentBytes());
-		frame.setMsgLength((short)getMsgLength());
+		frame.setMsgLength((short) getMsgLength());
 		frame.setSequence(getSequenceNo());
 		return frame;
 	}
 
 	@Override
-	public CmppSubmitRequestMessage generateMessage(LongMessageFrame frame) throws Exception{
+	public CmppSubmitRequestMessage generateMessage(LongMessageFrame frame) throws Exception {
 		CmppSubmitRequestMessage requestMessage = this.clone();
 		requestMessage.setPknumber(frame.getPknumber());
 		requestMessage.setPktotal(frame.getPktotal());
 		requestMessage.setTpudhi(frame.getTpudhi());
 		requestMessage.setMsgfmt(frame.getMsgfmt());
 		requestMessage.setMsgContentBytes(frame.getMsgContentBytes());
-		requestMessage.setMsgLength((short)frame.getMsgLength());
-		if(frame.getPknumber()!=1){
+		requestMessage.setMsgLength((short) frame.getMsgLength());
+		if (frame.getPknumber() != 1) {
 			requestMessage.getHeader().setSequenceId(DefaultSequenceNumberUtil.getSequenceNo());
 		}
 		requestMessage.setMsg(null);
 		return requestMessage;
 	}
-	
+
 	private List<CmppSubmitRequestMessage> fragments = null;
-	
+
 	@Override
 	public List<CmppSubmitRequestMessage> getFragments() {
 		return fragments;
@@ -506,9 +487,9 @@ public class CmppSubmitRequestMessage extends DefaultMessage  implements LongSMS
 
 	@Override
 	public void addFragment(CmppSubmitRequestMessage fragment) {
-		if(fragments==null)
+		if (fragments == null)
 			fragments = new ArrayList<CmppSubmitRequestMessage>();
-		
+
 		fragments.add(fragment);
 	}
 }

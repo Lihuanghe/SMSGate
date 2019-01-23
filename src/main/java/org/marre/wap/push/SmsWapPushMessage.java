@@ -216,5 +216,14 @@ public class SmsWapPushMessage extends SmsPortAddressedMessage implements Serial
 	public void setWbxml(WbxmlDocument wbxml) {
 		this.wbxml = wbxml;
 	}
-    
+	@Override
+	public String toString() {
+		WbxmlDocument wbxml = getWbxml();
+		if(wbxml instanceof WapSIPush){
+			return ((WapSIPush)wbxml).getUri();
+		}else if(wbxml instanceof WapSLPush){
+			return ((WapSLPush)wbxml).getUri();
+		}
+		return wbxml.toString();
+	}
  }

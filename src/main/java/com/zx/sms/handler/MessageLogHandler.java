@@ -52,7 +52,8 @@ public class MessageLogHandler extends ChannelDuplexHandler {
 			public void operationComplete(Future future) throws Exception {
 				// 如果发送消息失败，记录失败日志
 				if (!future.isSuccess()) {
-					logger.error("ErrSend:{},cause by {}", finalmsg , future.cause().getMessage());
+					logger.error("ErrSend:{}",future.cause());
+//					logger.error("ErrSend:{},cause by {}", finalmsg , future.cause().getMessage());
 				}else{
 					logger.debug("Send:{}", finalmsg);
 				}
