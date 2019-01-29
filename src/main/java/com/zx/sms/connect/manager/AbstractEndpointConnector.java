@@ -1,20 +1,5 @@
 package com.zx.sms.connect.manager;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufHolder;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.proxy.HttpProxyHandler;
-import io.netty.handler.proxy.Socks4ProxyHandler;
-import io.netty.handler.proxy.Socks5ProxyHandler;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.traffic.ChannelTrafficShapingHandler;
-import io.netty.util.concurrent.Promise;
-
 import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.URI;
@@ -41,6 +26,21 @@ import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 import com.zx.sms.session.AbstractSessionStateManager;
 import com.zx.sms.session.cmpp.SessionState;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufHolder;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.proxy.HttpProxyHandler;
+import io.netty.handler.proxy.Socks4ProxyHandler;
+import io.netty.handler.proxy.Socks5ProxyHandler;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.traffic.ChannelTrafficShapingHandler;
+import io.netty.util.concurrent.Promise;
 
 /**
  * @author Lihuanghe(18852780@qq.com)
@@ -206,36 +206,43 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		};
 	};
 
-	public void addChannel(Channel ch) {
-
-		// 标识连接已建立
-		ch.attr(GlobalConstance.attributeKey).set(SessionState.Connect);
-		getChannels().add(ch);
-		int cnt = incrementConn();
-
+	public synchronized boolean addChannel(Channel ch) {
+		int nowConnCnt = getConnectionNum();
 		EndpointEntity endpoint = getEndpointEntity();
-		ConcurrentMap<Serializable, VersionObject> storedMap = null;
-		if (endpoint.isReSendFailMsg()) {
-			// 如果上次发送失败的消息要重发一次，则要创建持久化Map用于存储发送的message
-			storedMap = BDBStoredMapFactoryImpl.INS.buildMap(endpoint.getId(), "Session_" + endpoint.getId());
-		} else {
-			storedMap = new ConcurrentHashMap();
-		}
+		if(endpoint.getMaxChannels()==0 || endpoint.getMaxChannels()> nowConnCnt) {
+			// 标识连接已建立
+			ch.attr(GlobalConstance.attributeKey).set(SessionState.Connect);
+			
+			getChannels().add(ch);
+			int cnt = incrementConn();
+			
+			ConcurrentMap<Serializable, VersionObject> storedMap = null;
+			if (endpoint.isReSendFailMsg()) {
+				// 如果上次发送失败的消息要重发一次，则要创建持久化Map用于存储发送的message
+				storedMap = BDBStoredMapFactoryImpl.INS.buildMap(endpoint.getId(), "Session_" + endpoint.getId());
+			} else {
+				storedMap = new ConcurrentHashMap();
+			}
 
-		logger.info("Channel added To Endpoint {} .totalCnt:{} ,remoteAddress: {}", endpoint, cnt, ch.remoteAddress());
+			logger.info("Channel added To Endpoint {} .totalCnt:{} ,remoteAddress: {}", endpoint, cnt, ch.remoteAddress());
 
-		if (cnt == 1 && endpoint.isReSendFailMsg()) {
-			// 如果是第一个连接。要把上次发送失败的消息取出，再次发送一次
-			ch.pipeline().addAfter(GlobalConstance.codecName, sessionHandler,createSessionManager(endpoint, storedMap, true) );
-		}else{
-			ch.pipeline().addAfter(GlobalConstance.codecName, sessionHandler, createSessionManager(endpoint, storedMap, false) );
+			if (cnt == 1 && endpoint.isReSendFailMsg()) {
+				// 如果是第一个连接。要把上次发送失败的消息取出，再次发送一次
+				ch.pipeline().addAfter(GlobalConstance.codecName, sessionHandler,createSessionManager(endpoint, storedMap, true) );
+			}else{
+				ch.pipeline().addAfter(GlobalConstance.codecName, sessionHandler, createSessionManager(endpoint, storedMap, false) );
+			}
+			
+			// 增加流量整形 ，每个连接每秒发送，接收消息数不超过配置的值
+			ch.pipeline().addAfter(GlobalConstance.codecName, "ChannelTrafficAfter",
+					new MessageChannelTrafficShapingHandler(endpoint.getWriteLimit(), endpoint.getReadLimit(), 250));
+			
+			bindHandler(ch.pipeline(), getEndpointEntity());
+			return true;
+		}else {
+			return false;
 		}
 		
-		// 增加流量整形 ，每个连接每秒发送，接收消息数不超过配置的值
-		ch.pipeline().addAfter(GlobalConstance.codecName, "ChannelTrafficAfter",
-				new MessageChannelTrafficShapingHandler(endpoint.getWriteLimit(), endpoint.getReadLimit(), 250));
-		
-		bindHandler(ch.pipeline(), getEndpointEntity());
 	}
 
 	public void removeChannel(Channel ch) {
@@ -388,6 +395,18 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		return future;
 	}
 		
+	public List<Promise> synwrite(List<BaseMessage> msgs){
+		Channel ch = fetchOneWritable();
+		if(ch == null) return null;
+		AbstractSessionStateManager session = (AbstractSessionStateManager)ch.pipeline().get(sessionHandler);
+		List<Promise> arrPromise = new ArrayList<Promise>();
+		for (BaseMessage msg : msgs) {
+			arrPromise.add(session.writeMessagesync( msg));
+		}
+		
+		return arrPromise;
+	}
+	
 	public Promise synwrite(BaseMessage message){
 		Channel ch = fetchOneWritable();
 		if(ch == null) return null;

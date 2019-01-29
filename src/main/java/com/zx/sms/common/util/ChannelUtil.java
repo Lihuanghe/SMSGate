@@ -1,10 +1,5 @@
 package com.zx.sms.common.util;
 
-import io.netty.channel.ChannelFuture;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
-import io.netty.util.concurrent.Promise;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,10 +11,16 @@ import com.zx.sms.BaseMessage;
 import com.zx.sms.LongSMSMessage;
 import com.zx.sms.codec.cmpp.wap.LongMessageFrame;
 import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
-import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EndpointManager;
+import com.zx.sms.session.AbstractSessionStateManager;
+
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
+import io.netty.util.concurrent.Promise;
 
 public class ChannelUtil {
 
@@ -84,23 +85,21 @@ public class ChannelUtil {
 	public static List<Promise> syncWriteLongMsgToEntity(String entity, BaseMessage msg) throws Exception {
 
 		EndpointConnector connector = EndpointManager.INS.getEndpointConnector(entity);
-		List<Promise> arrPromise = new ArrayList<Promise>();
+		
 		if (msg instanceof LongSMSMessage) {
 			LongSMSMessage<BaseMessage> lmsg = (LongSMSMessage<BaseMessage>) msg;
 			if (!lmsg.isReport()) {
 				// 长短信拆分
 				SmsMessage msgcontent = lmsg.getSmsMessage();
 				List<LongMessageFrame> frameList = LongMessageFrameHolder.INS.splitmsgcontent(msgcontent);
+				
+				//保证同一条长短信，通过同一个tcp连接发送
+				List<BaseMessage> msgs = new ArrayList<BaseMessage>();
 				for (LongMessageFrame frame : frameList) {
 					BaseMessage basemsg = (BaseMessage) lmsg.generateMessage(frame);
-					Promise promise = connector.synwrite(basemsg);
-					if (promise == null) {
-						// 为空，可能是连接断了,直接返回
-						return null;
-					}
-					arrPromise.add(promise);
+					msgs.add(basemsg);
 				}
-				return arrPromise;
+				return connector.synwrite(msgs);
 			}
 		}
 
@@ -109,6 +108,7 @@ public class ChannelUtil {
 			// 为空，可能是连接断了,直接返回
 			return null;
 		}
+		List<Promise> arrPromise = new ArrayList<Promise>();
 		arrPromise.add(promise);
 		return arrPromise;
 

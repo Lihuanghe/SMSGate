@@ -68,14 +68,15 @@ public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 						if(ctx.channel().isWritable()){
 							List<Promise> futures = null;
 							ChannelFuture chfuture = null;
-							BaseMessage msg = createTestReq("中msgfutures = ChannelUtil.syncWriteLongMsgToEntity(getEndpointEntity().getId(), createTestReq(\"中msg\"+UUID.randomUUID().toString()));"+UUID.randomUUID().toString());
+							ChannelFuture cfuture = null;
+							BaseMessage msg = createTestReq("中"+UUID.randomUUID().toString());
 //							chfuture = ChannelUtil.asyncWriteToEntity(getEndpointEntity().getId(), msg);
 							futures = ChannelUtil.syncWriteLongMsgToEntity(getEndpointEntity().getId(), msg);
-//							ChannelFuture cfuture = ctx.writeAndFlush(msg);
+//							cfuture = ctx.writeAndFlush(msg);
 							cnt--;
 							tmptotal.decrementAndGet();
 							if(chfuture!=null)chfuture.sync();
-							
+							if(cfuture!=null)cfuture.sync();
 							if(futures==null) continue;
 							try{
 								for(Promise  future: futures){

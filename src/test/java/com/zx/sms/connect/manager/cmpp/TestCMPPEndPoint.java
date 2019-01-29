@@ -1,12 +1,8 @@
 package com.zx.sms.connect.manager.cmpp;
 
-import io.netty.util.ResourceLeakDetector;
-import io.netty.util.ResourceLeakDetector.Level;
-
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
 
 import org.junit.Test;
@@ -16,8 +12,9 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.connect.manager.EndpointEntity.SupportLongMessage;
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
-import com.zx.sms.handler.api.gate.SessionConnectedHandler;
-import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
+
+import io.netty.util.ResourceLeakDetector;
+import io.netty.util.ResourceLeakDetector.Level;
 /**
  *经测试，35个连接，每个连接每200/s条消息
  *lenovoX250能承担7000/s消息编码解析无压力。
@@ -53,7 +50,7 @@ public class TestCMPPEndPoint {
 		child.setValid(true);
 		child.setVersion((short)0x30);
 
-		child.setMaxChannels((short)20);
+		child.setMaxChannels((short)2);
 		child.setRetryWaitTimeSec((short)30);
 		child.setMaxRetryCnt((short)3);
 //		child.setReSendFailMsg(true);
@@ -77,7 +74,7 @@ public class TestCMPPEndPoint {
 		client.setUserName("901783");
 		client.setPassword("ICP001");
 
-		client.setMaxChannels((short)1);
+		client.setMaxChannels((short)10);
 		client.setVersion((short)0x30);
 		client.setRetryWaitTimeSec((short)30);
 		client.setUseSSL(false);
@@ -91,7 +88,10 @@ public class TestCMPPEndPoint {
 		manager.addEndpointEntity(client);
 		
 		manager.openAll();
-		manager.startConnectionCheckTask();
+		
+		Thread.sleep(1000);
+		for(int i=0;i<child.getMaxChannels();i++)
+			manager.openEndpoint(client);
 
         System.out.println("start.....");
         

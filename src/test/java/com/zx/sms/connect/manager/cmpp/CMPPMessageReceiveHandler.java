@@ -13,13 +13,10 @@ import com.zx.sms.codec.cmpp.msg.CmppReportRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.common.util.CachedMillisecondClock;
-import com.zx.sms.common.util.MsgId;
 import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
 
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 
 public class CMPPMessageReceiveHandler extends MessageReceiveHandler {
 

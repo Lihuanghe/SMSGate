@@ -45,10 +45,10 @@ public class CMPPSessionConnectedHandler extends SessionConnectedHandler {
 			return msg;
 		} else {
 			CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
-			msg.setDestterminalId(String.valueOf(System.currentTimeMillis()/1000));
+			msg.setDestterminalId(String.valueOf(System.nanoTime()));
 			msg.setLinkID("0000");
 			msg.setMsgContent(content);
-			msg.setRegisteredDelivery((short)1);
+			msg.setRegisteredDelivery((short)0);
 			msg.setMsgid(new MsgId());
 			msg.setServiceId("10086");
 			return msg;
