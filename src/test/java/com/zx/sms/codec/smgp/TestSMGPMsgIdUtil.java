@@ -4,7 +4,7 @@ package com.zx.sms.codec.smgp;
 import java.util.Date;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -45,7 +45,7 @@ public class TestSMPPEndPoint {
 
 		child.setValid(true);
 		child.setChannelType(ChannelType.DUPLEX);
-		child.setMaxChannels((short)20);
+		child.setMaxChannels((short)3);
 		child.setRetryWaitTimeSec((short)30);
 		child.setMaxRetryCnt((short)3);
 		child.setReSendFailMsg(true);
@@ -80,6 +80,10 @@ public class TestSMPPEndPoint {
 		manager.addEndpointEntity(server);
 		manager.addEndpointEntity(client);
 		manager.openAll();
+		
+		Thread.sleep(1000);
+		for(int i=0;i<child.getMaxChannels();i++)
+			manager.openEndpoint(client);
 		System.out.println("start.....");
 		LockSupport.park();
 		EndpointManager.INS.close();

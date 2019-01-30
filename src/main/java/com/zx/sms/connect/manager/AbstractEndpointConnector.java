@@ -240,6 +240,8 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			bindHandler(ch.pipeline(), getEndpointEntity());
 			return true;
 		}else {
+			logger.warn("allowed max channel count: {} ,deny to login.{}",endpoint.getMaxChannels(),endpoint);
+
 			return false;
 		}
 		

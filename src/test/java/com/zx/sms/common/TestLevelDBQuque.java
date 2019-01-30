@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.DBIterator;
 import org.iq80.leveldb.Options;

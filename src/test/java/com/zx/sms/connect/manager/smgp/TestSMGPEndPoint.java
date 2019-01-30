@@ -45,7 +45,7 @@ public class TestSMGPEndPoint {
 
 		child.setValid(true);
 		child.setChannelType(ChannelType.DUPLEX);
-		child.setMaxChannels((short)20);
+		child.setMaxChannels((short)3);
 		child.setRetryWaitTimeSec((short)30);
 		child.setMaxRetryCnt((short)3);
 		child.setReSendFailMsg(false);
@@ -65,7 +65,7 @@ public class TestSMGPEndPoint {
 		client.setPassword("0555");
 		client.setChannelType(ChannelType.DUPLEX);
 
-		client.setMaxChannels((short)12);
+		client.setMaxChannels((short)30);
 		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);
 		client.setReSendFailMsg(false);
@@ -79,6 +79,10 @@ public class TestSMGPEndPoint {
 		manager.addEndpointEntity(client);
 		
 		manager.openAll();
+		
+		Thread.sleep(1000);
+		for(int i=0;i<child.getMaxChannels();i++)
+			manager.openEndpoint(client);
 		 System.out.println("start.....");
 		LockSupport.park();
        

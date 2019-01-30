@@ -1,6 +1,6 @@
 package com.zx.sms.handler.smgp;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.marre.sms.SmsMessage;
 
 import com.zx.sms.BaseMessage;

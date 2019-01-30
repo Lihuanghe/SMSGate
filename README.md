@@ -10,9 +10,15 @@
 <dependency>
   <groupId>com.chinamobile.cmos</groupId>
   <artifactId>sms-core</artifactId>
-  <version>2.1.5</version>
+  <version>2.1.6</version>
 </dependency>
 ```
+
+# 新手指引
+
+- 先看doc目录下的`CMPP接口协议V3.0.0.doc`文档 (看不懂的到群里咨询)
+- 再看readme里的说明  (看不懂的到群里咨询)
+- 导入工程后，运行测试demo: TestCMPPEndPoint，学会配置账号密码等参数
 
 # CMPPGate , SMPPGate , SGIPGate, SMGPGate
 中移短信cmpp协议/smpp协议 netty实现编解码
