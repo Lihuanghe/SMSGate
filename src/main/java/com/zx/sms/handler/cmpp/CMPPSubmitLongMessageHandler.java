@@ -33,7 +33,7 @@ public class CMPPSubmitLongMessageHandler extends AbstractLongMessageHandler<Cmp
 
 	@Override
 	protected String generateFrameKey(CmppSubmitRequestMessage msg) {
-		return StringUtils.join(msg.getDestterminalId(), "|");
+		return StringUtils.join(msg.getDestterminalId(), "|")+msg.getSrcId();
 	}
 
 	@Override

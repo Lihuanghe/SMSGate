@@ -34,7 +34,7 @@ public class CMPPDeliverLongMessageHandler extends AbstractLongMessageHandler<Cm
 
 	@Override
 	protected String generateFrameKey(CmppDeliverRequestMessage msg) {
-		return msg.getSrcterminalId();
+		return msg.getSrcterminalId()+msg.getDestId();
 	}
 
 

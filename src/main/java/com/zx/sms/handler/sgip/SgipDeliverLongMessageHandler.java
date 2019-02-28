@@ -35,7 +35,7 @@ public class SgipDeliverLongMessageHandler extends AbstractLongMessageHandler<Sg
 
 	@Override
 	protected String generateFrameKey(SgipDeliverRequestMessage msg) {
-		return msg.getUsernumber();
+		return msg.getUsernumber()+msg.getSpnumber();
 	}
 
 	@Override

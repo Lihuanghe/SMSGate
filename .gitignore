@@ -14,7 +14,7 @@
 /logs
 /test-output
 jdbc.properties
-
+/doc/~*.doc
 *.class
 
 # Mobile Tools for Java (J2ME)

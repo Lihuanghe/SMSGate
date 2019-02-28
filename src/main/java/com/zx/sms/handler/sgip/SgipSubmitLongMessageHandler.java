@@ -31,7 +31,7 @@ public class SgipSubmitLongMessageHandler extends AbstractLongMessageHandler<Sgi
 
 	@Override
 	protected String generateFrameKey(SgipSubmitRequestMessage msg) {
-		return StringUtils.join(msg.getUsernumber(), "|");
+		return StringUtils.join(msg.getUsernumber(), "|")+msg.getSpnumber();
 	}
 
 	@Override

@@ -12,7 +12,8 @@ public class PropertiesUtils {
     public static String globalBDBBaseHome = PropertiesUtils.getproperties("BDBBaseHome",System.getProperty("java.io.tmpdir"));
 	public static String getdefaultTransportCharset()
 	{
-		return global.getProperty("defaultTransportCharset");
+		String charset = global.getProperty("defaultTransportCharset");
+		return charset==null?"UTF-8":charset;
 	}
 	
 	public static String getproperties(String key,String defaultValue)
@@ -28,15 +29,14 @@ public class PropertiesUtils {
 	}
 
 	private static Properties loadProperties(String resources) {
-
 		// 使用InputStream得到一个资源文件
-
 		InputStream inputstream = PropertiesUtils.class.getClassLoader().getResourceAsStream(resources);
-
 		// new 一个Properties
-
 		Properties properties = new Properties();
-
+		if(inputstream==null) {
+			return properties;
+		}
+			
 		try {
 
 			// 加载配置文件

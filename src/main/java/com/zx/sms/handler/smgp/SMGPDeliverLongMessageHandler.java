@@ -35,7 +35,7 @@ public class SMGPDeliverLongMessageHandler extends AbstractLongMessageHandler<SM
 
 	@Override
 	protected String generateFrameKey(SMGPDeliverMessage msg) {
-		return msg.getSrcTermId();
+		return msg.getSrcTermId()+msg.getDestTermId();
 	}
 
 	@Override

@@ -36,7 +36,7 @@ public class SMGPSubmitLongMessageHandler extends AbstractLongMessageHandler<SMG
 
 	@Override
 	protected String generateFrameKey(SMGPSubmitMessage msg) {
-		return StringUtils.join(msg.getDestTermIdArray(), "|");
+		return StringUtils.join(msg.getDestTermIdArray(), "|")+msg.getSrcTermId();
 	}
 	
 	@Override

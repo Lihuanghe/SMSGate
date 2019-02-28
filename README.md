@@ -19,6 +19,7 @@
 - 先看doc目录下的`CMPP接口协议V3.0.0.doc`文档 (看不懂的到群里咨询)
 - 再看readme里的说明  (看不懂的到群里咨询)
 - 导入工程后，运行测试demo: TestCMPPEndPoint，学会配置账号密码等参数
+- 由于代码是基于netty网络框架，您有必要先有一些Netty的基础
 
 # CMPPGate , SMPPGate , SGIPGate, SMGPGate
 中移短信cmpp协议/smpp协议 netty实现编解码

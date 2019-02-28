@@ -188,18 +188,6 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 		}
 	}
 	
-	private boolean validMaxChannel(EndpointEntity entity,EndpointConnector conn)
-	{
-		int maxChannels = entity.getMaxChannels();
-
-		if (maxChannels != 0 && maxChannels <= conn.getConnectionNum()) {
-			logger.warn("MaxChannels config is {} ,now connection is {}. no more channel will be created . ", maxChannels,conn.getConnectionNum());
-			
-			return false;
-		}
-		return true;
-	}
-	
 	private void notifyChannelConnected(ChannelHandlerContext ctx ){
 		//通知业务handler连接已建立完成
 		ctx.channel().pipeline().fireUserEventTriggered(SessionState.Connect);

@@ -36,9 +36,9 @@ public class SMPPLongMessageHandler extends AbstractLongMessageHandler<BaseSm> {
 	@Override
 	protected String generateFrameKey(BaseSm msg) throws Exception{
 		if(msg instanceof SubmitSm){
-			return msg.getDestAddress().getAddress();
+			return msg.getDestAddress().getAddress()+msg.getSourceAddress().getAddress();
 		}else if(msg instanceof DeliverSm){
-			return msg.getSourceAddress().getAddress();
+			return msg.getSourceAddress().getAddress()+msg.getDestAddress().getAddress();
 		}else{
 			throw new NotSupportedException("not support LongMessage Type  "+ msg.getClass());
 		}

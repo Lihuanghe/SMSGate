@@ -69,7 +69,7 @@ public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 							List<Promise> futures = null;
 							ChannelFuture chfuture = null;
 							ChannelFuture cfuture = null;
-							BaseMessage msg = createTestReq("这是一个在netty4框架下实现的cmpp3.0/cmpp2.0短信协议解析及网关端口管理 (master分支是依赖于netty5的)."+UUID.randomUUID().toString());
+							BaseMessage msg = createTestReq(UUID.randomUUID().toString());
 //							chfuture = ChannelUtil.asyncWriteToEntity(getEndpointEntity().getId(), msg);
 							futures = ChannelUtil.syncWriteLongMsgToEntity(getEndpointEntity().getId(), msg);
 //							cfuture = ctx.writeAndFlush(msg);

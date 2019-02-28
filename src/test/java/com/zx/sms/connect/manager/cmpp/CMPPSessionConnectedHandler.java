@@ -33,7 +33,7 @@ public class CMPPSessionConnectedHandler extends SessionConnectedHandler {
 		
 		if (finalentity instanceof ServerEndpoint) {
 			CmppDeliverRequestMessage msg = new CmppDeliverRequestMessage();
-			msg.setDestId("13800138000");
+			msg.setDestId(String.valueOf(System.nanoTime()));
 			msg.setLinkid("0000");
 			msg.setMsgContent(content);
 			msg.setMsgId(new MsgId());
@@ -46,10 +46,10 @@ public class CMPPSessionConnectedHandler extends SessionConnectedHandler {
 		} else {
 			CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
 			msg.setDestterminalId(String.valueOf(System.nanoTime()));
+			msg.setSrcId(String.valueOf(System.nanoTime()));
 			msg.setLinkID("0000");
 			msg.setMsgContent(content);
 			msg.setRegisteredDelivery((short)0);
-			msg.setMsgid(new MsgId());
 			msg.setServiceId("10086");
 			return msg;
 		}
