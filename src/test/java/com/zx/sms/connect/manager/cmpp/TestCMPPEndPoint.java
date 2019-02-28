@@ -53,7 +53,7 @@ public class TestCMPPEndPoint {
 		child.setMaxChannels((short)4);
 		child.setRetryWaitTimeSec((short)30);
 		child.setMaxRetryCnt((short)3);
-//		child.setReSendFailMsg(true);
+		child.setReSendFailMsg(true);
 //		child.setWriteLimit(200);
 //		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
@@ -79,10 +79,10 @@ public class TestCMPPEndPoint {
 		client.setRetryWaitTimeSec((short)30);
 		client.setUseSSL(false);
 //		client.setWriteLimit(100);
-		client.setReSendFailMsg(false);
+		client.setReSendFailMsg(true);
 		client.setSupportLongmsg(SupportLongMessage.BOTH);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new CMPPSessionConnectedHandler(100000));
+		clienthandlers.add( new CMPPSessionConnectedHandler(10000));
 		client.setBusinessHandlerSet(clienthandlers);
 		
 		manager.addEndpointEntity(client);
