@@ -59,6 +59,13 @@ public class SmsUserData
         dcs_ = dataCodingScheme;
     }
     
+    public SmsUserData(byte[] userData, SmsDcs dataCodingScheme)
+    {
+        data_ = userData;
+        length_ = userData.length;
+        dcs_ = dataCodingScheme;
+    }
+    
     public SmsUserData(byte[] userData)
     {
         data_ = userData;

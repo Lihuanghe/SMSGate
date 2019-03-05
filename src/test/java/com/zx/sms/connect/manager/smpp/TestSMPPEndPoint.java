@@ -80,7 +80,7 @@ public class TestSMPPEndPoint {
 		manager.addEndpointEntity(server);
 		manager.addEndpointEntity(client);
 		manager.openAll();
-		
+		manager.startConnectionCheckTask();
 		Thread.sleep(1000);
 		for(int i=0;i<child.getMaxChannels();i++)
 			manager.openEndpoint(client);

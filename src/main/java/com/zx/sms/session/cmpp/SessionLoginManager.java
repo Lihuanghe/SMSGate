@@ -8,6 +8,7 @@ import io.netty.util.concurrent.GenericFutureListener;
 
 import java.util.Arrays;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
@@ -50,7 +51,7 @@ public class SessionLoginManager extends AbstractSessionLoginManager {
 		if (Arrays.equals(authBytes, message.getAuthenticatorSource())) {
 			return 0;
 		} else {
-			logger.error("AuthenticatorSource valided failed");
+			logger.error("AuthenticatorSource valided failed.s:{},c:{}",Hex.encodeHexString(authBytes),Hex.encodeHexString(message.getAuthenticatorSource()));
 			return 3;
 		}
 	}

@@ -14,12 +14,40 @@
 </dependency>
 ```
 
+# 常见问题
+
+- `没看懂如何发送短信？`
+
+  短信协议是tcp长连接，类似数据库连接，如jdbc-connection. 所以发送短信前必须要先有一个短信连接。因此你需要在程序启动时建立短信连接。参考demo里的client，调用manager.openEntity()方法，,调用manager.startConnectionCheckTask()开启断线重连。
+  
+  然后就像调用其它库一样，在需要发送短信的地方，new 一个对应的Message,调用ChannelUtils.syncWriteLongMsgToEntity([clientEntityId],message)方法发送即可。
+
+- `如何发送长短信？`
+
+  smsgate默认已经处理好长短信了，就像发送普通短信一样。
+  
+- `如何接收短信？`
+
+  如果你了解netty的handler,那么请看AbstractBusinessHandler的源码即可，这是一个netty的handler.
+  
+  如果你不了解netty, 你只许知道：
+  
+  当连接刚刚建立时，smsgate会自动调用handler里的userEventTriggered方法；
+  
+  当对方发送任一消息给你时，smsgate会自动调用handler里的channelRead方法；
+  
+  当连接关闭时，smsgate会自动调用handler里的channelInactive方法
+
+
+
 # 新手指引
 
 - 先看doc目录下的`CMPP接口协议V3.0.0.doc`文档 (看不懂的到群里咨询)
 - 再看readme里的说明  (看不懂的到群里咨询)
 - 导入工程后，运行测试demo: TestCMPPEndPoint，学会配置账号密码等参数
 - 由于代码是基于netty网络框架，您有必要先有一些Netty的基础
+
+
 
 # CMPPGate , SMPPGate , SGIPGate, SMGPGate
 中移短信cmpp协议/smpp协议 netty实现编解码
