@@ -202,77 +202,82 @@ smsgate自开发以来，一直使用netty的异步发送消息，但实际使�
 ## CMPP Api使用举例
 
 ```java
-
 public class TestCMPPEndPoint {
 	private static final Logger logger = LoggerFactory.getLogger(TestCMPPEndPoint.class);
 
 	@Test
 	public void testCMPPEndpoint() throws Exception {
-	
+		ResourceLeakDetector.setLevel(Level.ADVANCED);
 		final EndpointManager manager = EndpointManager.INS;
 
 		CMPPServerEndpointEntity server = new CMPPServerEndpointEntity();
 		server.setId("server");
 		server.setHost("127.0.0.1");
-		server.setPort(7891);
+		server.setPort(7890);
 		server.setValid(true);
 		//使用ssl加密数据流
 		server.setUseSSL(false);
-		
+
 		CMPPServerChildEndpointEntity child = new CMPPServerChildEndpointEntity();
 		child.setId("child");
 		child.setChartset(Charset.forName("utf-8"));
 		child.setGroupName("test");
-		child.setUserName("901782");
-		child.setPassword("ICP");
+		child.setUserName("901783");
+		child.setPassword("ICP001");
 
 		child.setValid(true);
-		child.setWindows((short)16);
-		child.setVersion((short)0x20);
+		child.setVersion((short)0x30);
 
-		child.setMaxChannels((short)20);
-		child.setRetryWaitTimeSec((short)5);
+		child.setMaxChannels((short)4);
+		child.setRetryWaitTimeSec((short)30);
 		child.setMaxRetryCnt((short)3);
-		child.setReSendFailMsg(false);
-		//child.setReadLimit(200);
+		child.setReSendFailMsg(true);
+//		child.setWriteLimit(200);
+//		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new SessionConnectedHandler(300000));      //在这个类里发送短信
+		serverhandlers.add(new CMPPMessageReceiveHandler());
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
-		
 		
 		manager.addEndpointEntity(server);
 	
 		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
 		client.setId("client");
 		client.setHost("127.0.0.1");
-		client.setPort(7891);
+//		client.setLocalhost("127.0.0.1");
+//		client.setLocalport(65521);
+		client.setPort(7890);
 		client.setChartset(Charset.forName("utf-8"));
 		client.setGroupName("test");
-		client.setUserName("901782");
-		client.setPassword("ICP");
+		client.setUserName("901783");
+		client.setPassword("ICP001");
 
-
-		client.setMaxChannels((short)12);
-		client.setWindows((short)16);
-		client.setVersion((short)0x20);
-		client.setRetryWaitTimeSec((short)10);
+		client.setMaxChannels((short)10);
+		client.setVersion((short)0x30);
+		client.setRetryWaitTimeSec((short)30);
 		client.setUseSSL(false);
-		client.setReSendFailMsg(false);
-		//client.setWriteLimit(200);
-		//client.setReadLimit(200);
+//		client.setWriteLimit(100);
+		client.setReSendFailMsg(true);
+		client.setSupportLongmsg(SupportLongMessage.BOTH);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new MessageReceiveHandler());  //在这个类里接收短信消息
+		clienthandlers.add( new CMPPSessionConnectedHandler(10000));
 		client.setBusinessHandlerSet(clienthandlers);
+		
 		manager.addEndpointEntity(client);
 		
-		manager.openAll();
-		//LockSupport.park();
-       
-		Thread.sleep(300000);
+		manager.openEndpoint(server);
+		
+		Thread.sleep(1000);
+		for(int i=0;i<=child.getMaxChannels()+1;i++)
+			manager.openEndpoint(client);
+
+        System.out.println("start.....");
+        
+//		Thread.sleep(300000);
+        LockSupport.park();
 		EndpointManager.INS.close();
 	}
-
+}
 ```
 
 ## SMPP Api使用举例
@@ -288,7 +293,7 @@ public class TestSMPPEndPoint {
 		final EndpointManager manager = EndpointManager.INS;
 
 		SMPPServerEndpointEntity server = new SMPPServerEndpointEntity();
-		server.setId("server");
+		server.setId("smppserver");
 		server.setHost("127.0.0.1");
 		server.setPort(2776);
 		server.setValid(true);
@@ -296,28 +301,26 @@ public class TestSMPPEndPoint {
 		server.setUseSSL(false);
 		
 		SMPPServerChildEndpointEntity child = new SMPPServerChildEndpointEntity();
-		child.setId("child");
+		child.setId("smppchild");
 		child.setSystemId("901782");
 		child.setPassword("ICP");
 
 		child.setValid(true);
 		child.setChannelType(ChannelType.DUPLEX);
-		child.setMaxChannels((short)20);
+		child.setMaxChannels((short)3);
 		child.setRetryWaitTimeSec((short)30);
 		child.setMaxRetryCnt((short)3);
-		child.setReSendFailMsg(false);
+		child.setReSendFailMsg(true);
 		child.setIdleTimeSec((short)15);
+//		child.setWriteLimit(200);
+//		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new SMPP2CMPPBusinessHandler());  //  将CMPP的对象转成SMPP对象，然后再经SMPP解码器处理
-		serverhandlers.add( new MessageReceiveHandler());   // 复用CMPP的Handler
+		serverhandlers.add(new SMPPSessionConnectedHandler(10000));   
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
-		manager.addEndpointEntity(server);
-		manager.openAll();
-		
 		SMPPClientEndpointEntity client = new SMPPClientEndpointEntity();
-		client.setId("client");
+		client.setId("smppclient");
 		client.setHost("127.0.0.1");
 		client.setPort(2776);
 		client.setSystemId("901782");
@@ -327,18 +330,27 @@ public class TestSMPPEndPoint {
 		client.setMaxChannels((short)12);
 		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);
-		client.setReSendFailMsg(false);
+		client.setReSendFailMsg(true);
+//		client.setWriteLimit(200);
+//		client.setReadLimit(200);
+		client.setSupportLongmsg(SupportLongMessage.SEND);  //接收长短信时不自动合并
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add(new SMPP2CMPPBusinessHandler()); //  将CMPP的对象转成SMPP对象，然后再经SMPP解码器处理
-		clienthandlers.add(new SessionConnectedHandler(600000)); //// 复用CMPP的Handler ，在这个类里发送短信
+		clienthandlers.add( new SMPPMessageReceiveHandler()); 
 		client.setBusinessHandlerSet(clienthandlers);
 		
-		manager.openEndpoint(client);
 		
-		//LockSupport.park();
-		Thread.sleep(300000);
+		manager.addEndpointEntity(server);
+		manager.addEndpointEntity(client);
+		manager.openAll();
+		manager.startConnectionCheckTask();
+		Thread.sleep(1000);
+		for(int i=0;i<child.getMaxChannels();i++)
+			manager.openEndpoint(client);
+		System.out.println("start.....");
+		LockSupport.park();
 		EndpointManager.INS.close();
 	}
+}
 	
 ```
 
@@ -356,7 +368,7 @@ public class TestSgipEndPoint {
 		SgipServerEndpointEntity server = new SgipServerEndpointEntity();
 		server.setId("sgipserver");
 		server.setHost("127.0.0.1");
-		server.setPort(8801);
+		server.setPort(8001);
 		server.setValid(true);
 		//使用ssl加密数据流
 		server.setUseSSL(false);
@@ -367,17 +379,19 @@ public class TestSgipEndPoint {
 		child.setLoginPassowrd("0555");
 
 		child.setValid(true);
-		child.setChannelType(ChannelType.DOWN);
-		child.setMaxChannels((short)20);
+		child.setChannelType(ChannelType.DUPLEX);
+		child.setMaxChannels((short)3);
 		child.setRetryWaitTimeSec((short)30);
 		child.setMaxRetryCnt((short)3);
 		child.setReSendFailMsg(false);
-		child.setIdleTimeSec((short)15);
+		child.setIdleTimeSec((short)30);
+//		child.setWriteLimit(200);
+//		child.setReadLimit(200);
+		child.setSupportLongmsg(SupportLongMessage.SEND);  //接收长短信时不自动合并
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
 		
 		serverhandlers.add(new SgipReportRequestMessageHandler());
-		serverhandlers.add(new Sgip2CMPPBusinessHandler());  //  将CMPP的对象转成sgip对象，然后再经sgip解码器处理
-		serverhandlers.add(new MessageReceiveHandler());   // 复用CMPP的Handler
+		serverhandlers.add(new SGIPMessageReceiveHandler());   
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
@@ -390,21 +404,26 @@ public class TestSgipEndPoint {
 		client.setPort(8001);
 		client.setLoginName("333");
 		client.setLoginPassowrd("0555");
-		client.setChannelType(ChannelType.DOWN);
+		client.setChannelType(ChannelType.DUPLEX);
 
-		client.setMaxChannels((short)12);
+		client.setMaxChannels((short)10);
 		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);
+		client.setReSendFailMsg(true);
+//		client.setWriteLimit(200);
+//		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add(new Sgip2CMPPBusinessHandler()); //  将CMPP的对象转成sgip对象，然后再经sgip解码器处理
-		clienthandlers.add(new SessionConnectedHandler(1)); //// 复用CMPP的Handler ，在这个类里发送短信
+		clienthandlers.add(new SGIPSessionConnectedHandler(10000));
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		manager.openAll();
-		//LockSupport.park();
-        System.out.println("start.....");
-        
-		Thread.sleep(300000);
+		Thread.sleep(1000);
+		for(int i=0;i<child.getMaxChannels();i++)
+			manager.openEndpoint(client);
+		System.out.println("start.....");
+      
+        LockSupport.park();
+
 		EndpointManager.INS.close();
 	}
 }
