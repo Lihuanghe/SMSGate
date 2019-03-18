@@ -101,10 +101,11 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Serializable, Ve
 			logger.error("file  {} is not a Directory ", pathName);
 			return null;
 		}
-		logger.info("init BDBPath : {}" ,pathName);
+		
 		QueueEnvironment env = envMap.get(pathName);
 
 		if (env == null) {
+			logger.info("init BDBPath : {}" ,pathName);
 			env = new QueueEnvironment().buildEnvironment(pathName).buildStoredClassCatalog();
 			QueueEnvironment oldenv = envMap.putIfAbsent(pathName, env);
 			return oldenv == null ? env : oldenv;

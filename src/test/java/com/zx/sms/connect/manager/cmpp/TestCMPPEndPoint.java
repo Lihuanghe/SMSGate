@@ -74,7 +74,7 @@ public class TestCMPPEndPoint {
 		client.setUserName("901783");
 		client.setPassword("ICP001");
 
-		client.setMaxChannels((short)10);
+		client.setMaxChannels((short)2);
 		client.setVersion((short)0x30);
 		client.setRetryWaitTimeSec((short)30);
 		client.setUseSSL(false);

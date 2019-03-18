@@ -1,23 +1,11 @@
 package com.zx.sms.handler.api.smsbiz;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
-import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
-import com.zx.sms.codec.cmpp.msg.CmppQueryRequestMessage;
-import com.zx.sms.codec.cmpp.msg.CmppQueryResponseMessage;
-import com.zx.sms.codec.cmpp.msg.CmppReportRequestMessage;
-import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
-import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
-import com.zx.sms.common.util.CachedMillisecondClock;
-import com.zx.sms.common.util.MsgId;
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
@@ -58,7 +46,7 @@ public abstract class MessageReceiveHandler extends AbstractBusinessHandler {
 			},new ExitUnlimitCirclePolicy() {
 				@Override
 				public boolean notOver(Future future) {
-					return ctx.channel().isActive();
+					return true;
 				}
 			},rate*1000);
 			inited = true;
