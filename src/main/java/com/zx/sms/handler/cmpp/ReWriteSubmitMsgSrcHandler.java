@@ -24,8 +24,13 @@ public class ReWriteSubmitMsgSrcHandler extends ChannelDuplexHandler {
 		if(msg instanceof CmppSubmitRequestMessage){
 			CmppSubmitRequestMessage submitMsg = (CmppSubmitRequestMessage)msg;
 			if(StringUtils.isBlank(submitMsg.getMsgsrc()))
-				submitMsg.setMsgsrc(entity.getUserName());
-			
+			{
+				if(StringUtils.isNotBlank(entity.getMsgSrc())) {
+					submitMsg.setMsgsrc(entity.getMsgSrc());
+				}else {
+					submitMsg.setMsgsrc(entity.getUserName());
+				}
+			}
 			if(StringUtils.isBlank(submitMsg.getServiceId()))
 				submitMsg.setServiceId(entity.getServiceId());
 			
