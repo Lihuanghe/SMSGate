@@ -3,6 +3,7 @@ package com.zx.sms.connect.manager.cmpp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
@@ -22,6 +23,7 @@ public class CMPPMessageReceiveHandler extends MessageReceiveHandler {
 
 	@Override
 	protected ChannelFuture reponse(final ChannelHandlerContext ctx, Object msg) {
+		int result = RandomUtils.nextInt(0, 100) > 97 ? 8 : 0 ;
 		if (msg instanceof CmppDeliverRequestMessage) {
 			CmppDeliverRequestMessage e = (CmppDeliverRequestMessage) msg;
 			
@@ -29,14 +31,14 @@ public class CMPPMessageReceiveHandler extends MessageReceiveHandler {
 				//长短信会带有片断
 				for(CmppDeliverRequestMessage frag:e.getFragments()) {
 					CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(frag.getHeader().getSequenceId());
-					responseMessage.setResult(0);
+					responseMessage.setResult(result);
 					responseMessage.setMsgId(frag.getMsgId());
 					ctx.channel().write(responseMessage);
 				}
 			}
 			
 			CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage(e.getHeader().getSequenceId());
-			responseMessage.setResult(0);
+			responseMessage.setResult(result);
 			responseMessage.setMsgId(e.getMsgId());
 			return ctx.channel().writeAndFlush(responseMessage);
 
@@ -50,7 +52,7 @@ public class CMPPMessageReceiveHandler extends MessageReceiveHandler {
 				//长短信会可能带有片断，每个片断都要回复一个response
 				for(CmppSubmitRequestMessage frag:e.getFragments()) {
 					CmppSubmitResponseMessage responseMessage = new CmppSubmitResponseMessage(frag.getHeader().getSequenceId());
-					responseMessage.setResult(0);
+					responseMessage.setResult(result);
 					ctx.channel().write(responseMessage);
 					
 					CmppDeliverRequestMessage deliver = new CmppDeliverRequestMessage();
@@ -70,7 +72,7 @@ public class CMPPMessageReceiveHandler extends MessageReceiveHandler {
 			}
 			
 			final CmppSubmitResponseMessage resp = new CmppSubmitResponseMessage(e.getHeader().getSequenceId());
-			resp.setResult(0);
+			resp.setResult(result);
 			
 			ChannelFuture future = ctx.channel().writeAndFlush(resp);
 			
@@ -98,7 +100,7 @@ public class CMPPMessageReceiveHandler extends MessageReceiveHandler {
 					}
 				});
 			}
-			return future;
+			return result == 0 ? future : null;
 		} else if (msg instanceof CmppQueryRequestMessage) {
 			CmppQueryRequestMessage e = (CmppQueryRequestMessage) msg;
 			CmppQueryResponseMessage res = new CmppQueryResponseMessage(e.getHeader().getSequenceId());

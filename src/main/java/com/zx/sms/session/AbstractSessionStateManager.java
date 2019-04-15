@@ -231,7 +231,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 						//网关异常时会发送大量超速错误(result=8),造成大量重发，浪费资源。这里先停止发送，过40毫秒再回恢复
 						setchannelunwritable(ctx,40);
 						//400ms后重发
-						reWriteLater(ctx, request, ctx.newPromise(), 400);
+						reWriteLater(ctx, entry.request, ctx.newPromise(), 400);
 						
 					}else{
 						cancelRetry(entry, ctx.channel());
@@ -475,28 +475,22 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 				//否则
 				
 				if(!message.equals(old.request)){
-					
-					VersionObject<T> storerequest = storeMap.get(seq);
-					//增加一次判断 ，如果是持久化的request,反序列化后的request跟msgRetryMap里的是不同的。
-					//这里增加一次比较
-					if(storerequest!=null && !message.equals(storerequest.getObj())) {
-						// bugfix: 集群环境下可能产生相同的seq. 如果已经存在一个相同的seq.
-						// 此消息延迟250ms再发
-						logger.error("has repeat Sequense {}", seq);
-						if(syn){
-							//同步调用时，立即返回失败。
-							StringBuilder sb = new StringBuilder();
-							sb.append("seqId:").append(seq);
-							sb.append(".it Has a same sequenceId with another message:").append(old.request).append(". wait it complete.");
-							IOException cause = new IOException(sb.toString());
-							DefaultPromise failed = new DefaultPromise<T>(ctx.executor());
-							failed.tryFailure(cause);
-							return failed;
-						}else{
-							//异步调用时等250ms后再试发一次
-							reWriteLater(ctx, message, promise, 250);
-							return null;
-						}
+					// bugfix: 集群环境下可能产生相同的seq. 如果已经存在一个相同的seq.
+					// 此消息延迟250ms再发
+					logger.error("has repeat Sequense {}", seq);
+					if(syn){
+						//同步调用时，立即返回失败。
+						StringBuilder sb = new StringBuilder();
+						sb.append("seqId:").append(seq);
+						sb.append(".it Has a same sequenceId with another message:").append(old.request).append(". wait it complete.");
+						IOException cause = new IOException(sb.toString());
+						DefaultPromise failed = new DefaultPromise<T>(ctx.executor());
+						failed.tryFailure(cause);
+						return failed;
+					}else{
+						//异步调用时等250ms后再试发一次
+						reWriteLater(ctx, message, promise, 250);
+						return null;
 					}
 				}
 			} else{
