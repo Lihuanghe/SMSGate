@@ -464,32 +464,39 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 			}
 			
 			final K seq = getSequenceId(message);
-		
 			// 记录已发送的请求,在发送msg前生记录到map里。防止生成retryTask前就收到resp的情况发生
 			boolean has = msgRetryMap.containsKey(seq);
 			Entry tmpentry = new Entry(message);
 			if (has) {
 				Entry old = msgRetryMap.get(seq);
+				
 				//2018-08-27 当网关返回超速错时，也会存在想同的seq
 				//消息相同表示此消息是因为超速错导致的重发,什么都不做。
 				//否则
+				
 				if(!message.equals(old.request)){
-					// bugfix: 集群环境下可能产生相同的seq. 如果已经存在一个相同的seq.
-					// 此消息延迟250ms再发
-					logger.error("has repeat Sequense {}", seq);
-					if(syn){
-						//同步调用时，立即返回失败。
-						StringBuilder sb = new StringBuilder();
-						sb.append("seqId:").append(seq);
-						sb.append(".it Has a same sequenceId with another message:").append(old.request).append(". wait it complete.");
-						IOException cause = new IOException(sb.toString());
-						DefaultPromise failed = new DefaultPromise<T>(ctx.executor());
-						failed.tryFailure(cause);
-						return failed;
-					}else{
-						//异步调用时等250ms后再试发一次
-						reWriteLater(ctx, message, promise, 250);
-						return null;
+					
+					VersionObject<T> storerequest = storeMap.get(seq);
+					//增加一次判断 ，如果是持久化的request,反序列化后的request跟msgRetryMap里的是不同的。
+					//这里增加一次比较
+					if(storerequest!=null && !message.equals(storerequest.getObj())) {
+						// bugfix: 集群环境下可能产生相同的seq. 如果已经存在一个相同的seq.
+						// 此消息延迟250ms再发
+						logger.error("has repeat Sequense {}", seq);
+						if(syn){
+							//同步调用时，立即返回失败。
+							StringBuilder sb = new StringBuilder();
+							sb.append("seqId:").append(seq);
+							sb.append(".it Has a same sequenceId with another message:").append(old.request).append(". wait it complete.");
+							IOException cause = new IOException(sb.toString());
+							DefaultPromise failed = new DefaultPromise<T>(ctx.executor());
+							failed.tryFailure(cause);
+							return failed;
+						}else{
+							//异步调用时等250ms后再试发一次
+							reWriteLater(ctx, message, promise, 250);
+							return null;
+						}
 					}
 				}
 			} else{
