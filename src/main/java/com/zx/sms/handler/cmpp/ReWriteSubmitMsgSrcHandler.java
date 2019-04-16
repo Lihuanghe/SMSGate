@@ -31,10 +31,10 @@ public class ReWriteSubmitMsgSrcHandler extends ChannelDuplexHandler {
 					submitMsg.setMsgsrc(entity.getUserName());
 				}
 			}
-			if(StringUtils.isBlank(submitMsg.getServiceId()))
+			if(StringUtils.isBlank(submitMsg.getServiceId()) && StringUtils.isNotBlank(entity.getServiceId()))
 				submitMsg.setServiceId(entity.getServiceId());
 			
-			if(StringUtils.isBlank(submitMsg.getSrcId()))
+			if(StringUtils.isBlank(submitMsg.getSrcId()) && StringUtils.isNotBlank(entity.getSpCode()))
 				submitMsg.setSrcId(entity.getSpCode());
 		}
 		ctx.write(msg, promise);

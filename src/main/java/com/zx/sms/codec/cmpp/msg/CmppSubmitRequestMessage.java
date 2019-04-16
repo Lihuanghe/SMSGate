@@ -124,7 +124,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage implements LongSMSM
 	 * @return the serviceId
 	 */
 	public String getServiceId() {
-		return serviceId;
+		return serviceId == null ? "" : serviceId;
 	}
 
 	/**
@@ -154,7 +154,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage implements LongSMSM
 	 * @return the feeterminalId
 	 */
 	public String getFeeterminalId() {
-		return feeterminalId;
+		return feeterminalId == null ? "" : feeterminalId;
 	}
 
 	/**
@@ -184,7 +184,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage implements LongSMSM
 	 * @return the msgsrc
 	 */
 	public String getMsgsrc() {
-		return msgsrc;
+		return msgsrc == null ? "" : msgsrc;
 	}
 
 	/**
@@ -199,7 +199,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage implements LongSMSM
 	 * @return the feeType
 	 */
 	public String getFeeType() {
-		return feeType;
+		return feeType == null ? "" : feeType;
 	}
 
 	/**
@@ -214,7 +214,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage implements LongSMSM
 	 * @return the feeCode
 	 */
 	public String getFeeCode() {
-		return feeCode;
+		return feeCode == null ? "" : feeCode;
 	}
 
 	/**
@@ -229,7 +229,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage implements LongSMSM
 	 * @return the valIdTime
 	 */
 	public String getValIdTime() {
-		return valIdTime;
+		return valIdTime == null ? "" : valIdTime;
 	}
 
 	/**
@@ -244,7 +244,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage implements LongSMSM
 	 * @return the atTime
 	 */
 	public String getAtTime() {
-		return atTime;
+		return atTime == null ? "" : atTime;
 	}
 
 	/**
@@ -259,7 +259,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage implements LongSMSM
 	 * @return the srcId
 	 */
 	public String getSrcId() {
-		return srcId;
+		return srcId == null ? "" : srcId;
 	}
 
 	/**
@@ -315,7 +315,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage implements LongSMSM
 	 * @return the linkID
 	 */
 	public String getLinkID() {
-		return linkID;
+		return linkID == null ? "" : linkID;
 	}
 
 	/**
