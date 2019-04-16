@@ -55,7 +55,7 @@
 这是一个在netty4框架下实现的cmpp3.0/cmpp2.0短信协议解析及网关端口管理 (master分支是依赖于netty5的)。
 代码copy了 `huzorro@gmail.com` 基于netty3.7的cmpp协议解析 [huzorro@gmail.com 的代码 ](https://github.com/huzorro/netty3ext)
 
-目前已支持发送和解析`长文本短们拆分合并`，`WapPush短信`，以及`彩信通知`类型的短信。可以实现对彩信或者wap-push短信的拦截和加工处理。wap短信的解析使用 [smsj] (https://github.com/marre/smsj)的短信库
+目前已支持发送和解析`长文本短信拆分合并`，`WapPush短信`，以及`彩信通知`类型的短信。可以实现对彩信或者wap-push短信的拦截和加工处理。wap短信的解析使用 [smsj] (https://github.com/marre/smsj)的短信库
 
 cmpp协议已经跟华为，东软，亚信的短信网关都做过联调测试，兼容了不同厂家的错误和异常，如果跟网关通信出错，可以打开trace日志查看二进制数据。
 
