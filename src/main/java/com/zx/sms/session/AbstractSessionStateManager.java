@@ -472,8 +472,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 				
 				//2018-08-27 当网关返回超速错时，也会存在想同的seq
 				//消息相同表示此消息是因为超速错导致的重发,什么都不做。
-				//否则
-				
+				//否则可能是相同的seq，但不同的短信				
 				if(!message.equals(old.request)){
 					// bugfix: 集群环境下可能产生相同的seq. 如果已经存在一个相同的seq.
 					// 此消息延迟250ms再发
@@ -511,6 +510,12 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 					if (future.isSuccess()) {
 						// 注册重试任务
 						scheduleRetryMsg(ctx, message);
+					}else {
+						//发送失败,必须清除msgRetryMap里的对象，否则上层业务
+						//可能提交相同seq的消息，造成死循环
+						logger.error("remove fail message Sequense {}", seq);
+						msgRetryMap.remove(seq);
+						storeMap.remove(seq);
 					}
 				}
 
