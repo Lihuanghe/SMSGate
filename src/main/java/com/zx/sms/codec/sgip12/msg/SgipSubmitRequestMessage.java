@@ -426,7 +426,7 @@ public class SgipSubmitRequestMessage extends DefaultMessage implements LongSMSM
 		.append(", spnumber=").append(spnumber)
 		.append(", destterminalId=").append(Arrays.toString(usernumber))
 		.append(", msgContent=").append(getMsgContent())
-		.append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
+		.append(", Header=").append(getHeader()).append("]");
 		return sb.toString();
 	}
 	private List<SgipSubmitRequestMessage> fragments = null;

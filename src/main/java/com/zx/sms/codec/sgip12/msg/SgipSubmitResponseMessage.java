@@ -63,7 +63,7 @@ public class SgipSubmitResponseMessage extends DefaultMessage {
 	 */
 	@Override
 	public String toString() {
-		return String.format("SgipSubmitResponseMessage [result=%s, reserve=%s, sequenceId=%s]", result, reserve, getHeader().getSequenceId());
+		return String.format("SgipSubmitResponseMessage [result=%s, reserve=%s, header=%s]", result, reserve, getHeader());
 	}
 
 }

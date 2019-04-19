@@ -38,7 +38,17 @@
   
   当连接关闭时，smsgate会自动调用handler里的channelInactive方法
 
+- `如何不改源码，实现修改框架默认的handler`
 
+  比如SGIP协议要设置NodeId;你需要这样做：
+  
+  1、写一个扩展的SgipClientEndpointEntity子类，如：MySgipClientEndpointEntity，重写buildConnector()方法
+  
+  2、再写一个SgipClientEndpointConnector子类，如：MySgipClientEndpointConnector,重写doinitPipeLine()方法
+  
+  3、最后再写一个SgipSessionLoginManager子类，如：MySgipSessionLoginManager，重写doLogin方法，实现登陆方法的重写，在方法里创建自己定义的实现。
+  
+  4、最后在openEntity通道里，new MySgipClientEndpointEntity就可以了
 
 # 新手指引
 
@@ -52,7 +62,7 @@
 # CMPPGate , SMPPGate , SGIPGate, SMGPGate
 中移短信cmpp协议/smpp协议 netty实现编解码
 
-这是一个在netty4框架下实现的cmpp3.0/cmpp2.0短信协议解析及网关端口管理 (master分支是依赖于netty5的)。
+这是一个在netty4框架下实现的cmpp3.0/cmpp2.0短信协议解析及网关端口管理。
 代码copy了 `huzorro@gmail.com` 基于netty3.7的cmpp协议解析 [huzorro@gmail.com 的代码 ](https://github.com/huzorro/netty3ext)
 
 目前已支持发送和解析`长文本短信拆分合并`，`WapPush短信`，以及`彩信通知`类型的短信。可以实现对彩信或者wap-push短信的拦截和加工处理。wap短信的解析使用 [smsj] (https://github.com/marre/smsj)的短信库

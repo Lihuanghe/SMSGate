@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.zx.sms.codec.sgip12.codec.Sgip2CMPPBusinessHandler;
 import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
 import com.zx.sms.connect.manager.EndpointEntity.SupportLongMessage;
 import com.zx.sms.connect.manager.EndpointManager;
@@ -47,7 +46,7 @@ public class TestSgipEndPoint {
 		child.setId("sgipchild");
 		child.setLoginName("333");
 		child.setLoginPassowrd("0555");
-
+		child.setNodeId(0xeee);
 		child.setValid(true);
 		child.setChannelType(ChannelType.DUPLEX);
 		child.setMaxChannels((short)3);
@@ -57,11 +56,11 @@ public class TestSgipEndPoint {
 		child.setIdleTimeSec((short)30);
 //		child.setWriteLimit(200);
 //		child.setReadLimit(200);
-		child.setSupportLongmsg(SupportLongMessage.SEND);  //接收长短信时不自动合并
+		child.setSupportLongmsg(SupportLongMessage.BOTH);  
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
 		
 		serverhandlers.add(new SgipReportRequestMessageHandler());
-		serverhandlers.add(new SGIPMessageReceiveHandler());   
+		serverhandlers.add(new SGIPSessionConnectedHandler(10000));   
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
@@ -75,7 +74,7 @@ public class TestSgipEndPoint {
 		client.setLoginName("333");
 		client.setLoginPassowrd("0555");
 		client.setChannelType(ChannelType.DUPLEX);
-
+		client.setNodeId(0xffff);
 		client.setMaxChannels((short)10);
 		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);
@@ -83,7 +82,7 @@ public class TestSgipEndPoint {
 //		client.setWriteLimit(200);
 //		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add(new SGIPSessionConnectedHandler(10000));
+		clienthandlers.add(new SGIPMessageReceiveHandler());
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		manager.openAll();

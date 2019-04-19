@@ -5,7 +5,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.zx.sms.BaseMessage;
 import com.zx.sms.codec.sgip12.msg.SgipDeliverRequestMessage;
 import com.zx.sms.codec.sgip12.msg.SgipSubmitRequestMessage;
-import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.ServerEndpoint;
 import com.zx.sms.handler.api.gate.SessionConnectedHandler;
 
@@ -16,20 +15,21 @@ public class SGIPSessionConnectedHandler extends SessionConnectedHandler {
 	
 	@Override
 	protected BaseMessage createTestReq(String content) {
-		final EndpointEntity finalentity = getEndpointEntity();
-		
+		final SgipEndpointEntity finalentity = (SgipEndpointEntity)getEndpointEntity();
+		String sms = "【费用提醒】尊敬的客户，截止2018年2月1日17时，您的话费余额【费用提醒】尊敬的客户，截止2018年2月1日17时，您的话费余额为17.21元。【温馨提示】请您及时缴费【中国移动】为17.21元。【温馨提示】请您及时缴费【中国移动】";
 		if (finalentity instanceof ServerEndpoint) {
 			SgipDeliverRequestMessage sgipmsg = new SgipDeliverRequestMessage();
 			sgipmsg.setUsernumber("13800138000");
 			sgipmsg.setSpnumber("10086");
-			sgipmsg.setMsgContent(content);
+			sgipmsg.setMsgContent(sms);
+			sgipmsg.getHeader().setNodeId(finalentity.getNodeId());
 			return sgipmsg;
 		} else {
 			SgipSubmitRequestMessage requestMessage = new SgipSubmitRequestMessage();
 			requestMessage.setSpnumber("10086");
 			requestMessage.setUsernumber("13800138000");
-			
-			requestMessage.setMsgContent(content);
+			requestMessage.setMsgContent(sms);
+			requestMessage.getHeader().setNodeId(finalentity.getNodeId());
 			return requestMessage;
 		}
 	}

@@ -15,8 +15,9 @@ public class SgipSessionStateManager extends AbstractSessionStateManager<Long, M
 
 	@Override
 	protected Long getSequenceId(Message msg) {
-		
-		return msg.getHeader().getSequenceId();
+		long seq = msg.getHeader().getSequenceId();
+		long node = msg.getHeader().getNodeId();
+		return Long.valueOf(node << 32 | seq);
 	}
 
 	@Override

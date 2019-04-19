@@ -54,7 +54,7 @@ public class SgipBindResponseMessage extends DefaultMessage {
 	@Override
 	public String toString() {
 		return String
-				.format("BindResponseMessage [result=%s, reserve=%s, sequenceId=%s]",result, reserve,getHeader().getSequenceId());
+				.format("BindResponseMessage [result=%s, reserve=%s, header=%s]",result, reserve,getHeader());
 	}
 	
 	

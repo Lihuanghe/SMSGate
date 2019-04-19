@@ -68,7 +68,15 @@ public class DefaultHeader implements Header {
 
 	@Override
 	public String toString() {
-		return "DefaultHeader [commandId=" + commandId + ", sequenceId=" + sequenceId + "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("DefaultHeader [commandId=");
+		builder.append(commandId);
+		builder.append(", sequenceId=");
+		builder.append(sequenceId);
+		builder.append(", nodeId=");
+		builder.append(nodeId);
+		builder.append("]");
+		return builder.toString();
 	}
 
 	@Override

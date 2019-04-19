@@ -10,7 +10,7 @@ public abstract class SgipEndpointEntity extends EndpointEntity {
 	private static final long serialVersionUID = -441048745116970563L;
 	private String loginName = GlobalConstance.emptyString;
 	private String loginPassowrd = GlobalConstance.emptyString;
-
+	private int nodeId = 0;
 	public String getLoginName() {
 		return loginName;
 	}
@@ -22,6 +22,11 @@ public abstract class SgipEndpointEntity extends EndpointEntity {
 	}
 	public void setLoginPassowrd(String loginPassowrd) {
 		this.loginPassowrd = loginPassowrd;
+	}
+	public int getNodeId() {
+		return nodeId;
+	}
+	public void setNodeId(int nodeId) {
+		this.nodeId = nodeId;
 	}    
-
 }

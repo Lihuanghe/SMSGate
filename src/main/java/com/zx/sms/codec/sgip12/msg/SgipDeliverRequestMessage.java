@@ -192,7 +192,7 @@ public class SgipDeliverRequestMessage extends DefaultMessage implements LongSMS
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SgipDeliverRequestMessage [").append("destId=").append(usernumber).append(", srcterminalId=").append(spnumber)
-				.append(", msgContent=").append(getMsgContent()).append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
+				.append(", msgContent=").append(getMsgContent()).append(", header=").append(getHeader()).append("]");
 		return sb.toString();
 	}
 	public SgipDeliverRequestMessage clone() throws CloneNotSupportedException {

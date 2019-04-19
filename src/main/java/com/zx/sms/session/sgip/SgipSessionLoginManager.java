@@ -91,6 +91,7 @@ public class SgipSessionLoginManager extends AbstractSessionLoginManager {
 		
 		SgipBindResponseMessage resp = new SgipBindResponseMessage(((Message)message).getHeader());
 		resp.setResult((short)0);
+		resp.setTimestamp(((Message)message).getTimestamp());
 		ctx.channel().writeAndFlush(resp);
 
 	}
@@ -103,6 +104,8 @@ public class SgipSessionLoginManager extends AbstractSessionLoginManager {
 			// 认证失败
 			SgipBindResponseMessage resp = new SgipBindResponseMessage(((Message)message).getHeader());
 			resp.setResult((short)status);
+			resp.setTimestamp(((Message)message).getTimestamp());
+			
 			ChannelFuture promise = ctx.writeAndFlush(resp);
 
 			final ChannelHandlerContext finalctx = ctx;
@@ -123,6 +126,7 @@ public class SgipSessionLoginManager extends AbstractSessionLoginManager {
     	SgipBindRequestMessage req = new SgipBindRequestMessage();
     	req.setLoginName(entity.getLoginName());
     	req.setLoginPassowrd(entity.getLoginPassowrd());
+    	req.getHeader().setNodeId(entity.getNodeId());
     	/**
     	 * 登录类型。  
     	 * 1：SP向SMG建立的连接，用于发送命令 
