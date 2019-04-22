@@ -10,6 +10,7 @@ import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.AbstractEndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.smgp.SMGPServerChildEndpointEntity;
+import com.zx.sms.handler.sgip.ReWriteNodeIdHandler;
 import com.zx.sms.handler.sgip.SgipDeliverLongMessageHandler;
 import com.zx.sms.handler.sgip.SgipSubmitLongMessageHandler;
 import com.zx.sms.handler.sgip.SgipUnbindRequestMessageHandler;
@@ -51,8 +52,9 @@ public class SgipServerChildEndpointConnector extends AbstractEndpointConnector{
 				pipe.replace(handler, GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, entity.getIdleTimeSec(), TimeUnit.SECONDS));
 			}
 		}
+		pipe.addLast("reWriteNodeIdHandler", new ReWriteNodeIdHandler((SgipEndpointEntity)entity));
 		//处理长短信
-		pipe.addLast( "SgipDeliverLongMessageHandler", new SgipDeliverLongMessageHandler(entity));
+		pipe.addLast("SgipDeliverLongMessageHandler", new SgipDeliverLongMessageHandler(entity));
 		pipe.addLast("SgipSubmitLongMessageHandler",  new SgipSubmitLongMessageHandler(entity));
 		pipe.addLast("SgipUnbindResponseMessageHandler", new SgipUnbindResponseMessageHandler());
 		pipe.addLast("SgipUnbindRequestMessageHandler", new SgipUnbindRequestMessageHandler());

@@ -46,7 +46,7 @@ public class TestSgipEndPoint {
 		child.setId("sgipchild");
 		child.setLoginName("333");
 		child.setLoginPassowrd("0555");
-		child.setNodeId(0xeee);
+		child.setNodeId(3025000001L);
 		child.setValid(true);
 		child.setChannelType(ChannelType.DUPLEX);
 		child.setMaxChannels((short)3);
@@ -66,7 +66,6 @@ public class TestSgipEndPoint {
 		
 		manager.addEndpointEntity(server);
 		
-		
 		SgipClientEndpointEntity client = new SgipClientEndpointEntity();
 		client.setId("sgipclient");
 		client.setHost("127.0.0.1");
@@ -74,7 +73,7 @@ public class TestSgipEndPoint {
 		client.setLoginName("333");
 		client.setLoginPassowrd("0555");
 		client.setChannelType(ChannelType.DUPLEX);
-		client.setNodeId(0xffff);
+		client.setNodeId(3073100001L);
 		client.setMaxChannels((short)10);
 		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);

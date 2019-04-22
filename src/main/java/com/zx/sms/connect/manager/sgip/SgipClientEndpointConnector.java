@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.AbstractClientEndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
+import com.zx.sms.handler.sgip.ReWriteNodeIdHandler;
 import com.zx.sms.handler.sgip.SgipDeliverLongMessageHandler;
 import com.zx.sms.handler.sgip.SgipSubmitLongMessageHandler;
 import com.zx.sms.handler.sgip.SgipUnbindRequestMessageHandler;
@@ -35,8 +36,9 @@ public class SgipClientEndpointConnector extends AbstractClientEndpointConnector
 
 	@Override
 	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity entity) {
+		pipe.addLast("reWriteNodeIdHandler", new ReWriteNodeIdHandler((SgipEndpointEntity)entity));
 		//处理长短信
-		pipe.addLast( "SgipDeliverLongMessageHandler", new SgipDeliverLongMessageHandler(entity));
+		pipe.addLast("SgipDeliverLongMessageHandler", new SgipDeliverLongMessageHandler(entity));
 		pipe.addLast("SgipSubmitLongMessageHandler",  new SgipSubmitLongMessageHandler(entity));
 		pipe.addLast("SgipUnbindResponseMessageHandler", new SgipUnbindResponseMessageHandler());
 		pipe.addLast("SgipUnbindRequestMessageHandler", new SgipUnbindRequestMessageHandler());
