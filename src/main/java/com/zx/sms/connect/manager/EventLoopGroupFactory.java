@@ -75,11 +75,11 @@ EventLoopGroup.submit(callable)方法不能提交阻塞任务。
 				try {
 					nettyfuture.setSuccess(future.get());
 				} catch (InterruptedException e) {
-					nettyfuture.setFailure(e);
+					nettyfuture.tryFailure(e);
 				} catch (ExecutionException e) {
-					nettyfuture.setFailure(e);
+					nettyfuture.tryFailure(e);
 				}catch(Exception e){
-					nettyfuture.setFailure(e);
+					nettyfuture.tryFailure(e);
 				}
 				try {
 				if(exitCondition.notOver(nettyfuture))			

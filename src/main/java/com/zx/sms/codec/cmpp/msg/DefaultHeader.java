@@ -58,7 +58,7 @@ public class DefaultHeader implements Header {
 
     @Override
     public void setSequenceId(long transitionId) {
-        this.sequenceId = transitionId & 0xffffffffL;
+        this.sequenceId = transitionId;
     }
 
     @Override

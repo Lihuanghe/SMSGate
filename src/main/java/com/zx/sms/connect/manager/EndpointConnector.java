@@ -59,10 +59,10 @@ public interface EndpointConnector<T extends EndpointEntity> {
 	/**
 	 *同步发送消息，消息收到回复表示完成
 	 */
-	Promise synwrite(BaseMessage msg);
+	<K extends BaseMessage> Promise<K> synwrite(K msg);
 	
 	/**
 	 *通过同一个连接同步发送一组消息
 	 */
-	List<Promise> synwrite(List<BaseMessage> msgs);
+	<K extends BaseMessage> List<Promise<K>> synwrite(List<K> msgs);
 }

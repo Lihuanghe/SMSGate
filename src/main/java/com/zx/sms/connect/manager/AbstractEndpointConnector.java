@@ -397,11 +397,11 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		return future;
 	}
 		
-	public List<Promise> synwrite(List<BaseMessage> msgs){
+	public <T extends BaseMessage> List<Promise<T>> synwrite(List<T> msgs){
 		Channel ch = fetchOneWritable();
 		if(ch == null) return null;
 		AbstractSessionStateManager session = (AbstractSessionStateManager)ch.pipeline().get(sessionHandler);
-		List<Promise> arrPromise = new ArrayList<Promise>();
+		List<Promise<T>> arrPromise = new ArrayList<Promise<T>>();
 		for (BaseMessage msg : msgs) {
 			arrPromise.add(session.writeMessagesync( msg));
 		}
@@ -409,7 +409,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		return arrPromise;
 	}
 	
-	public Promise synwrite(BaseMessage message){
+	public <T extends BaseMessage> Promise<T> synwrite(T message){
 		Channel ch = fetchOneWritable();
 		if(ch == null) return null;
 		AbstractSessionStateManager session = (AbstractSessionStateManager)ch.pipeline().get(sessionHandler);

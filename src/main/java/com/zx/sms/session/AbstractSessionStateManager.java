@@ -1,15 +1,5 @@
 package com.zx.sms.session;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelOutboundBuffer;
-import io.netty.channel.ChannelPromise;
-import io.netty.util.concurrent.DefaultPromise;
-import io.netty.util.concurrent.Promise;
-
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
@@ -37,6 +27,16 @@ import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.session.cmpp.SessionState;
+
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelOutboundBuffer;
+import io.netty.channel.ChannelPromise;
+import io.netty.util.concurrent.DefaultPromise;
+import io.netty.util.concurrent.Promise;
 
 /**
  * @author Lihuanghe(18852780@qq.com) 消息发送窗口拜你控制和消息重发 ，消息持久化
@@ -307,7 +307,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 		try {
 			safewrite(ctx, message, promise,false);
 		} catch (Exception e) {
-			promise.setFailure(e);
+			promise.tryFailure(e);
 			logger.error("writeWithWindow: ", e.getCause() != null ? e.getCause() : e);
 		}
 		return true;
@@ -398,7 +398,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 	
 	private Entry responseFutureDone(Entry entry,Throwable cause){
 		if(entry!=null &&entry.resfuture!=null){
-			entry.resfuture.setFailure(cause);
+			entry.resfuture.tryFailure(cause);
 			return entry;
 		}
 		return null;
@@ -450,13 +450,13 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 	/**
 	 * 发送msg,首先做消息持久化
 	 */
-	private Promise safewrite(final ChannelHandlerContext ctx, final T message, final ChannelPromise promise,boolean syn) {
+	private Promise<T> safewrite(final ChannelHandlerContext ctx, final T message, final ChannelPromise promise,boolean syn) {
 		if (ctx.channel().isActive()) {
 			
 			// 发送消息超过生命周期
 			if (message.isTerminated()) {
 				errlogger.error("Msg Life over .{}", message);
-				promise.setFailure(new SmsLifeTerminateException("Msg Life over"));
+				promise.tryFailure(new SmsLifeTerminateException("Msg Life over"));
 				
 				DefaultPromise failed = new DefaultPromise<T>(ctx.executor());
 				failed.tryFailure(new SmsLifeTerminateException("Msg Life over"));
@@ -530,13 +530,11 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 			IOException cause = new IOException(sb.toString());
 			
 			if (promise != null && (!promise.isDone())) {
-				promise.setFailure(cause);
-				return promise;
-			}else{
-				DefaultPromise failed = new DefaultPromise<T>(ctx.executor());
-				failed.tryFailure(cause);
-				return failed;
+				promise.tryFailure(cause);
 			}
+			DefaultPromise<T> failed = new DefaultPromise<T>(ctx.executor());
+			failed.tryFailure(cause);
+			return failed;
 		}
 	}
 
@@ -566,7 +564,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 		}
 	}
 	
-	public Promise writeMessagesync(T message){
+	public Promise<T> writeMessagesync(T message){
 		return safewrite(ctx,message,ctx.newPromise(),true);
 	}
 }

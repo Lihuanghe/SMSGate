@@ -1,6 +1,5 @@
 package com.zx.sms.codec.cmpp20;
 
-
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -19,11 +18,11 @@ import com.zx.sms.codec.cmpp20.packet.Cmpp20PacketType;
 @Sharable
 public class CMPP20MessageCodecAggregator extends ChannelDuplexHandler {
 	private static final Logger logger = LoggerFactory.getLogger(CMPP20MessageCodecAggregator.class);
-	
-	private static class CMPP20MessageCodecAggregatorHolder{
-		private final static  CMPP20MessageCodecAggregator instance = new CMPP20MessageCodecAggregator();
+
+	private static class CMPP20MessageCodecAggregatorHolder {
+		private final static CMPP20MessageCodecAggregator instance = new CMPP20MessageCodecAggregator();
 	}
-	
+
 	private ConcurrentHashMap<Long, MessageToMessageCodec> codecMap = new ConcurrentHashMap<Long, MessageToMessageCodec>();
 
 	private CMPP20MessageCodecAggregator() {
@@ -31,11 +30,11 @@ public class CMPP20MessageCodecAggregator extends ChannelDuplexHandler {
 			codecMap.put(packetType.getCommandId(), packetType.getCodec());
 		}
 	}
-	
-	public static CMPP20MessageCodecAggregator getInstance(){
+
+	public static CMPP20MessageCodecAggregator getInstance() {
 		return CMPP20MessageCodecAggregatorHolder.instance;
 	}
-	
+
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
@@ -46,8 +45,12 @@ public class CMPP20MessageCodecAggregator extends ChannelDuplexHandler {
 
 	@Override
 	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-		long commandId = (Long) ((Message) msg).getHeader().getCommandId();
-		MessageToMessageCodec codec = codecMap.get(commandId);
-		codec.write(ctx, msg, promise);
+		try {
+			long commandId = (Long) ((Message) msg).getHeader().getCommandId();
+			MessageToMessageCodec codec = codecMap.get(commandId);
+			codec.write(ctx, msg, promise);
+		} catch (Exception ex) {
+			promise.tryFailure(ex);
+		}
 	}
 }

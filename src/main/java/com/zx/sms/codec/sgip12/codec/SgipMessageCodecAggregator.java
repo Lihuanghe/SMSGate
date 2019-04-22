@@ -44,8 +44,12 @@ public class SgipMessageCodecAggregator extends ChannelDuplexHandler {
 
 	@Override
 	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-		long commandId = (Long) ((Message) msg).getHeader().getCommandId();
-		MessageToMessageCodec codec = codecMap.get(commandId);
-		codec.write(ctx, msg, promise);
+		try {
+			long commandId = (Long) ((Message) msg).getHeader().getCommandId();
+			MessageToMessageCodec codec = codecMap.get(commandId);
+			codec.write(ctx, msg, promise);
+		}catch(Exception ex) {
+			promise.tryFailure(ex);
+		}
 	}
 }
