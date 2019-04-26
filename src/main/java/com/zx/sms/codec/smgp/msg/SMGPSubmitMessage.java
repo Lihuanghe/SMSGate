@@ -3,17 +3,8 @@ package com.zx.sms.codec.smgp.msg;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.marre.sms.SmsAlphabet;
 import org.marre.sms.SmsDcs;
 import org.marre.sms.SmsMessage;
-import org.marre.sms.SmsMsgClass;
-import org.marre.sms.SmsPortAddressedTextMessage;
-import org.marre.sms.SmsTextMessage;
-import org.marre.wap.push.SmsMmsNotificationMessage;
-import org.marre.wap.push.SmsWapPushMessage;
-import org.marre.wap.push.WapSIPush;
-import org.marre.wap.push.WapSLPush;
-import org.marre.wap.wbxml.WbxmlDocument;
 
 import com.zx.sms.LongSMSMessage;
 import com.zx.sms.codec.cmpp.wap.LongMessageFrame;
@@ -531,9 +522,44 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 		buffer.append("msgContent=").append(getMsgContent()).append("]");
 		return buffer.toString();
 	}
+	
 	public SMGPSubmitMessage clone() throws CloneNotSupportedException {
-		return (SMGPSubmitMessage) super.clone();
+		SMGPSubmitMessage cloned = new SMGPSubmitMessage();
+		cloned.setAtTime(this.getAtTime());
+		cloned.setChargeTermId(this.getChargeTermId());
+		cloned.setChargeTermPseudo(this.getChargeTermPseudo());
+		cloned.setChargeTermType(this.getChargeTermType());
+		cloned.setChargeUserType(this.getChargeUserType());
+		cloned.setDestTermIdArray(this.getDestTermIdArray());
+		cloned.setDestTermPseudo(this.getDestTermPseudo());
+		cloned.setDestTermType(this.getDestTermType());
+		cloned.setSpDealResult(this.getSpDealResult());
+		cloned.setFeeCode(this.getFeeCode());
+		cloned.setFeeType(this.getFeeType());
+		cloned.setFixedFee(this.getFixedFee());
+		cloned.setLifeTime(this.getLifeTime());
+		cloned.setLinkId(this.getLinkId());
+		cloned.setMServiceId(this.getMServiceId());
+		cloned.setMsgType(this.getMsgType());
+		cloned.setMsgSrc(this.getMsgSrc());
+		cloned.setNeedReport(this.isNeedReport());
+		cloned.setPkNumber(this.getPkNumber());
+		cloned.setPriority(this.getPriority());
+		cloned.setReserve(this.getReserve());
+		cloned.setSpDealResult(this.getSpDealResult());
+		cloned.setSrcTermId(this.getSrcTermId());
+		cloned.setSubmitMsgType(this.getSubmitMsgType());
+		cloned.setTpPid(this.getTpPid());
+		cloned.setTpUdhi(this.getTpUdhi());
+		cloned.setPkNumber(this.getPkNumber());
+		cloned.setPkTotal(this.getPkTotal());
+		cloned.setValidTime(this.getValidTime());
+		cloned.setMsgFmt(this.getMsgFmt());
+		cloned.setBMsgContent(this.getBMsgContent());
+		cloned.setMsgContent(this.getSmsMessage());
+		return cloned;
 	}
+	
 	@Override
 	public LongMessageFrame generateFrame() {
 		LongMessageFrame frame = new LongMessageFrame();
@@ -552,7 +578,7 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 		requestMessage.setTpUdhi((byte)frame.getTpudhi());
 		requestMessage.setMsgFmt(frame.getMsgfmt());
 		requestMessage.setBMsgContent(frame.getMsgContentBytes());
-		requestMessage.setPkNumber((byte)frame.getPktotal());
+		requestMessage.setPkTotal((byte)frame.getPktotal());
 		requestMessage.setPkNumber((byte)frame.getPknumber());
 		if(frame.getPknumber()!=1){
 			requestMessage.setSequenceNumber(DefaultSequenceNumberUtil.getSequenceNo());
