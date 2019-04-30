@@ -27,7 +27,7 @@ public class SgipSessionStateManager extends AbstractSessionStateManager<Long, M
 
 	@Override
 	protected boolean closeWhenRetryFailed(Message req) {
-		return true;
+		return getEntity().isCloseWhenRetryFailed();
 	}
 
 }
