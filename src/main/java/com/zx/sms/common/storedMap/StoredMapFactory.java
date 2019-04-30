@@ -1,8 +1,6 @@
 package com.zx.sms.common.storedMap;
 
-import java.io.Serializable;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 
 public interface StoredMapFactory<K,T extends VersionObject> {
 	

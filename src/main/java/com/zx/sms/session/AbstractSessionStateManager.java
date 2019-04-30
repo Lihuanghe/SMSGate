@@ -351,11 +351,13 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 							msgRetryMap.remove(seq);
 							// 删除消息
 							storeMap.remove(seq);
-							// 发送3次都失败的消息要记录
+							// 重试发送都失败的消息要记录
 							errlogger.error("entity : {} , RetryFailed: {}", entity.getId(),message);
 
-							logger.error("entity : {} , retry send {} times Message {} ,the connection may die.close it", entity.getId(),times,message);
-							ctx.close();
+							if(entity.isCloseWhenRetryFailed()) {
+								logger.error("entity : {} , retry send {} times Message {} ,the connection may die.close it", entity.getId(),times,message);
+								ctx.close();
+							}
 
 						} else {
 

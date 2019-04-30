@@ -36,6 +36,8 @@ public abstract class FstObjectSerializeUtil {
 			}else{
 				return null;
 			}
+		}catch(Exception ex) {
+			return null;
 		}finally{
 			
 		}

@@ -66,6 +66,7 @@ public abstract class EndpointEntity implements Serializable {
 	private short maxRetryCnt = 3;
 	private short retryWaitTimeSec=60;
 	private short idleTimeSec = 30;
+	boolean closeWhenRetryFailed = true;  //当等待接收response超过最大重试次数，是否关闭channel
 	/**
 	 *流量整形 
 	 */
@@ -203,6 +204,12 @@ public abstract class EndpointEntity implements Serializable {
 		this.supportLongmsg = supportLongmsg;
 	}
 	
+	public boolean isCloseWhenRetryFailed() {
+		return closeWhenRetryFailed;
+	}
+	public void setCloseWhenRetryFailed(boolean closeWhenRetryFailed) {
+		this.closeWhenRetryFailed = closeWhenRetryFailed;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
