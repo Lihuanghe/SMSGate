@@ -2,6 +2,8 @@ package com.zx.sms.session.smpp;
 
 import java.util.concurrent.ConcurrentMap;
 
+import com.zx.sms.codec.cmpp.msg.Message;
+import com.zx.sms.codec.smpp.msg.EnquireLink;
 import com.zx.sms.codec.smpp.msg.Pdu;
 import com.zx.sms.common.storedMap.VersionObject;
 import com.zx.sms.connect.manager.EndpointEntity;
@@ -23,5 +25,10 @@ public class SMPPSessionStateManager extends AbstractSessionStateManager<Integer
 	protected boolean needSendAgainByResponse(Pdu req, Pdu res) {
 		return false;
 	}
-
+	protected boolean closeWhenRetryFailed(Pdu req) {
+		if(req instanceof EnquireLink) {
+			return true;
+		}
+		return getEntity().isCloseWhenRetryFailed();
+	};
 }

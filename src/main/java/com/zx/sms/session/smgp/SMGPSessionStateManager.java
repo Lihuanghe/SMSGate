@@ -2,6 +2,8 @@ package com.zx.sms.session.smgp;
 
 import java.util.concurrent.ConcurrentMap;
 
+import com.zx.sms.codec.cmpp.msg.Message;
+import com.zx.sms.codec.smgp.msg.SMGPActiveTestMessage;
 import com.zx.sms.codec.smgp.msg.SMGPBaseMessage;
 import com.zx.sms.codec.smgp.msg.SMGPSubmitRespMessage;
 import com.zx.sms.common.storedMap.VersionObject;
@@ -29,5 +31,12 @@ public class SMGPSessionStateManager extends AbstractSessionStateManager<Long, S
 		}
 		return false;
 	}
+	
+	protected boolean closeWhenRetryFailed(SMGPBaseMessage req) {
+		if(req instanceof SMGPActiveTestMessage) {
+			return true;
+		}
+		return getEntity().isCloseWhenRetryFailed();
+	};
 
 }

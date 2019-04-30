@@ -194,6 +194,8 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 	protected abstract K getSequenceId(T msg);
 
 	protected abstract boolean needSendAgainByResponse(T req, T res);
+	
+	protected abstract boolean closeWhenRetryFailed(T req) ;
 
 	@Override
 	public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -354,7 +356,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 							// 重试发送都失败的消息要记录
 							errlogger.error("entity : {} , RetryFailed: {}", entity.getId(),message);
 
-							if(entity.isCloseWhenRetryFailed()) {
+							if(closeWhenRetryFailed(message)) {
 								logger.error("entity : {} , retry send {} times Message {} ,the connection may die.close it", entity.getId(),times,message);
 								ctx.close();
 							}
@@ -568,5 +570,9 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 	
 	public Promise<T> writeMessagesync(T message){
 		return safewrite(ctx,message,ctx.newPromise(),true);
+	}
+
+	public EndpointEntity getEntity() {
+		return entity;
 	}
 }

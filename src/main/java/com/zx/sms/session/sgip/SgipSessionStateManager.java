@@ -25,4 +25,9 @@ public class SgipSessionStateManager extends AbstractSessionStateManager<Long, M
 		return false;
 	}
 
+	@Override
+	protected boolean closeWhenRetryFailed(Message req) {
+		return true;
+	}
+
 }

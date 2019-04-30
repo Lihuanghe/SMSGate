@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.zx.sms.codec.cmpp.msg.CmppActiveTestRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.codec.cmpp.msg.Message;
@@ -48,5 +49,12 @@ public class SessionStateManager extends AbstractSessionStateManager<Long, Messa
 		}
 		return false;
 	}
+	
+	protected boolean closeWhenRetryFailed(Message req) {
+		if(req instanceof CmppActiveTestRequestMessage) {
+			return true;
+		}
+		return getEntity().isCloseWhenRetryFailed();
+	};
 
 }
