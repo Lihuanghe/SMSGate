@@ -97,7 +97,7 @@ public class CMPPSessionConnectedHandler extends SessionConnectedHandler {
 					CmppReportRequestMessage report = new CmppReportRequestMessage();
 					report.setDestterminalId(deliver.getSrcterminalId());
 					report.setMsgId(responseMessage.getMsgId());
-					String t = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "yyMMddHHMM");
+					String t = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "yyMMddHHmm");
 					report.setSubmitTime(t);
 					report.setDoneTime(t);
 					report.setStat("DELIVRD");
@@ -121,7 +121,7 @@ public class CMPPSessionConnectedHandler extends SessionConnectedHandler {
 				CmppReportRequestMessage report = new CmppReportRequestMessage();
 				report.setDestterminalId(deliver.getSrcterminalId());
 				report.setMsgId(resp.getMsgId());
-				String t = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "yyMMddHHMM");
+				String t = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "yyMMddHHmm");
 				report.setSubmitTime(t);
 				report.setDoneTime(t);
 				report.setStat("DELIVRD");

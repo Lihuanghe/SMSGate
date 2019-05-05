@@ -29,6 +29,6 @@ public class TestBDBQueueMap {
 		ByteBuf nettybf = Unpooled.buffer();
 		System.out.println(ByteOrder.nativeOrder());
 		System.out.println(nettybf.order());
-		System.out.println(DateFormatUtils.format(CachedMillisecondClock.INS.now(), "yyMMddHHMM"));
+		System.out.println(DateFormatUtils.format(CachedMillisecondClock.INS.now(), "yyMMddHHmm"));
 	}
 }
