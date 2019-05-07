@@ -68,8 +68,7 @@ public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 //						chfuture = ChannelUtil.asyncWriteToEntity(getEndpointEntity().getId(), msg);
 						futures = ChannelUtil.syncWriteLongMsgToEntity(getEndpointEntity().getId(), msg);
 //						chfuture = ctx.writeAndFlush(msg);
-						cnt--;
-						tmptotal.decrementAndGet();
+						
 						if (chfuture != null)
 							chfuture.sync();
 
@@ -99,6 +98,8 @@ public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 							tmptotal.decrementAndGet();
 							break;
 						}
+						cnt--;
+						tmptotal.decrementAndGet();
 					}
 					return true;
 				}
