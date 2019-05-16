@@ -45,6 +45,7 @@ public class TestSMGPEndPoint {
 
 		child.setValid(true);
 		child.setChannelType(ChannelType.DUPLEX);
+		child.setClientVersion((byte)0x13);
 		child.setMaxChannels((short)3);
 		child.setRetryWaitTimeSec((short)30);
 		child.setMaxRetryCnt((short)3);
@@ -69,7 +70,7 @@ public class TestSMGPEndPoint {
 		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);
 		client.setReSendFailMsg(false);
-		client.setClientVersion((byte)0x30);
+		client.setClientVersion((byte)0x13);
 //		client.setWriteLimit(200);
 //		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();

@@ -142,6 +142,7 @@ public class SessionLoginManager extends AbstractSessionLoginManager {
 		CmppConnectRequestMessage message = (CmppConnectRequestMessage)msg;
 		//channelHandler已绑定完成，给客户端发resp.
 		CmppConnectResponseMessage resp = new CmppConnectResponseMessage(message.getHeader().getSequenceId());
+		resp.setVersion(childentity.getVersion());
 		resp.setStatus(0);
 		resp.setAuthenticatorISMG(DigestUtils.md5(Bytes.concat(Ints.toByteArray((int)resp.getStatus()), message.getAuthenticatorSource(), childentity
 				.getPassword().getBytes(childentity.getChartset()))));

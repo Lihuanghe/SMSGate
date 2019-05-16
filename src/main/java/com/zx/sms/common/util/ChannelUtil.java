@@ -116,10 +116,12 @@ public class ChannelUtil {
 
 	/**
 	 * 同步发送消息类型 <br/>
-	 * 注意：该方法将直接发送，不会再调用BusinessHandler里的write方法了。
-	 * 因此对于Deliver和Submit消息必须自己进行长短信拆分
+	 * 注意：该方法将直接发送至编码器，不会再调用BusinessHandler里的write方法了。
+	 * 因此对于Deliver和Submit消息必须自己进行长短信拆分，设置PDU等相关字段
+	 *一般此方法用来发送二进制短信等特殊短信，需要自己生成短信的二进制内容。
+	 *正常短信下发要使用 syncWriteLongMsgToEntity 方法
 	 */
-	public static <T extends BaseMessage> Promise<T> syncWriteMsgToEntity(String entity, BaseMessage msg) throws Exception {
+	public static <T extends BaseMessage> Promise<T> syncWriteBinaryMsgToEntity(String entity, BaseMessage msg) throws Exception {
 
 		EndpointConnector connector = EndpointManager.INS.getEndpointConnector(entity);
 

@@ -131,7 +131,7 @@ public class SMGPSessionLoginManager extends AbstractSessionLoginManager {
 		SMGPLoginRespMessage resp = new SMGPLoginRespMessage();
 		resp.setSequenceNumber(req.getSequenceNo());
 		resp.setStatus(0);
-		
+		resp.setVersion(smgpentity.getClientVersion());
 		resp.setServerAuth(DigestUtils.md5(Bytes.concat(Ints.toByteArray((int)resp.getStatus()), req.getClientAuth(), smgpentity
 				.getPassword().getBytes(smgpentity.getChartset()))));
 		ctx.channel().writeAndFlush(resp);
