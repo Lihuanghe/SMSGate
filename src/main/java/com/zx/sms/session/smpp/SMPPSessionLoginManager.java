@@ -1,11 +1,5 @@
 package com.zx.sms.session.smpp;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +17,12 @@ import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
 import com.zx.sms.connect.manager.smpp.SMPPEndpointEntity;
 import com.zx.sms.connect.manager.smpp.SMPPServerEndpointEntity;
 import com.zx.sms.session.AbstractSessionLoginManager;
+
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 public class SMPPSessionLoginManager extends AbstractSessionLoginManager {
 	private static final Logger logger = LoggerFactory.getLogger(SMPPSessionLoginManager.class);
@@ -61,7 +61,7 @@ public class SMPPSessionLoginManager extends AbstractSessionLoginManager {
 	}
 
 	@Override
-	protected boolean validAddressHost(String remotehost) {
+	protected boolean validAddressHost(EndpointEntity childentity,Channel channel) {
 		return true;
 	}
 

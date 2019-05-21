@@ -1,11 +1,5 @@
 package com.zx.sms.session.cmpp;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
-
 import java.util.Arrays;
 
 import org.apache.commons.codec.binary.Hex;
@@ -26,6 +20,12 @@ import com.zx.sms.connect.manager.cmpp.CMPPCodecChannelInitializer;
 import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPServerChildEndpointEntity;
 import com.zx.sms.session.AbstractSessionLoginManager;
+
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 /**
  * 处理客户端或者服务端登陆，密码校验。协议协商 建立连接前，不会启动消息重试和消息可靠性保证
@@ -88,7 +88,7 @@ public class SessionLoginManager extends AbstractSessionLoginManager {
 	}
 
 	@Override
-	protected boolean validAddressHost(String remotehost) {
+	protected boolean validAddressHost(EndpointEntity childentity,Channel channel) {
 		return true;
 	}
 

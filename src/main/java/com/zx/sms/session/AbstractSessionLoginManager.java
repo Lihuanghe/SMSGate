@@ -1,11 +1,7 @@
 package com.zx.sms.session;
 
+import java.net.SocketAddress;
 import java.util.concurrent.TimeUnit;
-
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.timeout.IdleStateHandler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +11,12 @@ import com.zx.sms.connect.manager.ClientEndpoint;
 import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EndpointManager;
-import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 import com.zx.sms.session.cmpp.SessionState;
+
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.timeout.IdleStateHandler;
 
 
 
@@ -91,7 +91,7 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 	}
 
     protected abstract EndpointEntity queryEndpointEntityByMsg(Object msg);
-    protected abstract boolean validAddressHost(String remotehost);
+    protected abstract boolean validAddressHost(EndpointEntity childentity,Channel channel);
     protected abstract int validClientMsg(EndpointEntity entity,Object message);
     protected abstract int validServermsg(Object message);
     protected abstract void changeProtoVersion(ChannelHandlerContext ctx,EndpointEntity entity,Object message) throws Exception;
@@ -110,7 +110,7 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 		//修改协议版本，使用客户端对应协议的协议解析器
 		changeProtoVersion(ctx,childentity,message);
 		
-		if (!validAddressHost(childentity.getHost())) {
+		if (!validAddressHost(childentity,ctx.channel())) {
 			failedLogin(ctx, message, 2);
 			return;
 		}

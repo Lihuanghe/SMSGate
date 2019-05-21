@@ -1,11 +1,5 @@
 package com.zx.sms.session.smgp;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
-
 import java.util.Arrays;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -17,7 +11,6 @@ import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Ints;
 import com.zx.sms.codec.smgp.msg.SMGPLoginMessage;
 import com.zx.sms.codec.smgp.msg.SMGPLoginRespMessage;
-import com.zx.sms.codec.smpp.SmppConstants;
 import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
@@ -25,6 +18,12 @@ import com.zx.sms.connect.manager.smgp.SMGPEndpointEntity;
 import com.zx.sms.connect.manager.smgp.SMGPServerChildEndpointEntity;
 import com.zx.sms.connect.manager.smgp.SMGPServerEndpointEntity;
 import com.zx.sms.session.AbstractSessionLoginManager;
+
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 public class SMGPSessionLoginManager extends AbstractSessionLoginManager {
 	private static final Logger logger = LoggerFactory.getLogger(SMGPSessionLoginManager.class);
@@ -78,7 +77,7 @@ public class SMGPSessionLoginManager extends AbstractSessionLoginManager {
 	}
 
 	@Override
-	protected boolean validAddressHost(String remotehost) {
+	protected boolean validAddressHost(EndpointEntity childentity,Channel channel) {
 		return true;
 	}
 	

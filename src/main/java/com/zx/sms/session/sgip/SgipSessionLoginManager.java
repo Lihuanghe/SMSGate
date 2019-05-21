@@ -1,11 +1,5 @@
 package com.zx.sms.session.sgip;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +11,12 @@ import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
 import com.zx.sms.connect.manager.sgip.SgipEndpointEntity;
 import com.zx.sms.connect.manager.sgip.SgipServerEndpointEntity;
 import com.zx.sms.session.AbstractSessionLoginManager;
+
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 public class SgipSessionLoginManager extends AbstractSessionLoginManager {
 	private static final Logger logger = LoggerFactory.getLogger(SgipSessionLoginManager.class);
@@ -48,7 +48,7 @@ public class SgipSessionLoginManager extends AbstractSessionLoginManager {
 	}
 
 	@Override
-	protected boolean validAddressHost(String remotehost) {
+	protected boolean validAddressHost(EndpointEntity childentity,Channel channel) {
 		return true;
 	}
 
