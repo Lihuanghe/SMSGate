@@ -521,9 +521,9 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 						logger.error("remove fail message Sequense {}", seq);
 						
 						storeMap.remove(seq);
-						msgRetryMap.remove(seq);
+						Entry entry = msgRetryMap.remove(seq);
 //						//发送到网络失败
-//						responseFutureDone(entry,future.cause());
+						responseFutureDone(entry,future.cause());
 					}
 				}
 
