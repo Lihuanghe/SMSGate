@@ -135,7 +135,8 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 				// 取消重试队列里的任务
 				Map.Entry<K, Entry> entry = null;
 				EndpointConnector conn = EndpointManager.INS.getEndpointConnector(entity);
-				for (Iterator<Map.Entry<K, Entry>> itor = msgRetryMap.entrySet().iterator();itor.hasNext(); entry = itor.next()) {
+				for (Iterator<Map.Entry<K, Entry>> itor = msgRetryMap.entrySet().iterator();itor.hasNext(); ) {
+					entry = itor.next();
 					if(entry == null) continue;
 					T requestmsg = entry.getValue().request;
 					
@@ -518,8 +519,11 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 						//发送失败,必须清除msgRetryMap里的对象，否则上层业务
 						//可能提交相同seq的消息，造成死循环
 						logger.error("remove fail message Sequense {}", seq);
-						msgRetryMap.remove(seq);
+						
 						storeMap.remove(seq);
+						msgRetryMap.remove(seq);
+//						//发送到网络失败
+//						responseFutureDone(entry,future.cause());
 					}
 				}
 

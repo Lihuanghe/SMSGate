@@ -67,37 +67,38 @@ public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 						BaseMessage msg = createTestReq(UUID.randomUUID().toString());
 //						chfuture = ChannelUtil.asyncWriteToEntity(getEndpointEntity().getId(), msg);
 						futures = ChannelUtil.syncWriteLongMsgToEntity(getEndpointEntity().getId(), msg);
+						
 //						chfuture = ctx.writeAndFlush(msg);
 						
 						if (chfuture != null)
 							chfuture.sync();
 
-						if (futures == null)
-							continue;
-						try {
-							for (Promise<BaseMessage> future : futures) {
-								
-								future.addListener(new GenericFutureListener<Future<BaseMessage>>() {
-									@Override
-									public void operationComplete(Future<BaseMessage> future) throws Exception {
-										if (future.isSuccess()) {
-//											 logger.info("response:{}",future.get());
-										} else {
-//											 logger.error("response:{}",future.cause());
+						if (futures != null) {
+							try {
+								for (Promise<BaseMessage> future : futures) {
+									future.addListener(new GenericFutureListener<Future<BaseMessage>>() {
+										@Override
+										public void operationComplete(Future<BaseMessage> future) throws Exception {
+											if (future.isSuccess()) {
+//												 logger.info("response:{}",future.get());
+											} else {
+//												 logger.error("response:{}",future.cause());
+											}
 										}
-									}
-								});
-								try {
-									future.sync();
-								}catch(Exception ex) {}
-							}
+									});
+									try {
+										future.sync();
+									}catch(Exception ex) {}
+								}
 
-						} catch (Exception e) {
-							e.printStackTrace();
-							cnt--;
-							tmptotal.decrementAndGet();
-							break;
+							} catch (Exception e) {
+								e.printStackTrace();
+								cnt--;
+								tmptotal.decrementAndGet();
+								break;
+							}
 						}
+					
 						cnt--;
 						tmptotal.decrementAndGet();
 					}
