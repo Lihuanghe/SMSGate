@@ -401,6 +401,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		Channel ch = fetchOneWritable();
 		if(ch == null) return null;
 		AbstractSessionStateManager session = (AbstractSessionStateManager)ch.pipeline().get(sessionHandler);
+		if(session == null) return null;
 		List<Promise<T>> arrPromise = new ArrayList<Promise<T>>();
 		for (BaseMessage msg : msgs) {
 			arrPromise.add(session.writeMessagesync( msg));
