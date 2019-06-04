@@ -133,20 +133,20 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 			@Override
 			public void run() {
 				// 取消重试队列里的任务
-				Map.Entry<K, Entry> entry = null;
 				EndpointConnector conn = EndpointManager.INS.getEndpointConnector(entity);
+				
 				for (Iterator<Map.Entry<K, Entry>> itor = msgRetryMap.entrySet().iterator();itor.hasNext(); ) {
-					entry = itor.next();
+					Map.Entry<K, Entry> entry = itor.next();
 					if(entry == null) continue;
-					T requestmsg = entry.getValue().request;
-					
+					Entry failedentry = entry.getValue();
+					T requestmsg = failedentry.request;
+					boolean async = !failedentry.sync;
 					// 所有连接都已关闭
 					if (conn != null){
 						Channel ch = conn.fetch();
-
 						if (ch != null && ch.isActive()) {
-							if (entity.isReSendFailMsg()) {
-								// 连接断连，但是未收到Resp的消息，通过其它连接再发送一次
+							if (entity.isReSendFailMsg() && async) {
+								// 连接断连，但是未收到Resp的消息，异步发送时。通过其它连接再发送一次
 								ch.writeAndFlush(requestmsg);
 								logger.warn("current channel {} is closed.send requestMsg {} from other channel {} which is active.", ctx.channel(),requestmsg, ch);
 							} else {
@@ -154,8 +154,8 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 							}
 						}
 					}
-					cancelRetry(entry.getValue(), ctx.channel());
-					responseFutureDone(entry.getValue(), new IOException("channel closed."));
+					cancelRetry(failedentry, ctx.channel());
+					responseFutureDone(failedentry, new IOException("channel closed."));
 					itor.remove();
 				}
 
@@ -471,7 +471,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 			final K seq = getSequenceId(message);
 			// 记录已发送的请求,在发送msg前生记录到map里。防止生成retryTask前就收到resp的情况发生
 			boolean has = msgRetryMap.containsKey(seq);
-			Entry tmpentry = new Entry(message);
+			Entry tmpentry = new Entry(message,syn);
 			if (has) {
 				Entry old = msgRetryMap.get(seq);
 				
@@ -565,10 +565,12 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 		volatile Future future;
 		AtomicInteger cnt = new AtomicInteger(1);
 		T request;
+		boolean sync =  false;
 		
 		DefaultPromise<T> resfuture ;
-		Entry(T request) {
+		Entry(T request,boolean sync) {
 			this.request = request;
+			this.sync =  sync;
 		}
 	}
 	
