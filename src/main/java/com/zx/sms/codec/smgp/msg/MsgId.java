@@ -5,6 +5,9 @@ package com.zx.sms.codec.smgp.msg;
 
 import java.io.Serializable;
 import java.lang.management.ManagementFactory;
+import java.util.Arrays;
+
+import org.apache.commons.codec.binary.Hex;
 
 import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
@@ -22,6 +25,7 @@ public class MsgId implements Serializable {
 	private int minutes;
 	private int gateId;
 	private int sequenceId;
+	private byte[] originarr;
 	
 	static{
 		String vmName = ManagementFactory.getRuntimeMXBean().getName();
@@ -52,10 +56,12 @@ public class MsgId implements Serializable {
 		
 		this(timeMillis, ProcessID, (int)DefaultSequenceNumberUtil.getSequenceNo());
 	}
-	/**
-	 * 
-	 * @param msgIds
-	 */
+	
+	public MsgId(byte[] arr) {
+		originarr = new byte[10];
+		System.arraycopy(arr, 0, originarr, 0, 10);
+	}
+	
 	public MsgId(String msgIds) {
 		setGateId(Integer.parseInt(msgIds.substring(0, 6)));
 		setMonth(Integer.parseInt(msgIds.substring(6, 8)));
@@ -155,14 +161,24 @@ public class MsgId implements Serializable {
 	 */
 	@Override
 	public String toString() {
-		return String
-				.format("%1$06d%2$02d%3$02d%4$02d%5$02d%6$06d",
-						gateId,month, day, hour, minutes, sequenceId);
+		if(originarr!=null && originarr.length>0) {
+			return String.valueOf(Hex.encodeHex(originarr));
+		}else {
+			return String
+					.format("%1$06d%2$02d%3$02d%4$02d%5$02d%6$06d",
+							gateId,month, day, hour, minutes, sequenceId);
+		}
+
 	}
 	@Override
 	public int hashCode() {
+	
+		
 		final int prime = 31;
 		int result = 1;
+		if(originarr!=null && originarr.length>0) {
+			return Arrays.hashCode(originarr);
+		}
 		result = prime * result + day;
 		result = prime * result + gateId;
 		result = prime * result + hour;
@@ -180,6 +196,11 @@ public class MsgId implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		MsgId other = (MsgId) obj;
+		
+		if(originarr!=null && originarr.length>0) {
+			return Arrays.equals(originarr, other.originarr);
+		}
+		
 		if (day != other.day)
 			return false;
 		if (gateId != other.gateId)

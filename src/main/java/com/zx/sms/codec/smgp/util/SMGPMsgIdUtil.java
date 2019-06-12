@@ -35,8 +35,8 @@ public final class SMGPMsgIdUtil {
 		try{
 			return new MsgId(str);
 		}catch(Exception ex){
-			logger.warn("Err MsgID : 0x{}" ,str);
-			return new MsgId();
+			logger.debug("Err MsgID : 0x{}" ,str);
+			return new MsgId(bytes);
 		}
 	}
 }
