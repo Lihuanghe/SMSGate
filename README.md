@@ -20,7 +20,7 @@
 
   短信协议是tcp长连接，类似数据库连接，如jdbc-connection. 所以发送短信前必须要先有一个短信连接。因此你需要在程序启动时建立短信连接。参考demo里的client，调用manager.openEntity()方法，,调用manager.startConnectionCheckTask()开启断线重连。
   
-  然后就像调用其它库一样，在需要发送短信的地方，new 一个对应的Message,调用ChannelUtils.syncWriteLongMsgToEntity([clientEntityId],message)方法发送即可。
+  然后就像调用其它库一样，在需要发送短信的地方，new 一个对应的Message,调用ChannelUtil.syncWriteLongMsgToEntity([clientEntityId],message)方法发送即可。
 
 - `如何发送长短信？`
 

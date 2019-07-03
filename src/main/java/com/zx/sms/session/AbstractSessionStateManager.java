@@ -360,6 +360,9 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 							if(closeWhenRetryFailed(message)) {
 								logger.error("entity : {} , retry send {} times Message {} ,the connection may die.close it", entity.getId(),times,message);
 								ctx.close();
+							}else {
+								//不关闭通道的，设置连接不可写，1s后恢复
+								setchannelunwritable(ctx,1000);
 							}
 
 						} else {
