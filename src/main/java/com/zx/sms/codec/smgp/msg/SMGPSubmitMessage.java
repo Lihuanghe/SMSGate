@@ -525,6 +525,7 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 	
 	public SMGPSubmitMessage clone() throws CloneNotSupportedException {
 		SMGPSubmitMessage cloned = new SMGPSubmitMessage();
+		cloned.setServiceId(this.getServiceId());
 		cloned.setAtTime(this.getAtTime());
 		cloned.setChargeTermId(this.getChargeTermId());
 		cloned.setChargeTermPseudo(this.getChargeTermPseudo());
