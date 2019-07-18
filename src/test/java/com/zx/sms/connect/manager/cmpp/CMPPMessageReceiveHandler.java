@@ -23,7 +23,7 @@ public class CMPPMessageReceiveHandler extends MessageReceiveHandler {
 
 	@Override
 	protected ChannelFuture reponse(final ChannelHandlerContext ctx, Object msg) {
-		int result = RandomUtils.nextInt(0, 100) > 97 ? 8 : 0 ;
+		int result = RandomUtils.nextInt(0, 100) > 97 ? 0 : 0 ;
 		if (msg instanceof CmppDeliverRequestMessage) {
 			CmppDeliverRequestMessage e = (CmppDeliverRequestMessage) msg;
 			

@@ -19,13 +19,21 @@
 - `没看懂如何发送短信？`
 
   短信协议是tcp长连接，类似数据库连接，如jdbc-connection. 所以发送短信前必须要先有一个短信连接。因此你需要在程序启动时建立短信连接。参考demo里的client，调用manager.openEntity()方法，,调用manager.startConnectionCheckTask()开启断线重连。
+  然后就像调用其它库一样，在需要发送短信的地方，new 一个对应的Message,调用
   
-  然后就像调用其它库一样，在需要发送短信的地方，new 一个对应的Message,调用ChannelUtil.syncWriteLongMsgToEntity([clientEntityId],message)方法发送即可。
+  Future f = ChannelUtil.syncWriteLongMsgToEntity([clientEntityId],message)方法发送，`要判断f是否为Null，为Null表示发送失败`。
 
 - `如何发送长短信？`
 
   smsgate默认已经处理好长短信了，就像发送普通短信一样。
   
+- `如何发送闪信?`
+
+```java
+  CmppSubmitRequestMessage msg = CmppSubmitRequestMessage.create(phone, "10690021", "");
+  msg.setMsgContent(new SmsTextMessage("你好，我是闪信！",SmsAlphabet.UCS2,SmsMsgClass.CLASS_0));  //class0是闪信
+```
+
 - `如何接收短信？`
 
   如果你了解netty的handler,那么请看AbstractBusinessHandler的源码即可，这是一个netty的handler.
