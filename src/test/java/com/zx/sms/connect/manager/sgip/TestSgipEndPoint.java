@@ -58,14 +58,11 @@ public class TestSgipEndPoint {
 //		child.setReadLimit(200);
 		child.setSupportLongmsg(SupportLongMessage.BOTH);  
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		
-		serverhandlers.add(new SgipReportRequestMessageHandler());
-		serverhandlers.add(new SGIPSessionConnectedHandler(10000));   
+		serverhandlers.add(new SGIPMessageReceiveHandler());
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
 		manager.addEndpointEntity(server);
-		
 		SgipClientEndpointEntity client = new SgipClientEndpointEntity();
 		client.setId("sgipclient");
 		client.setHost("127.0.0.1");
@@ -73,7 +70,7 @@ public class TestSgipEndPoint {
 		client.setLoginName("333");
 		client.setLoginPassowrd("0555");
 		client.setChannelType(ChannelType.DUPLEX);
-		client.setNodeId(3073100001L);
+		client.setNodeId(3073100002L);
 		client.setMaxChannels((short)10);
 		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);
@@ -81,13 +78,13 @@ public class TestSgipEndPoint {
 //		client.setWriteLimit(200);
 //		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add(new SGIPMessageReceiveHandler());
+		clienthandlers.add(new SgipReportRequestMessageHandler());
+		clienthandlers.add(new SGIPSessionConnectedHandler(10));   
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		manager.openAll();
 		Thread.sleep(1000);
-		for(int i=0;i<child.getMaxChannels();i++)
-			manager.openEndpoint(client);
+	
 		System.out.println("start.....");
       
         LockSupport.park();

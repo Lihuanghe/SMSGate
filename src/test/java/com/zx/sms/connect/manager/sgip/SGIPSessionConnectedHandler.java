@@ -22,14 +22,12 @@ public class SGIPSessionConnectedHandler extends SessionConnectedHandler {
 			sgipmsg.setUsernumber("13800138000");
 			sgipmsg.setSpnumber("10086");
 			sgipmsg.setMsgContent(sms);
-			sgipmsg.getHeader().setNodeId(finalentity.getNodeId());
 			return sgipmsg;
 		} else {
 			SgipSubmitRequestMessage requestMessage = new SgipSubmitRequestMessage();
 			requestMessage.setSpnumber("10086");
 			requestMessage.setUsernumber("13800138000");
 			requestMessage.setMsgContent(sms);
-			requestMessage.getHeader().setNodeId(finalentity.getNodeId());
 			return requestMessage;
 		}
 	}
