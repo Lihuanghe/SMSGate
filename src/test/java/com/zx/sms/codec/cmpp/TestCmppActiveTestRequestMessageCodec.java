@@ -40,5 +40,6 @@ public class TestCmppActiveTestRequestMessageCodec extends AbstractTestMessageCo
 		Assert.assertTrue(result instanceof CmppActiveTestRequestMessage); 
 		
 		Assert.assertEquals(msg.getHeader().getSequenceId(),((CmppActiveTestRequestMessage)result).getHeader().getSequenceId());
+		System.out.println(msg.getHeader());
 	}
 }

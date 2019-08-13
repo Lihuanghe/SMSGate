@@ -85,6 +85,7 @@ public class ChannelUtil {
 	public static <T extends BaseMessage> List<Promise<T>> syncWriteLongMsgToEntity(String entity, BaseMessage msg) throws Exception {
 
 		EndpointConnector connector = EndpointManager.INS.getEndpointConnector(entity);
+		if(connector == null) return null;
 		
 		if (msg instanceof LongSMSMessage) {
 			LongSMSMessage<BaseMessage> lmsg = (LongSMSMessage<BaseMessage>) msg;

@@ -34,5 +34,7 @@ public class TestCmppActiveTestResponseMessageCodec extends AbstractTestMessageC
 		CmppActiveTestResponseMessage result = decode(newbuf);
 		
 		Assert.assertEquals(2, result.getReserved());
+		System.out.println(msg.getHeader());
+	
 	}
 }

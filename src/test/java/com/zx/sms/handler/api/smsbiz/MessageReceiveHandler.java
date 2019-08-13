@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
@@ -26,6 +27,7 @@ public abstract class MessageReceiveHandler extends AbstractBusinessHandler {
 	private AtomicLong cnt = new AtomicLong();
 	private long lastNum = 0;
 	private volatile boolean inited = false;
+
 	@Override
 	public String name() {
 		return "MessageReceiveHandler-smsBiz";
@@ -33,41 +35,44 @@ public abstract class MessageReceiveHandler extends AbstractBusinessHandler {
 
 	public synchronized void userEventTriggered(final ChannelHandlerContext ctx, Object evt) throws Exception {
 		if (evt == SessionState.Connect && !inited) {
-			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>(){
-				
+			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>() {
+
 				@Override
 				public Boolean call() throws Exception {
-				
-					long nowcnt = cnt.get();
-					logger.info("channels : {},Totle Receive Msg Num:{},   speed : {}/s", EndpointManager.INS.getEndpointConnector(getEndpointEntity()).getConnectionNum(),nowcnt, (nowcnt - lastNum)/rate);
-					lastNum = nowcnt;
-					return true;
+						long nowcnt = cnt.get();
+						EndpointConnector conn = EndpointManager.INS.getEndpointConnector(getEndpointEntity());
+						
+						logger.info("channels : {},Totle Receive Msg Num:{},   speed : {}/s",
+								conn == null ? 0 : conn.getConnectionNum(), nowcnt, (nowcnt - lastNum) / rate);
+						lastNum = nowcnt;
+						return true;
 				}
-			},new ExitUnlimitCirclePolicy() {
+			}, new ExitUnlimitCirclePolicy() {
 				@Override
 				public boolean notOver(Future future) {
-					return true;
+					return EndpointManager.INS.getEndpointConnector(getEndpointEntity()) != null;
 				}
-			},rate*1000);
+			}, rate * 1000);
 			inited = true;
 		}
 		ctx.fireUserEventTriggered(evt);
 	}
-	
-	protected abstract ChannelFuture reponse(final ChannelHandlerContext ctx ,Object msg);
+
+	protected abstract ChannelFuture reponse(final ChannelHandlerContext ctx, Object msg);
 
 	@Override
 	public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
-		
-		ChannelFuture future = reponse(ctx,msg);
-		if(future!=null) future.addListener(new GenericFutureListener() {
-			@Override
-			public void operationComplete(Future future) throws Exception {
-				cnt.incrementAndGet();
-			}
-		});
+
+		ChannelFuture future = reponse(ctx, msg);
+		if (future != null)
+			future.addListener(new GenericFutureListener() {
+				@Override
+				public void operationComplete(Future future) throws Exception {
+					cnt.incrementAndGet();
+				}
+			});
 	}
-	
+
 	public MessageReceiveHandler clone() throws CloneNotSupportedException {
 		MessageReceiveHandler ret = (MessageReceiveHandler) super.clone();
 		ret.cnt = new AtomicLong();

@@ -88,10 +88,11 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 	@Override
 	public void close() throws Exception {
-		Channel ch = channels.fetch();
-		while (ch != null) {
+		Channel[] chs = channels.getall();
+		if(chs == null || chs.length == 0)
+			return;
+		for(Channel ch : chs){
 			close(ch);
-			ch = channels.fetch();
 		}
 	}
 
@@ -253,7 +254,6 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			ch.attr(GlobalConstance.attributeKey).set(SessionState.DisConnect);
 			decrementConn();
 		}
-			
 	}
 
 	/**
@@ -328,7 +328,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		private List<Channel> collection = Collections.synchronizedList( new ArrayList<Channel>(20)); 
 
 		public Channel[] getall() {
-			return collection.toArray(new Channel[0]);
+			return collection.toArray(new Channel[collection.size()]);
 		}
 
 		public Channel fetch() {

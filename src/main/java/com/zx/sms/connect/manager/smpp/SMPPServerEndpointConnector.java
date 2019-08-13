@@ -20,6 +20,7 @@ public class SMPPServerEndpointConnector extends AbstractServerEndpointConnector
 
 	@Override
 	protected void doinitPipeLine(ChannelPipeline pipeline) {
+		super.doinitPipeLine(pipeline);
 		EndpointEntity entity = getEndpointEntity();
 		pipeline.addLast(GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, entity.getIdleTimeSec(), TimeUnit.SECONDS));
 		pipeline.addLast("SmppServerIdleStateHandler", GlobalConstance.smppidleHandler);
