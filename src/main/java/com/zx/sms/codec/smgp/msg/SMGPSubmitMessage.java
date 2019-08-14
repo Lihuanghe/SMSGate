@@ -35,7 +35,7 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 
 	private String feeCode="000000"; // 6
 
-	private String fixedFee="000000"; // 6
+	private String fixedFee="000000"; // 6  v3.0新增字段
 
 	private SmsDcs msgFmt = GlobalConstance.defaultmsgfmt;
 
@@ -192,7 +192,7 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 	
 	
 	@Override
-	protected int setBody(byte[] bodyBytes) throws Exception {
+	protected int setBody(byte[] bodyBytes,int version) throws Exception {
 		int offset = 0;
 		byte[] tmp = null;
 
@@ -220,10 +220,12 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 		feeCode = new String(ByteUtil.rtrimBytes(tmp));
 		offset += 6;
 
-		tmp = new byte[6];
-		System.arraycopy(bodyBytes, offset, tmp, 0, 6);
-		fixedFee = new String(ByteUtil.rtrimBytes(tmp));
-		offset += 6;
+		if(0x13 != version) {
+			tmp = new byte[6];
+			System.arraycopy(bodyBytes, offset, tmp, 0, 6);
+			fixedFee = new String(ByteUtil.rtrimBytes(tmp));
+			offset += 6;
+		}
 
 		msgFmt = new SmsDcs(bodyBytes[offset]);
 		offset += 1;
@@ -282,9 +284,9 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 	}
 
 	@Override
-	protected byte[] getBody() throws Exception {
+	protected byte[] getBody(int version) throws Exception {
 		int msgLength = bMsgContent.length;
-		int len =0+1 + 1 + 1 + 10 + 2 + 6 + 6 + 1 + 17 + 17 + 21 + 21 + 1 + 21* destTermIdCount + 1 + msgLength + 8;
+		int len =0+1 + 1 + 1 + 10 + 2 + 6 + (0x13 != version ? 6 : 0 ) + 1 + 17 + 17 + 21 + 21 + 1 + 21* destTermIdCount + 1 + msgLength + 8;
 		int offset = 0;
 		byte[] bodyBytes = new byte[len];
 		bodyBytes[offset] = msgType;
@@ -305,9 +307,10 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 		ByteUtil.rfillBytes(feeCode.getBytes(), 6, bodyBytes, offset);
 		offset += 6;
 
-		ByteUtil.rfillBytes(fixedFee.getBytes(), 6, bodyBytes, offset);
-		offset += 6;
-
+		if(0x13 != version) {
+			ByteUtil.rfillBytes(fixedFee.getBytes(), 6, bodyBytes, offset);
+			offset += 6;
+		}
 		bodyBytes[offset] = msgFmt.getValue();
 		offset += 1;
 
@@ -525,6 +528,9 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 	
 	public SMGPSubmitMessage clone() throws CloneNotSupportedException {
 		SMGPSubmitMessage cloned = new SMGPSubmitMessage();
+		cloned.setSequenceNo(this.getSequenceNo());
+		cloned.setTimestamp(this.getTimestamp());
+		cloned.setLifeTime(this.getLifeTime());
 		cloned.setServiceId(this.getServiceId());
 		cloned.setAtTime(this.getAtTime());
 		cloned.setChargeTermId(this.getChargeTermId());

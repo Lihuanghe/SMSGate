@@ -22,7 +22,7 @@ public class SMGPLoginRespMessage extends SMGPBaseMessage {
 	private byte version; // 1
 
 	@Override
-	protected int setBody(byte[] bodyBytes) throws Exception {
+	protected int setBody(byte[] bodyBytes,int version) throws Exception {
 		int offset = 0;
 		
 		status = ByteUtil.byte2int(bodyBytes, offset);
@@ -32,13 +32,13 @@ public class SMGPLoginRespMessage extends SMGPBaseMessage {
 		System.arraycopy(bodyBytes, offset, serverAuth, 0, 16);
 		offset += 16;
 
-		version = bodyBytes[offset];
+		this.version = bodyBytes[offset];
 		offset += 1;
 		return offset;
 	}
 
 	@Override
-	protected byte[] getBody() throws Exception {
+	protected byte[] getBody(int version) throws Exception {
 		int len = 4 + 16 + 1;
 		int offset = 0;
 		byte[] bodyBytes = new byte[len];
@@ -48,7 +48,7 @@ public class SMGPLoginRespMessage extends SMGPBaseMessage {
 		System.arraycopy(serverAuth, 0, bodyBytes, offset, 16);
 		offset += 16;
 
-		bodyBytes[offset] = version;
+		bodyBytes[offset] = this.version;
 		offset += 1;
 
 		return bodyBytes;

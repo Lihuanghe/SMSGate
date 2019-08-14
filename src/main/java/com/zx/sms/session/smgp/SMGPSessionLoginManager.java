@@ -9,11 +9,17 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Ints;
+import com.zx.sms.codec.cmpp.msg.CmppConnectRequestMessage;
+import com.zx.sms.codec.smgp.codec.SMGPMessageCodec;
 import com.zx.sms.codec.smgp.msg.SMGPLoginMessage;
 import com.zx.sms.codec.smgp.msg.SMGPLoginRespMessage;
+import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
+import com.zx.sms.connect.manager.cmpp.CMPPCodecChannelInitializer;
+import com.zx.sms.connect.manager.cmpp.CMPPServerChildEndpointEntity;
+import com.zx.sms.connect.manager.smgp.SMGPCodecChannelInitializer;
 import com.zx.sms.connect.manager.smgp.SMGPEndpointEntity;
 import com.zx.sms.connect.manager.smgp.SMGPServerChildEndpointEntity;
 import com.zx.sms.connect.manager.smgp.SMGPServerEndpointEntity;
@@ -87,7 +93,6 @@ public class SMGPSessionLoginManager extends AbstractSessionLoginManager {
 
 		byte[] timestampBytes = String.format("%010d", message.getTimestamp()).getBytes(entity.getChartset());
 		byte[] authBytes = DigestUtils.md5(Bytes.concat(userBytes, new byte[7], passwdBytes, timestampBytes));
-		System.out.println(message);
 		if (Arrays.equals(authBytes, message.getClientAuth())) {
 			return 0;
 		} else {
@@ -116,9 +121,23 @@ public class SMGPSessionLoginManager extends AbstractSessionLoginManager {
 	}
 
 	@Override
-	protected void changeProtoVersion(ChannelHandlerContext ctx, EndpointEntity entity, Object message) throws Exception {
+	protected void changeProtoVersion(ChannelHandlerContext ctx, EndpointEntity entity, Object msg) throws Exception {
 
-		
+		SMGPServerChildEndpointEntity childentity = (SMGPServerChildEndpointEntity)entity;
+		SMGPLoginMessage message = (SMGPLoginMessage)msg;
+		int version = message.getVersion();
+		//默认的是3.0的协议，如果不是则要更换解析器版本
+		if ((byte)0x30 != childentity.getClientVersion()) {
+			//发送ConnectRequest里的Version跟配置的不同
+			if(childentity.getClientVersion() != version){
+				logger.warn("receive version code {} ,expected version is {} .I would use version {}",version ,childentity.getClientVersion(),childentity.getClientVersion());
+			}
+			
+			//以配置的协议版本为准
+			//更换协议解析器
+			logger.info("changeCodec to version:{}", childentity.getClientVersion());
+			ctx.pipeline().replace(GlobalConstance.codecName, GlobalConstance.codecName,new SMGPMessageCodec(childentity.getClientVersion()));
+		}
 	}
 
 	@Override

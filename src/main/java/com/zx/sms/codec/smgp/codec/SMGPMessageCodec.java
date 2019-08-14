@@ -23,9 +23,16 @@ import com.zx.sms.codec.smgp.msg.SMGPUnknownMessage;
 import com.zx.sms.codec.smgp.util.ByteUtil;
 
 public class SMGPMessageCodec extends MessageToMessageCodec<ByteBuf, SMGPBaseMessage> {
+	
+	private int version;
+	
+	public SMGPMessageCodec(int version) {
+		this.version = version;
+	}
+	
 	@Override
 	protected void encode(ChannelHandlerContext ctx, SMGPBaseMessage msg, List<Object> out) throws Exception {
-		ByteBuf buf = Unpooled.wrappedBuffer(msg.toBytes());
+		ByteBuf buf = Unpooled.wrappedBuffer(msg.toBytes(version));
 		out.add(buf);
 	}
 
@@ -88,7 +95,7 @@ public class SMGPMessageCodec extends MessageToMessageCodec<ByteBuf, SMGPBaseMes
 			baseMsg = new SMGPUnknownMessage(commandId);
 			break;
 		}
-		baseMsg.fromBytes(bytes);
+		baseMsg.fromBytes(bytes,version);
 		return baseMsg;
 	}
 

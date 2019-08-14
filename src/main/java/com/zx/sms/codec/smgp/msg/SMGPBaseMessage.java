@@ -32,7 +32,7 @@ public abstract class SMGPBaseMessage implements BaseMessage ,Cloneable{
 	//消息的生命周期，单位秒, 0表示永不过期
 	private long lifeTime=0;
 
-	public boolean fromBytes(byte[] bytes) throws Exception {
+	public boolean fromBytes(byte[] bytes,int version) throws Exception {
 		if (bytes == null) {
 			return false;
 		}
@@ -49,7 +49,7 @@ public abstract class SMGPBaseMessage implements BaseMessage ,Cloneable{
 		
 		byte[] bodyBytes = new byte[commandLength - SZ_HEADER];
 		System.arraycopy(bytes, offset, bodyBytes, 0, bodyBytes.length);
-		int bodyLength=setBody(bodyBytes);
+		int bodyLength=setBody(bodyBytes,version);
 		
 		if (bodyLength < bodyBytes.length) {
 			byte[] optBytes = new byte[bodyBytes.length - bodyLength];
@@ -60,8 +60,8 @@ public abstract class SMGPBaseMessage implements BaseMessage ,Cloneable{
 		return true;
 	}
 
-	public byte[] toBytes() throws Exception {
-		byte[] bodyBytes = getBody();
+	public byte[] toBytes(int version) throws Exception {
+		byte[] bodyBytes = getBody(version);
 		byte[] optBytes = getOptionalBody();
 		
 		commandLength = SZ_HEADER + bodyBytes.length+optBytes.length;
@@ -83,9 +83,9 @@ public abstract class SMGPBaseMessage implements BaseMessage ,Cloneable{
 		return bytes;
 	}
 
-	abstract protected int setBody(byte[] bodyBytes) throws Exception;
+	abstract protected int setBody(byte[] bodyBytes,int version) throws Exception;
 
-	abstract protected byte[] getBody() throws Exception ;
+	abstract protected byte[] getBody(int version) throws Exception ;
 
 	
 	private void setOptionalBody(byte[] buffer) throws Exception {

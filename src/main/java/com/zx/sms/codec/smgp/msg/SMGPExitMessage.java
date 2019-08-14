@@ -11,7 +11,7 @@ public class SMGPExitMessage extends SMGPBaseMessage {
 		this.commandId = SMGPConstants.SMGP_EXIT_TEST;
 	}
 	@Override
-	protected byte[] getBody() throws Exception {
+	protected byte[] getBody(int version) throws Exception {
 		return new byte[0];
 	}
 	@Override
@@ -22,7 +22,7 @@ public class SMGPExitMessage extends SMGPBaseMessage {
 		return buffer.toString();
 	}
 	@Override
-	protected int setBody(byte[] bodyBytes) throws Exception {
+	protected int setBody(byte[] bodyBytes,int version) throws Exception {
 		// TODO Auto-generated method stub
 		return 0;
 	}

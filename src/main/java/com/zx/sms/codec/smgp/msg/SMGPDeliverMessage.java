@@ -119,7 +119,7 @@ public class SMGPDeliverMessage extends SMGPBaseMessage implements LongSMSMessag
 
 	
 	@Override
-	protected int setBody(byte[] bodyBytes) throws Exception {
+	protected int setBody(byte[] bodyBytes,int version) throws Exception {
 		int offset = 0;
 		byte[] tmp = null;
 
@@ -178,7 +178,7 @@ public class SMGPDeliverMessage extends SMGPBaseMessage implements LongSMSMessag
 	}
 
 	@Override
-	protected byte[] getBody() throws Exception {
+	protected byte[] getBody(int version) throws Exception {
 		
 		int msgLength = 0 ;
 		byte[] msgContent = null;

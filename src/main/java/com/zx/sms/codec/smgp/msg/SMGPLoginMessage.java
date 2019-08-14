@@ -27,7 +27,7 @@ public class SMGPLoginMessage extends SMGPBaseMessage {
 	private byte version; // 1
 
 	@Override
-	protected int setBody(byte[] bodyBytes) throws Exception {
+	protected int setBody(byte[] bodyBytes,int version) throws Exception {
 		int offset = 0;
 		byte[] tmp = null;
 
@@ -45,13 +45,13 @@ public class SMGPLoginMessage extends SMGPBaseMessage {
 		setTimestamp(ByteUtil.byte2int(bodyBytes, offset));
 		offset += 4;
 
-		version = bodyBytes[offset];
+		this.version = bodyBytes[offset];
 		offset += 1;
 		return offset;
 	}
 
 	@Override
-	protected byte[] getBody() throws Exception {
+	protected byte[] getBody(int version) throws Exception {
 		int len = 8 + 16 + 1 + 4 + 1;
 		int offset = 0;
 		byte[] bodyBytes = new byte[len];
@@ -67,7 +67,7 @@ public class SMGPLoginMessage extends SMGPBaseMessage {
 		ByteUtil.int2byte((int)getTimestamp(), bodyBytes, offset);
 		offset += 4;
 
-		bodyBytes[offset] = version;
+		bodyBytes[offset] = this.version;
 		offset += 1;
 
 		return bodyBytes;
