@@ -1,6 +1,5 @@
 package com.zx.sms.session;
 
-import java.net.SocketAddress;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;

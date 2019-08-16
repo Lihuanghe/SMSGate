@@ -3,7 +3,6 @@
  */
 package com.zx.sms.codec.sgip12.msg;
 
-import com.zx.sms.codec.cmpp.msg.DefaultMessage;
 import com.zx.sms.codec.cmpp.msg.Header;
 import com.zx.sms.codec.sgip12.packet.SgipPacketType;
 import com.zx.sms.common.GlobalConstance;
@@ -12,7 +11,7 @@ import com.zx.sms.common.GlobalConstance;
  * @author huzorro(huzorro@gmail.com)
  * 
  */
-public class SgipDeliverResponseMessage extends DefaultMessage {
+public class SgipDeliverResponseMessage extends SgipDefaultMessage {
 	private static final long serialVersionUID = 2437819129069431834L;
 
 	private short result = 0;
@@ -54,8 +53,8 @@ public class SgipDeliverResponseMessage extends DefaultMessage {
 	@Override
 	public String toString() {
 		return String
-				.format("SgipDeliverResponseMessage [result=%s, reserve=%s, header=%s]",
-						result, reserve, getHeader());
+				.format("SgipDeliverResponseMessage [result=%s, reserve=%s, seq=%s, header=%s]",
+						result, reserve, getSequenceNumber(),getHeader());
 	}
 	
 }

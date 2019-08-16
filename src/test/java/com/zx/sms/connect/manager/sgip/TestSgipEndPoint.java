@@ -74,12 +74,13 @@ public class TestSgipEndPoint {
 		client.setMaxChannels((short)10);
 		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);
-		client.setReSendFailMsg(true);
+		client.setReSendFailMsg(false);
+		client.setIdleTimeSec((short)120);
 //		client.setWriteLimit(200);
 //		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new SgipReportRequestMessageHandler());
-		clienthandlers.add(new SGIPSessionConnectedHandler(10));   
+		clienthandlers.add(new SGIPSessionConnectedHandler(1000000));   
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		manager.openAll();

@@ -6,20 +6,10 @@ package com.zx.sms.codec.sgip12.msg;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.marre.sms.SmsAlphabet;
 import org.marre.sms.SmsDcs;
 import org.marre.sms.SmsMessage;
-import org.marre.sms.SmsMsgClass;
-import org.marre.sms.SmsPortAddressedTextMessage;
-import org.marre.sms.SmsTextMessage;
-import org.marre.wap.push.SmsMmsNotificationMessage;
-import org.marre.wap.push.SmsWapPushMessage;
-import org.marre.wap.push.WapSIPush;
-import org.marre.wap.push.WapSLPush;
-import org.marre.wap.wbxml.WbxmlDocument;
 
 import com.zx.sms.LongSMSMessage;
-import com.zx.sms.codec.cmpp.msg.DefaultMessage;
 import com.zx.sms.codec.cmpp.msg.Header;
 import com.zx.sms.codec.cmpp.wap.LongMessageFrame;
 import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
@@ -32,7 +22,7 @@ import com.zx.sms.common.util.DefaultSequenceNumberUtil;
  * @author huzorro(huzorro@gmail.com)
  * 
  */
-public class SgipDeliverRequestMessage extends DefaultMessage implements LongSMSMessage<SgipDeliverRequestMessage>{
+public class SgipDeliverRequestMessage extends SgipDefaultMessage implements LongSMSMessage<SgipDeliverRequestMessage>{
 	private static final long serialVersionUID = -605827022369453415L;
 
 	private String usernumber = GlobalConstance.emptyString;
@@ -192,7 +182,7 @@ public class SgipDeliverRequestMessage extends DefaultMessage implements LongSMS
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SgipDeliverRequestMessage [").append("destId=").append(usernumber).append(", srcterminalId=").append(spnumber)
-				.append(", msgContent=").append(getMsgContent()).append(", header=").append(getHeader()).append("]");
+				.append(", msgContent=").append(getMsgContent()).append(", seq=").append(getSequenceNumber()).append(", header=").append(getHeader()).append("]");
 		return sb.toString();
 	}
 	public SgipDeliverRequestMessage clone() throws CloneNotSupportedException {

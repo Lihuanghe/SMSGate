@@ -12,7 +12,7 @@ public abstract class SMGPEndpointEntity extends EndpointEntity {
 	private static final long serialVersionUID = -441048745116970563L;
 	private String clientID;
     private String password;
-    private byte clientVersion = 0x13;  // interface version requested by us or them
+    private byte clientVersion = 0x30;  // interface version requested by us or them
     
     private Charset chartset = GlobalConstance.defaultTransportCharset;
 	public String getClientID() {

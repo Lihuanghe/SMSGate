@@ -7,20 +7,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.marre.sms.SmsAlphabet;
 import org.marre.sms.SmsDcs;
 import org.marre.sms.SmsMessage;
-import org.marre.sms.SmsMsgClass;
-import org.marre.sms.SmsPortAddressedTextMessage;
-import org.marre.sms.SmsTextMessage;
-import org.marre.wap.push.SmsMmsNotificationMessage;
-import org.marre.wap.push.SmsWapPushMessage;
-import org.marre.wap.push.WapSIPush;
-import org.marre.wap.push.WapSLPush;
-import org.marre.wap.wbxml.WbxmlDocument;
 
 import com.zx.sms.LongSMSMessage;
-import com.zx.sms.codec.cmpp.msg.DefaultMessage;
 import com.zx.sms.codec.cmpp.msg.Header;
 import com.zx.sms.codec.cmpp.wap.LongMessageFrame;
 import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
@@ -33,7 +23,7 @@ import com.zx.sms.common.util.DefaultSequenceNumberUtil;
  * @author huzorro(huzorro@gmail.com)
  * 
  */
-public class SgipSubmitRequestMessage extends DefaultMessage implements LongSMSMessage<SgipSubmitRequestMessage>{
+public class SgipSubmitRequestMessage extends SgipDefaultMessage implements LongSMSMessage<SgipSubmitRequestMessage>{
 	private static final long serialVersionUID = 5265747696709571791L;
 
 	private String spnumber = GlobalConstance.emptyString;
@@ -426,6 +416,7 @@ public class SgipSubmitRequestMessage extends DefaultMessage implements LongSMSM
 		.append(", spnumber=").append(spnumber)
 		.append(", destterminalId=").append(Arrays.toString(usernumber))
 		.append(", msgContent=").append(getMsgContent())
+		.append(", seq=").append(getSequenceNumber())
 		.append(", Header=").append(getHeader()).append("]");
 		return sb.toString();
 	}

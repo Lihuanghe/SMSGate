@@ -3,7 +3,6 @@
  */
 package com.zx.sms.codec.sgip12.msg;
 
-import com.zx.sms.codec.cmpp.msg.DefaultMessage;
 import com.zx.sms.codec.cmpp.msg.Header;
 import com.zx.sms.codec.sgip12.packet.SgipPacketType;
 import com.zx.sms.common.GlobalConstance;
@@ -12,7 +11,7 @@ import com.zx.sms.common.GlobalConstance;
  * @author huzorro(huzorro@gmail.com)
  *
  */
-public class SgipBindRequestMessage extends DefaultMessage {
+public class SgipBindRequestMessage extends SgipDefaultMessage {
 	private static final long serialVersionUID = 776190389687326556L;
 
 	/**
@@ -104,8 +103,8 @@ public class SgipBindRequestMessage extends DefaultMessage {
 	 */
 	@Override
 	public String toString() {
-		return String.format("BindRequestMessage [loginType=%s, loginName=%s, loginPassowrd=%s, reserve=%s, header=%s]", loginType, loginName,
-				loginPassowrd, reserve, getHeader());
+		return String.format("BindRequestMessage [loginType=%s, loginName=%s, loginPassowrd=%s, reserve=%s, seq=%s, header=%s]", loginType, loginName,
+				loginPassowrd, reserve, getSequenceNumber(),getHeader());
 	}
 
 }

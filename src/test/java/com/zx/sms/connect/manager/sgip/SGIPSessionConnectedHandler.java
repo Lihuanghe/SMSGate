@@ -16,7 +16,7 @@ public class SGIPSessionConnectedHandler extends SessionConnectedHandler {
 	@Override
 	protected BaseMessage createTestReq(String content) {
 		final SgipEndpointEntity finalentity = (SgipEndpointEntity)getEndpointEntity();
-		String sms = "【费用提醒】尊敬的客户，截止2018年2月1日17时，您的话费余额【费用提醒】尊敬的客户，截止2018年2月1日17时，您的话费余额为17.21元。【温馨提示】请您及时缴费【中国移动】为17.21元。【温馨提示】请您及时缴费【中国移动】";
+		String sms = "【费用提醒】尊敬的客户，截止2018年2月1日17时";
 		if (finalentity instanceof ServerEndpoint) {
 			SgipDeliverRequestMessage sgipmsg = new SgipDeliverRequestMessage();
 			sgipmsg.setUsernumber("13800138000");
@@ -28,6 +28,7 @@ public class SGIPSessionConnectedHandler extends SessionConnectedHandler {
 			requestMessage.setSpnumber("10086");
 			requestMessage.setUsernumber("13800138000");
 			requestMessage.setMsgContent(sms);
+			requestMessage.setReportflag((short)0);
 			return requestMessage;
 		}
 	}

@@ -14,6 +14,7 @@ public class SgipReportRequestMessageHandler extends AbstractBusinessHandler{
     	if(msg instanceof SgipReportRequestMessage){
     		SgipReportResponseMessage resp = new SgipReportResponseMessage(((SgipReportRequestMessage)msg).getHeader());
     		resp.setResult((short)0);
+    		resp.setTimestamp(((SgipReportRequestMessage)msg).getTimestamp());
     		ctx.channel().writeAndFlush(resp);
     	}else{
     		ctx.fireChannelRead(msg);

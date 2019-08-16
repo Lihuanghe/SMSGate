@@ -3,7 +3,6 @@
  */
 package com.zx.sms.codec.sgip12.msg;
 
-import com.zx.sms.codec.cmpp.msg.DefaultMessage;
 import com.zx.sms.codec.cmpp.msg.Header;
 import com.zx.sms.codec.sgip12.packet.SgipPacketType;
 import com.zx.sms.common.GlobalConstance;
@@ -13,7 +12,7 @@ import com.zx.sms.common.util.SequenceNumber;
  * @author huzorro(huzorro@gmail.com)
  * 
  */
-public class SgipReportRequestMessage extends DefaultMessage {
+public class SgipReportRequestMessage extends SgipDefaultMessage {
 	private static final long serialVersionUID = 4460557848888343195L;
 	private SequenceNumber sequenceId ;
 	private short reporttype = 0;
@@ -101,8 +100,6 @@ public class SgipReportRequestMessage extends DefaultMessage {
 		this.reserve = reserve;
 	}
 	
-	
-
 	public SequenceNumber getSequenceId() {
 		return sequenceId;
 	}
@@ -114,10 +111,9 @@ public class SgipReportRequestMessage extends DefaultMessage {
 	@Override
 	public String toString() {
 		return String
-				.format("ReportRequestMessage [ reporttype=%s, usernumber=%s, state=%s, errorcode=%s, reserve=%s, header=%s]",
-						 reporttype, usernumber, state,
-						errorcode, reserve, 
-						getHeader());
+				.format("SgipReportRequestMessage [ sequenceId=%s, reporttype=%s, usernumber=%s, state=%s, errorcode=%s, reserve=%s, seq=%s, header=%s]",
+						sequenceId,reporttype, usernumber, state,
+						errorcode, reserve, getSequenceNumber(),getHeader());
 	}
 	
 }
