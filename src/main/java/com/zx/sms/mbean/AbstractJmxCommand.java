@@ -152,7 +152,7 @@ public abstract class AbstractJmxCommand {
 	abstract protected void invoke(MBeanServerConnection mconn, String[] args);
 
 	public void main0(String[] args) throws IOException {
-		int pid = Integer.valueOf(args[0]);
+		int pid = Integer.parseInt(args[0]);
 		String connstr = findJMXUrlByProcessId(pid);
 		System.out.println("Connect to JMXUrl :"+ connstr+"\n");
 		if (connstr != null && (!"".equals(connstr))) {

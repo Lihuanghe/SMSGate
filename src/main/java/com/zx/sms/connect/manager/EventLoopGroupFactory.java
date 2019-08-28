@@ -41,7 +41,7 @@ EventLoopGroup.submit(callable)方法不能提交阻塞任务。
 如果队列中一个任务阻塞，其余的任务也无法执行。 
 	 */
 	
-	private final static ListeningScheduledExecutorService busiWork = MoreExecutors.listeningDecorator(new ScheduledThreadPoolExecutor(Integer.valueOf(PropertiesUtils.getproperties("GlobalBusiWorkThreadCount","4")),newThreadFactory("busiWork-"),rejected));
+	private final static ListeningScheduledExecutorService busiWork = MoreExecutors.listeningDecorator(new ScheduledThreadPoolExecutor(Integer.parseInt(PropertiesUtils.getProperties("GlobalBusiWorkThreadCount","4")),newThreadFactory("busiWork-"),rejected));
 	//private  final static EventLoopGroup busiWork = new ShareTaskQueueDefaultEventLoopGroup(Integer.valueOf(PropertiesUtils.getproperties("GlobalBusiWorkThreadCount","4")),new DefaultExecutorServiceFactory("busiWork"));
 	
 	public EventLoopGroup getBoss(){return bossGroup;};

@@ -80,10 +80,10 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Serializable, Ve
 	private QueueEnvironment buildBDB(String basename) {
 		String pathName;
 		basename = basename==null?"":basename;
-		if(PropertiesUtils.globalBDBBaseHome.endsWith("/")){
-			 pathName = PropertiesUtils.globalBDBBaseHome + basename;
+		if(PropertiesUtils.GLOBAL_BDB_BASE_HOME.endsWith("/")){
+			 pathName = PropertiesUtils.GLOBAL_BDB_BASE_HOME + basename;
 		}else{
-			 pathName = PropertiesUtils.globalBDBBaseHome +"/"+ basename;
+			 pathName = PropertiesUtils.GLOBAL_BDB_BASE_HOME +"/"+ basename;
 		}
 		
 		File file = new File(pathName);

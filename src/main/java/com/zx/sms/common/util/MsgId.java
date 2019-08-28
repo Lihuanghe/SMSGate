@@ -26,7 +26,7 @@ public class MsgId implements Serializable {
 		String vmName = ManagementFactory.getRuntimeMXBean().getName();
 		if(vmName.contains("@")){
 			try{
-				ProcessID = Integer.valueOf(vmName.split("@")[0]);
+				ProcessID = Integer.parseInt(vmName.split("@")[0]);
 			}catch(Exception e){
 				
 			}
