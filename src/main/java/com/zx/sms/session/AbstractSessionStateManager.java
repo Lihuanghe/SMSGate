@@ -70,7 +70,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 
 	private final long version = System.currentTimeMillis();
 
-	private final static ScheduledThreadPoolExecutor msgResend = new ScheduledThreadPoolExecutor(Integer.valueOf(PropertiesUtils.getproperties(
+	private final static ScheduledThreadPoolExecutor msgResend = new ScheduledThreadPoolExecutor(Integer.parseInt(PropertiesUtils.getProperties(
 			"GlobalMsgResendThreadCount", "4")), new ThreadFactory() {
 
 		private final AtomicInteger threadNumber = new AtomicInteger(1);

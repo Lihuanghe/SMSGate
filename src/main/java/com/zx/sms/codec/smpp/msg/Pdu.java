@@ -90,14 +90,14 @@ public abstract class Pdu implements BaseMessage,Cloneable{
     }
 
     public void setCommandLength(int value) {
-        this.commandLength = new Integer(value);
+        this.commandLength = value;
     }
 
     public int getCommandLength() {
         if (this.commandLength == null) {
             return 0;
         } else {
-            return this.commandLength.intValue();
+            return this.commandLength;
         }
     }
 
@@ -133,14 +133,14 @@ public abstract class Pdu implements BaseMessage,Cloneable{
     }
 
     public void setSequenceNumber(int value) {
-        this.sequenceNumber = new Integer(value);
+        this.sequenceNumber = value;
     }
 
     public int getSequenceNumber() {
         if (this.sequenceNumber == null) {
             return 0;
         } else {
-            return this.sequenceNumber.intValue();
+            return this.sequenceNumber;
         }
     }
 	public long getTimestamp() {

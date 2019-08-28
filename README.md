@@ -38,7 +38,7 @@
 
   如果你了解netty的handler,那么请看AbstractBusinessHandler的源码即可，这是一个netty的handler.
   
-  如果你不了解netty, 你只许知道：
+  如果你不了解netty, 你只需知道：
   
   当连接刚刚建立时，smsgate会自动调用handler里的userEventTriggered方法；
   
