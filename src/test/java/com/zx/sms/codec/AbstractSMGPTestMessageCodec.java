@@ -24,10 +24,14 @@ public  abstract class AbstractSMGPTestMessageCodec<T> {
 		}
 	});
 	
+	protected int getversion() {
+		return 0x13;
+	}
+	
 	protected void doinitChannel(Channel ch){
 		ResourceLeakDetector.setLevel(Level.ADVANCED);
 		ChannelPipeline pipeline = ch.pipeline();
-		SMGPCodecChannelInitializer codec = new SMGPCodecChannelInitializer(0x13);
+		SMGPCodecChannelInitializer codec = new SMGPCodecChannelInitializer(getversion());
 		pipeline.addLast("serverLog", new LoggingHandler(this.getClass(),LogLevel.INFO));
 		pipeline.addLast(codec.pipeName(), codec);
 		//处理长短信

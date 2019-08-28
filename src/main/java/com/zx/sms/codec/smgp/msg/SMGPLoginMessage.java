@@ -1,5 +1,7 @@
 package com.zx.sms.codec.smgp.msg;
 
+import org.apache.commons.codec.binary.Hex;
+
 import com.zx.sms.codec.smgp.util.ByteUtil;
 
 public class SMGPLoginMessage extends SMGPBaseMessage {
@@ -111,7 +113,7 @@ public class SMGPLoginMessage extends SMGPBaseMessage {
 		buffer.append("SMGPLoginMessage:[sequenceNumber=").append(
 				sequenceString()).append(",");
 		buffer.append("clientId=").append(clientId).append(",");
-		buffer.append("clientAuth=").append(clientAuth).append(",");
+		buffer.append("clientAuth=").append(Hex.encodeHex(clientAuth)).append(",");
 		buffer.append("loginMode=").append(loginMode).append(",");
 		buffer.append("timestamp=").append(getTimestamp()).append(",");
 		buffer.append("version=").append(version).append("]");
