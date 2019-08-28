@@ -82,7 +82,7 @@ public class BdbQueueMap<E> extends AbstractQueue<E> implements BlockingQueue<E>
 		try {
 			Long lastKey = (Long) queueMap.lastKey();
 			lastKey = (lastKey == null) ? 1L : ++lastKey;
-			insert((Long) lastKey, e);
+			insert(lastKey, e);
 			return true;
 		} finally {
 			lock.unlock();
@@ -106,7 +106,7 @@ public class BdbQueueMap<E> extends AbstractQueue<E> implements BlockingQueue<E>
 		try {
 			Long lastKey = (Long) queueMap.lastKey();
 			lastKey = (lastKey == null) ? 1L : ++lastKey;
-			insert((Long) lastKey, e);
+			insert(lastKey, e);
 		} finally {
 			lock.unlock();
 		}

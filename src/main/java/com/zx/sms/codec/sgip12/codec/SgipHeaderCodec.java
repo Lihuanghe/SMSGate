@@ -71,7 +71,7 @@ public class SgipHeaderCodec extends MessageToMessageCodec<ByteBuf, Message> {
 		buf.writeInt((int) message.getHeader().getCommandId());
 		String timeString = DateFormatUtils.format(message.getTimestamp(), "MMddHHmmss");
 		buf.writeInt((int) message.getHeader().getNodeId());
-		buf.writeInt(Integer.valueOf(timeString).intValue());
+		buf.writeInt(Integer.parseInt(timeString));
 		buf.writeInt((int) message.getHeader().getSequenceId());
 		if (packetLength > headerLength) {
 			buf.writeBytes(message.getBodyBuffer());
