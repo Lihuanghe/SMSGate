@@ -279,7 +279,7 @@ public class TestCMPPEndPoint {
 //		child.setWriteLimit(200);
 //		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new CMPPMessageReceiveHandler());
+		serverhandlers.add(new CMPPMessageReceiveHandler()); //在这个handler里接收短信
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
@@ -304,7 +304,7 @@ public class TestCMPPEndPoint {
 		client.setReSendFailMsg(true);
 		client.setSupportLongmsg(SupportLongMessage.BOTH);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new CMPPSessionConnectedHandler(10000));
+		clienthandlers.add( new CMPPSessionConnectedHandler(10000));  //在这个handler里发送短信
 		client.setBusinessHandlerSet(clienthandlers);
 		
 		manager.addEndpointEntity(client);

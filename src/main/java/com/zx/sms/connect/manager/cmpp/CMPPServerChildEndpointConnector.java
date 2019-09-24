@@ -1,14 +1,5 @@
 package com.zx.sms.connect.manager.cmpp;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelPipeline;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.timeout.IdleStateHandler;
-
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
@@ -18,11 +9,17 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.AbstractEndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
-import com.zx.sms.handler.MessageLogHandler;
 import com.zx.sms.handler.cmpp.CMPPDeliverLongMessageHandler;
 import com.zx.sms.handler.cmpp.CMPPSubmitLongMessageHandler;
 import com.zx.sms.session.AbstractSessionStateManager;
 import com.zx.sms.session.cmpp.SessionStateManager;
+
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelPipeline;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.timeout.IdleStateHandler;
 
 public class CMPPServerChildEndpointConnector extends AbstractEndpointConnector {
 	private static final Logger logger = LoggerFactory.getLogger(CMPPServerChildEndpointConnector.class);

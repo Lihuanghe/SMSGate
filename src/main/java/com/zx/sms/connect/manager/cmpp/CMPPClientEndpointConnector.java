@@ -1,10 +1,5 @@
 package com.zx.sms.connect.manager.cmpp;
 
-import io.netty.channel.ChannelPipeline;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.timeout.IdleStateHandler;
-
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
@@ -15,13 +10,15 @@ import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.AbstractClientEndpointConnector;
 import com.zx.sms.connect.manager.ClientEndpoint;
 import com.zx.sms.connect.manager.EndpointEntity;
-import com.zx.sms.handler.MessageLogHandler;
 import com.zx.sms.handler.cmpp.CMPPDeliverLongMessageHandler;
 import com.zx.sms.handler.cmpp.CMPPSubmitLongMessageHandler;
 import com.zx.sms.handler.cmpp.ReWriteSubmitMsgSrcHandler;
 import com.zx.sms.session.AbstractSessionStateManager;
 import com.zx.sms.session.cmpp.SessionLoginManager;
 import com.zx.sms.session.cmpp.SessionStateManager;
+
+import io.netty.channel.ChannelPipeline;
+import io.netty.handler.timeout.IdleStateHandler;
 
 /**
  *@author Lihuanghe(18852780@qq.com)

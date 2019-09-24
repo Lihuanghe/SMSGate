@@ -189,7 +189,6 @@ public class TestCmppDeliverRequestMessageCodec extends AbstractTestMessageCodec
 	public void testlongCodec(CmppDeliverRequestMessage msg)
 	{
 		
-		
 		channel().writeOutbound(msg);
 		ByteBuf buf =(ByteBuf)channel().readOutbound();
 		ByteBuf copybuf = Unpooled.buffer();
