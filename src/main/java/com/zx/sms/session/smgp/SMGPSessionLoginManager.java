@@ -159,7 +159,7 @@ public class SMGPSessionLoginManager extends AbstractSessionLoginManager {
 	@Override
 	protected void failedLogin(ChannelHandlerContext ctx, Object msg, long status) {
 		if(msg instanceof SMGPLoginMessage){
-			logger.error("Connected error status :{}" , status);
+			logger.error("Connected error status :{},msg : {}" , status,msg);
 			SMGPLoginMessage message = (SMGPLoginMessage)msg;
 			// 认证失败
 			SMGPLoginRespMessage resp = new SMGPLoginRespMessage();

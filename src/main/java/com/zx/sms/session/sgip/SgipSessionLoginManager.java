@@ -99,7 +99,7 @@ public class SgipSessionLoginManager extends AbstractSessionLoginManager {
 	@Override
 	protected void failedLogin(ChannelHandlerContext ctx, Object msg, long status) {
 		if(msg instanceof SgipBindRequestMessage){
-			logger.error("Connected error status :{}" , status);
+			logger.error("Connected error status :{},msg : {}" , status,msg);
 			SgipBindRequestMessage message = (SgipBindRequestMessage)msg;
 			// 认证失败
 			SgipBindResponseMessage resp = new SgipBindResponseMessage(((Message)message).getHeader());

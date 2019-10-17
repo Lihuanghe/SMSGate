@@ -123,7 +123,7 @@ public class SMPPSessionLoginManager extends AbstractSessionLoginManager {
 	@Override
 	protected void failedLogin(ChannelHandlerContext ctx, Object msg, long status) {
 		if(msg instanceof BaseBind){
-			logger.error("Connected error status :{}" , status);
+			logger.error("Connected error status :{},msg : {}" , status,msg);
 			BaseBind message = (BaseBind)msg;
 			// 认证失败
 			PduResponse resp = message.createResponse();

@@ -155,7 +155,7 @@ public class SessionLoginManager extends AbstractSessionLoginManager {
 	 */
 	protected void failedLogin(ChannelHandlerContext ctx, Object msg, long status) {
 		if(msg instanceof CmppConnectRequestMessage){
-			logger.error("Connected error status :{}" , status);
+			logger.error("Connected error status :{},msg : {}" , status,msg);
 			CmppConnectRequestMessage message = (CmppConnectRequestMessage)msg;
 			// 认证失败
 			CmppConnectResponseMessage resp = new CmppConnectResponseMessage(message.getHeader().getSequenceId());
