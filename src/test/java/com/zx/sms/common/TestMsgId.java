@@ -20,9 +20,7 @@ public class TestMsgId {
 		MsgId msgid = DefaultMsgIdUtil.bytes2MsgId(Hex.decodeHex(maiyunMsgid.toCharArray()));
 		System.out.println(msgid);
 		
-		String trans = StringUtils.upperCase(Hex.encodeHexString(DefaultMsgIdUtil.msgId2Bytes(msgid)));
-
-		Assert.assertEquals(maiyunMsgid, trans);
+		Assert.assertEquals(maiyunMsgid, msgid.toHexString(false));
 
 	}
 }

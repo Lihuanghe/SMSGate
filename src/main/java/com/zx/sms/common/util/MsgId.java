@@ -5,6 +5,13 @@ package com.zx.sms.common.util;
 
 import java.io.Serializable;
 import java.lang.management.ManagementFactory;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
+
+import com.zx.sms.codec.smgp.util.SMGPMsgIdUtil;
 
 /**
  * 
@@ -23,14 +30,36 @@ public class MsgId implements Serializable {
 	private int sequenceId;
 	
 	static{
-		String vmName = ManagementFactory.getRuntimeMXBean().getName();
-		if(vmName.contains("@")){
-			try{
-				ProcessID = Integer.parseInt(vmName.split("@")[0]);
-			}catch(Exception e){
-				
+		final String propertiesName = "smsgate.id";
+		String value = null;
+		//解决在docker中运行，进程号都一样的问题
+        try {
+            if (System.getSecurityManager() == null) {
+                value = System.getProperty(propertiesName);
+            } else {
+                value = AccessController.doPrivileged(new PrivilegedAction<String>() {
+                    @Override
+                    public String run() {
+                        return System.getProperty(propertiesName);
+                    }
+                });
+            }
+        } catch (SecurityException e) {
+        }
+        //没有配置gateid就取程序进程号
+		if(StringUtils.isBlank(value)) {
+			String vmName = ManagementFactory.getRuntimeMXBean().getName();
+			if(vmName.contains("@")){
+				value =vmName.split("@")[0];
 			}
 		}
+		
+		try{
+			ProcessID = Integer.valueOf(value);
+		}catch(Exception e){
+			
+		}
+
 	}
 	
 	public MsgId() {
@@ -172,6 +201,11 @@ public class MsgId implements Serializable {
 				.format("%1$02d%2$02d%3$02d%4$02d%5$02d%6$07d%7$05d",
 						month, day, hour, minutes, seconds, gateId, sequenceId);
 	}
+	
+	public String toHexString(boolean toLowerCase) {
+		return Hex.encodeHexString(DefaultMsgIdUtil.msgId2Bytes(this), toLowerCase);
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

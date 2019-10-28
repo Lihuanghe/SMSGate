@@ -9,6 +9,7 @@ import java.util.Arrays;
 
 import org.apache.commons.codec.binary.Hex;
 
+import com.zx.sms.codec.smgp.util.SMGPMsgIdUtil;
 import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 
@@ -160,6 +161,7 @@ public class MsgId implements Serializable {
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
+	
 	public String toString() {
 		if(originarr!=null && originarr.length>0) {
 			return String.valueOf(Hex.encodeHex(originarr));
@@ -170,6 +172,11 @@ public class MsgId implements Serializable {
 		}
 
 	}
+	
+	public String toHexString(boolean toLowerCase) {
+		return Hex.encodeHexString(SMGPMsgIdUtil.msgId2Bytes(this), toLowerCase);
+	}
+	
 	@Override
 	public int hashCode() {
 	
