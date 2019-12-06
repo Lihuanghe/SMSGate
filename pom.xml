@@ -5,7 +5,7 @@
 
 	<groupId>com.chinamobile.cmos</groupId>
 	<artifactId>sms-core</artifactId>
-	<version>2.1.10-SNAPSHOT</version>
+	<version>2.1.10</version>
 	<packaging>jar</packaging>
 	<name>sms-core</name>
 	<url>https://github.com/Lihuanghe/SMSGate</url>
