@@ -29,7 +29,7 @@ public class TLVString extends TLV {
 
 	@Override
 	public void setValueData(byte[] buffer) throws Exception {
-		value = new String(ByteUtil.ltrimBytes(buffer));
+		value = new String(ByteUtil.rtrimBytes(buffer));
 		markValueSet();
 	}
 

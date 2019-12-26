@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.zx.sms.BaseMessage;
 import com.zx.sms.codec.smgp.tlv.TLV;
+import com.zx.sms.codec.smgp.tlv.TLVOctets;
 import com.zx.sms.codec.smgp.util.ByteUtil;
 import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
@@ -100,7 +101,10 @@ public abstract class SMGPBaseMessage implements BaseMessage ,Cloneable{
 			tag = ByteUtil.byte2short(buffer, offset);
 			offset += 2;
 			tlv = findOptional(tag);
-			if(tlv==null)break; //ignore error
+			if(tlv==null) {
+				//未知的TLV
+				tlv = new TLVOctets(tag); 
+			}
 			length = ByteUtil.byte2short(buffer, offset);
 			offset += 2;
 			byte[] valueBytes = new byte[length];
