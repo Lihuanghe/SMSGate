@@ -45,8 +45,8 @@ import java.io.IOException;
  */
 public final class SmsUdhUtil
 {
-	public static final int PDUMAXLENGTH = 140;
-	public  static final int ASCIIMAXLENGTH = 159;
+	static final int PDUMAXLENGTH = 140;
+	static final int ASCIIMAXLENGTH = 159;
     /**
      * Constructor for SmsUdhUtil.
      */
