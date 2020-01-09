@@ -58,6 +58,18 @@
   
   4、最后在openEntity通道里，new MySgipClientEndpointEntity就可以了
 
+- `使用 http 或者 socks 代理`
+
+  SmsGate支持HTTP、SOCKS代理以方便在使用代理访问服务器的情况。代理设置方式：
+
+```
+	// 无username 和 password 可写为  http://ipaddress:port
+	client.setProxy("http://username:password@ipaddress:port");  //http代理
+	client.setProxy("socks4://username:password@ipaddress:port");  //socks4代理
+	client.setProxy("socks5://username:password@ipaddress:port");  //socks4代理
+
+```
+
 # 新手指引
 
 - 先看doc目录下的`CMPP接口协议V3.0.0.doc`文档 (看不懂的到群里咨询)

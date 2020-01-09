@@ -60,7 +60,7 @@ public class ClientTestCMPPEndPoint {
 		client1.setSpCode("1069039129");
 		client1.setUserName("GSDT02");
 		client1.setPassword("1qaz2wsx");
-//		client1.setProxy("http://127.0.0.1:1080");
+//		client1.setProxy("http://username:password@127.0.0.1:1080");
 
 		client1.setMaxChannels((short)1);
 		client1.setVersion((short)0x20);
