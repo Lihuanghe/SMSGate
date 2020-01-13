@@ -138,10 +138,4 @@ public class DeliverSmReceipt extends DeliverSm {
 		return dst;
 	}
 
-	@Override
-	public String toString() {
-		return "DeliverSmReceipt [id=" + id + ", sub=" + sub + ", dlvrd=" + dlvrd + ", submit_date=" + submit_date + ", done_date=" + done_date + ", stat="
-				+ stat + ", err=" + err + ", text=" + text + "]";
-	}
-	
 }

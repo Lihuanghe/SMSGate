@@ -166,7 +166,7 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
     }
     
     public boolean isReport() {
-		return false;
+		return this instanceof DeliverSmReceipt;
 	}
 
     public void setServiceType(String value) {

@@ -48,12 +48,12 @@ public class TestSMPPEndPoint {
 		child.setMaxChannels((short)3);
 		child.setRetryWaitTimeSec((short)30);
 		child.setMaxRetryCnt((short)3);
-		child.setReSendFailMsg(true);
+		child.setReSendFailMsg(false);
 		child.setIdleTimeSec((short)15);
 //		child.setWriteLimit(200);
 //		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-		serverhandlers.add(new SMPPSessionConnectedHandler(10000));   
+		serverhandlers.add(new SMPPMessageReceiveHandler());   
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
@@ -68,22 +68,18 @@ public class TestSMPPEndPoint {
 		client.setMaxChannels((short)12);
 		client.setRetryWaitTimeSec((short)100);
 		client.setUseSSL(false);
-		client.setReSendFailMsg(true);
+		client.setReSendFailMsg(false);
 //		client.setWriteLimit(200);
 //		client.setReadLimit(200);
 		client.setSupportLongmsg(SupportLongMessage.SEND);  //接收长短信时不自动合并
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new SMPPMessageReceiveHandler()); 
+		clienthandlers.add( new SMPPSessionConnectedHandler(1000)); 
 		client.setBusinessHandlerSet(clienthandlers);
-		
 		
 		manager.addEndpointEntity(server);
 		manager.addEndpointEntity(client);
 		manager.openAll();
-		manager.startConnectionCheckTask();
 		Thread.sleep(1000);
-		for(int i=0;i<child.getMaxChannels();i++)
-			manager.openEndpoint(client);
 		System.out.println("start.....");
 		LockSupport.park();
 		EndpointManager.INS.close();

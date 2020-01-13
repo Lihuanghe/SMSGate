@@ -147,5 +147,4 @@ public class CMPPSessionConnectedHandler extends SessionConnectedHandler {
 			ctx.fireChannelRead(msg);
 		}
 	}
-
 }

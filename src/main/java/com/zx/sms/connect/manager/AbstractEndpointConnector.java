@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -189,13 +190,13 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 				ChannelPipeline pipeline = ch.pipeline();
 				EndpointEntity entity = getEndpointEntity();
 //				pipeline.addFirst(new LoggingHandler("proxy", LogLevel.INFO));
-				if(entity instanceof ClientEndpoint && entity.getProxy()!=null && (!"".equals(entity.getProxy()))){
+				if(entity instanceof ClientEndpoint && StringUtils.isNotBlank(entity.getProxy())){
 					String uriString = entity.getProxy();
 					try{
 						URI uri = URI.create(uriString);
 						addProxyHandler(ch,uri);
 					}catch(Exception ex){
-						logger.error("parse Proxy URI failed.",ex);
+						logger.error("parse Proxy URI {} failed.",uriString ,ex);
 					}
 				}
 

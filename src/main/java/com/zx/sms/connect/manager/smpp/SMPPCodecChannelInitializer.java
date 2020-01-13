@@ -24,6 +24,5 @@ public class SMPPCodecChannelInitializer extends ChannelInitializer<Channel> {
 		pipeline.addBefore(pipeName(), "FrameDecoder", new LengthFieldBasedFrameDecoder(4 * 1024 , 0, 4, -4, 0, true));
 
 		pipeline.addBefore(pipeName(), GlobalConstance.codecName, new SMPPMessageCodec());
-		pipeline.addBefore(pipeName(), "DeliverSmReceiptCodec", new DeliverSmReceiptCodec());
 	}
 }
