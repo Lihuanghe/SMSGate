@@ -10,6 +10,11 @@ import com.zx.sms.codec.smpp.msg.DeliverSmReceipt;
 
 public class DeliverSmReceiptCodec extends MessageToMessageCodec<DeliverSm, DeliverSmReceipt> {
 
+	DeliverSmReceiptCodec()
+	{
+		super();
+	}
+	
 	@Override
 	protected void encode(ChannelHandlerContext ctx, DeliverSmReceipt msg, List<Object> out) throws Exception {
 		DeliverSm pdu = new DeliverSm();

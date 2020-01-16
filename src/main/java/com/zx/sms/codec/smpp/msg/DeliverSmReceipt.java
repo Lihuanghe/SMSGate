@@ -132,10 +132,4 @@ public class DeliverSmReceipt extends DeliverSm {
     	super.setShortMessage(value);
     }
     
-	private byte[] byteBufreadarray(ByteBuf buf){
-		byte[] dst = new byte[ buf.readableBytes()];
-		buf.readBytes(dst);
-		return dst;
-	}
-
 }
