@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 public class PropertiesUtils {
 	private static final Properties GLOBAL = loadProperties("global.properties");
 	private static final Properties JE = loadProperties("je.properties");
-	public static final String GLOBAL_BDB_BASE_HOME = PropertiesUtils.getProperties("BDBBaseHome", System.getProperty("java.io.tmpdir"));
+	public static String GLOBAL_BDB_BASE_HOME = PropertiesUtils.getProperties("BDBBaseHome", System.getProperty("java.io.tmpdir"));
 	public static String getDefaultTransportCharset()
 	{
 		String charset = GLOBAL.getProperty("defaultTransportCharset");

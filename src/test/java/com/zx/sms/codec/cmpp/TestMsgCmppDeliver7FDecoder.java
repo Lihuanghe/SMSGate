@@ -31,10 +31,10 @@ public class TestMsgCmppDeliver7FDecoder extends AbstractTestMessageCodec<CmppDe
 		ByteBuf buf = encode(msg);
 		ByteBuf copybuf = buf.copy();
 		// packageLength
-		buf.readUnsignedInt();
+		buf.readInt();
 		
-		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
-		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readUnsignedInt());
+		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readInt());
+		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readInt());
 	
 		
 		CmppDeliverRequestMessage result = decode(copybuf);
@@ -53,10 +53,10 @@ public class TestMsgCmppDeliver7FDecoder extends AbstractTestMessageCodec<CmppDe
 		ByteBuf buf = encode(msg);
 		ByteBuf copybuf = buf.copy();
 		// packageLength
-		buf.readUnsignedInt();
+		buf.readInt();
 		
-		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
-		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readUnsignedInt());
+		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readInt());
+		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readInt());
 	
 		
 		CmppDeliverRequestMessage result = decode(copybuf);

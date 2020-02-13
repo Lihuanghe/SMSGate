@@ -18,7 +18,7 @@ public class SequenceNumber implements Serializable{
 	private static final long serialVersionUID = 650229326111998772L;
 	private static final String[] datePattern = new String[]{"yyyyMMddHHmmss"};
 	private long nodeIds;
-	private long sequenceId;
+	private int sequenceId;
 	private long timestamp;
 	
 	public SequenceNumber() {
@@ -72,7 +72,7 @@ public class SequenceNumber implements Serializable{
 	 * @param gateId
 	 * @param sequenceId
 	 */
-	public SequenceNumber(long timeMillis, long nodeIds, long sequenceId) {
+	public SequenceNumber(long timeMillis, long nodeIds, int sequenceId) {
 		setNodeIds(nodeIds);
 		setSequenceId(sequenceId);
 		setTimestamp(timeMillis);
@@ -93,13 +93,13 @@ public class SequenceNumber implements Serializable{
 	/**
 	 * @return the sequenceId
 	 */
-	public long getSequenceId() {
+	public int getSequenceId() {
 		return sequenceId;
 	}
 	/**
 	 * @param sequenceId the sequenceId to set
 	 */
-	public void setSequenceId(long sequenceId) {
+	public void setSequenceId(int sequenceId) {
 		this.sequenceId = sequenceId;
 	}
 	

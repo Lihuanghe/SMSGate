@@ -8,7 +8,7 @@ import io.netty.handler.codec.MessageToMessageCodec;
  * @author huzorro(huzorro@gmail.com)
  */
 public interface PacketType {    
-    public long getCommandId();
+    public int getCommandId();
     public PacketStructure[] getPacketStructures();
     public long getAllCommandId();
     public MessageToMessageCodec getCodec();

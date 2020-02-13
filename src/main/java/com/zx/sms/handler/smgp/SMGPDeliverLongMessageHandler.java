@@ -21,7 +21,7 @@ public class SMGPDeliverLongMessageHandler extends AbstractLongMessageHandler<SM
 		
 		//短信片断未接收完全，直接给网关回复resp，等待其它片断
 		SMGPDeliverRespMessage responseMessage = new SMGPDeliverRespMessage();
-		responseMessage.setSequenceNumber(msg.getSequenceNo());
+		responseMessage.setSequenceNo(msg.getSequenceNo());
 		responseMessage.setStatus(0);
 		responseMessage.setMsgId(msg.getMsgId());
 		return responseMessage;

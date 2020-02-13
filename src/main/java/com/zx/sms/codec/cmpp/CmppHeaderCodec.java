@@ -29,9 +29,9 @@ public class CmppHeaderCodec extends MessageToMessageCodec<ByteBuf, Message> {
 	protected void decode(ChannelHandlerContext ctx, ByteBuf bytebuf, List<Object> list) throws Exception {
 		//此时已处理过粘包和断包了，bytebuf里是完整的一帧
 		Header header = new DefaultHeader();
-		header.setPacketLength(bytebuf.readUnsignedInt());
-		header.setCommandId(bytebuf.readUnsignedInt());
-		header.setSequenceId(bytebuf.readUnsignedInt());
+		header.setPacketLength(bytebuf.readInt());
+		header.setCommandId(bytebuf.readInt());
+		header.setSequenceId(bytebuf.readInt());
 		header.setHeadLength(CmppHead.COMMANDID.getHeadLength());
 		header.setBodyLength(header.getPacketLength() - header.getHeadLength());
 

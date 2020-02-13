@@ -23,7 +23,7 @@ public class SMGPSubmitLongMessageHandler extends AbstractLongMessageHandler<SMG
 	protected BaseMessage response(SMGPSubmitMessage msg) {
 		//短信片断未接收完全，直接给网关回复resp，等待其它片断
 		SMGPSubmitRespMessage responseMessage = new SMGPSubmitRespMessage();
-		responseMessage.setSequenceNumber(msg.getSequenceNo());
+		responseMessage.setSequenceNo(msg.getSequenceNo());
 		responseMessage.setStatus(0);
 		responseMessage.setMsgId( new MsgId());
 		return responseMessage;

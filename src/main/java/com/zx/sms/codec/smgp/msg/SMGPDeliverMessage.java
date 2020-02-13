@@ -376,7 +376,7 @@ public class SMGPDeliverMessage extends SMGPBaseMessage implements LongSMSMessag
 		requestMessage.setBMsgContent(frame.getMsgContentBytes());
 		
 		if(frame.getPknumber()!=1){
-			requestMessage.setSequenceNumber(DefaultSequenceNumberUtil.getSequenceNo());
+			requestMessage.setSequenceNo(DefaultSequenceNumberUtil.getSequenceNo());
 		}
 		requestMessage.setMsgContent((SmsMessage)null);
 		return requestMessage;

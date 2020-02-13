@@ -28,7 +28,6 @@ public class TestCmpp20DeliverRequestMessageCodec extends AbstractTestMessageCod
 	public void testCodec() {
 
 		CmppDeliverRequestMessage msg = createTestReq("ad3 中");
-
 		test0(msg);
 	}
 
@@ -54,9 +53,9 @@ public class TestCmpp20DeliverRequestMessageCodec extends AbstractTestMessageCod
 
 		int length = buf.readableBytes();
 		
-		Assert.assertEquals(length, buf.readUnsignedInt());
-		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
-		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readUnsignedInt());
+		Assert.assertEquals(length, buf.readInt());
+		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readInt());
+		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readInt());
 
 
 		CmppDeliverRequestMessage result = decode(newbuf);
@@ -85,7 +84,7 @@ public class TestCmpp20DeliverRequestMessageCodec extends AbstractTestMessageCod
 		msg.setServiceid("10086");
 		msg.setSrcterminalId("13800138000");
 		msg.setSrcterminalType((short) 1);
-		header.setSequenceId(System.nanoTime() & 0x7fffffff);
+		header.setSequenceId((int)System.nanoTime());
 		return msg;
 	}
 	
@@ -107,8 +106,8 @@ public class TestCmpp20DeliverRequestMessageCodec extends AbstractTestMessageCod
 	    	copybuf.writeBytes(buf.copy());
 			int length = buf.readableBytes();
 			
-			Assert.assertEquals(length, buf.readUnsignedInt());
-			Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
+			Assert.assertEquals(length, buf.readInt());
+			Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readInt());
 			
 
 			buf =(ByteBuf)channel().readOutbound();
@@ -138,8 +137,8 @@ public class TestCmpp20DeliverRequestMessageCodec extends AbstractTestMessageCod
 	    	copybuf.writeBytes(buf.copy());
 			int length = buf.readableBytes();
 			
-			Assert.assertEquals(length, buf.readUnsignedInt());
-			Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
+			Assert.assertEquals(length, buf.readInt());
+			Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readInt());
 			
 
 			buf =(ByteBuf)channel().readOutbound();

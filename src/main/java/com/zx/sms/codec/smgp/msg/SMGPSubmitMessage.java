@@ -588,7 +588,7 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 		requestMessage.setPkTotal((byte)frame.getPktotal());
 		requestMessage.setPkNumber((byte)frame.getPknumber());
 		if(frame.getPknumber()!=1){
-			requestMessage.setSequenceNumber(DefaultSequenceNumberUtil.getSequenceNo());
+			requestMessage.setSequenceNo(DefaultSequenceNumberUtil.getSequenceNo());
 		}
 		requestMessage.setMsgContent((SmsMessage)null);
 		return requestMessage;

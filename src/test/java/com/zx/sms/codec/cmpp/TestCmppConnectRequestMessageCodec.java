@@ -28,9 +28,9 @@ public class TestCmppConnectRequestMessageCodec extends AbstractTestMessageCodec
 		int expectLength = CmppConnectRequest.AUTHENTICATORSOURCE.getBodyLength() +  CmppHead.COMMANDID.getHeadLength();
 		
 		Assert.assertEquals(expectLength, length);
-		Assert.assertEquals(expectLength, buf.readUnsignedInt());
-		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
-		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readUnsignedInt());
+		Assert.assertEquals(expectLength, buf.readInt());
+		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readInt());
+		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readInt());
 		
 		CmppConnectRequestMessage result = decode(copybuf);
 		

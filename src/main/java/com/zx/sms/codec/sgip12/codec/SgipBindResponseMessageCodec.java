@@ -38,7 +38,7 @@ public class SgipBindResponseMessageCodec extends MessageToMessageCodec<Message,
 
 	@Override
 	protected void decode(ChannelHandlerContext ctx, Message msg, List<Object> out) throws Exception {
-		long commandId = ((Long) msg.getHeader().getCommandId()).longValue();
+		int commandId =  msg.getHeader().getCommandId();
 		if (packetType.getCommandId() != commandId) {
 			// 不解析，交给下一个codec
 			out.add(msg);

@@ -83,7 +83,7 @@ public class SMGP2CMPPBusinessHandler extends AbstractBusinessHandler {
 				msgid.setSequenceId(deliver.getMsgId().getSequenceId());
 
 				pdu.setMsgFmt(deliver.getMsgfmt());
-		        pdu.setSequenceNumber(deliver.getHeader().getSequenceId());
+		        pdu.setSequenceNo(deliver.getHeader().getSequenceId());
 		        pdu.setLinkId(deliver.getLinkid());
 		        pdu.setDestTermId(deliver.getDestId());
 		        pdu.setMsgContent(deliver.getSmsMessage());
@@ -94,14 +94,14 @@ public class SMGP2CMPPBusinessHandler extends AbstractBusinessHandler {
     		}else if(msg instanceof CmppDeliverResponseMessage){
     			
     			SMGPDeliverRespMessage resp = new SMGPDeliverRespMessage();
-    		    resp.setSequenceNumber((int)msg.getHeader().getSequenceId());
+    		    resp.setSequenceNo((int)msg.getHeader().getSequenceId());
     		    resp.setStatus((int)((CmppDeliverResponseMessage)msg).getResult());
     		    out.add(resp);
     			
     		}else if(msg instanceof CmppSubmitRequestMessage){
     			CmppSubmitRequestMessage submit = (CmppSubmitRequestMessage)msg;
     			SMGPSubmitMessage pdu = new SMGPSubmitMessage();
-    	        pdu.setSequenceNumber(submit.getHeader().getSequenceId());
+    	        pdu.setSequenceNo(submit.getHeader().getSequenceId());
     	        
     	        pdu.setDestTermIdArray(submit.getDestterminalId());
     	        pdu.setLinkId(submit.getLinkID());
@@ -112,7 +112,7 @@ public class SMGP2CMPPBusinessHandler extends AbstractBusinessHandler {
     			
     		}else if(msg instanceof CmppSubmitResponseMessage){
     			SMGPSubmitRespMessage resp = new SMGPSubmitRespMessage();
-    		    resp.setSequenceNumber((int)msg.getHeader().getSequenceId());
+    		    resp.setSequenceNo((int)msg.getHeader().getSequenceId());
     		    resp.setStatus((int)((CmppSubmitResponseMessage)msg).getResult());
     		    out.add(resp);
     		}

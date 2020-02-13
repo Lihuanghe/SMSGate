@@ -383,11 +383,11 @@ public abstract class Pdu implements BaseMessage,Cloneable{
     }
     
 	@Override
-	public long getSequenceNo() {
+	public int getSequenceNo() {
 		return getSequenceNumber();
 	}
 	
-	public void setSequenceNo(long seq) {
-		setSequenceNumber((int)seq);
+	public void setSequenceNo(int seq) {
+		setSequenceNumber(seq);
 	}
 }

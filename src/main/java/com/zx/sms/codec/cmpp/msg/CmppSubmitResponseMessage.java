@@ -16,7 +16,7 @@ public class CmppSubmitResponseMessage extends DefaultMessage {
 	private MsgId msgId = new MsgId();
 	private long result = 0;
 
-	public CmppSubmitResponseMessage(long sequenceId) {
+	public CmppSubmitResponseMessage(int sequenceId) {
 		super(CmppPacketType.CMPPSUBMITRESPONSE, sequenceId);
 	}
 

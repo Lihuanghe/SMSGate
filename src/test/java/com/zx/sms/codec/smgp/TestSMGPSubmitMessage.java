@@ -49,8 +49,8 @@ public class TestSMGPSubmitMessage extends AbstractSMGPTestMessageCodec<SMGPSubm
 	    	copybuf.writeBytes(buf.copy());
 			int length = buf.readableBytes();
 			
-			Assert.assertEquals(length, buf.readUnsignedInt());
-			Assert.assertEquals(msg.getCommandId(), buf.readUnsignedInt());
+			Assert.assertEquals(length, buf.readInt());
+			Assert.assertEquals(msg.getCommandId(), buf.readInt());
 			
 
 			buf =(ByteBuf)channel().readOutbound();

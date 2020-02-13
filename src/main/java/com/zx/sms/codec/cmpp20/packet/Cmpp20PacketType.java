@@ -37,31 +37,31 @@ import com.zx.sms.codec.cmpp20.Cmpp20SubmitResponseMessageCodec;
  *
  */
 public enum Cmpp20PacketType implements PacketType {
-    CMPPCONNECTREQUEST(0x00000001L, CmppConnectRequest.class,CmppConnectRequestMessageCodec.class),
-    CMPPCONNECTRESPONSE(0x80000001L, Cmpp20ConnectResponse.class,Cmpp20ConnectResponseMessageCodec.class),
-    CMPPTERMINATEREQUEST(0x00000002L, CmppTerminateRequest.class,CmppTerminateRequestMessageCodec.class),
-    CMPPTERMINATERESPONSE(0x80000002L, CmppTerminateResponse.class,CmppTerminateResponseMessageCodec.class),    
-    CMPPSUBMITREQUEST(0x00000004L, Cmpp20SubmitRequest.class,Cmpp20SubmitRequestMessageCodec.class), 
-    CMPPSUBMITRESPONSE(0x80000004L, Cmpp20SubmitResponse.class,Cmpp20SubmitResponseMessageCodec.class),
-    CMPPDELIVERREQUEST(0x00000005L, Cmpp20DeliverRequest.class,Cmpp20DeliverRequestMessageCodec.class),
-    CMPPDELIVERRESPONSE(0x80000005L, Cmpp20DeliverResponse.class,Cmpp20DeliverResponseMessageCodec.class),    
-    CMPPQUERYREQUEST(0x00000006L, CmppQueryRequest.class,CmppQueryRequestMessageCodec.class),
-    CMPPQUERYRESPONSE(0x80000006L, CmppQueryResponse.class,CmppQueryResponseMessageCodec.class),
-    CMPPCANCELREQUEST(0x00000007L, CmppCancelRequest.class,CmppCancelRequestMessageCodec.class),
-    CMPPCANCELRESPONSE(0x80000007L, CmppCancelResponse.class,CmppCancelResponseMessageCodec.class),
-    CMPPACTIVETESTREQUEST(0x00000008L, CmppActiveTestRequest.class,CmppActiveTestRequestMessageCodec.class),
-    CMPPACTIVETESTRESPONSE(0x80000008L, CmppActiveTestResponse.class,CmppActiveTestResponseMessageCodec.class);
+    CMPPCONNECTREQUEST(0x00000001, CmppConnectRequest.class,CmppConnectRequestMessageCodec.class),
+    CMPPCONNECTRESPONSE(0x80000001, Cmpp20ConnectResponse.class,Cmpp20ConnectResponseMessageCodec.class),
+    CMPPTERMINATEREQUEST(0x00000002, CmppTerminateRequest.class,CmppTerminateRequestMessageCodec.class),
+    CMPPTERMINATERESPONSE(0x80000002, CmppTerminateResponse.class,CmppTerminateResponseMessageCodec.class),    
+    CMPPSUBMITREQUEST(0x00000004, Cmpp20SubmitRequest.class,Cmpp20SubmitRequestMessageCodec.class), 
+    CMPPSUBMITRESPONSE(0x80000004, Cmpp20SubmitResponse.class,Cmpp20SubmitResponseMessageCodec.class),
+    CMPPDELIVERREQUEST(0x00000005, Cmpp20DeliverRequest.class,Cmpp20DeliverRequestMessageCodec.class),
+    CMPPDELIVERRESPONSE(0x80000005, Cmpp20DeliverResponse.class,Cmpp20DeliverResponseMessageCodec.class),    
+    CMPPQUERYREQUEST(0x00000006, CmppQueryRequest.class,CmppQueryRequestMessageCodec.class),
+    CMPPQUERYRESPONSE(0x80000006, CmppQueryResponse.class,CmppQueryResponseMessageCodec.class),
+    CMPPCANCELREQUEST(0x00000007, CmppCancelRequest.class,CmppCancelRequestMessageCodec.class),
+    CMPPCANCELRESPONSE(0x80000007, CmppCancelResponse.class,CmppCancelResponseMessageCodec.class),
+    CMPPACTIVETESTREQUEST(0x00000008, CmppActiveTestRequest.class,CmppActiveTestRequestMessageCodec.class),
+    CMPPACTIVETESTRESPONSE(0x80000008, CmppActiveTestResponse.class,CmppActiveTestResponseMessageCodec.class);
     
-    private long commandId;
+    private int commandId;
     private Class<? extends PacketStructure> packetStructure;
     private Class<? extends MessageToMessageCodec> codec;
     
-    private Cmpp20PacketType(long commandId, Class<? extends PacketStructure> packetStructure,Class<? extends MessageToMessageCodec> codec) {
+    private Cmpp20PacketType(int commandId, Class<? extends PacketStructure> packetStructure,Class<? extends MessageToMessageCodec> codec) {
         this.commandId = commandId;
         this.packetStructure = packetStructure;
         this.codec = codec;
     }
-    public long getCommandId() {
+    public int getCommandId() {
         return commandId;
     }
     public PacketStructure[] getPacketStructures() {

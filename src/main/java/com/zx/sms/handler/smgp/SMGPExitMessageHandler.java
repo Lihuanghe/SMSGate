@@ -17,7 +17,7 @@ public class SMGPExitMessageHandler extends SimpleChannelInboundHandler<SMGPExit
 	@Override
 	protected void channelRead0(final ChannelHandlerContext ctx, SMGPExitMessage msg) throws Exception {
 		SMGPExitRespMessage resp = new SMGPExitRespMessage();
-		resp.setSequenceNumber(msg.getSequenceNo());
+		resp.setSequenceNo(msg.getSequenceNo());
 		ChannelFuture future = ctx.channel().writeAndFlush(resp);
 		final ChannelHandlerContext finalctx = ctx;
 		future.addListeners(new GenericFutureListener(){

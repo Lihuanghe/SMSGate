@@ -8,6 +8,6 @@ public interface BaseMessage extends Serializable{
 	public boolean isTerminated();
     public void setRequest(BaseMessage message);
     public BaseMessage getRequest();
-    public long getSequenceNo();
-    public void setSequenceNo(long seq);
+    public int getSequenceNo();
+    public void setSequenceNo(int seq);
 }

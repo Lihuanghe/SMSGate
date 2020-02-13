@@ -19,7 +19,7 @@ public class CmppConnectResponseMessage extends DefaultMessage{
     public CmppConnectResponseMessage(Header header ) {
     	super(CmppPacketType.CMPPCONNECTRESPONSE,header);
 	}
-    public CmppConnectResponseMessage(long sequenceId) {
+    public CmppConnectResponseMessage(int sequenceId) {
     	super(CmppPacketType.CMPPCONNECTRESPONSE,sequenceId);
 	}
 	/**

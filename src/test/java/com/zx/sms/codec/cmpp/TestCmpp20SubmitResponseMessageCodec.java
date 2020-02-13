@@ -20,7 +20,7 @@ public class TestCmpp20SubmitResponseMessageCodec  extends AbstractTestMessageCo
 	@Test
 	public void testCode()
 	{
-		CmppSubmitResponseMessage msg = new CmppSubmitResponseMessage(238L);
+		CmppSubmitResponseMessage msg = new CmppSubmitResponseMessage(238);
 	
 		msg.setMsgId(new MsgId());
 		
@@ -32,9 +32,9 @@ public class TestCmpp20SubmitResponseMessageCodec  extends AbstractTestMessageCo
 		int expectLength = Cmpp20SubmitResponse.MSGID.getBodyLength() +  CmppHead.COMMANDID.getHeadLength();
 		
 		Assert.assertEquals(expectLength, length);
-		Assert.assertEquals(expectLength, buf.readUnsignedInt());
-		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
-		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readUnsignedInt());
+		Assert.assertEquals(expectLength, buf.readInt());
+		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readInt());
+		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readInt());
 		
 		CmppSubmitResponseMessage result = decode(copybuf);
 		

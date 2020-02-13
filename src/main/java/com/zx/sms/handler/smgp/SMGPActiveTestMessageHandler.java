@@ -13,6 +13,6 @@ public class SMGPActiveTestMessageHandler extends SimpleChannelInboundHandler<SM
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, SMGPActiveTestMessage msg) throws Exception {
 		SMGPActiveTestRespMessage resp = new SMGPActiveTestRespMessage();
-		resp.setSequenceNumber(msg.getSequenceNo());
+		resp.setSequenceNo(msg.getSequenceNo());
 		ctx.writeAndFlush(resp);
 	}}

@@ -43,7 +43,7 @@ public class CmppConnectResponseMessageCodec extends MessageToMessageCodec<Messa
 
 	@Override
 	protected void decode(ChannelHandlerContext ctx, Message msg, List<Object> out) throws Exception {
-		long commandId = ((Long) msg.getHeader().getCommandId()).longValue();
+		int commandId = msg.getHeader().getCommandId();
 		if (commandId != packetType.getCommandId())
 		{
 			//不解析，交给下一个codec

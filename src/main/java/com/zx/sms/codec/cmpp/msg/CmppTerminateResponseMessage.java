@@ -13,7 +13,7 @@ import com.zx.sms.codec.cmpp.packet.CmppPacketType;
 public class CmppTerminateResponseMessage extends DefaultMessage {
 	private static final long serialVersionUID = -2657187574508760595L;
 
-	public CmppTerminateResponseMessage(long sequenceId) {
+	public CmppTerminateResponseMessage(int sequenceId) {
 		super(CmppPacketType.CMPPTERMINATERESPONSE,sequenceId);
 	}
 	public CmppTerminateResponseMessage(Header header) {

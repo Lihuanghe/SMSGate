@@ -147,7 +147,7 @@ public class SMGPSessionLoginManager extends AbstractSessionLoginManager {
 		
 		SMGPLoginMessage req = (SMGPLoginMessage)message;
 		SMGPLoginRespMessage resp = new SMGPLoginRespMessage();
-		resp.setSequenceNumber(req.getSequenceNo());
+		resp.setSequenceNo(req.getSequenceNo());
 		resp.setStatus(0);
 		resp.setVersion(smgpentity.getClientVersion());
 		resp.setServerAuth(DigestUtils.md5(Bytes.concat(Ints.toByteArray((int)resp.getStatus()), req.getClientAuth(), smgpentity
@@ -163,7 +163,7 @@ public class SMGPSessionLoginManager extends AbstractSessionLoginManager {
 			SMGPLoginMessage message = (SMGPLoginMessage)msg;
 			// 认证失败
 			SMGPLoginRespMessage resp = new SMGPLoginRespMessage();
-			resp.setSequenceNumber(message.getSequenceNo());
+			resp.setSequenceNo(message.getSequenceNo());
 			resp.setStatus((int)status);
 			ChannelFuture promise = ctx.writeAndFlush(resp);
 

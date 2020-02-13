@@ -25,9 +25,9 @@ public class TestCmppQueryRequestMessageCodec extends AbstractTestMessageCodec<C
 		int expectLength = CmppQueryRequest.QUERYCODE.getBodyLength() +  CmppHead.COMMANDID.getHeadLength();
 		
 		Assert.assertEquals(expectLength, length);
-		Assert.assertEquals(expectLength, buf.readUnsignedInt());
-		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
-		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readUnsignedInt());
+		Assert.assertEquals(expectLength, buf.readInt());
+		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readInt());
+		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readInt());
 		
 	
 		

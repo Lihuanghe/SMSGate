@@ -10,14 +10,14 @@ import com.zx.sms.common.storedMap.VersionObject;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.session.AbstractSessionStateManager;
 
-public class SMGPSessionStateManager extends AbstractSessionStateManager<Long, SMGPBaseMessage> {
+public class SMGPSessionStateManager extends AbstractSessionStateManager<Integer, SMGPBaseMessage> {
 
-	public SMGPSessionStateManager(EndpointEntity entity, ConcurrentMap<Long, VersionObject<SMGPBaseMessage>> storeMap, boolean preSend) {
+	public SMGPSessionStateManager(EndpointEntity entity, ConcurrentMap<Integer, VersionObject<SMGPBaseMessage>> storeMap, boolean preSend) {
 		super(entity, storeMap, preSend);
 	}
 
 	@Override
-	protected Long getSequenceId(SMGPBaseMessage msg) {
+	protected Integer getSequenceId(SMGPBaseMessage msg) {
 		
 		return msg.getSequenceNo();
 	}

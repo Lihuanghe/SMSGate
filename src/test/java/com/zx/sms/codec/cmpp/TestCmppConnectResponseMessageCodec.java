@@ -15,7 +15,7 @@ public class TestCmppConnectResponseMessageCodec extends AbstractTestMessageCode
 	@Test
 	public void testCode()
 	{
-		CmppConnectResponseMessage msg = new CmppConnectResponseMessage(238L);
+		CmppConnectResponseMessage msg = new CmppConnectResponseMessage(238);
 		
 		
 		//长度为16
@@ -28,9 +28,9 @@ public class TestCmppConnectResponseMessageCodec extends AbstractTestMessageCode
 		int expectLength = (getVersion()==0x30?CmppConnectResponse.AUTHENTICATORISMG.getBodyLength():Cmpp20ConnectResponse.AUTHENTICATORISMG.getBodyLength()) +  CmppHead.COMMANDID.getHeadLength();
 		
 		Assert.assertEquals(expectLength, length);
-		Assert.assertEquals(expectLength, buf.readUnsignedInt());
-		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
-		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readUnsignedInt());
+		Assert.assertEquals(expectLength, buf.readInt());
+		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readInt());
+		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readInt());
 		
 		CmppConnectResponseMessage result = decode(copybuf);
 		

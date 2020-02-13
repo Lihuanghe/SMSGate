@@ -14,7 +14,7 @@ public class TestCmppCancelResponseMessageCodec  extends AbstractTestMessageCode
 	@Test
 	public void testCode()
 	{
-		CmppCancelResponseMessage msg = new CmppCancelResponseMessage(0x12abd390L);
+		CmppCancelResponseMessage msg = new CmppCancelResponseMessage(0x12abd390);
 		msg.setSuccessId(0L);
 		
 		ByteBuf buf = encode(msg);
@@ -24,9 +24,9 @@ public class TestCmppCancelResponseMessageCodec  extends AbstractTestMessageCode
 		int expectLength = CmppCancelResponse.SUCCESSID.getBodyLength() +  CmppHead.COMMANDID.getHeadLength();
 		
 		Assert.assertEquals(expectLength, length);
-		Assert.assertEquals(expectLength, buf.readUnsignedInt());
-		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
-		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readUnsignedInt());
+		Assert.assertEquals(expectLength, buf.readInt());
+		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readInt());
+		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readInt());
 		
 		
 		CmppCancelResponseMessage result = decode(copybuf);

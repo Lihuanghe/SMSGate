@@ -21,9 +21,9 @@ public class TestCmppTerminateResponseMessageCodec extends AbstractTestMessageCo
 		ByteBuf copybuf = buf.copy();
 		Assert.assertEquals(12, buf.readableBytes());
 		
-		Assert.assertEquals(12, buf.readUnsignedInt());
-		Assert.assertEquals(msg.getPacketType().getCommandId(),buf.readUnsignedInt());
-		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readUnsignedInt());
+		Assert.assertEquals(12, buf.readInt());
+		Assert.assertEquals(msg.getPacketType().getCommandId(),buf.readInt());
+		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readInt());
 		
 		CmppTerminateResponseMessage result = decode(copybuf);
 		

@@ -16,13 +16,13 @@ public class SMGPMessageReceiveHandler extends MessageReceiveHandler {
 		
 		if(msg instanceof SMGPDeliverMessage){
 			SMGPDeliverRespMessage resp = new SMGPDeliverRespMessage();
-		    resp.setSequenceNumber(((SMGPDeliverMessage)msg).getSequenceNo());
+		    resp.setSequenceNo(((SMGPDeliverMessage)msg).getSequenceNo());
 		    resp.setStatus(0);
 		  
 			return ctx.writeAndFlush(resp);
 		}else if(msg instanceof SMGPSubmitMessage) {
 			SMGPSubmitRespMessage resp = new SMGPSubmitRespMessage();
-			resp.setSequenceNumber(((SMGPSubmitMessage)msg).getSequenceNo());
+			resp.setSequenceNo(((SMGPSubmitMessage)msg).getSequenceNo());
 		    resp.setStatus(0);
 			return ctx.writeAndFlush(resp);
 		}

@@ -339,7 +339,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 				if (size == 0)
 					return null;
 
-				int idx = (int) DefaultSequenceNumberUtil.getNextAtomicValue(indexSeq, Limited);
+				int idx = indexSeq.incrementAndGet();
 				Channel ret = collection.get(idx % size);
 				// 超过65535归0
 				return ret;
@@ -368,7 +368,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		}
 
 		private final static long Limited = 65535L;
-		private AtomicLong indexSeq = new AtomicLong();
+		private AtomicInteger indexSeq = new AtomicInteger();
 	}
 	
 	private class MessageChannelTrafficShapingHandler extends ChannelTrafficShapingHandler {

@@ -34,7 +34,7 @@ public class SgipHeaderCodec extends MessageToMessageCodec<ByteBuf, Message> {
 
 		Header header = new DefaultHeader();
 		header.setPacketLength(bytebuf.readUnsignedInt());
-		header.setCommandId(bytebuf.readUnsignedInt());
+		header.setCommandId(bytebuf.readInt());
 		byte[] seqbytes = new byte[SgipHead.SEQUENCENUMBER.getLength()];
 		bytebuf.readBytes(seqbytes);
 		SequenceNumber seq = DefaultSequenceNumberUtil.bytes2SequenceN(seqbytes);

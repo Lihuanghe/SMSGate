@@ -48,7 +48,7 @@ public class DefaultMessage implements Message ,Cloneable {
 		this(packetType, DefaultSequenceNumberUtil.getSequenceNo());
 	}
 
-	public DefaultMessage(PacketType packetType, long sequenceId) {
+	public DefaultMessage(PacketType packetType, int sequenceId) {
 		setPacketType(packetType);
 		Header header = new DefaultHeader();
 		header.setSequenceId(sequenceId);
@@ -156,12 +156,12 @@ public class DefaultMessage implements Message ,Cloneable {
 	}
 
 	@Override
-	public long getSequenceNo() {
+	public int getSequenceNo() {
 		return getHeader().getSequenceId();
 	}
 
 	@Override
-	public void setSequenceNo(long seq) {
+	public void setSequenceNo(int seq) {
 		getHeader().setSequenceId(seq);
 	}
 }

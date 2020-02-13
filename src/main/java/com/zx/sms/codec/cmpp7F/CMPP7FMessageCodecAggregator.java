@@ -23,7 +23,7 @@ public class CMPP7FMessageCodecAggregator extends ChannelDuplexHandler {
 		private final static  CMPP7FMessageCodecAggregator instance = new CMPP7FMessageCodecAggregator();
 	}
 	
-	private ConcurrentHashMap<Long, MessageToMessageCodec> codecMap = new ConcurrentHashMap<Long, MessageToMessageCodec>();
+	private ConcurrentHashMap<Integer, MessageToMessageCodec> codecMap = new ConcurrentHashMap<Integer, MessageToMessageCodec>();
 
 	private CMPP7FMessageCodecAggregator() {
 		for (PacketType packetType : Cmpp7FPacketType.values()) {
@@ -38,7 +38,7 @@ public class CMPP7FMessageCodecAggregator extends ChannelDuplexHandler {
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
-		long commandId = (Long) ((Message) msg).getHeader().getCommandId();
+		int commandId =((Message) msg).getHeader().getCommandId();
 		MessageToMessageCodec codec = codecMap.get(commandId);
 		codec.channelRead(ctx, msg);
 	}
@@ -46,7 +46,7 @@ public class CMPP7FMessageCodecAggregator extends ChannelDuplexHandler {
 	@Override
 	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
 		try {
-			long commandId = (Long) ((Message) msg).getHeader().getCommandId();
+			int commandId = ((Message) msg).getHeader().getCommandId();
 			MessageToMessageCodec codec = codecMap.get(commandId);
 			codec.write(ctx, msg, promise);
 		} catch (Exception ex) {

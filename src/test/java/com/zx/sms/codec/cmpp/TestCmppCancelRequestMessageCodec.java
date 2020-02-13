@@ -27,9 +27,9 @@ public class TestCmppCancelRequestMessageCodec  extends AbstractTestMessageCodec
 		int expectLength = CmppCancelRequest.MSGID.getBodyLength() +  CmppHead.COMMANDID.getHeadLength();
 		
 		Assert.assertEquals(expectLength, length);
-		Assert.assertEquals(expectLength, buf.readUnsignedInt());
-		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readUnsignedInt());
-		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readUnsignedInt());
+		Assert.assertEquals(expectLength, buf.readInt());
+		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readInt());
+		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readInt());
 		
 		CmppCancelRequestMessage result = decode(copybuf);
 		Assert.assertEquals(msg.getMsgId(), result.getMsgId());

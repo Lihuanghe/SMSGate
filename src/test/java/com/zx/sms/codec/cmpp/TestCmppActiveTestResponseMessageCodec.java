@@ -16,7 +16,7 @@ public class TestCmppActiveTestResponseMessageCodec extends AbstractTestMessageC
 	@Test
 	public void testCodec()
 	{
-		CmppActiveTestResponseMessage msg = new CmppActiveTestResponseMessage(0x12fL);
+		CmppActiveTestResponseMessage msg = new CmppActiveTestResponseMessage(0x12f);
 		msg.setReserved((short )2);
 		
 		ByteBuf buf = encode(msg);
@@ -26,9 +26,9 @@ public class TestCmppActiveTestResponseMessageCodec extends AbstractTestMessageC
 		int length = buf.readableBytes();
 		int expectLength =  CmppActiveTestResponse.RESERVED.getBodyLength()+ CmppHead.COMMANDID.getHeadLength();
 		Assert.assertEquals(expectLength,length);
-		Assert.assertEquals(expectLength, buf.readUnsignedInt());
-		Assert.assertEquals(msg.getPacketType().getCommandId(),buf.readUnsignedInt());
-		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readUnsignedInt());
+		Assert.assertEquals(expectLength, buf.readInt());
+		Assert.assertEquals(msg.getPacketType().getCommandId(),buf.readInt());
+		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readInt());
 		
 		
 		CmppActiveTestResponseMessage result = decode(newbuf);

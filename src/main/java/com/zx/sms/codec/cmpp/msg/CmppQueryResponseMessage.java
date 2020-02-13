@@ -26,7 +26,7 @@ public class CmppQueryResponseMessage extends DefaultMessage {
 	private long moWT = 0;
 	private long moFL = 0;
 
-	public CmppQueryResponseMessage(long sequenceId) {
+	public CmppQueryResponseMessage(int sequenceId) {
 		super(CmppPacketType.CMPPQUERYRESPONSE, sequenceId);
 	}
 
