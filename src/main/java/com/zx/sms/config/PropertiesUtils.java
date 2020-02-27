@@ -15,7 +15,11 @@ public class PropertiesUtils {
 		String charset = GLOBAL.getProperty("defaultTransportCharset");
 		return charset==null?"UTF-8":charset;
 	}
-	
+	//保留该方法，兼容以前版本
+	public static String getproperties(String key, String defaultValue)
+	{
+		return  getProperties(key,defaultValue);
+	}
 	public static String getProperties(String key, String defaultValue)
 	{
 		String ret = GLOBAL.getProperty(key);
