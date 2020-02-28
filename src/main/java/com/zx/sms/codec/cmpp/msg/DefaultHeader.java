@@ -70,7 +70,7 @@ public class DefaultHeader implements Header {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("DefaultHeader [commandId=0x");
-		builder.append(Long.toHexString(commandId));
+		builder.append(Integer.toHexString(commandId));
 		builder.append(", sequenceId=");
 		builder.append(sequenceId);
 		builder.append(", nodeId=");
