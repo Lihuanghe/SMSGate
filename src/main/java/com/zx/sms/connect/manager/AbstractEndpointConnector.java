@@ -49,8 +49,6 @@ import io.netty.util.concurrent.Promise;
 public abstract class AbstractEndpointConnector implements EndpointConnector<EndpointEntity> {
 	private static final Logger logger = LoggerFactory.getLogger(AbstractEndpointConnector.class);
 
-	private volatile AtomicInteger conCnt = new AtomicInteger();
-
 	private SslContext sslCtx = null;
 	/**
 	 * 端口
@@ -116,16 +114,9 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	@Override
 	public int getConnectionNum() {
 
-		return conCnt.get();
+		return getChannels().size();
 	}
 
-	protected int incrementConn() {
-		return conCnt.incrementAndGet();
-	}
-
-	protected int decrementConn() {
-		return conCnt.decrementAndGet();
-	}
 
 	private CircularList getChannels() {
 		return channels;
@@ -216,7 +207,6 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			ch.attr(GlobalConstance.attributeKey).set(SessionState.Connect);
 			
 			getChannels().add(ch);
-			int cnt = incrementConn();
 			
 			ConcurrentMap<Serializable, VersionObject> storedMap = null;
 			if (endpoint.isReSendFailMsg()) {
@@ -226,9 +216,9 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 				storedMap = new ConcurrentHashMap();
 			}
 
-			logger.info("Channel added To Endpoint {} .totalCnt:{} ,remoteAddress: {}", endpoint, cnt, ch.remoteAddress());
+			logger.info("Channel added To Endpoint {} .totalCnt:{} ,remoteAddress: {}", endpoint, nowConnCnt + 1, ch.remoteAddress());
 
-			if (cnt == 1 && endpoint.isReSendFailMsg()) {
+			if (nowConnCnt == 0 && endpoint.isReSendFailMsg()) {
 				// 如果是第一个连接。要把上次发送失败的消息取出，再次发送一次
 				ch.pipeline().addAfter(GlobalConstance.codecName, sessionHandler,createSessionManager(endpoint, storedMap, true) );
 			}else{
@@ -253,7 +243,6 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		
 		if (getChannels().remove(ch)){
 			ch.attr(GlobalConstance.attributeKey).set(SessionState.DisConnect);
-			decrementConn();
 		}
 	}
 
@@ -331,18 +320,24 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		public Channel[] getall() {
 			return collection.toArray(new Channel[collection.size()]);
 		}
+		
+		public int size() {return collection.size();}
 
 		public Channel fetch() {
+			int size = collection.size();
+			if (size == 0)
+				return null;
 
+			int idx = indexSeq.incrementAndGet();
+			
 			try {
-				int size = getConnectionNum();
-				if (size == 0)
-					return null;
-
-				int idx = indexSeq.incrementAndGet();
-				Channel ret = collection.get(idx % size);
-				// 超过65535归0
+				Channel ret = collection.get((idx & 0x7fffffff) % size);
 				return ret;
+			}catch(IndexOutOfBoundsException ex) {
+				//多线程情况可能抛异常
+				//1：当线连接数为0了
+				//2：当前连接数小于index
+				return collection.isEmpty() ? null :collection.get(0);
 			} finally {
 			}
 		}
@@ -367,7 +362,6 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			return r;
 		}
 
-		private final static long Limited = 65535L;
 		private AtomicInteger indexSeq = new AtomicInteger();
 	}
 	
