@@ -284,6 +284,10 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 						}
 					}
 
+				}else{
+					handler.setEndpointEntity(entity);
+					pipe.addLast(handler.name(), handler);
+					logger.info("add share handlers . {}", handler);
 				}
 			}
 		}
@@ -331,7 +335,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			int idx = indexSeq.incrementAndGet();
 			
 			try {
-				Channel ret = collection.get((idx & 0x7fffffff) % size);
+				Channel ret = collection.get((idx & 0xffff) % size);
 				return ret;
 			}catch(IndexOutOfBoundsException ex) {
 				//多线程情况可能抛异常
