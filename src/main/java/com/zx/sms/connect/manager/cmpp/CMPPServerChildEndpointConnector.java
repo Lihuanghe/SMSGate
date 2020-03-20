@@ -52,7 +52,7 @@ public class CMPPServerChildEndpointConnector extends AbstractEndpointConnector 
 			}
 		}
 		//处理长短信
-		pipe.addLast( "CMPPDeliverLongMessageHandler", new CMPPDeliverLongMessageHandler(entity));
+		pipe.addLast("CMPPDeliverLongMessageHandler", new CMPPDeliverLongMessageHandler(entity));
 		pipe.addLast("CMPPSubmitLongMessageHandler",  new CMPPSubmitLongMessageHandler(entity));
 		
 		pipe.addLast("CmppActiveTestRequestMessageHandler", GlobalConstance.activeTestHandler);
