@@ -113,14 +113,15 @@ public enum EndpointManager implements EndpointManagerInterface {
 				for(Map.Entry<String, EndpointEntity> entry: idMap.entrySet()){
 					
 					EndpointEntity entity = entry.getValue();
-					EndpointConnector conn = entity.getSingletonConnector();
-					int max = entity.getMaxChannels();
-					int actual = conn.getConnectionNum();
-					
-					//客户端重连
-					if(entity instanceof ClientEndpoint && actual < max){
-						logger.debug("open connection {}",entity);
-						conn.open();
+					if(entity instanceof ClientEndpoint) {
+						EndpointConnector conn = entity.getSingletonConnector();
+						int max = entity.getMaxChannels();
+						int actual = conn.getConnectionNum();
+						//客户端重连
+						if(actual < max){
+							logger.debug("open connection {}",entity);
+							conn.open();
+						}
 					}
 				}
 				return started;
