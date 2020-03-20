@@ -34,7 +34,7 @@ public class TCPServerEndpointEntity extends EndpointEntity implements ServerEnd
 	}
 
 	@Override
-	public <T extends EndpointConnector<EndpointEntity>> T buildConnector() {
+	protected <T extends EndpointConnector<EndpointEntity>> T buildConnector() {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -7,7 +7,7 @@ import com.zx.sms.connect.manager.ServerEndpoint;
 public class SMPPServerChildEndpointEntity extends SMPPEndpointEntity implements ServerEndpoint{
 
 	@Override
-	public SMPPServerChildEndpointConnector buildConnector() {
+	protected SMPPServerChildEndpointConnector buildConnector() {
 		return new SMPPServerChildEndpointConnector(this);
 	}
 

@@ -41,7 +41,7 @@ public class SMPPServerEndpointEntity extends EndpointEntity implements ServerEn
 		return list;
 	}
 	@Override
-	public SMPPServerEndpointConnector buildConnector() {
+	protected SMPPServerEndpointConnector buildConnector() {
 		return new SMPPServerEndpointConnector(this);
 	}
 

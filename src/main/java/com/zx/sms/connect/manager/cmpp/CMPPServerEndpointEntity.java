@@ -29,7 +29,7 @@ public class CMPPServerEndpointEntity extends EndpointEntity implements ServerEn
 	}
 
 	@Override
-	public CMPPServerEndpointConnector buildConnector() {
+	protected CMPPServerEndpointConnector buildConnector() {
 		return new CMPPServerEndpointConnector(this);
 	}
 

@@ -35,7 +35,7 @@ public class ConnState implements ConnStateMBean {
 
 	private String printOne(EndpointEntity e){
 		 StringBuilder sb = new StringBuilder();
-		EndpointConnector econn = EndpointManager.INS.getEndpointConnector(e);
+		EndpointConnector econn = e.getSingletonConnector();
 		
 		if(econn == null) return ""; 
 			

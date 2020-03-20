@@ -25,7 +25,6 @@ import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.config.PropertiesUtils;
 import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
-import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.session.cmpp.SessionState;
 
 import io.netty.channel.Channel;
@@ -133,7 +132,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 			@Override
 			public void run() {
 				// 取消重试队列里的任务
-				EndpointConnector conn = EndpointManager.INS.getEndpointConnector(entity);
+				EndpointConnector conn = entity.getSingletonConnector();
 				
 				for (Iterator<Map.Entry<K, Entry>> itor = msgRetryMap.entrySet().iterator();itor.hasNext(); ) {
 					Map.Entry<K, Entry> entry = itor.next();

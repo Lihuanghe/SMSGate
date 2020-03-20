@@ -41,7 +41,7 @@ public class SgipServerEndpointEntity extends EndpointEntity implements ServerEn
 		return list;
 	}
 	@Override
-	public SgipServerEndpointConnector buildConnector() {
+	protected SgipServerEndpointConnector buildConnector() {
 		return new SgipServerEndpointConnector(this);
 	}
 

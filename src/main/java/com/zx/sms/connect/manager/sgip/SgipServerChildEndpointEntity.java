@@ -7,7 +7,7 @@ import com.zx.sms.connect.manager.ServerEndpoint;
 public class SgipServerChildEndpointEntity extends SgipEndpointEntity implements ServerEndpoint{
 
 	@Override
-	public SgipServerChildEndpointConnector buildConnector() {
+	protected SgipServerChildEndpointConnector buildConnector() {
 		return new SgipServerChildEndpointConnector(this);
 	}
 

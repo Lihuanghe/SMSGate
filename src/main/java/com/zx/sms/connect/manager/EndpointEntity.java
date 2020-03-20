@@ -2,6 +2,8 @@ package com.zx.sms.connect.manager;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 
@@ -75,6 +77,8 @@ public abstract class EndpointEntity implements Serializable {
 	
 	private boolean useSSL = false;
 	private String proxy;
+	
+	private volatile EndpointConnector connector;
 	
     public String getProxy() {
 		return proxy;
@@ -233,8 +237,22 @@ public abstract class EndpointEntity implements Serializable {
 			return false;
 		return true;
 	}
+	public  <T extends EndpointConnector<EndpointEntity>> T getSingletonConnector() {
+		if(connector!=null) {
+			return (T)connector;
+		}else {
+			synchronized (this) {
+				if(connector!=null) {
+					return (T)connector;
+				}else {
+					connector = buildConnector();
+					return (T)connector;
+				}
+			}
+		}
+	}
 	
-	abstract public  <T extends EndpointConnector<EndpointEntity>> T buildConnector();
+	abstract protected <T extends EndpointConnector<EndpointEntity>> T buildConnector();
 	@Override
 	public String toString() {
 		return "EndpointEntity [Id=" + Id + ", Desc=" + Desc + ", channelType="

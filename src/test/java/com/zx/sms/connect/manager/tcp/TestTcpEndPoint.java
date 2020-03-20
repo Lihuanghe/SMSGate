@@ -43,7 +43,7 @@ public class TestTcpEndPoint {
 //		}, 10, 10, TimeUnit.SECONDS);
 		
 		Thread.sleep(5000);
-		manager.getEndpointConnector(client).fetch().writeAndFlush(Unpooled.wrappedBuffer(new byte[]{1}));
+		client.getSingletonConnector().fetch().writeAndFlush(Unpooled.wrappedBuffer(new byte[]{1}));
 		Thread.sleep(10000);
 		 Set<EndpointEntity> entities =  CMPPEndpointManager.INS.allEndPointEntity();
 		 for(EndpointEntity en : entities)

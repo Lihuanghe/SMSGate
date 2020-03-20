@@ -78,7 +78,7 @@ public class CMPPChargingDemoTest {
 	 */
 	private class MyCMPPClientEndpointEntity extends CMPPClientEndpointEntity{
 		@Override
-		public CMPPClientEndpointConnector buildConnector() {
+		protected CMPPClientEndpointConnector buildConnector() {
 			return new MyCMPPClientEndpointConnector(this);
 		}
 	}

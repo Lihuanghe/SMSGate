@@ -11,7 +11,7 @@ public class SMGPClientEndpointEntity extends SMGPEndpointEntity implements Clie
 	private static final long serialVersionUID = -4564015175057370204L;
 
 	@Override
-	public SMGPClientEndpointConnector buildConnector() {
+	protected SMGPClientEndpointConnector buildConnector() {
 		
 		return new SMGPClientEndpointConnector(this);
 	}

@@ -12,7 +12,7 @@ public class SMGPServerChildEndpointEntity extends SMGPEndpointEntity implements
 	private static final long serialVersionUID = 6946326952395639937L;
 
 	@Override
-	public SMGPServerChildEndpointConnector buildConnector() {
+	protected SMGPServerChildEndpointConnector buildConnector() {
 		return new SMGPServerChildEndpointConnector(this);
 	}
 

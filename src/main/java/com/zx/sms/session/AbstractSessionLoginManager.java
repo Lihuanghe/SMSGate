@@ -9,7 +9,6 @@ import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.ClientEndpoint;
 import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
-import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.session.cmpp.SessionState;
 
 import io.netty.channel.Channel;
@@ -66,7 +65,7 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
     	Channel ch = ctx.channel();
     	
 		if(state == SessionState.Connect){
-			final EndpointConnector conn = EndpointManager.INS.getEndpointConnector(entity);
+			EndpointConnector conn = entity.getSingletonConnector();
 			if(conn!=null)conn.removeChannel(ch);
 			logger.warn("Connection closed . {} , connect count : {}" ,entity,conn==null?0:conn.getConnectionNum());
 		}else{
@@ -122,15 +121,9 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 			entity = childentity;
 			
 			// 打开连接，并把连接加入管理 器
-			EndpointManager.INS.openEndpoint(childentity);
-			// 端口已打开，获取连接器
-			EndpointConnector conn = EndpointManager.INS.getEndpointConnector(childentity);
 			
-			if(conn==null){
-				logger.warn("entity may closed. {}" ,childentity);
-				failedLogin(ctx, message, 5);
-				return;
-			}
+			// 端口已打开，获取连接器
+			EndpointConnector conn = childentity.getSingletonConnector();
 			
 			//检查是否超过最大连接数
 			if(conn.addChannel(ctx.channel())){
@@ -162,13 +155,7 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 	private void receiveConnectResponseMessage(ChannelHandlerContext ctx, Object message) throws Exception {
 		int status = validServermsg(message);
 		if (status == 0) {
-			
-			EndpointConnector conn = EndpointManager.INS.getEndpointConnector(entity);
-			if(conn==null){
-				logger.warn("entity may closed. {}" ,entity);
-				ctx.close();
-				return;
-			}
+			EndpointConnector conn = entity.getSingletonConnector();
 			
 			if(conn.addChannel(ctx.channel())){
 				state = SessionState.Connect;

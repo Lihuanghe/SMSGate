@@ -27,26 +27,26 @@ public class ChannelUtil {
 	private static final Logger logger = LoggerFactory.getLogger(ChannelUtil.class);
 
 	public static ChannelFuture asyncWriteToEntity(final EndpointEntity entity, final Object msg) {
-
-		EndpointConnector connector = EndpointManager.INS.getEndpointConnector(entity);
+		EndpointConnector connector = entity.getSingletonConnector();
 		return asyncWriteToEntity(connector, msg, null);
 	}
 
-	public static ChannelFuture asyncWriteToEntity(final String entity, final Object msg) {
-
-		EndpointConnector connector = EndpointManager.INS.getEndpointConnector(entity);
+	public static ChannelFuture asyncWriteToEntity(String entity, Object msg) {
+		EndpointEntity e = EndpointManager.INS.getEndpointEntity(entity);
+		EndpointConnector connector = e.getSingletonConnector();
 		return asyncWriteToEntity(connector, msg, null);
 	}
 
 	public static ChannelFuture asyncWriteToEntity(final EndpointEntity entity, final Object msg, GenericFutureListener listner) {
 
-		EndpointConnector connector = EndpointManager.INS.getEndpointConnector(entity);
+		EndpointConnector connector = entity.getSingletonConnector();
 		return asyncWriteToEntity(connector, msg, listner);
 	}
 
 	public static ChannelFuture asyncWriteToEntity(final String entity, final Object msg, GenericFutureListener listner) {
 
-		EndpointConnector connector = EndpointManager.INS.getEndpointConnector(entity);
+		EndpointEntity e = EndpointManager.INS.getEndpointEntity(entity);
+		EndpointConnector connector = e.getSingletonConnector();
 		return asyncWriteToEntity(connector, msg, listner);
 	}
 
@@ -84,7 +84,8 @@ public class ChannelUtil {
 	 */
 	public static <T extends BaseMessage> List<Promise<T>> syncWriteLongMsgToEntity(String entity, BaseMessage msg) throws Exception {
 
-		EndpointConnector connector = EndpointManager.INS.getEndpointConnector(entity);
+		EndpointEntity e = EndpointManager.INS.getEndpointEntity(entity);
+		EndpointConnector connector = e.getSingletonConnector();
 		if(connector == null) return null;
 		
 		if (msg instanceof LongSMSMessage) {
@@ -123,8 +124,8 @@ public class ChannelUtil {
 	 *正常短信下发要使用 syncWriteLongMsgToEntity 方法
 	 */
 	public static <T extends BaseMessage> Promise<T> syncWriteBinaryMsgToEntity(String entity, BaseMessage msg) throws Exception {
-
-		EndpointConnector connector = EndpointManager.INS.getEndpointConnector(entity);
+		EndpointEntity e = EndpointManager.INS.getEndpointEntity(entity);
+		EndpointConnector connector = e.getSingletonConnector();
 
 		Promise<T> promise = connector.synwrite(msg);
 		if (promise == null) {

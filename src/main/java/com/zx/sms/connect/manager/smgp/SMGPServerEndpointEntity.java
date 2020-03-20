@@ -41,7 +41,7 @@ public class SMGPServerEndpointEntity extends EndpointEntity implements ServerEn
 		return list;
 	}
 	@Override
-	public SMGPServerEndpointConnector buildConnector() {
+	protected SMGPServerEndpointConnector buildConnector() {
 		return new SMGPServerEndpointConnector(this);
 	}
 

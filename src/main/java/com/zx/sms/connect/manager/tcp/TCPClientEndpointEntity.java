@@ -16,7 +16,7 @@ public class TCPClientEndpointEntity extends EndpointEntity implements ClientEnd
 	}
 
 	@Override
-	public TCPClientEndpointConnector buildConnector() {
+	protected TCPClientEndpointConnector buildConnector() {
 
 		return new TCPClientEndpointConnector(this);
 	}

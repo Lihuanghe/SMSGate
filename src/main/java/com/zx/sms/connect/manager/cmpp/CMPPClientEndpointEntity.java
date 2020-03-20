@@ -8,7 +8,8 @@ import com.zx.sms.connect.manager.ClientEndpoint;
 public class CMPPClientEndpointEntity extends CMPPEndpointEntity implements ClientEndpoint {
 
 	@Override
-	public CMPPClientEndpointConnector buildConnector() {
+	protected CMPPClientEndpointConnector buildConnector() {
+		
 		return new CMPPClientEndpointConnector(this);
 	}
 }

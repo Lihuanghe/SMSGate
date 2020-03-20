@@ -40,7 +40,7 @@ public abstract class MessageReceiveHandler extends AbstractBusinessHandler {
 				@Override
 				public Boolean call() throws Exception {
 						long nowcnt = cnt.get();
-						EndpointConnector conn = EndpointManager.INS.getEndpointConnector(getEndpointEntity());
+						EndpointConnector conn = getEndpointEntity().getSingletonConnector();
 						
 						logger.info("channels : {},Totle Receive Msg Num:{},   speed : {}/s",
 								conn == null ? 0 : conn.getConnectionNum(), nowcnt, (nowcnt - lastNum) / rate);
@@ -50,7 +50,7 @@ public abstract class MessageReceiveHandler extends AbstractBusinessHandler {
 			}, new ExitUnlimitCirclePolicy() {
 				@Override
 				public boolean notOver(Future future) {
-					return EndpointManager.INS.getEndpointConnector(getEndpointEntity()) != null;
+					return getEndpointEntity().getSingletonConnector() != null;
 				}
 			}, rate * 1000);
 			inited = true;

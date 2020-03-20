@@ -24,8 +24,6 @@ public enum EndpointManager implements EndpointManagerInterface {
 
 	private ConcurrentHashMap<String, EndpointEntity> idMap = new ConcurrentHashMap<String, EndpointEntity>();
 
-	private ConcurrentHashMap<String, EndpointConnector<?>> map = new ConcurrentHashMap<String, EndpointConnector<?>>();
-	
 	private volatile boolean started = false;
 
 	public synchronized void openEndpoint(EndpointEntity entity) {
@@ -37,11 +35,7 @@ public enum EndpointManager implements EndpointManagerInterface {
 			addEndpointEntity(entity);
 		}
 
-		EndpointConnector<?> conn = map.get(entity.getId());
-		if (conn == null){
-			conn = entity.buildConnector();
-			map.put(entity.getId(), conn);
-		}
+		EndpointConnector<?> conn = entity.getSingletonConnector();
 
 		try {
 			conn.open();
@@ -51,25 +45,15 @@ public enum EndpointManager implements EndpointManagerInterface {
 	}
 
 	public synchronized void close(EndpointEntity entity) {
-		EndpointConnector<?> conn = map.get(entity.getId());
+		EndpointConnector<?> conn = entity.getSingletonConnector();
 		if (conn == null)
 			return;
 		try {
 			conn.close();
-			// 关闭所有连接，并把Connector删掉
-			map.remove(entity.getId());
 
 		} catch (Exception e) {
 			logger.error("close Error", e);
 		}
-	}
-
-	public EndpointConnector<?> getEndpointConnector(EndpointEntity entity) {
-		return map.get(entity.getId());
-	}
-
-	public EndpointConnector<?> getEndpointConnector(String entityId) {
-		return map.get(entityId);
 	}
 
 	public EndpointEntity getEndpointEntity(String id) {
@@ -126,9 +110,10 @@ public enum EndpointManager implements EndpointManagerInterface {
 
 			@Override
 			public Boolean call() throws Exception {
-				for(Map.Entry<String, EndpointConnector<?>> entry: map.entrySet()){
-					EndpointConnector conn = entry.getValue();
-					EndpointEntity entity = conn.getEndpointEntity();
+				for(Map.Entry<String, EndpointEntity> entry: idMap.entrySet()){
+					
+					EndpointEntity entity = entry.getValue();
+					EndpointConnector conn = entity.getSingletonConnector();
 					int max = entity.getMaxChannels();
 					int actual = conn.getConnectionNum();
 					
