@@ -96,6 +96,7 @@ public enum EndpointManager implements EndpointManagerInterface {
 		for (EndpointEntity en : endpoints) {
 			close(en);
 		}
+		stopConnectionCheckTask();
 	}
 	
 	public void stopConnectionCheckTask(){

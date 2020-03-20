@@ -52,7 +52,7 @@ public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 
 	@Override
 	public void userEventTriggered(final ChannelHandlerContext ctx, Object evt) throws Exception {
-		final AtomicInteger tmptotal = new AtomicInteger(totleCnt.get());
+		final AtomicInteger tmptotal = totleCnt;
 		if (evt == SessionState.Connect) {
 
 			final Channel ch = ctx.channel();

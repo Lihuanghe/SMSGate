@@ -51,7 +51,6 @@ public class TestCirculeFutureTask {
 			}
 		}, 2,2, TimeUnit.SECONDS);
 		
-		LockSupport.park();
 	}
 	
 	@Test
@@ -89,7 +88,6 @@ public class TestCirculeFutureTask {
 			}
 		},0);
 		System.out.println(ManagementFactory.getRuntimeMXBean().getName());
-		LockSupport.park();
 		
 
 	}

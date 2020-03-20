@@ -28,6 +28,10 @@ public abstract class MessageReceiveHandler extends AbstractBusinessHandler {
 	private long lastNum = 0;
 	private volatile boolean inited = false;
 
+	public AtomicLong getCnt() {
+		return cnt;
+	}
+
 	@Override
 	public String name() {
 		return "MessageReceiveHandler-smsBiz";
@@ -50,7 +54,7 @@ public abstract class MessageReceiveHandler extends AbstractBusinessHandler {
 			}, new ExitUnlimitCirclePolicy() {
 				@Override
 				public boolean notOver(Future future) {
-					return getEndpointEntity().getSingletonConnector() != null;
+					return getEndpointEntity().getSingletonConnector().getConnectionNum()>0;
 				}
 			}, rate * 1000);
 			inited = true;
