@@ -6,6 +6,9 @@ import io.netty.buffer.Unpooled;
 import org.apache.commons.codec.binary.Hex;
 import org.junit.Assert;
 import org.junit.Test;
+import org.marre.sms.SmppSmsDcs;
+import org.marre.sms.SmsAlphabet;
+import org.marre.sms.SmsMsgClass;
 import org.marre.sms.SmsTextMessage;
 
 import com.zx.sms.codec.AbstractSMPPTestMessageCodec;
@@ -119,7 +122,7 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
         Assert.assertEquals(0x00, pdu0.getReplaceIfPresent());
         Assert.assertEquals(0x08, pdu0.getDataCoding());
         Assert.assertEquals(0x00, pdu0.getDefaultMsgId());
-        Assert.assertEquals(0, pdu0.getShortMessageLength());
+        Assert.assertEquals(0, pdu0.getMsglength());
         System.out.println(pdu0);
     }
     
@@ -134,13 +137,34 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
     
     @Test
     public void testLongmSubmitSm(){
+    	
     	SubmitSm pdu = new SubmitSm();
     	pdu.setDestAddress(new Address((byte)0,(byte)0,"1111"));
     	pdu.setSourceAddress(new Address((byte)0,(byte)0,"2222"));
     	pdu.setSmsMsg("尊敬的客户,您好！您于2016-03-23 14:51:36通过中国移动10085销售专线订购的【一加手机高清防刮保护膜】，请点击支付http://www.10085.cn/web85/page/zyzxpay/wap_order.html?orderId=76DEF9AE1808F506FD4E6CB782E3B8E7EE875E766D3D335C 完成下单。请在60分钟内完成支付，如有疑问，请致电10085咨询，谢谢！中国移动10085");
-    	testlongCodec(pdu);
+ 
+       	testlongCodec(pdu);
     	
     }
+	@Test
+	public void testASCIIcode()
+	{
+		SubmitSm pdu = new SubmitSm();
+    	pdu.setDestAddress(new Address((byte)0,(byte)0,"1111"));
+    	pdu.setSourceAddress(new Address((byte)0,(byte)0,"2222"));
+    	pdu.setSmsMsg(new SmsTextMessage("1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890", SmppSmsDcs.getGeneralDataCodingDcs(SmsAlphabet.GSM, SmsMsgClass.CLASS_UNKNOWN)));
+     	testlongCodec(pdu);
+	}
+    
+	@Test
+	public void testGSMcode()
+	{
+		SubmitSm pdu = new SubmitSm();
+    	pdu.setDestAddress(new Address((byte)0,(byte)0,"1111"));
+    	pdu.setSourceAddress(new Address((byte)0,(byte)0,"2222"));
+    	pdu.setSmsMsg(new SmsTextMessage("@£$¥èéùìòÇØøÅåΔ_ΦΓΛΩΠΨΣΘΞæßÉ !\"#¤%&'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñü|^€{}[]~12345678901AssBC5678901234567", SmppSmsDcs.getGeneralDataCodingDcs(SmsAlphabet.GSM, SmsMsgClass.CLASS_UNKNOWN)));
+     	testlongCodec(pdu);
+	}
     
 	private void testlongCodec(BaseSm msg)
 	{

@@ -50,8 +50,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public abstract class SmsConcatMessage implements SmsMessage
 {
     private static final AtomicInteger rnd_  = new AtomicInteger((new Random()).nextInt(0xffff));
-	static final int PDUMAXLENGTH = 140;
-	static final int ASCIIMAXLENGTH = 159;
+	
     /**
      * Creates an empty SmsConcatMessage.
      */
@@ -237,7 +236,7 @@ public abstract class SmsConcatMessage implements SmsMessage
         {
             int refno = nextRandom();
             // Convert septets into a string...
-            String msg = SmsPduUtil.readSeptets(ud.getData());
+            String msg = SmsPduUtil.readSeptets(ud.getData(),ud.getLength());
             
             if(msg.length()<=ud.getLength()){
             	//原字符串长度小于udLength ，说明存在GSM的转义字符
@@ -313,20 +312,21 @@ public abstract class SmsConcatMessage implements SmsMessage
     {
         SmsPdu[] smsPdus;
         SmsUserData ud = getUserData();
+        AbstractSmsDcs dcs = ud.getDcs();
         SmsUdhElement[] udhElements = getUdhElements();        
         int udhLength = SmsUdhUtil.getTotalSize(udhElements);
-        int nBytesLeft = PDUMAXLENGTH - udhLength;
+        int nBytesLeft = dcs.getMaxMsglength() - udhLength;
 
-        switch (ud.getDcs().getAlphabet())
+        switch (dcs.getAlphabet())
         {
         case GSM:
-            smsPdus = createSeptetPdus(udhElements, ud, nBytesLeft);
+            smsPdus = createOctalPdus(udhElements, ud, nBytesLeft);
             break;
         case UCS2:
             smsPdus = createUnicodePdus(udhElements, ud, nBytesLeft);
             break;
         case ASCII:
-        	smsPdus = createOctalPdus(udhElements, ud, nBytesLeft+ASCIIMAXLENGTH-PDUMAXLENGTH); 
+        	smsPdus = createOctalPdus(udhElements, ud, nBytesLeft); 
             break;
         case LATIN1:
         default:

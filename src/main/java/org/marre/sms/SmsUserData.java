@@ -50,16 +50,16 @@ public class SmsUserData
     protected final int length_;
     
     /** Data Coding Scheme for this user data. */
-    protected final SmsDcs dcs_;
+    protected final AbstractSmsDcs dcs_;
     
-    public SmsUserData(byte[] userData, int userDataLength, SmsDcs dataCodingScheme)
+    public SmsUserData(byte[] userData, int userDataLength, AbstractSmsDcs dataCodingScheme)
     {
         data_ = userData;
         length_ = userDataLength;
         dcs_ = dataCodingScheme;
     }
     
-    public SmsUserData(byte[] userData, SmsDcs dataCodingScheme)
+    public SmsUserData(byte[] userData, AbstractSmsDcs dataCodingScheme)
     {
         data_ = userData;
         length_ = userData.length;
@@ -97,7 +97,7 @@ public class SmsUserData
      * 
      * @return The dcs
      */
-    public SmsDcs getDcs()
+    public AbstractSmsDcs getDcs()
     {
         return dcs_;
     }

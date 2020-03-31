@@ -118,6 +118,7 @@ public class DefaultPduTranscoder implements PduTranscoder {
         // NOTE: at this point, the entire buffer written MUST match the command length
         // from earlier -- if it doesn't match, the our encoding process went awry
         if (buffer.readableBytes() != pdu.getCommandLength()) {
+        	
             throw new NotEnoughDataInBufferException("During PDU encoding the expected commandLength did not match the actual encoded (a serious error with our own encoding process)", pdu.getCommandLength(), buffer.readableBytes());
         }
 

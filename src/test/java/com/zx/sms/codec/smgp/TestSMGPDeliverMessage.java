@@ -14,6 +14,17 @@ import com.zx.sms.codec.smgp.msg.SMGPReportData;
 public class TestSMGPDeliverMessage extends AbstractSMGPTestMessageCodec<SMGPDeliverMessage>{
 
 	@Test
+	public void testascii() {
+		SMGPDeliverMessage msg = new SMGPDeliverMessage();
+		msg.setDestTermId("13800138000");
+		msg.setLinkId("1023rsd");
+		msg.setMsgContent("12345678901AssBC56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890abcdefghijklmnopqrstuvwxyzABCE");
+		msg.setMsgId(new MsgId());
+		msg.setSrcTermId("10086988");
+		testlongCodec(msg);
+	}
+	
+	@Test
 	public void test1() {
 		SMGPDeliverMessage msg = new SMGPDeliverMessage();
 		msg.setDestTermId("13800138000");
@@ -21,7 +32,7 @@ public class TestSMGPDeliverMessage extends AbstractSMGPTestMessageCodec<SMGPDel
 		msg.setMsgContent("第一种：通过注解@PostConstruct 和 @PreDestroy 方法 实现初始化和销毁bean之前进行的操作");
 		msg.setMsgId(new MsgId());
 		msg.setSrcTermId("10086988");
-		test0(msg);
+		testlongCodec(msg);
 	}
 	
 	@Test
@@ -52,7 +63,7 @@ public class TestSMGPDeliverMessage extends AbstractSMGPTestMessageCodec<SMGPDel
 		msg.setReport(report);
 		msg.setMsgId(new MsgId());
 		msg.setSrcTermId("10086988");
-		test0(msg);
+		testlongCodec(msg);
 	}
 	
 	public void testlongCodec(SMGPDeliverMessage msg)
@@ -87,27 +98,4 @@ public class TestSMGPDeliverMessage extends AbstractSMGPTestMessageCodec<SMGPDel
 		Assert.assertEquals(msg.getSrcTermId(), result.getSrcTermId());
 	}
 	
-	private void test0(SMGPDeliverMessage msg) {
-
-		System.out.println(msg);
-		ByteBuf buf = encode(msg);
-		ByteBuf newbuf = buf.copy();
-
-		int length = buf.readableBytes();
-		
-		buf.release();
-		SMGPDeliverMessage result = decode(newbuf);
-		System.out.println(result);
-		Assert.assertEquals(msg.getSequenceNo(), result.getSequenceNo());
-		if (msg.isReport()) {
-			Assert.assertEquals(msg.getReport().getStat(), result.getReport().getStat());
-		} else {
-			Assert.assertEquals(msg.getMsgContent(), result.getMsgContent());
-			Assert.assertEquals(msg.getSrcTermId(), result.getSrcTermId());
-			Assert.assertEquals(msg.getDestTermId(), result.getDestTermId());
-			Assert.assertEquals(msg.getRecvTime(), result.getRecvTime());
-		}
-		Assert.assertEquals(msg.getSrcTermId(), result.getSrcTermId());
-
-	}
 }

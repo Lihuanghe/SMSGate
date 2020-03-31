@@ -32,7 +32,7 @@ public  abstract class AbstractSMGPTestMessageCodec<T> {
 		ResourceLeakDetector.setLevel(Level.ADVANCED);
 		ChannelPipeline pipeline = ch.pipeline();
 		SMGPCodecChannelInitializer codec = new SMGPCodecChannelInitializer(getversion());
-		pipeline.addLast("serverLog", new LoggingHandler(this.getClass(),LogLevel.INFO));
+		pipeline.addLast("serverLog", new LoggingHandler(this.getClass(),LogLevel.DEBUG));
 		pipeline.addLast(codec.pipeName(), codec);
 		//处理长短信
 		pipeline.addLast("SMGPDeliverLongMessageHandler", new SMGPDeliverLongMessageHandler(null));

@@ -19,8 +19,8 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stax.StAXSource;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.marre.sms.AbstractSmsDcs;
 import org.marre.sms.SmsAlphabet;
-import org.marre.sms.SmsDcs;
 import org.marre.sms.SmsException;
 import org.marre.sms.SmsMessage;
 import org.marre.sms.SmsPdu;
@@ -29,7 +29,6 @@ import org.marre.sms.SmsPort;
 import org.marre.sms.SmsPortAddressedTextMessage;
 import org.marre.sms.SmsSimTookitSecurityMessage;
 import org.marre.sms.SmsTextMessage;
-import org.marre.sms.SmsUdhElement;
 import org.marre.sms.SmsUdhIei;
 import org.marre.sms.SmsUserData;
 import org.marre.wap.mms.MmsConstants;
@@ -137,7 +136,7 @@ public enum LongMessageFrameHolder {
 		}
 	}
 	
-	static SmsTextMessage buildTextMessage(byte[] bytes,SmsDcs msgfmt){
+	static SmsTextMessage buildTextMessage(byte[] bytes,AbstractSmsDcs msgfmt){
 		String text = null;
 		switch(msgfmt.getAlphabet()){
 		case GSM:
@@ -234,7 +233,7 @@ public enum LongMessageFrameHolder {
 			frame.setTpudhi(udh != null ? (short) 1 : (short) 0);
 
 			ByteArrayOutputStream btos = new ByteArrayOutputStream(200);
-			frame.setMsgLength((short) encodePdu(aMsgPdu, btos));
+			frame.setMsgLength((short) encodeOctetPdu(aMsgPdu, btos));
 			frame.setMsgContentBytes(btos.toByteArray());
 			result.add(frame);
 		}
@@ -352,9 +351,8 @@ public enum LongMessageFrameHolder {
 	 * @return
 	 */
 
-	public static byte[] octetStream2septetStream(byte[] octets) {
-		int septetCount = (8 * octets.length) / 7;
-		byte[] septets = new byte[septetCount];
+	public static byte[] octetStream2septetStream(byte[] octets,int charlength) {
+		byte[] septets = new byte[charlength];
 		for (int newIndex = septets.length - 1; newIndex >= 0; --newIndex) {
 			for (int bit = 6; bit >= 0; --bit) {
 				int oldBitIndex = ((newIndex * 7) + bit);
@@ -626,98 +624,6 @@ public enum LongMessageFrameHolder {
 				}
 			}
 		}
-	}
-
-	private int encodePdu(SmsPdu pdu, OutputStream baos) throws SmsException {
-		switch (pdu.getDcs().getAlphabet()) {
-		case GSM:
-			return encodeSeptetPdu(pdu, baos);
-		default:
-			return encodeOctetPdu(pdu, baos);
-		}
-	}
-
-	// 如果是7bit编码，需要计算真实的数据长度
-	public static int getPayloadLength(SmsAlphabet alpha, int udl) {
-		switch (alpha) {
-		case GSM:
-			return LongMessageFrameHolder.octetLengthfromseptetsLength(udl);
-		default:
-			return udl;
-		}
-	}
-
-	/**
-	 * Encodes an septet encoded pdu.
-	 * 
-	 * @param pdu
-	 * @param destination
-	 * @param sender
-	 * @return
-	 * @throws SmsException
-	 */
-	private static int encodeSeptetPdu(SmsPdu pdu, OutputStream baos) throws SmsException {
-		SmsUserData userData = pdu.getUserData();
-		byte[] ud = userData.getData();
-		byte[] udh = pdu.getUserDataHeaders();
-
-		int nUdSeptets = ud.length * 8 / 7;
-		int nUdBits = 0;
-
-		int nUdhBytes = (udh == null) ? 0 : udh.length;
-
-		// UDH + UDHL
-		int nUdhBits = 0;
-
-		// UD + UDH + UDHL
-		int nTotalBytes = 0;
-		int nTotalBits = 0;
-		int nTotalSeptets = 0;
-
-		int nFillBits = 0;
-		int length = 0;
-
-		try {
-			nUdhBits = nUdhBytes * 8;
-			nUdBits = nUdSeptets * 7;
-
-			nTotalBits = nUdBits + nFillBits + nUdhBits;
-			nTotalSeptets = nTotalBits / 7;
-
-			nTotalBytes = nTotalBits / 8;
-			if (nTotalBits % 8 > 0) {
-				nTotalBytes += 1;
-			}
-
-			// UDH?
-			if ((udh == null) || (udh.length == 0)) {
-				// TP-UDL
-				length = nUdSeptets;
-
-				// TP-UD
-				baos.write(ud);
-			} else {
-				// The whole UD PDU
-				byte[] fullUd = new byte[nTotalBytes];
-
-				// TP-UDL
-				// UDL includes the length of the UDHL
-
-				length = nTotalSeptets;
-				// TP-UDH (including user data header length)
-				System.arraycopy(udh, 0, fullUd, 0, nUdhBytes);
-
-				// TP-UD
-				SmsPduUtil.arrayCopy(ud, 0, fullUd, nUdhBytes, nFillBits, nUdBits);
-
-				baos.write(fullUd);
-			}
-			baos.close();
-		} catch (IOException ex) {
-			throw new SmsException(ex);
-		}
-
-		return length;
 	}
 
 	/**
