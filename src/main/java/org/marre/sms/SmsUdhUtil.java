@@ -45,8 +45,7 @@ import java.io.IOException;
  */
 public final class SmsUdhUtil
 {
-	static final int PDUMAXLENGTH = 140;
-	static final int ASCIIMAXLENGTH = 159;
+
     /**
      * Constructor for SmsUdhUtil.
      */
@@ -110,49 +109,7 @@ public final class SmsUdhUtil
 
         return baos.toByteArray();
     }
-    
-    /**
-     * Calculates if the given data needs a concatenated SMS.
-     * 
-     * @param ud User data
-     * @param udh UDH elements
-     * @return true if the message must be concatentated.
-     */
-    public static boolean isConcat(SmsUserData ud, byte[] udh)
-    {
-        int udLength = ud.getLength();
-        
-        int bytesLeft = PDUMAXLENGTH;
-        int maxChars;
-        
-        if (udh != null)
-        {
-            bytesLeft -= udh.length;
-        }
-
-        switch (ud.getDcs().getAlphabet())
-        {
-        case GSM:
-            maxChars = (bytesLeft * 8) / 7;
-            break;
-            
-        case UCS2:
-            maxChars = bytesLeft / 2;
-            break;
-            
-       
-        case ASCII:
-        	maxChars = bytesLeft+ASCIIMAXLENGTH-PDUMAXLENGTH ; 
-            break;
-        case LATIN1:
-        default:
-            maxChars = bytesLeft;
-            break;
-        }
-
-        return (udLength > maxChars);
-    }
-    
+ 
     /**
      * Creates a "8Bit concatenated" UDH element using UDH_IEI_CONCATENATED_8BIT.
      * 

@@ -35,9 +35,14 @@
  * ***** END LICENSE BLOCK ***** */
 package org.marre.sms;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
+
+import io.netty.util.CharsetUtil;
 
 /**
  * Various functions to encode and decode strings
@@ -633,7 +638,11 @@ public static byte[] stringToUnencodedSeptets(String s)
 			}
 			else
 			{
-				text.append(stdAlphabet[bytes[i]]);
+				if(bytes[i] > 0 && bytes[i] < stdAlphabet.length)
+					text.append(stdAlphabet[bytes[i]]);
+				else
+					text.append(new String(new byte[] {bytes[i]},CharsetUtil.ISO_8859_1));
+
 			}
 		}
 		return text.toString();

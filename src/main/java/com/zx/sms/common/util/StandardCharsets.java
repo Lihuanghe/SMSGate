@@ -3,6 +3,7 @@ package com.zx.sms.common.util;
 import java.nio.charset.Charset;
 
 public class StandardCharsets {
+	public static final Charset GBK =  init("GBK");
 	public static final Charset UTF_8 =  init("UTF8");
 	public static final Charset US_ASCII =  init("ASCII");
 	public static final Charset ISO_8859_1 =  init("ISO_8859_1");

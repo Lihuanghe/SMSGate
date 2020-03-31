@@ -78,13 +78,8 @@ public class ChannelUtil {
 		return promise;
 	}
 
-	/**
-	 * 同步发送长短信类型 <br/>
-	 * 注意：该方法将拆分后的短信直接发送，不会再调用BusinessHandler里的write方法了。
-	 */
-	public static <T extends BaseMessage> List<Promise<T>> syncWriteLongMsgToEntity(String entity, BaseMessage msg) throws Exception {
+	public static <T extends BaseMessage> List<Promise<T>> syncWriteLongMsgToEntity(EndpointEntity e, BaseMessage msg) throws Exception {
 
-		EndpointEntity e = EndpointManager.INS.getEndpointEntity(entity);
 		EndpointConnector connector = e.getSingletonConnector();
 		if(connector == null) return null;
 		
@@ -113,7 +108,19 @@ public class ChannelUtil {
 		List<Promise<T>> arrPromise = new ArrayList<Promise<T>>();
 		arrPromise.add(promise);
 		return arrPromise;
+	}
 
+	/**
+	 * 同步发送长短信类型 <br/>
+	 * 注意：该方法将拆分后的短信直接发送，不会再调用BusinessHandler里的write方法了。
+	 */
+	public static <T extends BaseMessage> List<Promise<T>> syncWriteLongMsgToEntity(String entity, BaseMessage msg) throws Exception {
+		EndpointEntity e = EndpointManager.INS.getEndpointEntity(entity);
+		if(e==null) {
+			logger.warn("EndpointEntity {} is null",entity);
+			return null;
+		}
+		return syncWriteLongMsgToEntity(e,msg);
 	}
 
 	/**

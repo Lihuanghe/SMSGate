@@ -44,9 +44,9 @@ public final class CMPPCommonUtil {
 		case LATIN1:
 			return StandardCharsets.ISO_8859_1;// 8bit编码,通常用于发送数据消息，比如图片和铃声等；
 		case UCS2:
-			return Charset.forName("ISO-10646-UCS-2");// 16bit编码
+			return StandardCharsets.UTF_16BE;// 16bit编码
 		case RESERVED:
-			return Charset.forName("GBK");// 预留
+			return StandardCharsets.GBK;// 预留
 		default:
 			return GlobalConstance.defaultTransportCharset;
 		}

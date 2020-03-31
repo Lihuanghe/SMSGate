@@ -50,7 +50,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public abstract class SmsConcatMessage implements SmsMessage
 {
     private static final AtomicInteger rnd_  = new AtomicInteger((new Random()).nextInt(0xffff));
-
+	static final int PDUMAXLENGTH = 140;
+	static final int ASCIIMAXLENGTH = 159;
     /**
      * Creates an empty SmsConcatMessage.
      */
@@ -314,7 +315,7 @@ public abstract class SmsConcatMessage implements SmsMessage
         SmsUserData ud = getUserData();
         SmsUdhElement[] udhElements = getUdhElements();        
         int udhLength = SmsUdhUtil.getTotalSize(udhElements);
-        int nBytesLeft = SmsUdhUtil.PDUMAXLENGTH - udhLength;
+        int nBytesLeft = PDUMAXLENGTH - udhLength;
 
         switch (ud.getDcs().getAlphabet())
         {
@@ -325,7 +326,7 @@ public abstract class SmsConcatMessage implements SmsMessage
             smsPdus = createUnicodePdus(udhElements, ud, nBytesLeft);
             break;
         case ASCII:
-        	smsPdus = createOctalPdus(udhElements, ud, nBytesLeft+SmsUdhUtil.ASCIIMAXLENGTH-SmsUdhUtil.PDUMAXLENGTH); 
+        	smsPdus = createOctalPdus(udhElements, ud, nBytesLeft+ASCIIMAXLENGTH-PDUMAXLENGTH); 
             break;
         case LATIN1:
         default:
