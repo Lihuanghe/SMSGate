@@ -40,6 +40,9 @@ import java.io.Serializable;
 
 import org.marre.mime.MimeBodyPart;
 import org.marre.mime.MimeContentType;
+import org.marre.sms.SmsAlphabet;
+import org.marre.sms.SmsDcs;
+import org.marre.sms.SmsMsgClass;
 import org.marre.sms.SmsPort;
 import org.marre.sms.SmsPortAddressedMessage;
 import org.marre.sms.SmsUserData;
@@ -191,7 +194,7 @@ public class SmsWapPushMessage extends SmsPortAddressedMessage implements Serial
             throw new RuntimeException(ex.getMessage());
         }
 
-        return new SmsUserData(baos.toByteArray());
+        return new SmsUserData(baos.toByteArray(),SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.LATIN1, SmsMsgClass.CLASS_UNKNOWN));
     }
 
     public void setXWapApplicationId(String appId)
