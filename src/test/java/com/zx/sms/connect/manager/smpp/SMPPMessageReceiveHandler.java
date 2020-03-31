@@ -19,48 +19,51 @@ import io.netty.channel.ChannelHandlerContext;
 public class SMPPMessageReceiveHandler extends MessageReceiveHandler {
 
 	@Override
-	protected ChannelFuture reponse(final ChannelHandlerContext ctx, Object msg)  {
-		String entity = getEndpointEntity().getId();
-		if(msg instanceof DeliverSm){
-			DeliverSmResp res = ((DeliverSm)msg).createResponse();
+	protected ChannelFuture reponse(final ChannelHandlerContext ctx, Object msg) {
+		if (msg instanceof DeliverSm) {
+			DeliverSmResp res = ((DeliverSm) msg).createResponse();
 			res.setMessageId(String.valueOf(System.currentTimeMillis()));
 			return ctx.writeAndFlush(res);
-		}else if(msg instanceof SubmitSm) {
-			SubmitSmResp res = ((SubmitSm)msg).createResponse();
+		} else if (msg instanceof SubmitSm) {
+			SubmitSmResp res = ((SubmitSm) msg).createResponse();
 			res.setMessageId(String.valueOf(System.currentTimeMillis()));
 			ChannelFuture future = ctx.writeAndFlush(res);
 
-			List<SubmitSm> frags = ((SubmitSm)msg).getFragments();
-			if(frags!=null && !frags.isEmpty()) {
-				for(SubmitSm fragment : frags) {
-					
-					SubmitSmResp fragres = ((SubmitSm)fragment).createResponse();
+			List<SubmitSm> frags = ((SubmitSm) msg).getFragments();
+			if (frags != null && !frags.isEmpty()) {
+				for (SubmitSm fragment : frags) {
+
+					SubmitSmResp fragres = ((SubmitSm) fragment).createResponse();
 					res.setMessageId(String.valueOf(System.currentTimeMillis()));
 					ctx.writeAndFlush(fragres);
-					
-					
-					DeliverSmReceipt report = new DeliverSmReceipt();
-					report.setId(String.valueOf(fragment.getSequenceNumber()));
-					report.setSourceAddress(((SubmitSm)msg).getDestAddress());
-					report.setDestAddress(((SubmitSm)msg).getSourceAddress());
-					report.setStat("DELIVRD");
-					report.setSubmit_date(DateFormatUtils.format(new Date(), "yyMMddHHmm"));
-					report.setDone_date(DateFormatUtils.format(new Date(), "yyMMddHHmm"));
-					ctx.writeAndFlush(report);
+
+					if (((SubmitSm) msg).getRegisteredDelivery() == 1) {
+						DeliverSmReceipt report = new DeliverSmReceipt();
+						report.setId(String.valueOf(fragment.getSequenceNumber()));
+						report.setSourceAddress(((SubmitSm) msg).getDestAddress());
+						report.setDestAddress(((SubmitSm) msg).getSourceAddress());
+						report.setStat("DELIVRD");
+						report.setText(fragment.getMsgContent());
+						report.setSubmit_date(DateFormatUtils.format(new Date(), "yyMMddHHmm"));
+						report.setDone_date(DateFormatUtils.format(new Date(), "yyMMddHHmm"));
+						ctx.writeAndFlush(report);
+					}
 				}
 			}
-
-			DeliverSmReceipt report = new DeliverSmReceipt();
-			report.setId(String.valueOf(res.getSequenceNumber()));
-			report.setSourceAddress(((SubmitSm)msg).getDestAddress());
-			report.setDestAddress(((SubmitSm)msg).getSourceAddress());
-			report.setStat("DELIVRD");
-			report.setSubmit_date(DateFormatUtils.format(new Date(), "yyMMddHHmm"));
-			report.setDone_date(DateFormatUtils.format(new Date(), "yyMMddHHmm"));
-			try {
-				ChannelUtil.syncWriteLongMsgToEntity(entity,report);
-			} catch (Exception e) {
-				e.printStackTrace();
+			if (((SubmitSm) msg).getRegisteredDelivery() == 1) {
+				DeliverSmReceipt report = new DeliverSmReceipt();
+				report.setId(String.valueOf(res.getSequenceNumber()));
+				report.setSourceAddress(((SubmitSm) msg).getDestAddress());
+				report.setDestAddress(((SubmitSm) msg).getSourceAddress());
+				report.setStat("DELIVRD");
+				report.setText(((SubmitSm) msg).getMsgContent());
+				report.setSubmit_date(DateFormatUtils.format(new Date(), "yyMMddHHmm"));
+				report.setDone_date(DateFormatUtils.format(new Date(), "yyMMddHHmm"));
+				try {
+					ChannelUtil.syncWriteLongMsgToEntity(getEndpointEntity(), report);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			return future;
 		}

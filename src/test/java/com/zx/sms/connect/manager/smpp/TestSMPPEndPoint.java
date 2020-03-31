@@ -73,7 +73,7 @@ public class TestSMPPEndPoint {
 //		client.setReadLimit(200);
 		client.setSupportLongmsg(SupportLongMessage.SEND);  //接收长短信时不自动合并
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new SMPPSessionConnectedHandler(1000)); 
+		clienthandlers.add( new SMPPSessionConnectedHandler(1)); 
 		client.setBusinessHandlerSet(clienthandlers);
 		
 		manager.addEndpointEntity(server);

@@ -372,7 +372,7 @@ public class SMGPDeliverMessage extends SMGPBaseMessage implements LongSMSMessag
 		SMGPDeliverMessage requestMessage = this.clone();
 		
 		requestMessage.setTpUdhi((byte)frame.getTpudhi());
-		requestMessage.setMsgFmt(frame.getMsgfmt());
+		requestMessage.setMsgFmt((SmsDcs)frame.getMsgfmt());
 		requestMessage.setBMsgContent(frame.getMsgContentBytes());
 		
 		if(frame.getPknumber()!=1){

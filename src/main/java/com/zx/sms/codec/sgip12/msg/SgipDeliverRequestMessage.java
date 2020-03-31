@@ -206,7 +206,7 @@ public class SgipDeliverRequestMessage extends SgipDefaultMessage implements Lon
 		SgipDeliverRequestMessage requestMessage = this.clone();
 		
 		requestMessage.setTpudhi(frame.getTpudhi());
-		requestMessage.setMsgfmt(frame.getMsgfmt());
+		requestMessage.setMsgfmt((SmsDcs)frame.getMsgfmt());
 		requestMessage.setMsgContentBytes(frame.getMsgContentBytes());
 		requestMessage.setMessagelength((short)frame.getMsgLength());
 		

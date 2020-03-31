@@ -134,7 +134,7 @@ public class SmsPortAddressedTextMessage extends SmsPortAddressedMessage impleme
     /**
      * Returns the dcs.
      */
-    public SmsDcs getDcs()
+    public AbstractSmsDcs getDcs()
     {
         return smsTextMessage_.getDcs();
     }

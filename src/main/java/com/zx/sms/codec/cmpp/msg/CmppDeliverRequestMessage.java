@@ -299,7 +299,7 @@ public class CmppDeliverRequestMessage extends DefaultMessage implements LongSMS
 	public CmppDeliverRequestMessage generateMessage(LongMessageFrame frame) throws Exception {
 		CmppDeliverRequestMessage requestMessage = this.clone();
 		requestMessage.setTpudhi(frame.getTpudhi());
-		requestMessage.setMsgfmt(frame.getMsgfmt());
+		requestMessage.setMsgfmt((SmsDcs)frame.getMsgfmt());
 		requestMessage.setMsgContentBytes(frame.getMsgContentBytes());
 		requestMessage.setMsgLength((short) frame.getMsgLength());
 

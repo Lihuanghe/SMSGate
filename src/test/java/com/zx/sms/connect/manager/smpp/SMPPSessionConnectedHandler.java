@@ -2,6 +2,11 @@ package com.zx.sms.connect.manager.smpp;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.marre.sms.SmsAlphabet;
+import org.marre.sms.SmsDcs;
+import org.marre.sms.SmsMsgClass;
+import org.marre.sms.SmsTextMessage;
+
 import com.zx.sms.BaseMessage;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
@@ -24,18 +29,19 @@ public class SMPPSessionConnectedHandler extends SessionConnectedHandler {
 	@Override
 	protected BaseMessage createTestReq(String str) {
 		final EndpointEntity finalentity = getEndpointEntity();
-		String content = "PS：第三种方法会在集群中传送很多无用的数据，无形中增加了网络的带宽。但是这也是没有办法的事情。以上代码都没经过测试，大体是这个意思PSS：如果谁有更好的方法，希望能和他说一声";
+		String content = "£$¥èéùì@";
 		if (finalentity instanceof ServerEndpoint) {
 			DeliverSm pdu = new DeliverSm();
 	        pdu.setSourceAddress(new Address((byte)0,(byte)0,"13800138000"));
 	        pdu.setDestAddress(new Address((byte)0,(byte)0,"10086"));
-	        pdu.setSmsMsg(content);
+	        pdu.setSmsMsg(new SmsTextMessage(content,SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.GSM,SmsMsgClass.CLASS_UNKNOWN)));
 			return pdu;
 		} else {
 			SubmitSm pdu = new SubmitSm();
+			pdu.setRegisteredDelivery((byte)0);
 	        pdu.setSourceAddress(new Address((byte)0,(byte)0,"10086"));
 	        pdu.setDestAddress(new Address((byte)0,(byte)0,"13800138000"));
-	        pdu.setSmsMsg(content);
+	        pdu.setSmsMsg(new SmsTextMessage(content,SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.GSM,SmsMsgClass.CLASS_UNKNOWN)));
 			return pdu;
 		}
 	}

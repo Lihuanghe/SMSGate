@@ -85,7 +85,7 @@ public final class SmsPduUtil
 	 * @param skipBits
 	 * @return
 	 */
-	static byte[] septetStream2octetStream(byte[] septets) {
+	public static byte[] septetStream2octetStream(byte[] septets) {
 		int octetLength = (int) Math.ceil(((septets.length * 7)) / 8.0);
 		byte[] octets = new byte[octetLength];
 		
@@ -127,7 +127,7 @@ public final class SmsPduUtil
      *            Number of decoded chars to read from the stream
      * @return The decoded string
      */
-    public static String readSeptets(byte[] data)
+    public static String readSeptets(byte[] data,int charlength)
     {
     
         if (data == null)
@@ -135,7 +135,7 @@ public final class SmsPduUtil
             return null;
         }
 
-       byte[] ba= LongMessageFrameHolder.octetStream2septetStream(data);
+       byte[] ba= LongMessageFrameHolder.octetStream2septetStream(data,charlength);
        return unencodedSeptetsToString(ba);
     }
 
@@ -431,7 +431,7 @@ private static final char[] stdAlphabet = { '\u0040', // COMMERCIAL AT
 		'\u00F9', // LATIN SMALL LETTER U WITH GRAVE
 		'\u00EC', // LATIN SMALL LETTER I WITH GRAVE
 		'\u00F2', // LATIN SMALL LETTER O WITH GRAVE
-		'\u00E7', // LATIN SMALL LETTER C WITH CEDILLA
+		'\u00C7', // LATIN CAPITAL LETTER C WITH CEDILLA
 		'\n', // LINE FEED
 		'\u00D8', // LATIN CAPITAL LETTER O WITH STROKE
 		'\u00F8', // LATIN SMALL LETTER O WITH STROKE
@@ -638,7 +638,7 @@ public static byte[] stringToUnencodedSeptets(String s)
 			}
 			else
 			{
-				if(bytes[i] > 0 && bytes[i] < stdAlphabet.length)
+				if(bytes[i] >= 0 && bytes[i] < stdAlphabet.length)
 					text.append(stdAlphabet[bytes[i]]);
 				else
 					text.append(new String(new byte[] {bytes[i]},CharsetUtil.ISO_8859_1));
