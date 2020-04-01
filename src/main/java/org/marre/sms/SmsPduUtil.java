@@ -57,7 +57,17 @@ public final class SmsPduUtil
     private SmsPduUtil()
     {
     }
-
+    private static String gsmstr = "@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà^{}\\[~]|€";
+    
+    public static boolean hasUnGsmchar(String content) {
+    	
+		for (int i = 0; i < content.length(); i++) {
+			if(gsmstr.indexOf(content.charAt(i)) < 0)
+				return true;
+		}
+    	return false;
+    }
+    
     /**
      * Pack the given string into septets
      *  
@@ -398,16 +408,17 @@ public final class SmsPduUtil
 		{ '\u03CE', '\u03A9' } // GREEK SMALL LETTER OMEGA WITH TONOS
 };
 
-private static final char[] extAlphabet = { '\u000c', // FORM FEED
-		'\u005e', // CIRCUMFLEX ACCENT
-		'\u007b', // LEFT CURLY BRACKET
-		'\u007d', // RIGHT CURLY BRACKET
-		'\\', // REVERSE SOLIDUS
-		'\u005b', // LEFT SQUARE BRACKET
-		'\u007e', // TILDE
-		'\u005d', // RIGHT SQUARE BRACKET
-		'\u007c', // VERTICAL LINES
-		'\u20ac', // EURO SIGN
+private static final char[] extAlphabet = {
+		'\u000c', //\n FORM FEED
+		'\u005e', //^ CIRCUMFLEX ACCENT
+		'\u007b', //{ LEFT CURLY BRACKET
+		'\u007d', //} RIGHT CURLY BRACKET
+		'\\',     //\ REVERSE SOLIDUS
+		'\u005b', //[ LEFT SQUARE BRACKET
+		'\u007e', //~ TILDE
+		'\u005d', //] RIGHT SQUARE BRACKET
+		'\u007c', //| VERTICAL LINES
+		'\u20ac', //€ EURO SIGN
 };
 
 private static final String[] extBytes = { "1b0a", // FORM FEED
@@ -422,73 +433,74 @@ private static final String[] extBytes = { "1b0a", // FORM FEED
 		"1b65", // EURO SIGN
 };
 
-private static final char[] stdAlphabet = { '\u0040', // COMMERCIAL AT
-		'\u00A3', // POUND SIGN
-		'\u0024', // DOLLAR SIGN
-		'\u00A5', // YEN SIGN
-		'\u00E8', // LATIN SMALL LETTER E WITH GRAVE
-		'\u00E9', // LATIN SMALL LETTER E WITH ACUTE
-		'\u00F9', // LATIN SMALL LETTER U WITH GRAVE
-		'\u00EC', // LATIN SMALL LETTER I WITH GRAVE
-		'\u00F2', // LATIN SMALL LETTER O WITH GRAVE
-		'\u00C7', // LATIN CAPITAL LETTER C WITH CEDILLA
-		'\n', // LINE FEED
-		'\u00D8', // LATIN CAPITAL LETTER O WITH STROKE
-		'\u00F8', // LATIN SMALL LETTER O WITH STROKE
-		'\r', // CARRIAGE RETURN
-		'\u00C5', // LATIN CAPITAL LETTER A WITH RING ABOVE
-		'\u00E5', // LATIN SMALL LETTER A WITH RING ABOVE
-		'\u0394', // GREEK CAPITAL LETTER DELTA
-		'\u005F', // LOW LINE
-		'\u03A6', // GREEK CAPITAL LETTER PHI
-		'\u0393', // GREEK CAPITAL LETTER GAMMA
-		'\u039B', // GREEK CAPITAL LETTER LAMDA
-		'\u03A9', // GREEK CAPITAL LETTER OMEGA
-		'\u03A0', // GREEK CAPITAL LETTER PI
-		'\u03A8', // GREEK CAPITAL LETTER PSI
-		'\u03A3', // GREEK CAPITAL LETTER SIGMA
-		'\u0398', // GREEK CAPITAL LETTER THETA
-		'\u039E', // GREEK CAPITAL LETTER XI
-		'\u00A0', // ESCAPE TO EXTENSION TABLE (or displayed as NBSP, see
+private static final char[] stdAlphabet = {
+		'\u0040', //0 @ COMMERCIAL AT
+		'\u00A3', //1 £ POUND SIGN
+		'\u0024', //2 $ DOLLAR SIGN
+		'\u00A5', //3 ¥ YEN SIGN
+		'\u00E8', //4 è LATIN SMALL LETTER E WITH GRAVE
+		'\u00E9', //5 é LATIN SMALL LETTER E WITH ACUTE
+		'\u00F9', //6 ù LATIN SMALL LETTER U WITH GRAVE
+		'\u00EC', //7 ì LATIN SMALL LETTER I WITH GRAVE
+		'\u00F2', //8 ò LATIN SMALL LETTER O WITH GRAVE
+		'\u00C7', //9 Ç LATIN CAPITAL LETTER C WITH CEDILLA
+		'\n',     //a LINE FEED
+		'\u00D8', //b Ø LATIN CAPITAL LETTER O WITH STROKE
+		'\u00F8', //c ø LATIN SMALL LETTER O WITH STROKE
+		'\r',     //d CARRIAGE RETURN
+		'\u00C5', //e Å LATIN CAPITAL LETTER A WITH RING ABOVE
+		'\u00E5', //f å LATIN SMALL LETTER A WITH RING ABOVE
+		'\u0394', //10 Δ GREEK CAPITAL LETTER DELTA
+		'\u005F', //11 _ LOW LINE
+		'\u03A6', //12 Φ GREEK CAPITAL LETTER PHI
+		'\u0393', //13 Γ GREEK CAPITAL LETTER GAMMA
+		'\u039B', //14 Λ GREEK CAPITAL LETTER LAMDA
+		'\u03A9', //15 Ω GREEK CAPITAL LETTER OMEGA
+		'\u03A0', //16 Π GREEK CAPITAL LETTER PI
+		'\u03A8', //17 Ψ GREEK CAPITAL LETTER PSI
+		'\u03A3', //18 Σ GREEK CAPITAL LETTER SIGMA
+		'\u0398', //19 Θ GREEK CAPITAL LETTER THETA
+		'\u039E', //1a Ξ GREEK CAPITAL LETTER XI
+		'\u00A0', //1b ESCAPE TO EXTENSION TABLE (or displayed as NBSP, see
 		// note
 		// above)
-		'\u00C6', // LATIN CAPITAL LETTER AE
-		'\u00E6', // LATIN SMALL LETTER AE
-		'\u00DF', // LATIN SMALL LETTER SHARP S (German)
-		'\u00C9', // LATIN CAPITAL LETTER E WITH ACUTE
-		'\u0020', // SPACE
-		'\u0021', // EXCLAMATION MARK
-		'\u0022', // QUOTATION MARK
-		'\u0023', // NUMBER SIGN
-		'\u00A4', // CURRENCY SIGN
-		'\u0025', // PERCENT SIGN
-		'\u0026', // AMPERSAND
-		'\'', // APOSTROPHE
-		'\u0028', // LEFT PARENTHESIS
-		'\u0029', // RIGHT PARENTHESIS
-		'\u002A', // ASTERISK
-		'\u002B', // PLUS SIGN
-		'\u002C', // COMMA
-		'\u002D', // HYPHEN-MINUS
-		'\u002E', // FULL STOP
-		'\u002F', // SOLIDUS
-		'\u0030', // DIGIT ZERO
-		'\u0031', // DIGIT ONE
-		'\u0032', // DIGIT TWO
-		'\u0033', // DIGIT THREE
-		'\u0034', // DIGIT FOUR
-		'\u0035', // DIGIT FIVE
-		'\u0036', // DIGIT SIX
-		'\u0037', // DIGIT SEVEN
-		'\u0038', // DIGIT EIGHT
-		'\u0039', // DIGIT NINE
-		'\u003A', // COLON
-		'\u003B', // SEMICOLON
-		'\u003C', // LESS-THAN SIGN
-		'\u003D', // EQUALS SIGN
-		'\u003E', // GREATER-THAN SIGN
-		'\u003F', // QUESTION MARK
-		'\u00A1', // INVERTED EXCLAMATION MARK
+		'\u00C6', //1c Æ LATIN CAPITAL LETTER AE
+		'\u00E6', //1d æ LATIN SMALL LETTER AE
+		'\u00DF', //1e ß LATIN SMALL LETTER SHARP S (German)
+		'\u00C9', //1f É LATIN CAPITAL LETTER E WITH ACUTE
+		'\u0020', //20 SPACE
+		'\u0021', //! 21 EXCLAMATION MARK
+		'\u0022', //" 22 QUOTATION MARK
+		'\u0023', //# 23 NUMBER SIGN
+		'\u00A4', //¤ 24 CURRENCY SIGN
+		'\u0025', //% 25 PERCENT SIGN
+		'\u0026', //& 26 AMPERSAND
+		'\'',     //' 27 APOSTROPHE
+		'\u0028', //( 28 LEFT PARENTHESIS
+		'\u0029', //) 29 RIGHT PARENTHESIS
+		'\u002A', //* 2a ASTERISK
+		'\u002B', //+ 2b PLUS SIGN
+		'\u002C', //, 2c COMMA
+		'\u002D', //- HYPHEN-MINUS
+		'\u002E', //. FULL STOP
+		'\u002F', /// SOLIDUS
+		'\u0030', //0 DIGIT ZERO
+		'\u0031', //1 DIGIT ONE
+		'\u0032', //2 DIGIT TWO
+		'\u0033', //3 DIGIT THREE
+		'\u0034', //4 DIGIT FOUR
+		'\u0035', //5 DIGIT FIVE
+		'\u0036', //6 DIGIT SIX
+		'\u0037', //7 DIGIT SEVEN
+		'\u0038', //8 DIGIT EIGHT
+		'\u0039', //9 DIGIT NINE
+		'\u003A', //: COLON
+		'\u003B', //; SEMICOLON
+		'\u003C', //< LESS-THAN SIGN
+		'\u003D', //= EQUALS SIGN
+		'\u003E', //> GREATER-THAN SIGN
+		'\u003F', //? 3f QUESTION MARK
+		'\u00A1', //¡ 40 INVERTED EXCLAMATION MARK
 		'\u0041', // LATIN CAPITAL LETTER A
 		'\u0042', // LATIN CAPITAL LETTER B
 		'\u0043', // LATIN CAPITAL LETTER C
@@ -515,12 +527,12 @@ private static final char[] stdAlphabet = { '\u0040', // COMMERCIAL AT
 		'\u0058', // LATIN CAPITAL LETTER X
 		'\u0059', // LATIN CAPITAL LETTER Y
 		'\u005A', // LATIN CAPITAL LETTER Z
-		'\u00C4', // LATIN CAPITAL LETTER A WITH DIAERESIS
-		'\u00D6', // LATIN CAPITAL LETTER O WITH DIAERESIS
-		'\u00D1', // LATIN CAPITAL LETTER N WITH TILDE
-		'\u00DC', // LATIN CAPITAL LETTER U WITH DIAERESIS
-		'\u00A7', // SECTION SIGN
-		'\u00BF', // INVERTED QUESTION MARK
+		'\u00C4', //Ä 5b LATIN CAPITAL LETTER A WITH DIAERESIS
+		'\u00D6', //Ö 5c LATIN CAPITAL LETTER O WITH DIAERESIS
+		'\u00D1', //Ñ 5d LATIN CAPITAL LETTER N WITH TILDE
+		'\u00DC', //Ü 5e LATIN CAPITAL LETTER U WITH DIAERESIS
+		'\u00A7', //§ 5f SECTION SIGN
+		'\u00BF', //¿ 60 INVERTED QUESTION MARK
 		'\u0061', // LATIN SMALL LETTER A
 		'\u0062', // LATIN SMALL LETTER B
 		'\u0063', // LATIN SMALL LETTER C
@@ -547,11 +559,11 @@ private static final char[] stdAlphabet = { '\u0040', // COMMERCIAL AT
 		'\u0078', // LATIN SMALL LETTER X
 		'\u0079', // LATIN SMALL LETTER Y
 		'\u007A', // LATIN SMALL LETTER Z
-		'\u00E4', // LATIN SMALL LETTER A WITH DIAERESIS
-		'\u00F6', // LATIN SMALL LETTER O WITH DIAERESIS
-		'\u00F1', // LATIN SMALL LETTER N WITH TILDE
-		'\u00FC', // LATIN SMALL LETTER U WITH DIAERESIS
-		'\u00E0', // LATIN SMALL LETTER A WITH GRAVE
+		'\u00E4', //ä 7b LATIN SMALL LETTER A WITH DIAERESIS
+		'\u00F6', //ö 7c LATIN SMALL LETTER O WITH DIAERESIS
+		'\u00F1', //ñ 7d LATIN SMALL LETTER N WITH TILDE
+		'\u00FC', //ü 7e LATIN SMALL LETTER U WITH DIAERESIS
+		'\u00E0', //à 7f LATIN SMALL LETTER A WITH GRAVE
 };
 	// from Java String to uncompressed septets (GSM characters)
 public static byte[] stringToUnencodedSeptets(String s)

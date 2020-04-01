@@ -1,14 +1,13 @@
 package com.zx.sms.codec.smpp;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.junit.Assert;
 import org.junit.Test;
 import org.marre.sms.SmppSmsDcs;
 import org.marre.sms.SmsAlphabet;
 import org.marre.sms.SmsMsgClass;
+import org.marre.sms.SmsPduUtil;
 import org.marre.sms.SmsTextMessage;
 
 import com.zx.sms.codec.AbstractSMPPTestMessageCodec;
@@ -17,8 +16,14 @@ import com.zx.sms.codec.smpp.msg.DeliverSm;
 import com.zx.sms.codec.smpp.msg.SubmitSm;
 import com.zx.sms.common.util.HexUtil;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.Unpooled;
+
 public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
-    @Test
+    
+	private String gsmstr = "@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà^{}\\[~]|€";
+	@Test
     public void decodeDeliverSmWithDeliveryReceiptThatFailedFromEndToEnd() throws Exception {
         ByteBuf buffer = Unpooled.wrappedBuffer(Hex.decodeHex("000000A2000000050000000000116AD500010134343935313336313932303537000501475442616E6B000400000000010000006E69643A3934323531343330393233207375623A30303120646C7672643A303031207375626D697420646174653A3039313130343031323420646F6E6520646174653A3039313130343031323420737461743A41434345505444206572723A31303720746578743A20323646313032".toCharArray()));
 
@@ -155,17 +160,47 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
     	pdu.setSmsMsg(new SmsTextMessage("1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890", SmppSmsDcs.getGeneralDataCodingDcs(SmsAlphabet.GSM, SmsMsgClass.CLASS_UNKNOWN)));
      	testlongCodec(pdu);
 	}
-    
+	@Test
+	public void testdefaultcode()
+	{
+		SubmitSm pdu = new SubmitSm();
+    	pdu.setDestAddress(new Address((byte)0,(byte)0,"1111"));
+    	pdu.setSourceAddress(new Address((byte)0,(byte)0,"2222"));
+    	pdu.setSmsMsg(gsmstr);
+     	testlongCodec(pdu);
+	}
+	
+	@Test
+	public void testGSMencode() throws DecoderException
+	{
+		ByteBuf expected = Unpooled.wrappedBuffer(Hex.decodeHex("000102030405060708090a0b0c0d0e0f101112131415161718191a1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f1b141b281b291b2f1b3c1b3d1b3e1b401b65".toCharArray()));
+		ByteBuf bs = Unpooled.wrappedBuffer(SmsPduUtil.stringToUnencodedSeptets(gsmstr));
+		System.out.println(ByteBufUtil.prettyHexDump(expected));
+		System.out.println(ByteBufUtil.prettyHexDump(bs));
+		Assert.assertTrue(ByteBufUtil.equals(expected,bs));
+	}
 	@Test
 	public void testGSMcode()
 	{
 		SubmitSm pdu = new SubmitSm();
     	pdu.setDestAddress(new Address((byte)0,(byte)0,"1111"));
     	pdu.setSourceAddress(new Address((byte)0,(byte)0,"2222"));
-    	pdu.setSmsMsg(new SmsTextMessage("@£$¥èéùìòÇØøÅåΔ_ΦΓΛΩΠΨΣΘΞæßÉ !\"#¤%&'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñü|^€{}[]~12345678901AssBC5678901234567", SmppSmsDcs.getGeneralDataCodingDcs(SmsAlphabet.GSM, SmsMsgClass.CLASS_UNKNOWN)));
+    	pdu.setSmsMsg(new SmsTextMessage(gsmstr, SmppSmsDcs.getGeneralDataCodingDcs(SmsAlphabet.GSM, SmsMsgClass.CLASS_UNKNOWN)));
      	testlongCodec(pdu);
 	}
-    
+	@Test
+	/**
+	 * https://smpp.org/
+	 */
+	public void testsmpp()
+	{
+		SubmitSm pdu = new SubmitSm();
+    	pdu.setDestAddress(new Address((byte)1,(byte)1,"447712345678"));
+    	pdu.setSourceAddress(new Address((byte)5,(byte)0,"MelroseLabs"));
+    	pdu.setSmsMsg(new SmsTextMessage("Hello World €$£", SmppSmsDcs.getGeneralDataCodingDcs(SmsAlphabet.GSM, SmsMsgClass.CLASS_UNKNOWN)));
+    	pdu.setRegisteredDelivery((byte)1);
+     	testlongCodec(pdu);
+	}
 	private void testlongCodec(BaseSm msg)
 	{
 		channel().writeOutbound(msg);
