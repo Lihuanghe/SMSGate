@@ -48,13 +48,15 @@ public class SMPPSessionLoginManager extends AbstractSessionLoginManager {
 				SMPPServerEndpointEntity serverEntity = (SMPPServerEndpointEntity) entity;
 				EndpointEntity end =  serverEntity.getChild(username.trim());
 				if(end == null) return null;
-				if(end.getChannelType()==ChannelType.DOWN && msg instanceof BindTransmitter){
-					return end;
-				}else if(end.getChannelType()==ChannelType.UP && msg instanceof BindReceiver){
-					return end;
-				}else if(end.getChannelType()==ChannelType.DUPLEX && msg instanceof BindTransceiver){
-					return end;
+				
+				if( msg instanceof BindTransmitter){
+					end.setChannelType(ChannelType.DOWN);
+				}else if(msg instanceof BindReceiver){
+					end.setChannelType(ChannelType.UP);
+				}else if(msg instanceof BindTransceiver){
+					end.setChannelType(ChannelType.DUPLEX);
 				}
+				return end;
 			}
 		}
 		return null;
@@ -115,9 +117,9 @@ public class SMPPSessionLoginManager extends AbstractSessionLoginManager {
 		SMPPEndpointEntity smppentity = (SMPPEndpointEntity) entity;
 		
 		BaseBind bind = (BaseBind)message;
-		
-		ctx.channel().writeAndFlush(bind.createResponse());
-
+		BaseBindResp resp =   (BaseBindResp)bind.createResponse();
+		resp.setSystemId(bind.getSystemId());
+		ctx.channel().writeAndFlush(resp);
 	}
 
 	@Override

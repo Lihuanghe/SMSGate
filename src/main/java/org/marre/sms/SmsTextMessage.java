@@ -185,7 +185,7 @@ public class SmsTextMessage extends SmsConcatMessage implements Serializable
     }
     
 	
-	public static boolean haswidthChar(String content) {
+	private static boolean haswidthChar(String content) {
 		if (StringUtils.isEmpty(content))
 			return false;
 

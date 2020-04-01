@@ -5,6 +5,7 @@ import org.marre.sms.SmsAlphabet;
 import org.marre.sms.SmsDcs;
 import org.marre.sms.SmsMessage;
 import org.marre.sms.SmsMsgClass;
+import org.marre.sms.SmsPduUtil;
 import org.marre.sms.SmsTextMessage;
 
 import com.zx.sms.codec.cmpp.wap.LongMessageFrame;
@@ -203,9 +204,9 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
 	}
 
 	public void setSmsMsg(String smsMsg) {
-		if (SmsTextMessage.haswidthChar(smsMsg))
+		if (SmsPduUtil.hasUnGsmchar(smsMsg))
 			this.smsMsg = new SmsTextMessage(smsMsg, SmppSmsDcs.getGeneralDataCodingDcs(SmsAlphabet.UCS2, SmsMsgClass.CLASS_UNKNOWN));
-		else
+		else 
 			this.smsMsg = new SmsTextMessage(smsMsg, SmppSmsDcs.getGeneralDataCodingDcs(SmsAlphabet.GSM, SmsMsgClass.CLASS_UNKNOWN));
 	}
 
