@@ -1,9 +1,9 @@
 package org.marre.sms;
 
-public class SmsDcs extends AbstractSmsDcs {
+public class SmppSmsDcs extends AbstractSmsDcs {
 	private static final long serialVersionUID = 1L;
 
-	public SmsDcs(byte dcs) {
+	public SmppSmsDcs(byte dcs) {
 		super(dcs);
 	}
 
@@ -17,7 +17,7 @@ public class SmsDcs extends AbstractSmsDcs {
 	 * 
 	 * @return A valid general data coding DCS.
 	 */
-	public static SmsDcs getGeneralDataCodingDcs(SmsAlphabet alphabet, SmsMsgClass messageClass) {
+	public static SmppSmsDcs getGeneralDataCodingDcs(SmsAlphabet alphabet, SmsMsgClass messageClass) {
 		byte dcs = 0x00;
 
 		// Bits 3 and 2 indicate the alphabet being used, as follows :
@@ -28,6 +28,8 @@ public class SmsDcs extends AbstractSmsDcs {
 		// 1 1 Reserved
 		switch (alphabet) {
 		case ASCII:
+			dcs |= 0x01;
+			break;
 		case GSM:
 			dcs |= 0x00;
 			break;
@@ -60,7 +62,7 @@ public class SmsDcs extends AbstractSmsDcs {
 			break;
 		}
 
-		return new SmsDcs(dcs);
+		return new SmppSmsDcs(dcs);
 	}
 
 	/**
@@ -78,6 +80,8 @@ public class SmsDcs extends AbstractSmsDcs {
 
 			switch (dcs_) {
 			case 0:
+				return SmsAlphabet.GSM;
+			case 1:
 				return SmsAlphabet.ASCII;
 			case 3:
 				return SmsAlphabet.LATIN1;
@@ -90,12 +94,12 @@ public class SmsDcs extends AbstractSmsDcs {
 			}
 
 			if (dcs_ == 0x00) {
-				return SmsAlphabet.ASCII;
+				return SmsAlphabet.GSM;
 			}
 
 			switch (dcs_ & 0x0C) {
 			case 0x00:
-				return SmsAlphabet.ASCII;
+				return SmsAlphabet.GSM;
 			case 0x04:
 				return SmsAlphabet.LATIN1;
 			case 0x08:
@@ -107,7 +111,7 @@ public class SmsDcs extends AbstractSmsDcs {
 			}
 
 		case MESSAGE_WAITING_STORE_GSM:
-			return SmsAlphabet.ASCII;
+			return SmsAlphabet.GSM;
 
 		case MESSAGE_WAITING_STORE_UCS2:
 			return SmsAlphabet.UCS2;
@@ -115,7 +119,7 @@ public class SmsDcs extends AbstractSmsDcs {
 		case DATA_CODING_MESSAGE:
 			switch (dcs_ & 0x04) {
 			case 0x00:
-				return SmsAlphabet.ASCII;
+				return SmsAlphabet.GSM;
 			case 0x04:
 				return SmsAlphabet.LATIN1;
 			default:
@@ -126,13 +130,14 @@ public class SmsDcs extends AbstractSmsDcs {
 			return SmsAlphabet.UCS2;
 		}
 	}
-
+	
 	public int getMaxMsglength() {
-		switch (getAlphabet()) {
-		case ASCII:
-			return 159;
-		default:
-			return 140;
+		switch(getAlphabet()) {
+			case GSM:
+				return 160;
+			default:
+				return 140;
 		}
 	}
+
 }

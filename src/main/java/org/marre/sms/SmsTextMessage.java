@@ -57,7 +57,7 @@ public class SmsTextMessage extends SmsConcatMessage implements Serializable
 	 */
 	private static final long serialVersionUID = -2655575183111164853L;
 	private String text_;
-    private SmsDcs dcs_;
+    private AbstractSmsDcs dcs_;
     
     /**
      * Creates an SmsTextMessage with the given dcs.
@@ -65,7 +65,7 @@ public class SmsTextMessage extends SmsConcatMessage implements Serializable
      * @param msg The message
      * @param dcs The data coding scheme
      */
-    public SmsTextMessage(String msg, SmsDcs dcs)
+    public SmsTextMessage(String msg, AbstractSmsDcs dcs)
     {
         setText(msg, dcs);
     }
@@ -123,7 +123,7 @@ public class SmsTextMessage extends SmsConcatMessage implements Serializable
      * 
      * @param text
      */
-    public void setText(String text, SmsDcs dcs)
+    public void setText(String text, AbstractSmsDcs dcs)
     {
         // Check input for null
         if (text == null)
@@ -143,7 +143,7 @@ public class SmsTextMessage extends SmsConcatMessage implements Serializable
     /**
      * Returns the dcs.
      */
-    public SmsDcs getDcs()
+    public AbstractSmsDcs getDcs()
     {
         return dcs_;
     }
@@ -159,8 +159,8 @@ public class SmsTextMessage extends SmsConcatMessage implements Serializable
         switch (alp)
         {
         case GSM:
-        	byte[] bs = SmsPduUtil.getSeptets(text_);
-            ud = new SmsUserData(bs, bs.length*8/7, dcs_);
+        	byte[] bs = SmsPduUtil.stringToUnencodedSeptets(text_);
+            ud = new SmsUserData(bs, bs.length, dcs_);
             break;
         case ASCII:
         case LATIN1:

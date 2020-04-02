@@ -1,13 +1,9 @@
 package com.zx.sms.handler.smpp;
 
-import io.netty.channel.ChannelHandler.Sharable;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPromise;
-import io.netty.handler.codec.MessageToMessageCodec;
-
 import java.util.List;
 
 import org.marre.sms.SmsDcs;
+import org.marre.sms.SmsTextMessage;
 
 import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
@@ -24,6 +20,11 @@ import com.zx.sms.codec.smpp.msg.Pdu;
 import com.zx.sms.codec.smpp.msg.SubmitSm;
 import com.zx.sms.codec.smpp.msg.SubmitSmResp;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
+
+import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPromise;
+import io.netty.handler.codec.MessageToMessageCodec;
 
 @Sharable
 public class SMPP2CMPPBusinessHandler extends AbstractBusinessHandler {
@@ -73,7 +74,13 @@ public class SMPP2CMPPBusinessHandler extends AbstractBusinessHandler {
     		        pdu.setServiceType("");
     		        pdu.setSourceAddress(new Address((byte)0,(byte)0,deliver.getSrcterminalId()));
     		        pdu.setDestAddress(new Address((byte)0,(byte)0,deliver.getDestId()));
-    		        pdu.setSmsMsg(deliver.getSmsMessage());
+    		        if(deliver.getSmsMessage() instanceof SmsTextMessage ) {
+    		        	 pdu.setSmsMsg(((SmsTextMessage)deliver.getSmsMessage()).getText());	
+    		        }else {
+    		        	 pdu.setSmsMsg(deliver.getSmsMessage());	
+    		        }
+    		        
+    		       
     		        out.add(pdu);
     			
     		}else if(msg instanceof CmppDeliverResponseMessage){
@@ -91,7 +98,12 @@ public class SMPP2CMPPBusinessHandler extends AbstractBusinessHandler {
     	        pdu.setServiceType("");
     	        pdu.setSourceAddress(new Address((byte)0,(byte)0,submit.getSrcId()));
     	        pdu.setDestAddress(new Address((byte)0,(byte)0,submit.getDestterminalId()[0]));
-    	        pdu.setSmsMsg(submit.getSmsMessage());
+    	       
+		        if(submit.getSmsMessage() instanceof SmsTextMessage ) {
+		        	 pdu.setSmsMsg(((SmsTextMessage)submit.getSmsMessage()).getText());	
+		        }else {
+		        	 pdu.setSmsMsg(submit.getSmsMessage());	
+		        }
     	        out.add(pdu);
     			
     			
@@ -110,7 +122,13 @@ public class SMPP2CMPPBusinessHandler extends AbstractBusinessHandler {
     			DeliverSm deli = (DeliverSm)msg;
     			CmppDeliverRequestMessage deliver = new CmppDeliverRequestMessage();
     			deliver.getHeader().setSequenceId(deli.getSequenceNumber());
-    			deliver.setMsgContent(deli.getSmsMessage());
+    			if(deli.getSmsMessage() instanceof SmsTextMessage ) {
+    				deliver.setMsgContent(((SmsTextMessage)deli.getSmsMessage()).getText());	
+		        }else {
+		        	deliver.setMsgContent(deli.getSmsMessage());
+		        }
+    			
+    			
     			deliver.setSrcterminalId(deli.getSourceAddress().getAddress());
     			deliver.setDestId(deli.getDestAddress().getAddress());
     			deliver.setMsgfmt(new SmsDcs(deli.getDataCoding()));
@@ -137,7 +155,12 @@ public class SMPP2CMPPBusinessHandler extends AbstractBusinessHandler {
     			submit.getHeader().setSequenceId(sm.getSequenceNumber());
     			submit.setDestterminalId(sm.getDestAddress().getAddress());
     			submit.setSrcId(sm.getSourceAddress().getAddress());
-    			submit.setMsgContent(sm.getSmsMessage());
+    			if(sm.getSmsMessage() instanceof SmsTextMessage ) {
+    				submit.setMsgContent(((SmsTextMessage)sm.getSmsMessage()).getText());	
+		        }else {
+		        	submit.setMsgContent(sm.getSmsMessage());
+		        }
+    			
     			submit.setMsgfmt(new SmsDcs(sm.getDataCoding()));
     			submit.setTppid(sm.getProtocolId());
     			submit.setTpudhi((short)((sm.getEsmClass()>>6)&0x01));

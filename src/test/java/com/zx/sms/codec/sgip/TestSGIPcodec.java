@@ -18,8 +18,7 @@ public class TestSGIPcodec extends AbstractSGIPTestMessageCodec<SgipSubmitReques
 	@Test
 	public void test() throws DecoderException{
 		
-		System.out.println(new SmsDcs((byte)8).getAlphabet()
-				);
+		System.out.println(new SmsDcs((byte)8).getAlphabet());
 		System.out.println(new SequenceNumber());
 		ByteBuf buffer = Unpooled.wrappedBuffer(Hex.decodeHex("000000a8000000030000000011f333f26ebb10dd31303635353931323530323800000000000000000000000000000000000000000000000000000000000001383631383635373131383633360000000000000000363131313800000000000000000000020000000000000000000000000000090000000000000000000000000000000000000000000000000000000000000000010000000000000004323333610000000000000000".toCharArray()));
 		SgipSubmitRequestMessage msg = decode(buffer);

@@ -3,6 +3,7 @@ package com.zx.sms.codec.cmpp.wap;
 import java.util.BitSet;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.marre.sms.AbstractSmsDcs;
 import org.marre.sms.SmsDcs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,7 @@ class FrameHolder {
 
 	private BitSet idxBitset;
 
-	private SmsDcs msgfmt;
+	private AbstractSmsDcs msgfmt;
 
 	private InformationElement appUDHinfo;
 	
@@ -135,11 +136,11 @@ class FrameHolder {
 		return ret;
 	}
 
-	public SmsDcs getMsgfmt() {
+	public AbstractSmsDcs getMsgfmt() {
 		return msgfmt;
 	}
 
-	public void setMsgfmt(SmsDcs msgfmt) {
+	public void setMsgfmt(AbstractSmsDcs msgfmt) {
 		this.msgfmt = msgfmt;
 	}
 

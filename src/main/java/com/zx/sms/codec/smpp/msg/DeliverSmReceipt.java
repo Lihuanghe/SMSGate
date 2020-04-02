@@ -1,10 +1,6 @@
 package com.zx.sms.codec.smpp.msg;
 
-import io.netty.buffer.ByteBuf;
-
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.zx.sms.codec.smpp.SmppInvalidArgumentException;
 

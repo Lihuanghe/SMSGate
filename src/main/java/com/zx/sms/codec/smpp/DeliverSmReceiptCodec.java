@@ -33,6 +33,7 @@ public class DeliverSmReceiptCodec extends MessageToMessageCodec<DeliverSm, Deli
         pdu.setDataCoding(msg.getDataCoding());
         pdu.setDefaultMsgId(msg.getDefaultMsgId());
         pdu.setShortMessage(msg.getShortMessage());
+        pdu.setMsglength((short)msg.getShortMessage().length);
         if(msg.getOptionalParameters()!=null)
         	for(Tlv tlv:msg.getOptionalParameters()){
         		pdu.addOptionalParameter(tlv);

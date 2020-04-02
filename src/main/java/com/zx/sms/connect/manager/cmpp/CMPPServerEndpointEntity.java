@@ -10,6 +10,10 @@ import com.zx.sms.connect.manager.ServerEndpoint;
  */
 public class CMPPServerEndpointEntity extends EndpointEntity implements ServerEndpoint {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7570800382297773838L;
 	private Map<String,CMPPServerChildEndpointEntity> childrenEndpoint = new ConcurrentHashMap<String,CMPPServerChildEndpointEntity>() ;
 	
 	
@@ -28,9 +32,14 @@ public class CMPPServerEndpointEntity extends EndpointEntity implements ServerEn
 		return childrenEndpoint.get(userName);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected CMPPServerEndpointConnector buildConnector() {
 		return new CMPPServerEndpointConnector(this);
 	}
 
+	@Override
+	public EndpointEntity getChild(String userName, ChannelType chType) {
+		return null;
+	}
 }

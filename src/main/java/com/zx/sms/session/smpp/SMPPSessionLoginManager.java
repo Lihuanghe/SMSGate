@@ -46,13 +46,14 @@ public class SMPPSessionLoginManager extends AbstractSessionLoginManager {
 			String username = message.getSystemId();
 			if (entity instanceof SMPPServerEndpointEntity) {
 				SMPPServerEndpointEntity serverEntity = (SMPPServerEndpointEntity) entity;
-				EndpointEntity end =  serverEntity.getChild(username.trim());
-				if(end == null) return null;
-				if(end.getChannelType()==ChannelType.DOWN && msg instanceof BindTransmitter){
+				if( msg instanceof BindTransmitter){
+					EndpointEntity end =  serverEntity.getChild(username.trim(),ChannelType.DOWN);
 					return end;
-				}else if(end.getChannelType()==ChannelType.UP && msg instanceof BindReceiver){
+				}else if(msg instanceof BindReceiver){
+					EndpointEntity end =  serverEntity.getChild(username.trim(),ChannelType.UP);
 					return end;
-				}else if(end.getChannelType()==ChannelType.DUPLEX && msg instanceof BindTransceiver){
+				}else if(msg instanceof BindTransceiver){
+					EndpointEntity end =  serverEntity.getChild(username.trim(),ChannelType.DUPLEX);
 					return end;
 				}
 			}
@@ -115,9 +116,9 @@ public class SMPPSessionLoginManager extends AbstractSessionLoginManager {
 		SMPPEndpointEntity smppentity = (SMPPEndpointEntity) entity;
 		
 		BaseBind bind = (BaseBind)message;
-		
-		ctx.channel().writeAndFlush(bind.createResponse());
-
+		BaseBindResp resp =   (BaseBindResp)bind.createResponse();
+		resp.setSystemId(bind.getSystemId());
+		ctx.channel().writeAndFlush(resp);
 	}
 
 	@Override

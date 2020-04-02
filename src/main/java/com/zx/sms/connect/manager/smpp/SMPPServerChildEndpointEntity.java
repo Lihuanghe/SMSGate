@@ -4,8 +4,10 @@ import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.ServerEndpoint;
 
 
-public class SMPPServerChildEndpointEntity extends SMPPEndpointEntity implements ServerEndpoint{
 
+public class SMPPServerChildEndpointEntity extends SMPPEndpointEntity implements ServerEndpoint{
+	private static final long serialVersionUID = -5780773960343990868L;
+	@SuppressWarnings("unchecked")
 	@Override
 	protected SMPPServerChildEndpointConnector buildConnector() {
 		return new SMPPServerChildEndpointConnector(this);
@@ -13,19 +15,20 @@ public class SMPPServerChildEndpointEntity extends SMPPEndpointEntity implements
 
 	@Override
 	public void addchild(EndpointEntity entity) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void removechild(EndpointEntity entity) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public EndpointEntity getChild(String userName) {
-		// TODO Auto-generated method stub
+		return null;
+	}
+	public EndpointEntity getChild(String userName,ChannelType chType)
+	{
 		return null;
 	}
 
