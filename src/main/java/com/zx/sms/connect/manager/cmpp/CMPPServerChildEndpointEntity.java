@@ -6,6 +6,12 @@ import com.zx.sms.connect.manager.ServerEndpoint;
 
 public class CMPPServerChildEndpointEntity extends CMPPEndpointEntity implements ServerEndpoint{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8696901786407841859L;
+
+	@SuppressWarnings("unchecked")
 	@Override
 	protected CMPPServerChildEndpointConnector buildConnector() {
 		
@@ -30,6 +36,9 @@ public class CMPPServerChildEndpointEntity extends CMPPEndpointEntity implements
 		return null;
 	}
 
-
-
+	@Override
+	public EndpointEntity getChild(String userName, ChannelType chType) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

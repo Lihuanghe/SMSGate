@@ -14,6 +14,10 @@ import com.zx.sms.connect.manager.cmpp.CMPPServerEndpointConnector;
 public class SgipServerEndpointEntity extends EndpointEntity implements ServerEndpoint {
 
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7749225357445133670L;
 	private Map<String,SgipServerChildEndpointEntity> childrenEndpoint = new ConcurrentHashMap<String,SgipServerChildEndpointEntity>() ;
 	
 	
@@ -40,9 +44,15 @@ public class SgipServerEndpointEntity extends EndpointEntity implements ServerEn
 		}
 		return list;
 	}
+	@SuppressWarnings("unchecked")
 	@Override
 	protected SgipServerEndpointConnector buildConnector() {
 		return new SgipServerEndpointConnector(this);
+	}
+
+	@Override
+	public EndpointEntity getChild(String userName, ChannelType chType) {
+		return null;
 	}
 
 }

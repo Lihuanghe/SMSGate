@@ -80,7 +80,7 @@ public class TestSgipEndPoint {
 //		client.setReadLimit(200);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add(new SgipReportRequestMessageHandler());
-		clienthandlers.add(new SGIPSessionConnectedHandler(1000000));   
+		clienthandlers.add(new SGIPSessionConnectedHandler(10000));   
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		manager.openAll();

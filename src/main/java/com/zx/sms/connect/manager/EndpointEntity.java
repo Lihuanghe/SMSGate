@@ -22,7 +22,7 @@ public abstract class EndpointEntity implements Serializable {
 	 */
 	private String Desc;
     
-	private ChannelType channelType;
+	private ChannelType channelType = ChannelType.DUPLEX;
 	private String host;
 	private Integer port;
 	

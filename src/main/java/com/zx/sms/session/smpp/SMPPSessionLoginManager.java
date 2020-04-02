@@ -46,17 +46,16 @@ public class SMPPSessionLoginManager extends AbstractSessionLoginManager {
 			String username = message.getSystemId();
 			if (entity instanceof SMPPServerEndpointEntity) {
 				SMPPServerEndpointEntity serverEntity = (SMPPServerEndpointEntity) entity;
-				EndpointEntity end =  serverEntity.getChild(username.trim());
-				if(end == null) return null;
-				
 				if( msg instanceof BindTransmitter){
-					end.setChannelType(ChannelType.DOWN);
+					EndpointEntity end =  serverEntity.getChild(username.trim(),ChannelType.DOWN);
+					return end;
 				}else if(msg instanceof BindReceiver){
-					end.setChannelType(ChannelType.UP);
+					EndpointEntity end =  serverEntity.getChild(username.trim(),ChannelType.UP);
+					return end;
 				}else if(msg instanceof BindTransceiver){
-					end.setChannelType(ChannelType.DUPLEX);
+					EndpointEntity end =  serverEntity.getChild(username.trim(),ChannelType.DUPLEX);
+					return end;
 				}
-				return end;
 			}
 		}
 		return null;
