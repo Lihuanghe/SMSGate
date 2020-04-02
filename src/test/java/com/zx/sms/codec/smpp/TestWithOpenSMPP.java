@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.codec.digest.Md5Crypt;
 import org.junit.Assert;
 import org.junit.Test;
 import org.smpp.Data;
@@ -17,23 +16,20 @@ import org.smpp.pdu.Address;
 import org.smpp.pdu.AddressRange;
 import org.smpp.pdu.BindRequest;
 import org.smpp.pdu.BindResponse;
-import org.smpp.pdu.BindTransciever;
+import org.smpp.pdu.BindTransmitter;
 import org.smpp.pdu.PDUException;
 import org.smpp.pdu.SubmitSM;
 import org.smpp.pdu.SubmitSMResp;
 import org.smpp.pdu.UnbindResp;
 import org.smpp.pdu.ValueNotSetException;
 
-import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
 import com.zx.sms.common.util.StandardCharsets;
+import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
 import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.connect.manager.smpp.SMPPMessageReceiveHandler;
 import com.zx.sms.connect.manager.smpp.SMPPServerChildEndpointEntity;
 import com.zx.sms.connect.manager.smpp.SMPPServerEndpointEntity;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
-
-import io.netty.buffer.ByteBufUtil;
-import io.netty.buffer.Unpooled;
 
 public class TestWithOpenSMPP {
 
@@ -61,7 +57,7 @@ public class TestWithOpenSMPP {
 		child.setPassword(password);
 
 		child.setValid(true);
-		child.setChannelType(ChannelType.DUPLEX);
+		child.setChannelType(ChannelType.DOWN);
 		child.setMaxChannels((short) 3);
 		child.setRetryWaitTimeSec((short) 30);
 		child.setMaxRetryCnt((short) 3);
@@ -131,7 +127,7 @@ public class TestWithOpenSMPP {
 		BindRequest request = null;
 		BindResponse response = null;
 
-		request = new BindTransciever();
+		request = new BindTransmitter();
 		TCPIPConnection connection = new TCPIPConnection("127.0.0.1", port);
 		connection.setReceiveTimeout(20 * 1000);
 		session = new Session(connection);
