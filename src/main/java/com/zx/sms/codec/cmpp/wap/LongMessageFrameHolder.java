@@ -172,7 +172,7 @@ public enum LongMessageFrameHolder {
 
 		// 短信内容不带协议头，直接获取短信内容
 		// udhi只取第一个bit
-		if (frame.getTpudhi() == 0) {
+		if ((frame.getTpudhi() & 0x01) == 0) {
 			SmsTextMessage smsmsg =  buildTextMessage(frame.getPayloadbytes(0), frame.getMsgfmt());
 			return new SmsMessageHolder(smsmsg,msg);
 		} else if ((frame.getTpudhi() & 0x01) == 1 || (frame.getTpudhi() & 0x40) == 0x40) {
