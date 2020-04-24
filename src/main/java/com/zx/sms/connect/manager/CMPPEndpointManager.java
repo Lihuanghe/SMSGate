@@ -46,7 +46,7 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 				list = old == null ? list : old;
 			}
 			list.add(cmppentity);
-		} 
+		}
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 
 		return groupMap.get(group);
 	}
-	
+
 	@Override
 	public void remove(String id) {
 		manager.remove(id);
@@ -68,7 +68,7 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 	public EndpointEntity getEndpointEntity(String id) {
 		return manager.getEndpointEntity(id);
 	}
-	
+
 	public void addAllEndpointEntity(List<EndpointEntity> entities) {
 		if (entities == null || entities.size() == 0)
 			return;
@@ -86,8 +86,19 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 	public void startConnectionCheckTask() {
 		manager.startConnectionCheckTask();
 	}
+
 	@Override
 	public void stopConnectionCheckTask() {
 		manager.stopConnectionCheckTask();
+	}
+
+	@Override
+	public EndpointConnector getEndpointConnector(EndpointEntity entity) {
+		return entity.getSingletonConnector();
+	}
+
+	@Override
+	public EndpointConnector getEndpointConnector(String id) {
+		return manager.getEndpointConnector(id);
 	}
 }

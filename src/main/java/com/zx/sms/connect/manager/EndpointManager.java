@@ -98,43 +98,57 @@ public enum EndpointManager implements EndpointManagerInterface {
 		}
 		stopConnectionCheckTask();
 	}
-	
-	public void stopConnectionCheckTask(){
+
+	public void stopConnectionCheckTask() {
 		started = false;
 	}
-	public void startConnectionCheckTask(){
-		if(started) return ;
-		
+
+	public void startConnectionCheckTask() {
+		if (started)
+			return;
+
 		started = true;
-		//每秒检查一次所有连接，不足数目的就新建一个连接
-		EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>(){
+		// 每秒检查一次所有连接，不足数目的就新建一个连接
+		EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>() {
 
 			@Override
 			public Boolean call() throws Exception {
-				for(Map.Entry<String, EndpointEntity> entry: idMap.entrySet()){
-					
+				for (Map.Entry<String, EndpointEntity> entry : idMap.entrySet()) {
+
 					EndpointEntity entity = entry.getValue();
-					if(entity instanceof ClientEndpoint) {
+					if (entity instanceof ClientEndpoint) {
 						EndpointConnector conn = entity.getSingletonConnector();
 						int max = entity.getMaxChannels();
 						int actual = conn.getConnectionNum();
-						//客户端重连
-						if(actual < max){
-							logger.debug("open connection {}",entity);
+						// 客户端重连
+						if (actual < max) {
+							logger.debug("open connection {}", entity);
 							conn.open();
 						}
 					}
 				}
 				return started;
 			}
-			
-		}, new ExitUnlimitCirclePolicy<Boolean>(){
+
+		}, new ExitUnlimitCirclePolicy<Boolean>() {
 
 			@Override
 			public boolean notOver(Future<Boolean> future) {
 				return started;
 			}
-			
+
 		}, 1000);
+	}
+
+	@Override
+	public EndpointConnector getEndpointConnector(EndpointEntity entity) {
+
+		return entity.getSingletonConnector();
+	}
+
+	@Override
+	public EndpointConnector getEndpointConnector(String id) {
+		EndpointEntity entity = getEndpointEntity(id);
+		return entity == null ? null : entity.getSingletonConnector();
 	}
 }
