@@ -57,7 +57,7 @@ public abstract class Pdu implements BaseMessage,Cloneable{
         this.isRequest = isRequest;
         this.commandLength = null;
         this.commandId = commandId;
-        this.sequenceNumber = (int)DefaultSequenceNumberUtil.getSequenceNo();
+        this.sequenceNumber = DefaultSequenceNumberUtil.getSequenceNo();
         this.referenceObject = null;
     }
 

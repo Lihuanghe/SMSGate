@@ -34,7 +34,7 @@ public class SessionStateManager extends AbstractSessionStateManager<Integer, Me
 			CmppSubmitResponseMessage submitResp = (CmppSubmitResponseMessage) res;
 			
 			if ((submitResp.getResult() != 0L) && (submitResp.getResult() != 8L)) {
-				logger.error("Send SubmitMsg ERR . Msg: {} ,Resp:{}", req, submitResp);
+				logger.error("Receive Err Response result: {} . Req: {} ,Resp:{}",submitResp.getResult(), req, submitResp);
 			}
 
 			return submitResp.getResult() == 8L;
@@ -42,7 +42,7 @@ public class SessionStateManager extends AbstractSessionStateManager<Integer, Me
 			CmppDeliverResponseMessage deliverResp = (CmppDeliverResponseMessage) res;
 
 			if ((deliverResp.getResult() != 0L) && (deliverResp.getResult() != 8L)) {
-				logger.error("Send DeliverMsg ERR . Msg: {} ,Resp:{}", req, deliverResp);
+				logger.error("Receive Err Response result: {} . Req: {} ,Resp:{}",deliverResp.getResult(), req, deliverResp);
 			}
 
 			return deliverResp.getResult() == 8L;

@@ -20,7 +20,6 @@ import javax.xml.transform.stax.StAXSource;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.marre.sms.AbstractSmsDcs;
-import org.marre.sms.SmsAlphabet;
 import org.marre.sms.SmsException;
 import org.marre.sms.SmsMessage;
 import org.marre.sms.SmsPdu;

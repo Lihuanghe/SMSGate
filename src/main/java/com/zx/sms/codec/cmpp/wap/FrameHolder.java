@@ -4,7 +4,6 @@ import java.util.BitSet;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.marre.sms.AbstractSmsDcs;
-import org.marre.sms.SmsDcs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

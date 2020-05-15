@@ -17,6 +17,7 @@ public class TestMsgId {
 	public void testmsgid() throws DecoderException {
 		//迈远格式的msgId与标准格式互转
 		String maiyunMsgid = "9BD88980F32D1C3E";
+//		String maiyunMsgid = "53265100001FA118";
 		MsgId msgid = DefaultMsgIdUtil.bytes2MsgId(Hex.decodeHex(maiyunMsgid.toCharArray()));
 		System.out.println(msgid);
 		

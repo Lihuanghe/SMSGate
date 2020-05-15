@@ -1,7 +1,6 @@
 package com.zx.sms.codec.cmpp.wap;
 
 import org.marre.sms.AbstractSmsDcs;
-import org.marre.sms.SmsDcs;
 
 import com.zx.sms.common.GlobalConstance;
 
