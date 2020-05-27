@@ -32,7 +32,7 @@ public class TestDiffrentMsgFmt extends AbstractTestMessageCodec<CmppSubmitReque
 			
 			Assert.assertNotNull(result);
 			System.out.println(result.getMsgContent());
-			Assert.assertNotEquals( expect, result.getMsgContent());
+			Assert.assertEquals( expect, result.getMsgContent());
 			success = true;
 		}
 		Assert.assertTrue(success);

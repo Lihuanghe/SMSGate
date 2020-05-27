@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.zx.sms.LongSMSMessage;
 import com.zx.sms.common.NotSupportedException;
+import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.CachedMillisecondClock;
 
 // 用来保存一条短信的各个片断
@@ -93,7 +94,7 @@ class FrameHolder {
 		this.idxBitset = new BitSet(totalLength);
 	}
 
-	public synchronized void merge(byte[] content, int idx) throws NotSupportedException {
+	public synchronized void merge(LongMessageFrame frame ,byte[] content, int idx) throws NotSupportedException {
 
 		if (idxBitset.get(idx)) {
 			logger.warn("have received the same index:{} of Message. do not merge this content.{},origin:{},{},{},new content:{}", idx,this.serviceNum,
@@ -109,8 +110,14 @@ class FrameHolder {
 		}
 		// 设置该短信序号已填冲
 		idxBitset.set(idx);
-
-		this.content[idx] = content;
+		
+		//判断不同分片的msgfmt是否相同，不同的话就当成String进行编码转换
+		if(this.msgfmt != null && msgfmt.getValue() != frame.getMsgfmt().getValue()) {
+			String txt = new String(content,CMPPCommonUtil.switchCharset(frame.getMsgfmt().getAlphabet()));
+			this.content[idx] = txt.getBytes(CMPPCommonUtil.switchCharset(msgfmt.getAlphabet()));
+		}else {
+			this.content[idx] = content;
+		}
 
 		this.totalbyteLength += this.content[idx].length;
 	}

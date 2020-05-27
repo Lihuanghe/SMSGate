@@ -99,7 +99,7 @@ public enum LongMessageFrameHolder {
 		InformationElement udheader = fh.getAppUDHinfo();
 		// udh为空表示文本短信
 		if (udheader == null) {
-			return buildTextMessage(contents, frame.getMsgfmt());
+			return buildTextMessage(contents, fh.getMsgfmt());
 		} else {
 			if (SmsUdhIei.APP_PORT_16BIT.equals(udheader.udhIei)) {
 				// 2948 wap_push 0x0B84
@@ -119,7 +119,7 @@ public enum LongMessageFrameHolder {
 				logger.warn("UnsupportedportMessage UDH:0x{} udhdata:{},pdu:[{}]", ByteBufUtil.hexDump(new byte[] {udheader.udhIei.getValue()}), ByteBufUtil.hexDump(udheader.infoEleData),
 						ByteBufUtil.hexDump(contents));
 
-				SmsTextMessage text = buildTextMessage(contents, frame.getMsgfmt());
+				SmsTextMessage text = buildTextMessage(contents, fh.getMsgfmt());
 				return new SmsPortAddressedTextMessage(new SmsPort(destport), new SmsPort(srcport), text);
 			} else if(frame.getTppid()==0x7f && (SmsUdhIei.COMMAND_PACKET.equals(udheader.udhIei)||SmsUdhIei.COMMAND_RESPONSE_PACKET.equals(udheader.udhIei))){
 				//Tppid()==0x7f sim data download
@@ -130,7 +130,7 @@ public enum LongMessageFrameHolder {
 			else {
 				// 其它都当成文本短信
 				logger.warn("Unsupported UDH:0x{} udhdata:{},pdu:[{}]", ByteBufUtil.hexDump(new byte[] {udheader.udhIei.getValue()}), ByteBufUtil.hexDump(udheader.infoEleData), ByteBufUtil.hexDump(contents));
-				return buildTextMessage(contents, frame.getMsgfmt());
+				return buildTextMessage(contents, fh.getMsgfmt());
 			}
 		}
 	}
@@ -249,11 +249,11 @@ public enum LongMessageFrameHolder {
 			for (InformationElement udhi : header.infoElement) {
 				if (SmsUdhIei.CONCATENATED_8BIT.equals(udhi.udhIei)) {
 
-					fh.merge(frame.getPayloadbytes(header.headerlength), udhi.infoEleData[2] - 1);
+					fh.merge(frame,frame.getPayloadbytes(header.headerlength), udhi.infoEleData[2] - 1);
 					break;
 				} else if (SmsUdhIei.CONCATENATED_16BIT.equals(udhi.udhIei)) {
 
-					fh.merge(frame.getPayloadbytes(header.headerlength), udhi.infoEleData[3] - 1);
+					fh.merge(frame,frame.getPayloadbytes(header.headerlength), udhi.infoEleData[3] - 1);
 					break;
 				}
 			}
@@ -305,7 +305,7 @@ public enum LongMessageFrameHolder {
 			frameholder.setMsgfmt(frame.getMsgfmt());
 			frameholder.setSequence(frame.getSequence());
 			frameholder.setServiceNum(serviceNum);
-			frameholder.merge(frame.getPayloadbytes(header.headerlength), frameIndex);
+			frameholder.merge(frame,frame.getPayloadbytes(header.headerlength), frameIndex);
 			return frameholder;
 		}
 
