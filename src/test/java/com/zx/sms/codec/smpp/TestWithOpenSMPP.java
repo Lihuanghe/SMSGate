@@ -1,11 +1,14 @@
 package com.zx.sms.codec.smpp;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.smpp.Data;
 import org.smpp.Session;
@@ -38,6 +41,25 @@ public class TestWithOpenSMPP {
 	String systemId = "901782";
 	String password = "ICP";
 	int port = 2775;
+	
+	@Before
+	public void  chooseport() {
+		port = getAvailablePort();
+	}
+	
+    private static int getAvailablePort() {
+        try {
+        	ServerSocket ss = new ServerSocket();
+            ss.bind(null);
+            return ss.getLocalPort();
+        } catch (IOException e) {
+            return getRandomPort();
+        }
+    }
+    
+    private static int getRandomPort() {
+        return 30000 + RandomUtils.nextInt(0,10000);
+    }
 
 	@Test
 	public void test() throws Exception {
@@ -75,8 +97,9 @@ public class TestWithOpenSMPP {
 		System.out.println("start.....");
 
 		bind();
-		sendsubmit("@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà^{}\\[~]|",Data.ENC_GSM7BIT);
-		sendsubmit("尊敬的客户,您好！您于2016-03-23 14:51:36通过中国移动10085销售专线订购的【一加手机高清防刮保护膜】",Data.ENC_UTF16_BE);
+		String randomStr = String.valueOf(RandomUtils.nextInt(0,10000));
+		sendsubmit("@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà^{}\\[~]|" + randomStr,Data.ENC_GSM7BIT);
+		sendsubmit("尊敬的客户,您好！您于2016-03-23 14:51:36通过中国移动10085销售专线订购的【一加手机高清防刮保护膜】" + randomStr,Data.ENC_UTF16_BE);
 		unbind();
 	}
 
