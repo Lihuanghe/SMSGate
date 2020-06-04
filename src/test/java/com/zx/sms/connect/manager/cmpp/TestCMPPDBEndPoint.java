@@ -12,9 +12,11 @@ import org.slf4j.LoggerFactory;
 
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EndpointManager;
+import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
 
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ResourceLeakDetector;
 import io.netty.util.ResourceLeakDetector.Level;
 /**
@@ -64,6 +66,22 @@ public class TestCMPPDBEndPoint {
 
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add( new CMPPMessageReceiveHandler());
+		clienthandlers.add(new AbstractBusinessHandler() {
+
+		    @Override
+		    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+		    	CMPPResponseSenderHandler handler = new CMPPResponseSenderHandler();
+		    	handler.setEndpointEntity(getEndpointEntity());
+		    	ctx.pipeline().addBefore("sessionStateManager", handler.name(), handler);
+		    	ctx.pipeline().remove(this);
+		    }
+			
+			@Override
+			public String name() {
+				return "AddCMPPResponseSenderHandler";
+			}
+			
+		});
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.openEndpoint(client);		
         System.out.println("start.....");

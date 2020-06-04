@@ -18,6 +18,7 @@ import com.zx.sms.BaseMessage;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EndpointManager;
+import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 import com.zx.sms.handler.api.gate.SessionConnectedHandler;
 import com.zx.sms.handler.api.smsbiz.MessageReceiveHandler;
@@ -118,6 +119,22 @@ public class CMPPChargingDemoTest {
 //		child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
 		serverhandlers.add(new CMPPMessageReceiveHandler());
+		serverhandlers.add(new AbstractBusinessHandler() {
+
+		    @Override
+		    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+		    	CMPPResponseSenderHandler handler = new CMPPResponseSenderHandler();
+		    	handler.setEndpointEntity(getEndpointEntity());
+		    	ctx.pipeline().addBefore("sessionStateManager", handler.name(), handler);
+		    	ctx.pipeline().remove(this);
+		    }
+			
+			@Override
+			public String name() {
+				return "AddCMPPResponseSenderHandler";
+			}
+			
+		});
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 		
