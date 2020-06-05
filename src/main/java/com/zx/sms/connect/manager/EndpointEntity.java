@@ -80,6 +80,11 @@ public abstract class EndpointEntity implements Serializable {
 	
 	private volatile EndpointConnector connector;
 	
+	/**
+	 *增加客户端IP校验配置 
+	 */
+	private List<String> allowedAddr;
+	
     public String getProxy() {
 		return proxy;
 	}
@@ -213,6 +218,14 @@ public abstract class EndpointEntity implements Serializable {
 	}
 	public void setCloseWhenRetryFailed(boolean closeWhenRetryFailed) {
 		this.closeWhenRetryFailed = closeWhenRetryFailed;
+	}
+	
+	
+	public List<String> getAllowedAddr() {
+		return allowedAddr;
+	}
+	public void setAllowedAddr(List<String> allowedAddr) {
+		this.allowedAddr = allowedAddr;
 	}
 	@Override
 	public int hashCode() {

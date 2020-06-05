@@ -35,7 +35,7 @@ public class TestCMPPEndPoint {
 
 		CMPPServerEndpointEntity server = new CMPPServerEndpointEntity();
 		server.setId("server");
-		server.setHost("127.0.0.1");
+		server.setHost("0.0.0.0");
 		server.setPort(7890);
 		server.setValid(true);
 		// 使用ssl加密数据流
@@ -54,6 +54,9 @@ public class TestCMPPEndPoint {
 		child.setMaxChannels((short) 1);
 		child.setRetryWaitTimeSec((short) 30);
 		child.setMaxRetryCnt((short) 3);
+		List<String> iplist = new ArrayList<String>();
+		iplist.add("192.168.98.48/18");
+		child.setAllowedAddr(iplist);
 		child.setReSendFailMsg(true);
 		// child.setWriteLimit(200);
 		// child.setReadLimit(200);
@@ -84,7 +87,7 @@ public class TestCMPPEndPoint {
 
 		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
 		client.setId("client");
-		client.setHost("127.0.0.1");
+		client.setHost("192.168.93.45");
 		// client.setLocalhost("127.0.0.1");
 		// client.setLocalport(65521);
 		client.setPort(7890);
@@ -101,7 +104,7 @@ public class TestCMPPEndPoint {
 		client.setReSendFailMsg(false);
 		client.setSupportLongmsg(SupportLongMessage.BOTH);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		int count = 10000;
+		int count = 1000;
 		CMPPSessionConnectedHandler sender = new CMPPSessionConnectedHandler(count);
 		clienthandlers.add(sender);
 		client.setBusinessHandlerSet(clienthandlers);
