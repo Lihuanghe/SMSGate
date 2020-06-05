@@ -10,7 +10,7 @@
 <dependency>
   <groupId>com.chinamobile.cmos</groupId>
   <artifactId>sms-core</artifactId>
-  <version>2.1.11</version>
+  <version>2.1.12</version>
 </dependency>
 ```
 
