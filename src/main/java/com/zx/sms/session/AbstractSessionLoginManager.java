@@ -114,8 +114,7 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 		if (allowed != null && !allowed.isEmpty()) {
 			boolean isallow = false;
 			for (String strIp : allowed) {
-				if (StringUtils.isNoneBlank(strIp)) {
-
+				if (StringUtils.isNotBlank(strIp)) {
 					try {
 						IPRange r = new IPRange(strIp.trim());
 						if (r.isInRange(remoteAddr.getAddress())) {

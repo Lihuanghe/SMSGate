@@ -56,9 +56,9 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	private EndpointEntity endpoint;
 
 	private CircularList channels = new CircularList();
-	
+
 	private final static String sessionHandler = "sessionStateManager";
-	
+
 	public AbstractEndpointConnector(EndpointEntity endpoint) {
 		this.endpoint = endpoint;
 		this.sslCtx = createSslCtx();
@@ -74,13 +74,8 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 	@Override
 	public void close(Channel channel) throws Exception {
-		try {
-			if (channel.isOpen())
-				channel.close().sync();
-
-		} catch (InterruptedException e) {
-			logger.error("close channel Error ", e);
-		}
+		if (channel.isOpen())
+			channel.close();
 		// 将channel移除
 		removeChannel(channel);
 	}
@@ -88,9 +83,9 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	@Override
 	public void close() throws Exception {
 		Channel[] chs = channels.getall();
-		if(chs == null || chs.length == 0)
+		if (chs == null || chs.length == 0)
 			return;
-		for(Channel ch : chs){
+		for (Channel ch : chs) {
 			close(ch);
 		}
 	}
@@ -117,58 +112,56 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		return getChannels().size();
 	}
 
-
 	private CircularList getChannels() {
 		return channels;
 	}
 
-	protected abstract AbstractSessionStateManager createSessionManager(EndpointEntity entity, ConcurrentMap storeMap,boolean presend);
+	protected abstract AbstractSessionStateManager createSessionManager(EndpointEntity entity, ConcurrentMap storeMap, boolean presend);
 
 	protected abstract void doBindHandler(ChannelPipeline pipe, EndpointEntity entity);
 
 	protected abstract void doinitPipeLine(ChannelPipeline pipeline);
-	
-	
-	protected void addProxyHandler(Channel ch,URI proxy) throws NotSupportedException{
-		if(proxy==null) return;
+
+	protected void addProxyHandler(Channel ch, URI proxy) throws NotSupportedException {
+		if (proxy == null)
+			return;
 		String scheme = proxy.getScheme();
 		String userinfo = proxy.getUserInfo();
 		String host = proxy.getHost();
 		int port = proxy.getPort();
 		String username = null;
 		String pass = null;
-		
-		
-		if(userinfo!=null && (!"".equals(userinfo))){
+
+		if (userinfo != null && (!"".equals(userinfo))) {
 			int idx = userinfo.indexOf(":");
-			if(idx>0){
+			if (idx > 0) {
 				username = userinfo.substring(0, idx);
-				pass =userinfo.substring(idx+1);
+				pass = userinfo.substring(idx + 1);
 			}
 		}
-		
+
 		ChannelPipeline pipeline = ch.pipeline();
-		
-		if("HTTP".equalsIgnoreCase(scheme)){
-			if(username==null){
-				pipeline.addLast(new HttpProxyHandler(new InetSocketAddress(host,port)));
-			}else{
-				pipeline.addLast(new HttpProxyHandler(new InetSocketAddress(host,port),username,pass));
+
+		if ("HTTP".equalsIgnoreCase(scheme)) {
+			if (username == null) {
+				pipeline.addLast(new HttpProxyHandler(new InetSocketAddress(host, port)));
+			} else {
+				pipeline.addLast(new HttpProxyHandler(new InetSocketAddress(host, port), username, pass));
 			}
-		}else if("SOCKS5".equalsIgnoreCase(scheme)){
-			if(username==null){
-				pipeline.addLast(new Socks5ProxyHandler(new InetSocketAddress(host,port)));
-			}else{
-				pipeline.addLast(new Socks5ProxyHandler(new InetSocketAddress(host,port),username,pass));
+		} else if ("SOCKS5".equalsIgnoreCase(scheme)) {
+			if (username == null) {
+				pipeline.addLast(new Socks5ProxyHandler(new InetSocketAddress(host, port)));
+			} else {
+				pipeline.addLast(new Socks5ProxyHandler(new InetSocketAddress(host, port), username, pass));
 			}
-		}else if("SOCKS4".equalsIgnoreCase(scheme)){
-			if(username==null){
-				pipeline.addLast(new Socks4ProxyHandler(new InetSocketAddress(host,port)));
-			}else{
-				pipeline.addLast(new Socks4ProxyHandler(new InetSocketAddress(host,port),username));
+		} else if ("SOCKS4".equalsIgnoreCase(scheme)) {
+			if (username == null) {
+				pipeline.addLast(new Socks4ProxyHandler(new InetSocketAddress(host, port)));
+			} else {
+				pipeline.addLast(new Socks4ProxyHandler(new InetSocketAddress(host, port), username));
 			}
-		}else {
-			throw new NotSupportedException("not support proxy protocol "+ scheme);
+		} else {
+			throw new NotSupportedException("not support proxy protocol " + scheme);
 		}
 	}
 
@@ -180,14 +173,15 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			protected void initChannel(Channel ch) throws Exception {
 				ChannelPipeline pipeline = ch.pipeline();
 				EndpointEntity entity = getEndpointEntity();
-//				pipeline.addFirst(new LoggingHandler("proxy", LogLevel.INFO));
-				if(entity instanceof ClientEndpoint && StringUtils.isNotBlank(entity.getProxy())){
+				// pipeline.addFirst(new LoggingHandler("proxy",
+				// LogLevel.INFO));
+				if (entity instanceof ClientEndpoint && StringUtils.isNotBlank(entity.getProxy())) {
 					String uriString = entity.getProxy();
-					try{
+					try {
 						URI uri = URI.create(uriString);
-						addProxyHandler(ch,uri);
-					}catch(Exception ex){
-						logger.error("parse Proxy URI {} failed.",uriString ,ex);
+						addProxyHandler(ch, uri);
+					} catch (Exception ex) {
+						logger.error("parse Proxy URI {} failed.", uriString, ex);
 					}
 				}
 
@@ -202,12 +196,12 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	public synchronized boolean addChannel(Channel ch) {
 		int nowConnCnt = getConnectionNum();
 		EndpointEntity endpoint = getEndpointEntity();
-		if(endpoint.getMaxChannels()==0 || endpoint.getMaxChannels()> nowConnCnt) {
+		if (endpoint.getMaxChannels() == 0 || endpoint.getMaxChannels() > nowConnCnt) {
 			// 标识连接已建立
 			ch.attr(GlobalConstance.attributeKey).set(SessionState.Connect);
-			
+
 			getChannels().add(ch);
-			
+
 			ConcurrentMap<Serializable, VersionObject> storedMap = null;
 			if (endpoint.isReSendFailMsg()) {
 				// 如果上次发送失败的消息要重发一次，则要创建持久化Map用于存储发送的message
@@ -220,28 +214,28 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 			if (nowConnCnt == 0 && endpoint.isReSendFailMsg()) {
 				// 如果是第一个连接。要把上次发送失败的消息取出，再次发送一次
-				ch.pipeline().addAfter(GlobalConstance.codecName, sessionHandler,createSessionManager(endpoint, storedMap, true) );
-			}else{
-				ch.pipeline().addAfter(GlobalConstance.codecName, sessionHandler, createSessionManager(endpoint, storedMap, false) );
+				ch.pipeline().addAfter(GlobalConstance.codecName, sessionHandler, createSessionManager(endpoint, storedMap, true));
+			} else {
+				ch.pipeline().addAfter(GlobalConstance.codecName, sessionHandler, createSessionManager(endpoint, storedMap, false));
 			}
-			
+
 			// 增加流量整形 ，每个连接每秒发送，接收消息数不超过配置的值
 			ch.pipeline().addAfter(GlobalConstance.codecName, "ChannelTrafficAfter",
 					new MessageChannelTrafficShapingHandler(endpoint.getWriteLimit(), endpoint.getReadLimit(), 250));
-			
+
 			bindHandler(ch.pipeline(), getEndpointEntity());
 			return true;
-		}else {
-			logger.warn("allowed max channel count: {} ,deny to login.{}",endpoint.getMaxChannels(),endpoint);
+		} else {
+			logger.warn("allowed max channel count: {} ,deny to login.{}", endpoint.getMaxChannels(), endpoint);
 
 			return false;
 		}
-		
+
 	}
 
 	public void removeChannel(Channel ch) {
-		
-		if (getChannels().remove(ch)){
+
+		if (getChannels().remove(ch)) {
 			ch.attr(GlobalConstance.attributeKey).set(SessionState.DisConnect);
 		}
 	}
@@ -251,16 +245,16 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	 */
 	protected void bindHandler(ChannelPipeline pipe, EndpointEntity entity) {
 
-		if(entity instanceof CMPPServerEndpointEntity){
+		if (entity instanceof CMPPServerEndpointEntity) {
 			return;
 		}
 		pipe.addFirst("socketLog", new LoggingHandler(String.format(GlobalConstance.loggerNamePrefix, entity.getId()), LogLevel.TRACE));
-		
+
 		// 调用子类的bind方法
 		doBindHandler(pipe, entity);
-		
-		pipe.addAfter(GlobalConstance.codecName,"msgLog", new MessageLogHandler(entity));
-		
+
+		pipe.addAfter(GlobalConstance.codecName, "msgLog", new MessageLogHandler(entity));
+
 		List<BusinessHandlerInterface> handlers = entity.getBusinessHandlerSet();
 		if (handlers != null && handlers.size() > 0) {
 			for (BusinessHandlerInterface handler : handlers) {
@@ -284,7 +278,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 						}
 					}
 
-				}else{
+				} else {
 					handler.setEndpointEntity(entity);
 					pipe.addLast(handler.name(), handler);
 					logger.info("add share handlers . {}", handler);
@@ -297,20 +291,20 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	}
 
 	protected abstract void initSslCtx(Channel ch, EndpointEntity entity);
-	
-	protected long doCalculateSize(Object msg){
-		if(msg instanceof BaseMessage){
-			BaseMessage req = (BaseMessage)msg;
-			if(req.isRequest()){
+
+	protected long doCalculateSize(Object msg) {
+		if (msg instanceof BaseMessage) {
+			BaseMessage req = (BaseMessage) msg;
+			if (req.isRequest()) {
 				return 1;
-			}else{
+			} else {
 				return 0;
 			}
-		}else{
+		} else {
 			return -1L;
 		}
 	}
-	
+
 	public Channel[] getallChannel() {
 		return channels.getall();
 	}
@@ -319,13 +313,15 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	 * 循环列表，用于实现轮循算法
 	 */
 	private class CircularList {
-		private List<Channel> collection = Collections.synchronizedList( new ArrayList<Channel>(20)); 
+		private List<Channel> collection = Collections.synchronizedList(new ArrayList<Channel>(20));
 
 		public Channel[] getall() {
 			return collection.toArray(new Channel[collection.size()]);
 		}
-		
-		public int size() {return collection.size();}
+
+		public int size() {
+			return collection.size();
+		}
 
 		public Channel fetch() {
 			int size = collection.size();
@@ -333,15 +329,15 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 				return null;
 
 			int idx = indexSeq.incrementAndGet();
-			
+
 			try {
 				Channel ret = collection.get((idx & 0xffff) % size);
 				return ret;
-			}catch(IndexOutOfBoundsException ex) {
-				//多线程情况可能抛异常
-				//1：当线连接数为0了
-				//2：当前连接数小于index
-				return collection.isEmpty() ? null :collection.get(0);
+			} catch (IndexOutOfBoundsException ex) {
+				// 多线程情况可能抛异常
+				// 1：当线连接数为0了
+				// 2：当前连接数小于index
+				return collection.isEmpty() ? null : collection.get(0);
 			} finally {
 			}
 		}
@@ -368,7 +364,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 		private AtomicInteger indexSeq = new AtomicInteger();
 	}
-	
+
 	private class MessageChannelTrafficShapingHandler extends ChannelTrafficShapingHandler {
 		public MessageChannelTrafficShapingHandler(long writeLimit, long readLimit, long checkInterval) {
 			super(writeLimit, readLimit, checkInterval);
@@ -388,35 +384,39 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			return doCalculateSize(msg);
 		}
 	}
-	
-	public ChannelFuture asynwrite(Object msg){
+
+	public ChannelFuture asynwrite(Object msg) {
 		Channel ch = fetchOneWritable();
-		if(ch == null) return null;
+		if (ch == null)
+			return null;
 		ChannelFuture future = ch.writeAndFlush(msg);
 		return future;
 	}
-		
-	public <T extends BaseMessage> List<Promise<T>> synwrite(List<T> msgs){
+
+	public <T extends BaseMessage> List<Promise<T>> synwrite(List<T> msgs) {
 		Channel ch = fetchOneWritable();
-		if(ch == null) return null;
-		AbstractSessionStateManager session = (AbstractSessionStateManager)ch.pipeline().get(sessionHandler);
-		if(session == null) return null;
+		if (ch == null)
+			return null;
+		AbstractSessionStateManager session = (AbstractSessionStateManager) ch.pipeline().get(sessionHandler);
+		if (session == null)
+			return null;
 		List<Promise<T>> arrPromise = new ArrayList<Promise<T>>();
 		for (BaseMessage msg : msgs) {
-			arrPromise.add(session.writeMessagesync( msg));
+			arrPromise.add(session.writeMessagesync(msg));
 		}
-		
+
 		return arrPromise;
 	}
-	
-	public <T extends BaseMessage> Promise<T> synwrite(T message){
+
+	public <T extends BaseMessage> Promise<T> synwrite(T message) {
 		Channel ch = fetchOneWritable();
-		if(ch == null) return null;
-		AbstractSessionStateManager session = (AbstractSessionStateManager)ch.pipeline().get(sessionHandler);
-		return session.writeMessagesync( message);
+		if (ch == null)
+			return null;
+		AbstractSessionStateManager session = (AbstractSessionStateManager) ch.pipeline().get(sessionHandler);
+		return session.writeMessagesync(message);
 	}
-	
-	private Channel fetchOneWritable(){
+
+	private Channel fetchOneWritable() {
 		Channel ch = fetch();
 		// 端口上还没有可用连接
 		if (ch == null)
