@@ -19,10 +19,25 @@
 - `没看懂如何发送短信？`
 
   短信协议是tcp长连接，类似数据库连接，如jdbc-connection. 所以发送短信前必须要先有一个短信连接。因此你需要在程序启动时建立短信连接。参考demo里的client，调用manager.openEntity()方法，,调用manager.startConnectionCheckTask()开启断线重连。
-  然后就像调用其它库一样，在需要发送短信的地方，new 一个对应的Message,调用
-  
-  List< Future > f = ChannelUtil.syncWriteLongMsgToEntity([clientEntityId],message)方法发送，`要判断f是否为Null，为Null表示发送失败,一条短信可能拆分成多条，因此返回List`。
-
+  然后就像调用其它库一样，在需要发送短信的地方，new 一个对应的Message,调用类ChannelUtil中的相关静态方法发送，要判断是否发送成功，可以对future增加listener,一条短信可能拆分成多条，因此返回List，代码示例如下：
+```java
+  List<Promise<BaseMessage>> futures = ChannelUtil.syncWriteLongMsgToEntity([clientEntityId],message);
+  futures = ChannelUtil.syncWriteLongMsgToEntity(getEndpointEntity().getId(), msg);
+  						
+    for (Promise<BaseMessage> future : futures) {
+        future.addListener(new GenericFutureListener<Future<BaseMessage>>() {
+            @Override
+            public void operationComplete(Future<BaseMessage> future) throws Exception {
+                if (future.isSuccess()) {
+                   //do something
+                } else {
+                  //do something
+                }
+            }
+        });
+        
+    }
+```
 - `如何发送长短信？`
 
   smsgate默认已经处理好长短信了，就像发送普通短信一样。

@@ -1,33 +1,18 @@
 package com.zx.sms.connect.manager;
 
-import java.io.Serializable;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.zx.sms.BaseMessage;
+import com.zx.sms.common.ErrorChannelFuture;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.NotSupportedException;
+import com.zx.sms.common.SendFailException;
 import com.zx.sms.common.storedMap.BDBStoredMapFactoryImpl;
 import com.zx.sms.common.storedMap.VersionObject;
-import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 import com.zx.sms.connect.manager.cmpp.CMPPServerEndpointEntity;
 import com.zx.sms.handler.MessageLogHandler;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 import com.zx.sms.session.AbstractSessionStateManager;
 import com.zx.sms.session.cmpp.SessionState;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufHolder;
 import io.netty.channel.Channel;
@@ -41,7 +26,22 @@ import io.netty.handler.proxy.Socks4ProxyHandler;
 import io.netty.handler.proxy.Socks5ProxyHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.traffic.ChannelTrafficShapingHandler;
+import io.netty.util.concurrent.DefaultPromise;
+import io.netty.util.concurrent.GlobalEventExecutor;
 import io.netty.util.concurrent.Promise;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Lihuanghe(18852780@qq.com)
@@ -390,18 +390,33 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	}
 	
 	public ChannelFuture asynwrite(Object msg){
+		if(getConnectionNum() <= 0){
+			return new ErrorChannelFuture("No available connector,the client may not connected");
+		}
 		Channel ch = fetchOneWritable();
-		if(ch == null) return null;
+		if(ch == null){
+			return new ErrorChannelFuture("No active or writable channel find, it's cause it may be that you send too fast, or the peer processing is too slow.  ");
+		}
 		ChannelFuture future = ch.writeAndFlush(msg);
 		return future;
 	}
 		
 	public <T extends BaseMessage> List<Promise<T>> synwrite(List<T> msgs){
-		Channel ch = fetchOneWritable();
-		if(ch == null) return null;
-		AbstractSessionStateManager session = (AbstractSessionStateManager)ch.pipeline().get(sessionHandler);
-		if(session == null) return null;
 		List<Promise<T>> arrPromise = new ArrayList<Promise<T>>();
+		Channel ch = fetchOneWritable();
+		if(ch == null){
+			DefaultPromise<T> errorPromise = new DefaultPromise<T>(GlobalEventExecutor.INSTANCE);
+			errorPromise.setFailure(new SendFailException("No active or writable channel find, it may be that  you send too fast, or the peer processing is too slow. "));
+			arrPromise.add(errorPromise);
+			return arrPromise;
+		}
+		AbstractSessionStateManager session = (AbstractSessionStateManager)ch.pipeline().get(sessionHandler);
+		if(session == null) {
+			DefaultPromise<T> errorPromise = new DefaultPromise<T>(GlobalEventExecutor.INSTANCE);
+			errorPromise.setFailure(new SendFailException("No Session handler"));
+			arrPromise.add(errorPromise);
+			return arrPromise;
+		}
 		for (BaseMessage msg : msgs) {
 			arrPromise.add(session.writeMessagesync( msg));
 		}
@@ -411,19 +426,25 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	
 	public <T extends BaseMessage> Promise<T> synwrite(T message){
 		Channel ch = fetchOneWritable();
-		if(ch == null) return null;
+		if(ch == null) {
+			DefaultPromise<T> errorPromise = new DefaultPromise<T>(GlobalEventExecutor.INSTANCE);
+			errorPromise.setFailure(new SendFailException("No active or writable channel find, it may be that  you send too fast, or the peer processing is too slow. "));
+			return errorPromise;
+		}
 		AbstractSessionStateManager session = (AbstractSessionStateManager)ch.pipeline().get(sessionHandler);
 		return session.writeMessagesync( message);
 	}
 	
 	private Channel fetchOneWritable(){
-		Channel ch = fetch();
-		// 端口上还没有可用连接
-		if (ch == null)
-			return null;
+		for(int i = 0;i < getConnectionNum(); i++) {
+			Channel ch = fetch();
+			// 端口上还没有可用连接 ，查找下一个可用端口
+			if (ch == null)
+				continue;
 
-		if (ch.isActive() && ch.isWritable()) {
-			return ch;
+			if (ch.isActive() && ch.isWritable()) {
+				return ch;
+			}
 		}
 		return null;
 	}

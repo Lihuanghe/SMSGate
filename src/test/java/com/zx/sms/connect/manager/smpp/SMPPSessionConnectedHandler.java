@@ -8,8 +8,6 @@ import org.marre.sms.SmsMsgClass;
 import org.marre.sms.SmsTextMessage;
 
 import com.zx.sms.BaseMessage;
-import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
-import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
 import com.zx.sms.codec.smpp.Address;
 import com.zx.sms.codec.smpp.msg.DeliverSm;
 import com.zx.sms.codec.smpp.msg.DeliverSmReceipt;
@@ -23,7 +21,7 @@ import io.netty.channel.ChannelHandlerContext;
 
 public class SMPPSessionConnectedHandler extends SessionConnectedHandler {
 	public SMPPSessionConnectedHandler(int t) {
-		totleCnt = new AtomicInteger(t);
+		totalCnt = new AtomicInteger(t);
 	}
 
 	@Override

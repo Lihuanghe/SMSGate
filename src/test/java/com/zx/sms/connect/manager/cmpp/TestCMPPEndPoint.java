@@ -56,6 +56,7 @@ public class TestCMPPEndPoint {
 		child.setMaxRetryCnt((short) 3);
 		List<String> iplist = new ArrayList<String>();
 		iplist.add("192.168.98.48/18");
+		iplist.add("127.0.0.1");
 		child.setAllowedAddr(iplist);
 		child.setReSendFailMsg(true);
 		// child.setWriteLimit(200);
@@ -87,9 +88,9 @@ public class TestCMPPEndPoint {
 
 		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
 		client.setId("client");
-		client.setHost("192.168.93.45");
-		// client.setLocalhost("127.0.0.1");
-		// client.setLocalport(65521);
+		client.setHost("127.0.0.1");
+//		 client.setLocalhost("127.0.0.1");
+		 client.setLocalport(65521);
 		client.setPort(7890);
 		client.setChartset(Charset.forName("utf-8"));
 		client.setGroupName("test");
@@ -120,8 +121,16 @@ public class TestCMPPEndPoint {
 			Thread.sleep(1000);
 		}
 		Thread.sleep(3000);
-		EndpointManager.INS.close();
+		{
+			manager.close(server);
+			Thread.sleep(3000);
+			manager.openEndpoint(server);
+		}
+
+		Thread.sleep(5000);
+		EndpointManager.INS.close(client);
 		Thread.sleep(4000);
+		EndpointManager.INS.close();
 		System.out.println("end.....");
 	}
 }

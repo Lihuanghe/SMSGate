@@ -3,8 +3,6 @@ package com.zx.sms.connect.manager.smgp;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.zx.sms.BaseMessage;
-import com.zx.sms.codec.sgip12.msg.SgipDeliverRequestMessage;
-import com.zx.sms.codec.sgip12.msg.SgipSubmitRequestMessage;
 import com.zx.sms.codec.smgp.msg.SMGPDeliverMessage;
 import com.zx.sms.codec.smgp.msg.SMGPSubmitMessage;
 import com.zx.sms.connect.manager.EndpointEntity;
@@ -13,7 +11,7 @@ import com.zx.sms.handler.api.gate.SessionConnectedHandler;
 
 public class SMGPSessionConnectedHandler extends SessionConnectedHandler {
 	public SMGPSessionConnectedHandler(int t) {
-		totleCnt = new AtomicInteger(t);
+		totalCnt = new AtomicInteger(t);
 	}
 
 	@Override

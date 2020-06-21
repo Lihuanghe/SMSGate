@@ -10,7 +10,7 @@ import com.zx.sms.handler.api.gate.SessionConnectedHandler;
 
 public class SGIPSessionConnectedHandler extends SessionConnectedHandler {
 	public SGIPSessionConnectedHandler(int t){
-		totleCnt = new AtomicInteger(t);
+		totalCnt = new AtomicInteger(t);
 	}
 	
 	@Override

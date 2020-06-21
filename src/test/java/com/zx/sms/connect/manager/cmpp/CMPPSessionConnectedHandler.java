@@ -24,7 +24,7 @@ import io.netty.channel.ChannelHandlerContext;
 
 public class CMPPSessionConnectedHandler extends SessionConnectedHandler {
 	public CMPPSessionConnectedHandler(int t){
-		totleCnt = new AtomicInteger(t);
+		super(new AtomicInteger(t));
 	}
 	
 	@Override

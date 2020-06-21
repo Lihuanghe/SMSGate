@@ -69,7 +69,7 @@ public class ClientTestCMPPEndPoint {
 		client1.setReSendFailMsg(true);
 //		client.setWriteLimit(10);
 		List<BusinessHandlerInterface> clienthandlers1 = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers1.add( new CMPPSessionConnectedHandler(0));
+		clienthandlers1.add( new CMPPSessionConnectedHandler(10));
 		client1.setBusinessHandlerSet(clienthandlers1);
 //		manager.addEndpointEntity(client1);
 		

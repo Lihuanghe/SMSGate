@@ -6,6 +6,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,28 +32,29 @@ import io.netty.util.concurrent.Promise;
 public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 	private static final Logger logger = LoggerFactory.getLogger(SessionConnectedHandler.class);
 
-	protected AtomicInteger totleCnt = new AtomicInteger(10);
+	protected AtomicInteger totalCnt = new AtomicInteger(10);
 
-	public AtomicInteger getTotleCnt() {
-		return totleCnt;
+	public AtomicInteger getTotalCnt() {
+		return totalCnt;
 	}
 
-	public void setTotleCnt(AtomicInteger totleCnt) {
-		this.totleCnt = totleCnt;
+	public void setTotalCnt(AtomicInteger totalCnt) {
+		this.totalCnt = totalCnt;
 	}
 
 	public SessionConnectedHandler() {
+
 	}
 
 	public SessionConnectedHandler(AtomicInteger t) {
-		totleCnt = t;
+		totalCnt = t;
 	}
 
 	protected abstract BaseMessage createTestReq(String content);
 
 	@Override
 	public void userEventTriggered(final ChannelHandlerContext ctx, Object evt) throws Exception {
-		final AtomicInteger tmptotal = totleCnt;
+		final AtomicInteger tmptotal = totalCnt;
 		if (evt == SessionState.Connect) {
 
 			final Channel ch = ctx.channel();
@@ -62,27 +64,32 @@ public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 				public Boolean call() throws Exception {
 					int cnt = RandomUtils.nextInt() & 0x4ff;
 					while (cnt > 0 && tmptotal.get() > 0) {
-						List<Promise<BaseMessage>> futures = null;
-						ChannelFuture chfuture = null;
 						BaseMessage msg = createTestReq(UUID.randomUUID().toString());
-//						chfuture = ChannelUtil.asyncWriteToEntity(getEndpointEntity().getId(), msg);
-						futures = ChannelUtil.syncWriteLongMsgToEntity(getEndpointEntity().getId(), msg);
-						
-//						chfuture = ctx.writeAndFlush(msg);
-						
-						if (chfuture != null)
+						if(tmptotal.get() % 2 == 0) {
+							ChannelFuture chfuture = ChannelUtil.asyncWriteToEntity(getEndpointEntity().getId(), msg);
+							chfuture.addListener(new GenericFutureListener<Future<Void>>() {
+								@Override
+								public void operationComplete(Future<Void> future) throws Exception {
+									if (future.isSuccess()) {
+										logger.info("[Async Success]");
+									} else {
+										logger.error("[async Error],error:{}",future.cause());
+									}
+								}
+							});
 							chfuture.sync();
 
-						if (futures != null) {
+						}else {
+						List<Promise<BaseMessage>> 	futures = ChannelUtil.syncWriteLongMsgToEntity(getEndpointEntity().getId(), msg);
 							try {
 								for (Promise<BaseMessage> future : futures) {
 									future.addListener(new GenericFutureListener<Future<BaseMessage>>() {
 										@Override
 										public void operationComplete(Future<BaseMessage> future) throws Exception {
 											if (future.isSuccess()) {
-//												 logger.info("response:{}",future.get());
+												logger.info("[Sync Success]response:{}",future.get());
 											} else {
-//												 logger.error("response:{}",future.cause());
+												logger.error("[Sync Error]error:{}",future.cause());
 											}
 										}
 									});
@@ -98,7 +105,7 @@ public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 								break;
 							}
 						}
-					
+
 						cnt--;
 						tmptotal.decrementAndGet();
 					}
@@ -124,6 +131,7 @@ public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 
 		ctx.fireUserEventTriggered(evt);
 	}
+
 
 	@Override
 	public String name() {

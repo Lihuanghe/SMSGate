@@ -3,6 +3,8 @@ package com.zx.sms.common.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.zx.sms.common.ErrorChannelFuture;
+import io.netty.util.concurrent.*;
 import org.marre.sms.SmsMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,13 +16,8 @@ import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
 import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EndpointManager;
-import com.zx.sms.session.AbstractSessionStateManager;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
-import io.netty.util.concurrent.Promise;
 
 public class ChannelUtil {
 
@@ -51,26 +48,19 @@ public class ChannelUtil {
 	}
 
 	private static ChannelFuture asyncWriteToEntity(EndpointConnector connector, final Object msg, GenericFutureListener listner) {
-		if (connector == null || msg == null)
-			return null;
+		if(msg == null){
+			return new ErrorChannelFuture("The message to write is null");
+		}
+		if (connector == null)
+			return new ErrorChannelFuture("No available connector,the client may not connected");
 
 		ChannelFuture promise = connector.asynwrite(msg);
 
 		if (promise == null)
-			return null;
+			return  new ErrorChannelFuture("Write msg with unknown error");
 
 		if (listner == null) {
-			promise.addListener(new GenericFutureListener() {
-				@Override
-				public void operationComplete(Future future) throws Exception {
-					// 如果发送消息失败，记录失败日志
-					if (!future.isSuccess()) {
-						StringBuilder sb = new StringBuilder();
-						sb.append("SendMessage ").append(msg.toString()).append(" Failed. ");
-						logger.error(sb.toString(), future.cause());
-					}
-				}
-			});
+			promise.addListener(new ErrorGenericFutureListener(msg));
 
 		} else {
 			promise.addListener(listner);
@@ -79,9 +69,14 @@ public class ChannelUtil {
 	}
 
 	public static <T extends BaseMessage> List<Promise<T>> syncWriteLongMsgToEntity(EndpointEntity e, BaseMessage msg) throws Exception {
-
+		List<Promise<T>> arrPromise = new ArrayList<Promise<T>>();
 		EndpointConnector connector = e.getSingletonConnector();
-		if(connector == null) return null;
+		if(connector == null) {
+			DefaultPromise<T> errorPromise = new DefaultPromise<T>(GlobalEventExecutor.INSTANCE);
+			errorPromise.setFailure(new IllegalStateException("No available connector,the client may not connected"));
+			arrPromise.add(errorPromise);
+			return arrPromise;
+		}
 		
 		if (msg instanceof LongSMSMessage) {
 			LongSMSMessage<BaseMessage> lmsg = (LongSMSMessage<BaseMessage>) msg;
@@ -103,9 +98,12 @@ public class ChannelUtil {
 		Promise promise = connector.synwrite(msg);
 		if (promise == null) {
 			// 为空，可能是连接断了,直接返回
-			return null;
+			DefaultPromise<T> errorPromise = new DefaultPromise<T>(GlobalEventExecutor.INSTANCE);
+			errorPromise.setFailure(new IllegalStateException("Write msg with unknown error"));
+			arrPromise.add(errorPromise);
+			return arrPromise;
 		}
-		List<Promise<T>> arrPromise = new ArrayList<Promise<T>>();
+
 		arrPromise.add(promise);
 		return arrPromise;
 	}
@@ -116,9 +114,13 @@ public class ChannelUtil {
 	 */
 	public static <T extends BaseMessage> List<Promise<T>> syncWriteLongMsgToEntity(String entity, BaseMessage msg) throws Exception {
 		EndpointEntity e = EndpointManager.INS.getEndpointEntity(entity);
-		if(e==null) {
+		if(e == null) {
 			logger.warn("EndpointEntity {} is null",entity);
-			return null;
+			DefaultPromise<T> errorPromise = new DefaultPromise<T>(GlobalEventExecutor.INSTANCE);
+			errorPromise.setFailure(new IllegalStateException("Write msg with unknown error"));
+			List<Promise<T>> arrPromise = new ArrayList<Promise<T>>(1);
+			arrPromise.add(errorPromise);
+			return arrPromise;
 		}
 		return syncWriteLongMsgToEntity(e,msg);
 	}
@@ -137,9 +139,33 @@ public class ChannelUtil {
 		Promise<T> promise = connector.synwrite(msg);
 		if (promise == null) {
 			// 为空，可能是连接断了,直接返回
-			return null;
+			DefaultPromise<T> errorPromise = new DefaultPromise<T>(GlobalEventExecutor.INSTANCE);
+			errorPromise.setFailure(new IllegalStateException("Write msg with unknown error"));
+			return errorPromise;
 		}
 
 		return promise;
+	}
+
+	private static class ErrorGenericFutureListener implements GenericFutureListener {
+		private final Object msg;
+
+		public ErrorGenericFutureListener(Object msg) {
+			this.msg = msg;
+		}
+
+		@Override
+		public void operationComplete(Future future) throws Exception {
+			// 如果发送消息失败，记录失败日志
+			if (!future.isSuccess()) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("SendMessage ").append(msg.toString()).append(" Failed. ");
+				if(future instanceof ErrorChannelFuture)
+					logger.error(sb.toString(), ((ErrorChannelFuture)future).getErrorMsg());
+				else
+					logger.error(sb.toString(), future.cause());
+
+			}
+		}
 	}
 }
