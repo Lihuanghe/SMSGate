@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.zx.sms.BaseMessage;
 import com.zx.sms.common.util.ChannelUtil;
+import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.connect.manager.EventLoopGroupFactory;
 import com.zx.sms.connect.manager.ExitUnlimitCirclePolicy;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
@@ -54,7 +55,11 @@ public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 	public void userEventTriggered(final ChannelHandlerContext ctx, Object evt) throws Exception {
 		final AtomicInteger tmptotal = totleCnt;
 		if (evt == SessionState.Connect) {
-
+			
+			//2.1.12版本后，做为ServerChildEndpointEntity不再自动加到EndpointManager里了，因此
+			//要手动加入EndpointManager进行管理
+			EndpointManager.INS.addEndpointEntity(getEndpointEntity());
+			
 			final Channel ch = ctx.channel();
 			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>() {
 
