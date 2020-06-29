@@ -14,7 +14,6 @@ public class LongMessageFrame {
 	private short tppid = 0;// 0是普通GSM 类型，点到点方式 ,127 :写sim卡
 	private short tpudhi = 0; // 0:msgcontent不带协议头。1:带有协议头
 	private AbstractSmsDcs msgfmt = GlobalConstance.defaultmsgfmt;
-	private short msgLength = 140;
 	// encode septet
 	private byte[] msgContentBytes = GlobalConstance.emptyBytes;
 
@@ -94,11 +93,11 @@ public class LongMessageFrame {
 	 * @return the msgLength
 	 */
 	public short getMsgLength() {
-		return msgLength;
+		return (short)msgContentBytes.length;
 	}
 
 	public void setMsgLength(short msgLength) {
-		this.msgLength = msgLength;
+		
 	}
 
 	/**
@@ -136,7 +135,7 @@ public class LongMessageFrame {
 	// get unencode septet bytes
 	public byte[] getPayloadbytes(int udhl) {
 		if (udhl > 0) {
-			int payloadlength = msgLength - udhl - 1;
+			int payloadlength = getMsgLength() - udhl - 1;
 			byte[] payload = new byte[payloadlength];
 			System.arraycopy(msgContentBytes, udhl + 1, payload, 0, payloadlength);
 			return payload;
