@@ -197,10 +197,6 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		int nowConnCnt = getConnectionNum();
 		EndpointEntity endpoint = getEndpointEntity();
 		if (endpoint.getMaxChannels() == 0 || endpoint.getMaxChannels() > nowConnCnt) {
-			// 标识连接已建立
-			ch.attr(GlobalConstance.attributeKey).set(SessionState.Connect);
-
-			getChannels().add(ch);
 
 			ConcurrentMap<Serializable, VersionObject> storedMap = null;
 			if (endpoint.isReSendFailMsg()) {
@@ -224,6 +220,13 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 					new MessageChannelTrafficShapingHandler(endpoint.getWriteLimit(), endpoint.getReadLimit(), 250));
 
 			bindHandler(ch.pipeline(), getEndpointEntity());
+			
+			/* 所有的handler都已加入pipeliner后再标识连接已建立，
+			 * 如过早加入connector，遇到有消息发送时，可能业务handler还未加入，
+			 * 引起消息未经handler处理就发了出去。
+			 */
+			ch.attr(GlobalConstance.attributeKey).set(SessionState.Connect);
+			getChannels().add(ch);
 			return true;
 		} else {
 			logger.warn("allowed max channel count: {} ,deny to login.{}", endpoint.getMaxChannels(), endpoint);
