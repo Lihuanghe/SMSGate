@@ -14,6 +14,7 @@ import com.zx.sms.common.util.IPRange;
 import com.zx.sms.connect.manager.ClientEndpoint;
 import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
+import com.zx.sms.connect.manager.EndpointManager;
 import com.zx.sms.session.cmpp.SessionState;
 
 import io.netty.channel.Channel;
@@ -159,7 +160,7 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 			entity = childentity;
 
 			// 打开连接，并把连接加入管理 器
-
+			EndpointManager.INS.openEndpoint(entity);
 			// 端口已打开，获取连接器
 			EndpointConnector conn = childentity.getSingletonConnector();
 

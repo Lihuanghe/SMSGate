@@ -55,11 +55,7 @@ public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 	public void userEventTriggered(final ChannelHandlerContext ctx, Object evt) throws Exception {
 		final AtomicInteger tmptotal = totleCnt;
 		if (evt == SessionState.Connect) {
-			
-			//2.1.12版本后，做为ServerChildEndpointEntity不再自动加到EndpointManager里了，因此
-			//要手动加入EndpointManager进行管理
-			EndpointManager.INS.addEndpointEntity(getEndpointEntity());
-			
+					
 			final Channel ch = ctx.channel();
 			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>() {
 
