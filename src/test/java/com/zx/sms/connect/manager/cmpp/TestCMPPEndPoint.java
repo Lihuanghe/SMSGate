@@ -72,7 +72,7 @@ public class TestCMPPEndPoint {
 		    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
 		    	CMPPResponseSenderHandler handler = new CMPPResponseSenderHandler();
 		    	handler.setEndpointEntity(getEndpointEntity());
-		    	ctx.pipeline().addBefore("sessionStateManager", handler.name(), handler);
+		    	ctx.pipeline().addAfter("sessionStateManager", handler.name(), handler);
 		    	ctx.pipeline().remove(this);
 		    }
 			
