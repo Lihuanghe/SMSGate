@@ -208,7 +208,7 @@ public enum LongMessageFrameHolder {
 				}
 			} catch (Exception ex) {
 				logger.error("",ex);
-				return null;
+				throw new NotSupportedException(ex.getMessage());
 			}
 
 		} else {

@@ -116,23 +116,30 @@ public class SessionLoginManager extends AbstractSessionLoginManager {
 
 	@Override
 	protected void changeProtoVersion(ChannelHandlerContext ctx, EndpointEntity entity,Object msg) throws Exception{
-		
-		CMPPServerChildEndpointEntity childentity = (CMPPServerChildEndpointEntity)entity;
 		CmppConnectRequestMessage message = (CmppConnectRequestMessage)msg;
-		short version = message.getVersion();
-		//默认的是cmpp30的协议，如果不是cmpp30则要更换解析器版本
-		if ((short)0x30 != childentity.getVersion()) {
+		final short clientVersion = message.getVersion();
+		short aim_ver = clientVersion;
+		if(entity != null) {
+			CMPPServerChildEndpointEntity childentity = (CMPPServerChildEndpointEntity)entity;
+			
+			//以服务端配置的版本为准
+			aim_ver = childentity.getVersion();
 			//发送ConnectRequest里的Version跟配置的不同
-			if(childentity.getVersion() != version){
-				logger.warn("receive version code {} ,expected version is {} .I would use version {}",version ,childentity.getVersion(),childentity.getVersion());
+			if(aim_ver != clientVersion){
+				logger.warn("receive version code {} ,expected version is {} .I would use version {}",clientVersion ,aim_ver,aim_ver);
 			}
+		}
+		//默认的是cmpp30的协议，如果不是cmpp30则要更换解析器版本
+		
+		if ((short)0x30 != aim_ver) {
 			
 			//以配置的协议版本为准
 			//更换协议解析器
-			logger.info("changeCodec to version:{}", childentity.getVersion());
+			logger.info("changeCodec to version:{}", aim_ver);
 			ctx.pipeline().replace(GlobalConstance.codecName, GlobalConstance.codecName,
-					CMPPCodecChannelInitializer.getCodecHandler(childentity.getVersion()));
+					CMPPCodecChannelInitializer.getCodecHandler(aim_ver));
 		}
+
 	}
 
 	@Override

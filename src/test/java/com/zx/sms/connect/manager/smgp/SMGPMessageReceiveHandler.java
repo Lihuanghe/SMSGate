@@ -17,6 +17,8 @@ public class SMGPMessageReceiveHandler extends MessageReceiveHandler {
 		if(msg instanceof SMGPDeliverMessage){
 			SMGPDeliverRespMessage resp = new SMGPDeliverRespMessage();
 		    resp.setSequenceNo(((SMGPDeliverMessage)msg).getSequenceNo());
+		   ;
+		    resp.setMsgId( ((SMGPDeliverMessage)msg).getMsgId());
 		    resp.setStatus(0);
 		  
 			return ctx.writeAndFlush(resp);

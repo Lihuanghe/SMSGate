@@ -123,21 +123,26 @@ public class SMGPSessionLoginManager extends AbstractSessionLoginManager {
 
 	@Override
 	protected void changeProtoVersion(ChannelHandlerContext ctx, EndpointEntity entity, Object msg) throws Exception {
-
-		SMGPServerChildEndpointEntity childentity = (SMGPServerChildEndpointEntity)entity;
 		SMGPLoginMessage message = (SMGPLoginMessage)msg;
-		int version = message.getVersion();
-		//默认的是3.0的协议，如果不是则要更换解析器版本
-		if ((byte)0x30 != childentity.getClientVersion()) {
+		final short clientVersion = message.getVersion();
+		short aim_ver = clientVersion;
+		if(entity != null) {
+			SMGPServerChildEndpointEntity childentity = (SMGPServerChildEndpointEntity)entity;
+			//以服务端配置的版本为准
+			aim_ver = childentity.getClientVersion();
 			//发送ConnectRequest里的Version跟配置的不同
-			if(childentity.getClientVersion() != version){
-				logger.warn("receive version code {} ,expected version is {} .I would use version {}",version ,childentity.getClientVersion(),childentity.getClientVersion());
+			if(aim_ver != clientVersion){
+				logger.warn("receive version code {} ,expected version is {} .I would use version {}",clientVersion ,aim_ver,aim_ver);
 			}
+		}
+	
+		//默认的是3.0的协议，如果不是则要更换解析器版本
+		if ((byte)0x30 != aim_ver) {
 			
 			//以配置的协议版本为准
 			//更换协议解析器
-			logger.info("changeCodec to version:{}", childentity.getClientVersion());
-			ctx.pipeline().replace(GlobalConstance.codecName, GlobalConstance.codecName,new SMGPMessageCodec(childentity.getClientVersion()));
+			logger.info("changeCodec to version:{}", aim_ver);
+			ctx.pipeline().replace(GlobalConstance.codecName, GlobalConstance.codecName,new SMGPMessageCodec(aim_ver));
 		}
 	}
 

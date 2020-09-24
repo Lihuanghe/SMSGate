@@ -139,14 +139,14 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 
 		// 通过用户名获取端口信息
 		EndpointEntity childentity = queryEndpointEntityByMsg(message);
+		// 修改协议版本，使用客户端对应协议的协议解析器
+		changeProtoVersion(ctx, childentity, message);
+		
 		if (childentity == null) {
 			failedLogin(ctx, message, 3);
 			return;
 		}
-
-		// 修改协议版本，使用客户端对应协议的协议解析器
-		changeProtoVersion(ctx, childentity, message);
-
+				
 		if (!validRemoteAddress(childentity, ctx.channel())) {
 			failedLogin(ctx, message, 2);
 			return;
