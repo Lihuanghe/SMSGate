@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -49,7 +50,7 @@ public class SequenceNumber implements Serializable{
 		setNodeIds(msgIds.getGateId());
 		//sgip协议里时间不带年份信息，这里判断下年份信息
 		String year = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "yyyy");
-		String t = String.format("%1$s%2$s",year, strmsgid.substring(0, 10));
+		String t = year + strmsgid.substring(0, 10);
 		
 		Date d;
 		try {
@@ -121,9 +122,11 @@ public class SequenceNumber implements Serializable{
 	 */
 	@Override
 	public String toString() {
-		return String
-				.format("%1$010d%2$10s%3$010d",
-						nodeIds, getTimeString(), sequenceId);
+		StringBuilder sb = new StringBuilder();
+		sb.append(StringUtils.leftPad(String.valueOf(nodeIds), 10,'0'))
+		.append(getTimeString())
+		.append(StringUtils.leftPad(String.valueOf(sequenceId), 10,'0'));
+		return sb.toString();
 	}	
 	
 }

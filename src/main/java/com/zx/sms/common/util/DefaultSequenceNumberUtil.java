@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 /**
@@ -33,7 +34,7 @@ public class DefaultSequenceNumberUtil {
 		
 		//sgip协议里时间不带年份信息，这里判断下年份信息
 		String year = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "yyyy");
-		String t = String.format("%1$s%2$010d",year, ByteBuffer.wrap(Arrays.copyOfRange(bytes, 4, 8)).getInt() & 0xFFFFFFFFL);
+		String t =year + StringUtils.leftPad(String.valueOf(ByteBuffer.wrap(Arrays.copyOfRange(bytes, 4, 8)).getInt()), 10, '0');
 		
 		Date d ;
 		try {

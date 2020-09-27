@@ -20,4 +20,15 @@ public class TestMsgId {
 		Assert.assertEquals(maiyunMsgid, msgid.toHexString(false));
 
 	}
+	
+	@Test
+	public void testperformance() {
+		System.out.println(new MsgId());
+		long start = System.currentTimeMillis();
+		for(int i = 0 ;i<1000000;i++) {
+			new MsgId().toString();
+		}
+		long end = System.currentTimeMillis();
+		System.out.println(end - start);
+	}
 }

@@ -7,11 +7,12 @@ import java.io.Serializable;
 import java.lang.management.ManagementFactory;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
-
-import com.zx.sms.codec.smgp.util.SMGPMsgIdUtil;
+import org.apache.commons.lang3.time.DateFormatUtils;
 
 /**
  * 
@@ -100,11 +101,13 @@ public class MsgId implements Serializable {
 	 * @param sequenceId
 	 */
 	public MsgId(long timeMillis, int gateId, int sequenceId) {
-		setMonth(Integer.parseInt(String.format("%tm", timeMillis)));
-		setDay(Integer.parseInt(String.format("%td", timeMillis)));
-		setHour(Integer.parseInt(String.format("%tH", timeMillis)));
-		setMinutes(Integer.parseInt(String.format("%tM", timeMillis)));
-		setSeconds(Integer.parseInt(String.format("%tS", timeMillis)));
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(timeMillis);
+		setMonth(cal.get(Calendar.MONTH));
+		setDay(cal.get(Calendar.DAY_OF_MONTH));
+		setHour(cal.get(Calendar.HOUR_OF_DAY));
+		setMinutes(cal.get(Calendar.MINUTE));
+		setSeconds(cal.get(Calendar.SECOND));
 		setGateId(gateId);
 		setSequenceId(sequenceId);
 	}
@@ -197,9 +200,16 @@ public class MsgId implements Serializable {
 	 */
 	@Override
 	public String toString() {
-		return String
-				.format("%1$02d%2$02d%3$02d%4$02d%5$02d%6$07d%7$05d",
-						month, day, hour, minutes, seconds, gateId, sequenceId);
+		StringBuilder sb = new StringBuilder();
+		sb.append(StringUtils.leftPad(String.valueOf(month), 2,'0'))
+		.append(StringUtils.leftPad(String.valueOf(day), 2,'0'))
+		.append(StringUtils.leftPad(String.valueOf(hour), 2,'0'))
+		.append(StringUtils.leftPad(String.valueOf(minutes), 2,'0'))
+		.append(StringUtils.leftPad(String.valueOf(seconds), 2,'0'))
+		.append(StringUtils.leftPad(String.valueOf(gateId), 7,'0'))
+		.append(StringUtils.leftPad(String.valueOf(sequenceId), 5,'0'));
+		
+		return sb.toString();
 	}
 	
 	public String toHexString(boolean toLowerCase) {
