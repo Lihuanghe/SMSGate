@@ -20,6 +20,10 @@ public class BlackHoleHandler extends ChannelDuplexHandler {
     	ReferenceCountUtil.safeRelease(msg);
     }
     
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {	
+		ctx.close();
+	}
+	
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
             throws Exception {

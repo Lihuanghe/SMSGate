@@ -8,11 +8,9 @@ import java.lang.management.ManagementFactory;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Calendar;
-import java.util.Date;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
 
 /**
  * 

@@ -1,12 +1,10 @@
 package com.zx.sms.codec.cmpp;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-
 import java.util.Random;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.marre.sms.SmsDcs;
 import org.marre.sms.SmsMessage;
 import org.marre.sms.SmsPort;
 import org.marre.sms.SmsPortAddressedTextMessage;
@@ -19,6 +17,9 @@ import org.marre.wap.push.WapSLPush;
 import com.zx.sms.codec.AbstractTestMessageCodec;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.common.util.MsgId;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 public class TestCmppSubmitRequestMessageCodec  extends AbstractTestMessageCodec<CmppSubmitRequestMessage>{
 
@@ -127,6 +128,17 @@ public class TestCmppSubmitRequestMessageCodec  extends AbstractTestMessageCodec
 		String origin = "112aaaasssss2334455@£$¥èéùìòçØøÅåΔ_ΦΓΛΩΠΨΣΘΞ^{}\\[~]|€ÆæßÉ!\"#¤%&'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà";
 		CmppSubmitRequestMessage msg = createTestReq(origin);
 		msg.setMsgContent(new SmsTextMessage(origin));
+		
+		CmppSubmitRequestMessage ret =  testWapCodec(msg);
+		Assert.assertEquals(msg.getMsgContent(), ret.getMsgContent());
+	}
+	
+	
+	@Test
+	public void testGBKMsg(){
+
+		CmppSubmitRequestMessage msg = createTestReq("");
+		msg.setMsgContent(new SmsTextMessage("有没有发现，使用模型的表达要清晰易懂很多，而且也不需要做关于组合品的判断了，因为我们在系统中引入了更加贴近现实的对象模型（CombineBackO123456",new SmsDcs((byte)0x0f)));
 		
 		CmppSubmitRequestMessage ret =  testWapCodec(msg);
 		Assert.assertEquals(msg.getMsgContent(), ret.getMsgContent());

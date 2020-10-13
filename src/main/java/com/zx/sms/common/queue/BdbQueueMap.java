@@ -12,11 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.sleepycat.bind.EntryBinding;
-import com.sleepycat.bind.serial.SerialBinding;
-import com.sleepycat.bind.serial.StoredClassCatalog;
 import com.sleepycat.collections.StoredSortedMap;
-import com.sleepycat.je.Database;
 
 /**
  * {@linkplain BlockingQueue blocking queue} <br>
