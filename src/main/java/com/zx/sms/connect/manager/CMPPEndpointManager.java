@@ -1,14 +1,12 @@
 package com.zx.sms.connect.manager;
 
+import io.netty.channel.ChannelFuture;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
-import com.zx.sms.connect.manager.cmpp.CMPPServerChildEndpointEntity;
-import com.zx.sms.connect.manager.cmpp.CMPPServerEndpointEntity;
-import com.zx.sms.connect.manager.smpp.SMPPServerChildEndpointEntity;
 
 public enum CMPPEndpointManager implements EndpointManagerInterface {
 	INS;
@@ -16,8 +14,8 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 	private ConcurrentHashMap<String, List<CMPPEndpointEntity>> groupMap = new ConcurrentHashMap<String, List<CMPPEndpointEntity>>();
 
 	@Override
-	public void openEndpoint(EndpointEntity entity) {
-		manager.openEndpoint(entity);
+	public ChannelFuture openEndpoint(EndpointEntity entity) {
+		return manager.openEndpoint(entity);
 	}
 
 	@Override
@@ -27,8 +25,8 @@ public enum CMPPEndpointManager implements EndpointManagerInterface {
 	}
 
 	@Override
-	public void openAll() throws Exception {
-		manager.openAll();
+	public List<ChannelFuture> openAll() throws Exception {
+		return manager.openAll();
 	}
 
 	public void addEndpointEntity(EndpointEntity entity) {

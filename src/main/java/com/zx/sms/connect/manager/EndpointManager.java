@@ -1,7 +1,9 @@
 package com.zx.sms.connect.manager;
 
+import com.google.common.base.Optional;
+import io.netty.channel.ChannelFuture;
 import io.netty.util.concurrent.Future;
-
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -9,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,22 +27,24 @@ public enum EndpointManager implements EndpointManagerInterface {
 
 	private volatile boolean started = false;
 
-	public synchronized void openEndpoint(EndpointEntity entity) {
-		if (!entity.isValid())
-			return;
+	public synchronized ChannelFuture openEndpoint(EndpointEntity entity) {
+		if (entity.isValid()){
+      EndpointEntity old = idMap.get(entity.getId());
+      if (old == null) {
+        addEndpointEntity(entity);
+      }
 
-		EndpointEntity old = idMap.get(entity.getId());
-		if (old == null) {
-			addEndpointEntity(entity);
-		}
+      EndpointConnector<?> conn = entity.getSingletonConnector();
 
-		EndpointConnector<?> conn = entity.getSingletonConnector();
-
-		try {
-			conn.open();
-		} catch (Exception e) {
-			logger.error("Open Endpoint Error. {}", entity, e);
-		}
+      try {
+        return conn.open();
+      } catch (Exception e) {
+        logger.error("Open Endpoint Error. {}", entity, e);
+        throw null;
+      }
+    }else{
+		  return null;
+    }
 	}
 
 	public synchronized void close(EndpointEntity entity) {
@@ -60,10 +63,14 @@ public enum EndpointManager implements EndpointManagerInterface {
 		return idMap.get(id);
 	}
 
-	public void openAll() throws Exception {
-		for (EndpointEntity e : endpoints)
-			openEndpoint(e);
-	}
+  public List<ChannelFuture> openAll() throws Exception {
+    List<ChannelFuture> futures = new ArrayList();
+    for (EndpointEntity e : endpoints) {
+      ChannelFuture future = openEndpoint(e);
+      futures.add(future);
+    }
+    return futures;
+  }
 
 	public synchronized void addEndpointEntity(EndpointEntity entity) {
 		endpoints.add(entity);
@@ -97,7 +104,7 @@ public enum EndpointManager implements EndpointManagerInterface {
 		for (EndpointEntity en : endpoints) {
 			close(en);
 		}
-		
+
 	}
 
 	public void stopConnectionCheckTask() {
