@@ -37,10 +37,15 @@ public abstract class AbstractServerEndpointConnector extends AbstractEndpointCo
 	public AbstractServerEndpointConnector(EndpointEntity e) {
 		super(e);
 		bootstrap.group(EventLoopGroupFactory.INS.getBoss(), EventLoopGroupFactory.INS.getWorker()).channel(NioServerSocketChannel.class)
-				.option(ChannelOption.SO_BACKLOG, 100).childOption(ChannelOption.SO_RCVBUF, 2048).childOption(ChannelOption.SO_SNDBUF, 2048)
-				.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT).childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-				.childOption(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(1024)).childOption(ChannelOption.TCP_NODELAY, true)
-				.handler(new LoggingHandler(LogLevel.DEBUG)).childHandler(initPipeLine());
+				.option(ChannelOption.SO_BACKLOG, 100)
+				.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+				.handler(new LoggingHandler(LogLevel.DEBUG))
+				.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+				.childOption(ChannelOption.SO_RCVBUF, 16384)
+				.childOption(ChannelOption.SO_SNDBUF, 8192)
+//				.childOption(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(1024))
+				.childOption(ChannelOption.TCP_NODELAY, true)
+				.childHandler(initPipeLine());
 	}
 
 	@Override
