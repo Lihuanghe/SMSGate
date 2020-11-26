@@ -60,7 +60,7 @@ public class TestCMPPEndPoint {
 //		iplist.add("192.168.98.48/18");
 //		child.setAllowedAddr(iplist);
 		
-		child.setReSendFailMsg(true);
+		child.setReSendFailMsg(false);
 		// child.setWriteLimit(200);
 		// child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
@@ -107,7 +107,7 @@ public class TestCMPPEndPoint {
 		client.setReSendFailMsg(false);
 		client.setSupportLongmsg(SupportLongMessage.BOTH);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		int count = 1000;
+		int count = 2000000;
 		CMPPSessionConnectedHandler sender = new CMPPSessionConnectedHandler(count);
 		clienthandlers.add(sender);
 		client.setBusinessHandlerSet(clienthandlers);

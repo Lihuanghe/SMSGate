@@ -61,7 +61,8 @@ public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 
 				@Override
 				public Boolean call() throws Exception {
-					int cnt = RandomUtils.nextInt() & 0x4ff;
+					int cnt = RandomUtils.nextInt() & 0x4fff;
+					Promise<BaseMessage> frefuture = null;
 					while (cnt > 0 && tmptotal.get() > 0) {
 						List<Promise<BaseMessage>> futures = null;
 						ChannelFuture chfuture = null;
@@ -87,15 +88,24 @@ public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 											}
 										}
 									});
-									try {
-										future.sync();
-									}catch(Exception ex) {}
+									frefuture = future;
 								}
 
 							} catch (Exception e) {
 								e.printStackTrace();
 								cnt--;
 								tmptotal.decrementAndGet();
+								break;
+							}
+						}else {
+							//连接不可写了，等待上一个response回来
+							//再把消息发出去
+							ctx.writeAndFlush(msg);
+							
+							if(frefuture!=null) {
+								frefuture.sync();
+								frefuture = null;
+							}else {
 								break;
 							}
 						}

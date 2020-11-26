@@ -49,7 +49,7 @@ public class CMPPSessionConnectedHandler extends SessionConnectedHandler {
 			msg.setSrcId(String.valueOf(System.nanoTime()));
 			msg.setLinkID("0000");
 			msg.setMsgContent(content);
-			msg.setRegisteredDelivery((short)1);
+			msg.setRegisteredDelivery((short)0);
 			msg.setServiceId("10086");
 			return msg;
 		}

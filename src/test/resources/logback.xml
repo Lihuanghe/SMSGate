@@ -33,7 +33,7 @@
 	
 	
 	<logger name="entity" additivity="false">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="SIFT" />
 	</logger>
 
