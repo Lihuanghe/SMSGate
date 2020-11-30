@@ -74,7 +74,8 @@ public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 						
 						if (chfuture != null)
 							chfuture.sync();
-
+						cnt--;
+						tmptotal.decrementAndGet();
 						if (futures != null) {
 							try {
 								for (Promise<BaseMessage> future : futures) {
@@ -109,9 +110,6 @@ public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 								break;
 							}
 						}
-					
-						cnt--;
-						tmptotal.decrementAndGet();
 					}
 					return true;
 				}
