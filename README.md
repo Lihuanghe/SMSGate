@@ -108,7 +108,7 @@
 
 当接收到来源客户的`submitRequest`消息后，要回复`response`,注意此时要记录回复`response`时所使用的`msgId`，即你回复给来源客户的`msgId`。
 
-将消息转发给通道后，当接收到`submitResponse后`，通过`response.getRequest()`获取对应的`request` 。注意此时有两个`msgID`，一个是通道给你的`msgID`，一个是你给来源客户的。在数据库里记录相关信息（至少包括消息来源客户，消息出去的通道，两个`msgId`,消息详情）。之后在接收到状态报告后，通过通道给你的`msgId`更新消息回执状态，并根据来源客户将回执回传给客户，注意回传`reportMessage`里的`msgId`要使用你给客户回复`response`时用的`msgId`.
+将消息转发给通道后，当接收到`submitResponse后`，通过`response.getRequest()`获取对应的`request` 。注意此时有两个`msgID`，一个是通道给你的`msgID`，一个是你给来源客户的。在数据库里记录相关信息（至少包括消息来源客户，消息出去的通道，两个`msgId`,消息详情）。之后在接收到状态报告后，通过通道给你的`msgId`更新消息回执状态，并根据来源客户将回执回传给客户，注意回传`reportMessage`里的`msgId`要使用你给客户回复`response`时用的`msgId`.  [详见流程图](https://www.processon.com/view/link/598c16ace4b02e9a26eeed11)
 
 
 # CMPPGate , SMPPGate , SGIPGate, SMGPGate
