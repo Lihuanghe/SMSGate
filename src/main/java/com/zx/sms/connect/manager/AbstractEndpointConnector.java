@@ -371,9 +371,10 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	private class MessageChannelTrafficShapingHandler extends ChannelTrafficShapingHandler {
 		public MessageChannelTrafficShapingHandler(long writeLimit, long readLimit, long checkInterval) {
 			super(writeLimit, readLimit, checkInterval);
-			// 积压75条,或者延迟超过2.5s就不能再写了
-			setMaxWriteSize(75);
-			setMaxWriteDelay(2500);
+			// 一个连接 积压条数超过每秒速度的60% 就不能再写了
+			setMaxWriteSize( writeLimit * 3 / 5);
+			// 一个连接 积压延迟超过600ms 就不能再写了
+			setMaxWriteDelay(1000 * 3 / 5);
 		}
 
 		@Override
