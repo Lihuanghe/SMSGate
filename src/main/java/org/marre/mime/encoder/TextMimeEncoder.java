@@ -121,7 +121,6 @@ public class TextMimeEncoder implements MimeEncoder
             if (ct.startsWith("application/vnd.wap.multipart."))
             {
                 // WSP encoded multipart
-                // TODO: Write wsp encoded multipart
             }
             else
             {

@@ -60,7 +60,6 @@ public class SessionLoginManager extends AbstractSessionLoginManager {
 	@Override
 	protected void doLogin(Channel ch) {
 		CMPPEndpointEntity cliententity = (CMPPEndpointEntity) entity;
-		// TODO 发送连接请求 ,创建密码
 		CmppConnectRequestMessage req = new CmppConnectRequestMessage();
 		req.setSourceAddr(cliententity.getUserName());
 		String timestamp = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "MMddHHmmss");

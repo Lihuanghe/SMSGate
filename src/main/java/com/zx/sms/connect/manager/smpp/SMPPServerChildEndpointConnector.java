@@ -32,13 +32,11 @@ public class SMPPServerChildEndpointConnector extends AbstractEndpointConnector{
 
 	@Override
 	public ChannelFuture open() throws Exception {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	protected SslContext createSslCtx() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -68,7 +66,6 @@ public class SMPPServerChildEndpointConnector extends AbstractEndpointConnector{
 
 	@Override
 	protected void initSslCtx(Channel ch, EndpointEntity entity) {
-		// TODO Auto-generated method stub
 		
 	}
 

@@ -82,7 +82,6 @@ public class TCPClientEndpointConnector extends AbstractEndpointConnector  {
 
 	@Override
 	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity entity) {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -94,7 +93,6 @@ public class TCPClientEndpointConnector extends AbstractEndpointConnector  {
 
 	@Override
 	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, ConcurrentMap storeMap, boolean preSend) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

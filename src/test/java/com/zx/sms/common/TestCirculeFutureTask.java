@@ -24,7 +24,6 @@ public class TestCirculeFutureTask {
 		try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -77,10 +76,8 @@ public class TestCirculeFutureTask {
 					}
 					return ret;
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (ExecutionException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				LockSupport.unpark(th);

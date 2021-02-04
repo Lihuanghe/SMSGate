@@ -33,7 +33,6 @@ public class TestNettyEventLoopTaskCancel {
 					try {
 						Thread.sleep(3000);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -51,7 +50,6 @@ public class TestNettyEventLoopTaskCancel {
 			LockSupport.park();
 			System.out.println("-----finished------");
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

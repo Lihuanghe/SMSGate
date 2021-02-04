@@ -7,6 +7,8 @@ import io.netty.buffer.Unpooled;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.marre.sms.SmsDcs;
+import org.marre.sms.SmsTextMessage;
 
 import com.zx.sms.codec.AbstractTestMessageCodec;
 import com.zx.sms.codec.cmpp.msg.CmppDeliverResponseMessage;
@@ -28,10 +30,13 @@ public class TestCmpp20SubmitRequestMessageCodec extends AbstractTestMessageCode
 	public void testCodec()
 	{
 		CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
+		
 		msg.setDestterminalId(new String[]{"13800138000","13800138001","138001380002"});
 		msg.setLinkID("0000");
 		String content = UUID.randomUUID().toString();
 		msg.setMsgContent(content);
+		msg.setMsgContent(new SmsTextMessage("你好，我是闪信！",new SmsDcs((byte)15)));
+		
 		msg.setMsgid(new MsgId());
 		msg.setServiceId("10086");
 		msg.setSrcId("10086");

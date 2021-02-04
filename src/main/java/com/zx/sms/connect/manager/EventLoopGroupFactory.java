@@ -50,7 +50,7 @@ EventLoopGroup.submit(callable)方法不能提交阻塞任务。
 	
 	
 	/**
-	 *使用netty线程池实现一个无限循环任务，
+	 *使用线程池实现一个无限循环任务，
 	 *@param task
 	 *需要执行的任务
 	 *@param exitCondition

@@ -51,8 +51,11 @@ public class TestWithOpenSMPP {
         try {
         	ServerSocket ss = new ServerSocket();
             ss.bind(null);
-            return ss.getLocalPort();
+            ss.close();
+            int port = ss.getLocalPort();
+            return port;
         } catch (IOException e) {
+        	e.printStackTrace();
             return getRandomPort();
         }
     }
