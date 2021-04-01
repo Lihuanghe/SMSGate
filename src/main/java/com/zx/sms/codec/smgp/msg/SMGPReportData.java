@@ -1,5 +1,7 @@
 package com.zx.sms.codec.smgp.msg;
 
+import java.io.Serializable;
+
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.codec.smgp.util.ByteUtil;
 import com.zx.sms.codec.smgp.util.SMGPMsgIdUtil;
 
-public class SMGPReportData {
+public class SMGPReportData implements Serializable {
 	private static final Logger logger = LoggerFactory.getLogger(SMGPReportData.class);
 	public static final int LENGTH = 10 + 3 + 3 + 10 + 10 + 7 + 3 + 20 + "id: sub: dlvrd: submit date: done date: stat: err: text:".length();
 
