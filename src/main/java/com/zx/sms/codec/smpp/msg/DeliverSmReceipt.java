@@ -2,10 +2,14 @@ package com.zx.sms.codec.smpp.msg;
 
 import java.io.UnsupportedEncodingException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.zx.sms.codec.smpp.SmppInvalidArgumentException;
 
 public class DeliverSmReceipt extends DeliverSm {
-	
+	private static final Logger logger = LoggerFactory.getLogger(DeliverSmReceipt.class);
+
 	/**
 	 * 
 	 */
@@ -103,28 +107,49 @@ public class DeliverSmReceipt extends DeliverSm {
 		sb.append(" err:").append(err);
 		sb.append(" text:").append(text);
 		try {
-			return sb.toString().getBytes("ISO-8859-1");
-		} catch (UnsupportedEncodingException e) {
-			
+			byte[] shortMessage =  sb.toString().getBytes("ISO-8859-1");
+			super.setShortMessage(shortMessage);
+			return shortMessage;
+		} catch (Exception e) {
+			logger.error("",e);
 		}
 		return null;
     }
 	
     public void setShortMessage(byte[] value) throws SmppInvalidArgumentException {
-    	
+    	String txt= "";
     	try {
-    		String txt = new String(value,"ISO-8859-1");
+    		txt = new String(value,"ISO-8859-1");
         	String[] c = txt.split(" ");
-			this.id = c[0].split(":")[1];
-			this.sub = c[1].split(":")[1];
-			this.dlvrd = c[2].split(":")[1];
-			this.submit_date = c[4].split(":")[1];
-			this.done_date = c[6].split(":")[1];
-			this.stat = c[7].split(":")[1];
-			this.err = c[8].split(":")[1];
-			this.text = c[9].split(":")[1];
+        	
+        	String[] arr_id = c[0].split(":");
+			this.id = arr_id.length>1?arr_id[1]:"";
+			
+			String[] arr_sub = c[1].split(":");
+			this.sub = arr_sub.length>1?arr_sub[1]:"";
+			
+			String[] arr_dlvrd = c[2].split(":");
+			this.dlvrd = arr_dlvrd.length>1?arr_dlvrd[1]:"";
+			
+			String[] arr_submit_date = c[4].split(":");
+			this.submit_date = arr_submit_date.length>1?arr_submit_date[1]:"";
+			
+			String[] arr_done_date = c[6].split(":");
+			this.done_date = arr_done_date.length>1?arr_done_date[1]:"";
+			
+			String[] arr_stat = c[7].split(":");
+			this.stat =arr_stat.length>1?arr_stat[1]:"";
+			
+			String[] arr_err = c[8].split(":");
+			this.err =arr_err.length>1?arr_err[1]:"";
+			
+			String[] arr_text = c[9].split(":");
+			this.text = arr_text.length>1?arr_text[1]:"";
+			
 		} catch (Exception e) {
+			logger.error(txt,e);
 		}
+    	
     	super.setShortMessage(value);
     }
     
