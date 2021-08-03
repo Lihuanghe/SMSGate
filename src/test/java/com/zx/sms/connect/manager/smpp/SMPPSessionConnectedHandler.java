@@ -29,20 +29,22 @@ public class SMPPSessionConnectedHandler extends SessionConnectedHandler {
 	@Override
 	protected BaseMessage createTestReq(String str) {
 		final EndpointEntity finalentity = getEndpointEntity();
-		String content = "£$¥èéùì@";
+//		String content = "£$¥èéùì@";
 		if (finalentity instanceof ServerEndpoint) {
 			DeliverSm pdu = new DeliverSm();
 	        pdu.setSourceAddress(new Address((byte)0,(byte)0,"13800138000"));
 	        pdu.setDestAddress(new Address((byte)0,(byte)0,"10086"));
-	        pdu.setSmsMsg(new SmsTextMessage(content,SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.GSM,SmsMsgClass.CLASS_UNKNOWN)));
-			return pdu;
+//	        pdu.setSmsMsg(new SmsTextMessage(content,SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.GSM,SmsMsgClass.CLASS_UNKNOWN)));
+			pdu.setSmsMsg(str);
+	        return pdu;
 		} else {
 			SubmitSm pdu = new SubmitSm();
 			pdu.setRegisteredDelivery((byte)0);
 	        pdu.setSourceAddress(new Address((byte)0,(byte)0,"10086"));
 	        pdu.setDestAddress(new Address((byte)0,(byte)0,"13800138000"));
-	        pdu.setSmsMsg(new SmsTextMessage(content,SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.GSM,SmsMsgClass.CLASS_UNKNOWN)));
-			return pdu;
+//	        pdu.setSmsMsg(new SmsTextMessage(content,SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.GSM,SmsMsgClass.CLASS_UNKNOWN)));
+	        pdu.setSmsMsg(str);
+	        return pdu;
 		}
 	}
 	

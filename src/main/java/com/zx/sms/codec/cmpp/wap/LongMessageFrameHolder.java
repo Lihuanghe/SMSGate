@@ -28,6 +28,7 @@ import org.marre.sms.SmsPort;
 import org.marre.sms.SmsPortAddressedTextMessage;
 import org.marre.sms.SmsSimTookitSecurityMessage;
 import org.marre.sms.SmsTextMessage;
+import org.marre.sms.SmsUdhElement;
 import org.marre.sms.SmsUdhIei;
 import org.marre.sms.SmsUserData;
 import org.marre.wap.mms.MmsConstants;
@@ -225,8 +226,30 @@ public enum LongMessageFrameHolder {
 		for (SmsPdu aMsgPdu : pdus) {
 			byte[] udh = aMsgPdu.getUserDataHeaders();
 			LongMessageFrame frame = new LongMessageFrame();
-			frame.setPktotal((short) pdus.length);
-			frame.setPknumber((short) i++);
+			
+			SmsUdhElement[] udhe = aMsgPdu.getUdhElements_();
+			short pkseq  = 1;
+			byte pktot  = 1;
+			byte pknum  = 1;
+			if(udhe!=null && udhe.length>0) {
+				SmsUdhElement  firstudh = udhe[0];
+				
+				if(SmsUdhIei.CONCATENATED_8BIT.equals(firstudh.getUdhIei_())) {
+					byte[] udhdata = firstudh.getUdhIeiData();
+					pkseq = (short)(udhdata[0] & 0xff);
+					pktot = udhdata[1];
+					pknum = udhdata[2];
+				}else if(SmsUdhIei.CONCATENATED_16BIT.equals(firstudh.getUdhIei_())) {
+					byte[] udhdata = firstudh.getUdhIeiData();
+					pkseq = (short)((((udhdata[0] & 0xff )<<8) | (udhdata[1]&0xff)) & 0xffff);
+					pktot = udhdata[2];
+					pknum = udhdata[3];
+				}
+			}
+			
+			frame.setPkseq( pkseq);
+			frame.setPktotal( pktot);
+			frame.setPknumber( pknum);
 			frame.setMsgfmt(aMsgPdu.getDcs());
 			
 			frame.setTpudhi(udh != null ? (short) 1 : (short) 0);

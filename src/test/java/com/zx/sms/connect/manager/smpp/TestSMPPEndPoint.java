@@ -29,11 +29,11 @@ public class TestSMPPEndPoint {
 	public void testSMPPEndpoint() throws Exception {
 	
 		final EndpointManager manager = EndpointManager.INS;
-
+		int port =27761;
 		SMPPServerEndpointEntity server = new SMPPServerEndpointEntity();
 		server.setId("smppserver");
 		server.setHost("127.0.0.1");
-		server.setPort(2776);
+		server.setPort(port);
 		server.setValid(true);
 		//使用ssl加密数据流
 		server.setUseSSL(false);
@@ -60,7 +60,7 @@ public class TestSMPPEndPoint {
 		SMPPClientEndpointEntity client = new SMPPClientEndpointEntity();
 		client.setId("smppclient");
 		client.setHost("127.0.0.1");
-		client.setPort(2776);
+		client.setPort(port);
 		client.setSystemId("901782");
 		client.setPassword("ICP");
 		client.setChannelType(ChannelType.DUPLEX);
@@ -73,7 +73,7 @@ public class TestSMPPEndPoint {
 //		client.setReadLimit(200);
 		client.setSupportLongmsg(SupportLongMessage.SEND);  //接收长短信时不自动合并
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new SMPPSessionConnectedHandler(1)); 
+		clienthandlers.add( new SMPPSessionConnectedHandler(10)); 
 		client.setBusinessHandlerSet(clienthandlers);
 		
 		manager.addEndpointEntity(server);

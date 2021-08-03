@@ -58,8 +58,15 @@ public final class SmsUdhElement
         udhIei_ = udhIei;
         udhIeiData_ = udhIeiData==null?new byte[0]:udhIeiData;
     }
+    
+    
 
-    /**
+    public SmsUdhIei getUdhIei_() {
+		return udhIei_;
+	}
+
+
+	/**
      * Returns the total length of this UDH element.
      * <p>
      * The length is including the UDH data length and the UDH "header" (2 bytes)

@@ -77,7 +77,7 @@ public abstract class SmsConcatMessage implements SmsMessage
     public abstract SmsUdhElement[] getUdhElements();
 
     private int nextRandom(){
-    	return rnd_.incrementAndGet()&0xff;
+    	return rnd_.incrementAndGet() & 0xffff;
     }
     
     private SmsPdu[] createOctalPdus(SmsUdhElement[] udhElements, SmsUserData ud, int maxBytes)

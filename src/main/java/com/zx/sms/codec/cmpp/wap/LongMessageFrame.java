@@ -9,8 +9,10 @@ import com.zx.sms.common.GlobalConstance;
  **/
 public class LongMessageFrame {
 	private static final long serialVersionUID = -8554060199834235624L;
-	private short pktotal = 1;
-	private short pknumber = 1;
+	
+	private short pkseq = 0;
+	private byte pktotal = 1;
+	private byte pknumber = 1;
 	private short tppid = 0;// 0是普通GSM 类型，点到点方式 ,127 :写sim卡
 	private short tpudhi = 0; // 0:msgcontent不带协议头。1:带有协议头
 	private AbstractSmsDcs msgfmt = GlobalConstance.defaultmsgfmt;
@@ -21,10 +23,18 @@ public class LongMessageFrame {
 	
 	private long sequence;
 	
+	public short getPkseq() {
+		return pkseq;
+	}
+
+	public void setPkseq(short pkseq) {
+		this.pkseq = pkseq;
+	}
+
 	/**
 	 * @return the pktotal
 	 */
-	public short getPktotal() {
+	public byte getPktotal() {
 		return pktotal;
 	}
 
@@ -32,14 +42,14 @@ public class LongMessageFrame {
 	 * @param pktotal
 	 *            the pktotal to set
 	 */
-	public void setPktotal(short pktotal) {
+	public void setPktotal(byte pktotal) {
 		this.pktotal = pktotal;
 	}
 
 	/**
 	 * @return the pknumber
 	 */
-	public short getPknumber() {
+	public byte getPknumber() {
 		return pknumber;
 	}
 
@@ -47,7 +57,7 @@ public class LongMessageFrame {
 	 * @param pknumber
 	 *            the pknumber to set
 	 */
-	public void setPknumber(short pknumber) {
+	public void setPknumber(byte pknumber) {
 		this.pknumber = pknumber;
 	}
 

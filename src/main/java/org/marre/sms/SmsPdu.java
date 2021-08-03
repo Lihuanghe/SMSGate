@@ -109,8 +109,14 @@ public class SmsPdu
             udhElements_ = null;
         }
     }
+    
+    
 
-    /**
+    public SmsUdhElement[] getUdhElements_() {
+		return udhElements_;
+	}
+
+	/**
      * Returns the user data headers
      * 
      * @return A byte array representing the UDH fields or null if there aren't

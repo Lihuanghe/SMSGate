@@ -12,14 +12,15 @@ import com.zx.sms.codec.cmpp.wap.LongMessageFrame;
 import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
 import com.zx.sms.codec.smpp.Address;
 import com.zx.sms.codec.smpp.RecoverablePduException;
+import com.zx.sms.codec.smpp.SmppConstants;
 import com.zx.sms.codec.smpp.SmppInvalidArgumentException;
 import com.zx.sms.codec.smpp.UnrecoverablePduException;
-import com.zx.sms.common.GlobalConstance;
+import com.zx.sms.common.util.ByteArrayUtil;
 import com.zx.sms.common.util.ByteBufUtil;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 import com.zx.sms.common.util.HexUtil;
 import com.zx.sms.common.util.PduUtil;
-
+import com.zx.sms.codec.smpp.Tlv;
 /*
  * #%L
  * ch-smpp
@@ -289,6 +290,12 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
 			requestMessage.setSequenceNumber((int) DefaultSequenceNumberUtil.getSequenceNo());
 		}
 		requestMessage.setSmsMsg((SmsMessage) null);
+		//已有UDH头进行的分片短信，不用再设置下面三个可选参数
+//		if(frame.getPktotal()>1) {
+//			requestMessage.addOptionalParameter(new Tlv(SmppConstants.TAG_SAR_MSG_REF_NUM,ByteArrayUtil.toByteArray(frame.getPknumber())));
+//			requestMessage.addOptionalParameter(new Tlv(SmppConstants.TAG_SAR_TOTAL_SEGMENTS,ByteArrayUtil.toByteArray(frame.getPktotal())));
+//			requestMessage.addOptionalParameter(new Tlv(SmppConstants.TAG_SAR_SEGMENT_SEQNUM,ByteArrayUtil.toByteArray(frame.getPkseq())));
+//		}
 		return requestMessage;
 	}
 

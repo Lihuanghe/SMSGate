@@ -104,7 +104,7 @@ public class TestCMPPEndPoint {
 		client.setRetryWaitTimeSec((short) 30);
 		client.setUseSSL(false);
 		// client.setWriteLimit(100);
-		client.setReSendFailMsg(false);
+		client.setReSendFailMsg(true);
 		client.setSupportLongmsg(SupportLongMessage.BOTH);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		int count = 2000000;
