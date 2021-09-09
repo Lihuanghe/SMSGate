@@ -236,7 +236,7 @@ public abstract class SmsConcatMessage implements SmsMessage
         {
             int refno = nextRandom();
             // Convert septets into a string...
-            String msg = SmsPduUtil.readSeptets(ud.getData(),ud.getLength());
+            String msg = SmsPduUtil.readSeptets(ud.getData());
             
             if(msg.length()<=ud.getLength()){
             	//原字符串长度小于udLength ，说明存在GSM的转义字符

@@ -1,5 +1,7 @@
 package com.zx.sms.codec.smpp;
 
+import java.io.UnsupportedEncodingException;
+
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.junit.Assert;
@@ -11,6 +13,7 @@ import org.marre.sms.SmsPduUtil;
 import org.marre.sms.SmsTextMessage;
 
 import com.zx.sms.codec.AbstractSMPPTestMessageCodec;
+import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
 import com.zx.sms.codec.smpp.msg.BaseSm;
 import com.zx.sms.codec.smpp.msg.DeliverSm;
 import com.zx.sms.codec.smpp.msg.SubmitSm;
@@ -201,6 +204,7 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
     	pdu.setRegisteredDelivery((byte)1);
      	testlongCodec(pdu);
 	}
+	
 	private void testlongCodec(BaseSm msg)
 	{
 		channel().writeOutbound(msg);
@@ -216,5 +220,16 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
 		
 		System.out.println(result);
 		Assert.assertEquals(((SmsTextMessage)msg.getSmsMessage()).getText(), ((SmsTextMessage)result.getSmsMessage()).getText());
+	}
+	@Test
+	public void testseptetencode() throws UnsupportedEncodingException {
+		String str = "åΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&'NOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà^{}\\[~]|€";
+		byte[] bs = SmsPduUtil.stringToUnencodedSeptets(str);
+		System.out.println(ByteBufUtil.prettyHexDump(Unpooled.wrappedBuffer(bs)));
+		byte[] encode = SmsPduUtil.septetStream2octetStream(bs);
+		System.out.println(ByteBufUtil.prettyHexDump(Unpooled.wrappedBuffer(encode)));
+		byte[] ret = LongMessageFrameHolder.octetStream2septetStream(encode);
+		System.out.println(ByteBufUtil.prettyHexDump(Unpooled.wrappedBuffer(ret)));
+		Assert.assertArrayEquals(ret, bs);
 	}
 }

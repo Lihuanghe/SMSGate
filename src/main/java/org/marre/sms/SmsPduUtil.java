@@ -98,7 +98,7 @@ public final class SmsPduUtil
 	public static byte[] septetStream2octetStream(byte[] septets) {
 		int octetLength = (int) Math.ceil(((septets.length * 7)) / 8.0);
 		byte[] octets = new byte[octetLength];
-		
+/*
 		for (int i = 0; i < septets.length; i++) {
 			for (int j = 0; j < 7; j++) {
 				if ((septets[i] & (1 << j)) != 0) {
@@ -107,9 +107,21 @@ public final class SmsPduUtil
 				}
 			}
 		}
-		
+*/
+		int ind = 0;
+		for (int i = 0; i < septets.length; i++) {
+			if((i+1) % 8 == 0) continue;
+			byte mod = (byte)(i % 8);
+			//当前字节右移  N 个bit ，剩余 7-N个bit
+			byte b = (byte)(septets[i] >> mod);
+			//从后一个字节取前  N 个 bit
+			byte a = 0;
+			if(i<septets.length-1) {
+				a = (byte)(septets[i+1] & (0x7f & (1<<(mod+1)) -1));
+			}
+			octets[ind++] =  (byte) (a<<(7-mod) | b);
+		}
 		return octets;
-		
 	}
     /**
      * Pack the given string into septets.
@@ -137,7 +149,7 @@ public final class SmsPduUtil
      *            Number of decoded chars to read from the stream
      * @return The decoded string
      */
-    public static String readSeptets(byte[] data,int charlength)
+    public static String readSeptets(byte[] data)
     {
     
         if (data == null)
@@ -145,7 +157,7 @@ public final class SmsPduUtil
             return null;
         }
 
-       byte[] ba= LongMessageFrameHolder.octetStream2septetStream(data,charlength);
+       byte[] ba= LongMessageFrameHolder.octetStream2septetStream(data);
        return unencodedSeptetsToString(ba);
     }
 
