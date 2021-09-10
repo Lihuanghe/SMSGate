@@ -1,9 +1,13 @@
 package com.zx.sms.codec.smpp;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.marre.sms.SmppSmsDcs;
@@ -14,6 +18,7 @@ import org.marre.sms.SmsTextMessage;
 
 import com.zx.sms.codec.AbstractSMPPTestMessageCodec;
 import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
+import com.zx.sms.codec.smpp.android.gsm.GsmAlphabet;
 import com.zx.sms.codec.smpp.msg.BaseSm;
 import com.zx.sms.codec.smpp.msg.DeliverSm;
 import com.zx.sms.codec.smpp.msg.SubmitSm;
@@ -221,15 +226,68 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
 		System.out.println(result);
 		Assert.assertEquals(((SmsTextMessage)msg.getSmsMessage()).getText(), ((SmsTextMessage)result.getSmsMessage()).getText());
 	}
+	
+	
 	@Test
-	public void testseptetencode() throws UnsupportedEncodingException {
-		String str = "åΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&'NOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà^{}\\[~]|€";
+	public void testseptetencode() throws UnsupportedEncodingException, Exception {
+		String str = shuffle(gsmstr);
+		int septetCount = GsmAlphabet.countGsmSeptets(str, true);
 		byte[] bs = SmsPduUtil.stringToUnencodedSeptets(str);
 		System.out.println(ByteBufUtil.prettyHexDump(Unpooled.wrappedBuffer(bs)));
 		byte[] encode = SmsPduUtil.septetStream2octetStream(bs);
 		System.out.println(ByteBufUtil.prettyHexDump(Unpooled.wrappedBuffer(encode)));
-		byte[] ret = LongMessageFrameHolder.octetStream2septetStream(encode);
+		byte[] ret = LongMessageFrameHolder.octetStream2septetStream(encode,septetCount);
 		System.out.println(ByteBufUtil.prettyHexDump(Unpooled.wrappedBuffer(ret)));
 		Assert.assertArrayEquals(ret, bs);
+		
+		String strRet = SmsPduUtil.readSeptets(encode,septetCount);
+		System.out.println(strRet);
+		Assert.assertEquals(str, strRet);
+	}
+	@Test
+	public void testseptetAll() throws Exception {
+		
+		StringBuilder sb =new StringBuilder();
+		
+		for(int i = 0 ;i<gsmstr.length();i++) {
+			sb.append(gsmstr.charAt(RandomUtils.nextInt() % gsmstr.length()));
+			TestGsmAlphabet(sb.toString());
+		}
+		
+	}
+	
+	
+	private void TestGsmAlphabet(String str) throws Exception {
+
+//		String str = shuffle(gsmstr);
+		byte[] pdu = GsmAlphabet.stringToGsm7BitPacked(str);
+		byte[] unencodeseptet = SmsPduUtil.stringToUnencodedSeptets(str);
+		byte[] encode = SmsPduUtil.septetStream2octetStream(unencodeseptet);
+
+		//
+		byte[] data = Unpooled.wrappedBuffer(pdu).copy(1,pdu.length-1).array();
+		Assert.assertArrayEquals(encode,data);
+		
+		
+		int septetCount = GsmAlphabet.countGsmSeptets(str, true);
+		String result = GsmAlphabet.gsm7BitPackedToString(data,0,septetCount);
+		String strRet = SmsPduUtil.readSeptets(data,septetCount);
+		System.out.println(result);
+		Assert.assertEquals(str, result);
+		Assert.assertEquals(str, strRet);
+	}
+	
+	private String shuffle(String str) {
+		char[] char_arr = str.toCharArray(); 
+		List<Character> char_list = new ArrayList<Character>();
+		for(char t : char_arr)char_list.add(t);
+		
+		Collections.shuffle(char_list);
+		StringBuffer sb = new StringBuffer();
+		for(Object c : char_list) {
+			sb.append(c.toString());
+		}
+			
+		return sb.toString();
 	}
 }

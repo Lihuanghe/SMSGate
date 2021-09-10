@@ -373,9 +373,9 @@ public enum LongMessageFrameHolder {
 	 * @return
 	 */
 
-	public static byte[] octetStream2septetStream(byte[] octets) {
+	public static byte[] octetStream2septetStream(byte[] octets,int setptetCnt) {
 		
-		byte[] septets = new byte[octets.length * 8/7];
+		byte[] septets = new byte[setptetCnt];
 		/*
 		for (int newIndex = septets.length - 1; newIndex >= 0; --newIndex) {
 			for (int bit = 6; bit >= 0; --bit) {
@@ -384,7 +384,8 @@ public enum LongMessageFrameHolder {
 					septets[newIndex] |= (1 << bit);
 			}
 		}
-*/
+		*/
+		
 		int ind = 0;
 		septets[ind++]  = (byte)(octets[0] & 0x7f) ;
 		for(int i = 1 ;i<octets.length ;i++) {
@@ -398,6 +399,9 @@ public enum LongMessageFrameHolder {
 				septets[ind++]  = (byte)(octets[i] & 0x7f) ;
 			}
 		}
+		if(octets.length * 8  == setptetCnt * 7 )
+			septets[ind++] = (byte)(octets[octets.length-1] >>> 1 & 0x7f);
+		
 		return septets;
 	}
 
