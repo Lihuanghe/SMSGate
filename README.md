@@ -16,6 +16,10 @@
 
 # 常见问题
 
+- `纯客户端发送短信`
+
+  可以使用[sms-client](https://github.com/Lihuanghe/sms-client), 一个纯发送短信的客户端，Api简单。
+
 - `没看懂如何发送短信？`
 
   短信协议是tcp长连接，类似数据库连接，如jdbc-connection. 所以发送短信前必须要先有一个短信连接。因此你需要在程序启动时建立短信连接。参考demo里的client，调用manager.openEntity()方法，,调用manager.startConnectionCheckTask()开启断线重连。
