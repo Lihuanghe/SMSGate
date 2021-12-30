@@ -230,6 +230,8 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 					Entry entry = msgRetryMap.get(key);
 					
 					// 根据Response 判断是否需要重发,比如CMPP协议，如果收到result==8，表示超速，需要重新发送
+					//Sgip 及 Smpp协议收到88（超速）要重发
+					
 					if (needSendAgainByResponse(request, response)) {
 						//取消息重发任务,再次发送时重新注册任务
 						cancelRetry(entry, ctx.channel());
