@@ -64,26 +64,9 @@ public class TestCMPPDBEndPoint {
 		client.setUseSSL(false);
 		client.setReSendFailMsg(false);
 
-		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new CMPPMessageReceiveHandler());
-		clienthandlers.add(new AbstractBusinessHandler() {
 
-		    @Override
-		    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-		    	CMPPResponseSenderHandler handler = new CMPPResponseSenderHandler();
-		    	handler.setEndpointEntity(getEndpointEntity());
-		    	ctx.pipeline().addBefore("sessionStateManager", handler.name(), handler);
-		    	ctx.pipeline().remove(this);
-		    }
-			
-			@Override
-			public String name() {
-				return "AddCMPPResponseSenderHandler";
-			}
-			
-		});
-		client.setBusinessHandlerSet(clienthandlers);
-		manager.addEndpointEntity(client);		
+//		client.setBusinessHandlerSet(clienthandlers);
+//		manager.addEndpointEntity(client);		
         System.out.println("start.....");
         manager.startConnectionCheckTask();
 //		Thread.sleep(300000);
@@ -104,15 +87,31 @@ public class TestCMPPDBEndPoint {
 			child.setValid(true);
 			child.setVersion((short)0x20);
 
-			child.setMaxChannels((short)20);
+			child.setMaxChannels((short)5);
 			child.setRetryWaitTimeSec((short)30);
 			child.setMaxRetryCnt((short)3);
 //			child.setReSendFailMsg(true);
 //			child.setWriteLimit(200);
 //			child.setReadLimit(200);
-			List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
-			serverhandlers.add(new CMPPSessionConnectedHandler(100000));
-			child.setBusinessHandlerSet(serverhandlers);
+			List<BusinessHandlerInterface> handlers = new ArrayList<BusinessHandlerInterface>();
+			handlers.add( new CMPPMessageReceiveHandler());
+			handlers.add(new AbstractBusinessHandler() {
+
+			    @Override
+			    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+			    	CMPPResponseSenderHandler handler = new CMPPResponseSenderHandler();
+			    	handler.setEndpointEntity(getEndpointEntity());
+			    	ctx.pipeline().addBefore("sessionStateManager", handler.name(), handler);
+			    	ctx.pipeline().remove(this);
+			    }
+				
+				@Override
+				public String name() {
+					return "AddCMPPResponseSenderHandler";
+				}
+				
+			});
+			child.setBusinessHandlerSet(handlers);
 			return child;
 		}
 	}

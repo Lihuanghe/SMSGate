@@ -156,27 +156,35 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 		int status = validClientMsg(childentity, message);
 		// 认证成功
 		if (status == 0) {
+			
+			EndpointEntity oldEntity = EndpointManager.INS.getEndpointEntity(childentity.getId());
+			
+			if(oldEntity == null) {
+				//该ID的第一个连接，会执行到这里
+				oldEntity = childentity;
+			}
+			
 			// 绑定端口为对应账号的端口
-			entity = childentity;
-
+			entity = oldEntity;
 			// 打开连接，并把连接加入管理 器
-			EndpointManager.INS.openEndpoint(entity);
+			EndpointManager.INS.openEndpoint(oldEntity);
+
 			// 端口已打开，获取连接器
-			EndpointConnector conn = childentity.getSingletonConnector();
+			EndpointConnector conn = oldEntity.getSingletonConnector();
 
 			// 检查是否超过最大连接数
 			if (conn.addChannel(ctx.channel())) {
 				IdleStateHandler idlehandler = (IdleStateHandler) ctx.pipeline().get(GlobalConstance.IdleCheckerHandlerName);
 				ctx.pipeline().replace(idlehandler, GlobalConstance.IdleCheckerHandlerName,
-						new IdleStateHandler(0, 0, childentity.getIdleTimeSec(), TimeUnit.SECONDS));
+						new IdleStateHandler(0, 0, oldEntity.getIdleTimeSec(), TimeUnit.SECONDS));
 				state = SessionState.Connect;
 
 				// channelHandler已绑定完成，给客户端发resp.
-				doLoginSuccess(ctx, childentity, message);
+				doLoginSuccess(ctx, oldEntity, message);
 
 				// 通知业务handler连接已建立完成
 				notifyChannelConnected(ctx);
-				logger.info("{} login success on channel {}", childentity.getId(), ctx.channel());
+				logger.info("{} login success on channel {}", oldEntity.getId(), ctx.channel());
 			} else {
 				// 超过最大连接数了
 				failedLogin(ctx, message, 5);

@@ -54,10 +54,11 @@ public abstract class MessageReceiveHandler extends AbstractBusinessHandler {
 			}, new ExitUnlimitCirclePolicy() {
 				@Override
 				public boolean notOver(Future future) {
-					return getEndpointEntity().getSingletonConnector().getConnectionNum()>0;
+					inited = getEndpointEntity().getSingletonConnector().getConnectionNum()>0;
+					return inited;
 				}
 			}, rate * 1000);
-			inited = true;
+			
 		}
 		ctx.fireUserEventTriggered(evt);
 	}

@@ -33,36 +33,36 @@ public class ClientTestCMPPEndPoint {
 		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
 		client.setId("GSDT01");
 		client.setHost("127.0.0.1");
-		client.setPort(20003);
+		client.setPort(7891);
 		client.setChartset(Charset.forName("utf-8"));
 		client.setGroupName("test");
-		client.setUserName("GSDT01");
-		client.setPassword("1234567");
+		client.setUserName("901782");
+		client.setPassword("ICP");
 
 		client.setSpCode("1069039128");
-		client.setMaxChannels((short)10);
+		client.setMaxChannels((short)11);
 		client.setVersion((short)0x20);
 		client.setRetryWaitTimeSec((short)30);
 		client.setUseSSL(false);
 		client.setReSendFailMsg(false);
 //		client.setWriteLimit(500);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		clienthandlers.add( new CMPPSessionConnectedHandler(10000));
+		clienthandlers.add( new CMPPSessionConnectedHandler(100));
 		client.setBusinessHandlerSet(clienthandlers);
 		manager.addEndpointEntity(client);
 		
 		CMPPClientEndpointEntity client1 = new CMPPClientEndpointEntity();
 		client1.setId("GSDT02");
 		client1.setHost("127.0.0.1");
-		client1.setPort(20003);
+		client1.setPort(7891);
 		client1.setChartset(Charset.forName("utf-8"));
 		client1.setGroupName("test");
 		client1.setSpCode("1069039129");
-		client1.setUserName("GSDT02");
-		client1.setPassword("1qaz2wsx");
+		client1.setUserName("901782");
+		client1.setPassword("ICP");
 //		client1.setProxy("http://username:password@127.0.0.1:1080");
 
-		client1.setMaxChannels((short)1);
+		client1.setMaxChannels((short)30);
 		client1.setVersion((short)0x20);
 		client1.setRetryWaitTimeSec((short)30);
 		client1.setUseSSL(false);
@@ -73,7 +73,7 @@ public class ClientTestCMPPEndPoint {
 		client1.setBusinessHandlerSet(clienthandlers1);
 //		manager.addEndpointEntity(client1);
 		
-		manager.openAll();
+//		manager.openAll();
 		//LockSupport.park();
 		Thread.sleep(1000);
 		manager.openEndpoint(client);

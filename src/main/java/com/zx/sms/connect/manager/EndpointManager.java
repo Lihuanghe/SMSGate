@@ -33,14 +33,15 @@ public enum EndpointManager implements EndpointManagerInterface {
 		EndpointEntity old = idMap.get(entity.getId());
 		if (old == null) {
 			addEndpointEntity(entity);
+			old = idMap.get(entity.getId());
 		}
-
-		EndpointConnector<?> conn = entity.getSingletonConnector();
+		
+		EndpointConnector<?> conn = old.getSingletonConnector();
 
 		try {
 			conn.open();
 		} catch (Exception e) {
-			logger.error("Open Endpoint Error. {}", entity, e);
+			logger.error("Open Endpoint Error. {}", old, e);
 		}
 	}
 
