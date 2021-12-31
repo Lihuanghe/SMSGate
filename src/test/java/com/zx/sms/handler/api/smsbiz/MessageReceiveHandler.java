@@ -26,7 +26,9 @@ public abstract class MessageReceiveHandler extends AbstractBusinessHandler {
 
 	private AtomicLong cnt = new AtomicLong();
 	private long lastNum = 0;
-	private volatile boolean inited = false;
+	private volatile static boolean inited = false;
+	
+	private static final Object lock = new Object();
 
 	public AtomicLong getCnt() {
 		return cnt;
@@ -38,27 +40,29 @@ public abstract class MessageReceiveHandler extends AbstractBusinessHandler {
 	}
 
 	public synchronized void userEventTriggered(final ChannelHandlerContext ctx, Object evt) throws Exception {
-		if (evt == SessionState.Connect && !inited) {
-			EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>() {
+		synchronized (lock) {
+			if (evt == SessionState.Connect && !inited) {
+				EventLoopGroupFactory.INS.submitUnlimitCircleTask(new Callable<Boolean>() {
 
-				@Override
-				public Boolean call() throws Exception {
-						long nowcnt = cnt.get();
-						EndpointConnector conn = getEndpointEntity().getSingletonConnector();
-						
-						logger.info("channels : {},Totle Receive Msg Num:{},   speed : {}/s",
-								conn == null ? 0 : conn.getConnectionNum(), nowcnt, (nowcnt - lastNum) / rate);
-						lastNum = nowcnt;
-						return true;
-				}
-			}, new ExitUnlimitCirclePolicy() {
-				@Override
-				public boolean notOver(Future future) {
-					inited = getEndpointEntity().getSingletonConnector().getConnectionNum()>0;
-					return inited;
-				}
-			}, rate * 1000);
-			
+					@Override
+					public Boolean call() throws Exception {
+							long nowcnt = cnt.get();
+							EndpointConnector conn = getEndpointEntity().getSingletonConnector();
+							
+							logger.info("channels : {},Totle Receive Msg Num:{},   speed : {}/s",
+									conn == null ? 0 : conn.getConnectionNum(), nowcnt, (nowcnt - lastNum) / rate);
+							lastNum = nowcnt;
+							return true;
+					}
+				}, new ExitUnlimitCirclePolicy() {
+					@Override
+					public boolean notOver(Future future) {
+						inited = getEndpointEntity().getSingletonConnector().getConnectionNum()>0;
+						return inited;
+					}
+				}, rate * 1000);
+				inited = true;
+			}
 		}
 		ctx.fireUserEventTriggered(evt);
 	}

@@ -87,7 +87,7 @@ public class TestCMPPDBEndPoint {
 			child.setValid(true);
 			child.setVersion((short)0x20);
 
-			child.setMaxChannels((short)5);
+			child.setMaxChannels((short)100);
 			child.setRetryWaitTimeSec((short)30);
 			child.setMaxRetryCnt((short)3);
 //			child.setReSendFailMsg(true);

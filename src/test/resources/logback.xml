@@ -32,8 +32,8 @@
 	</appender>
 	
 	
-	<logger name="entity" additivity="false">
-		<level value="info" />
+    <logger name="entity" additivity="false">
+		<level value= "info" />
 		<appender-ref ref="SIFT" />
 	</logger>
 
