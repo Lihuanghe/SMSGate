@@ -1,5 +1,8 @@
 package com.zx.sms.codec.smpp.msg;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,38 +120,76 @@ public class DeliverSmReceipt extends DeliverSm {
     public void setShortMessage(byte[] value) throws SmppInvalidArgumentException {
     	String txt= "";
     	try {
-    		txt = new String(value,"ISO-8859-1");
-        	String[] c = txt.split(" ");
+    		 Map<String ,String> reportKV = parseReport(value);
         	
-        	String[] arr_id = c[0].split(":");
-			this.id = arr_id.length>1?arr_id[1]:"";
+			this.id = nvl(reportKV.get("id"));
 			
-			String[] arr_sub = c[1].split(":");
-			this.sub = arr_sub.length>1?arr_sub[1]:"";
+			this.sub = nvl(reportKV.get("sub"));
 			
-			String[] arr_dlvrd = c[2].split(":");
-			this.dlvrd = arr_dlvrd.length>1?arr_dlvrd[1]:"";
+			this.dlvrd = nvl(reportKV.get("dlvrd"));
 			
-			String[] arr_submit_date = c[4].split(":");
-			this.submit_date = arr_submit_date.length>1?arr_submit_date[1]:"";
+			this.submit_date = nvl(reportKV.get("submitdate"));
 			
-			String[] arr_done_date = c[6].split(":");
-			this.done_date = arr_done_date.length>1?arr_done_date[1]:"";
+			this.done_date = nvl(reportKV.get("donedate"));
 			
-			String[] arr_stat = c[7].split(":");
-			this.stat =arr_stat.length>1?arr_stat[1]:"";
+			this.stat =nvl(reportKV.get("stat"));
 			
-			String[] arr_err = c[8].split(":");
-			this.err =arr_err.length>1?arr_err[1]:"";
+			this.err =nvl( reportKV.get("err"));
 			
-			String[] arr_text = c[9].split(":");
-			this.text = arr_text.length>1?arr_text[1]:"";
+			this.text = nvl(reportKV.get("text"));
 			
 		} catch (Exception e) {
 			logger.error(txt,e);
 		}
     	
     	super.setShortMessage(value);
+    }
+    
+    private Map<String ,String> parseReport(byte[] value){
+    	Map<String ,String> kv = new HashMap<String ,String>();
+    	boolean parseKeyName = true;
+    	StringBuffer temp = new StringBuffer();
+    	String keyName = "" ;
+    	String keyValue = "";
+    	for(byte c : value) {
+    		
+    		if(parseKeyName) {
+    			if(' ' == (char)c) {
+    				//KeyName里的空格忽略
+    				continue;
+    			}
+    			else if(':' ==  (char)c) {
+    				//KeyName 结束
+    				keyName = temp.toString();
+    				temp.setLength(0);
+    				//开始解析数据值
+    				parseKeyName = false;
+    			}
+    			else {
+    				temp.append((char)c);
+    			}
+    		}else {
+    			if(' ' == (char)c) {
+    				//解析keyValue结束
+    				keyValue = temp.toString();
+    				temp.setLength(0);
+    				//开始解析keyName
+    				parseKeyName = true;
+    				kv.put(keyName.toLowerCase(), keyValue);
+    				keyName = "";
+    				keyValue = "";
+    			}
+    			else {
+    				temp.append((char)c);
+    			}
+    		}
+    	}
+    	return kv;
+    	
+    }
+    
+    private String nvl(String k) {
+    	return k == null?"":k;
     }
     
 }

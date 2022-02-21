@@ -21,6 +21,7 @@ import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
 import com.zx.sms.codec.smpp.android.gsm.GsmAlphabet;
 import com.zx.sms.codec.smpp.msg.BaseSm;
 import com.zx.sms.codec.smpp.msg.DeliverSm;
+import com.zx.sms.codec.smpp.msg.DeliverSmReceipt;
 import com.zx.sms.codec.smpp.msg.SubmitSm;
 import com.zx.sms.common.util.HexUtil;
 
@@ -193,8 +194,17 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
 		SubmitSm pdu = new SubmitSm();
     	pdu.setDestAddress(new Address((byte)0,(byte)0,"1111"));
     	pdu.setSourceAddress(new Address((byte)0,(byte)0,"2222"));
-    	pdu.setSmsMsg(new SmsTextMessage(gsmstr, SmppSmsDcs.getGeneralDataCodingDcs(SmsAlphabet.GSM, SmsMsgClass.CLASS_UNKNOWN)));
+    	pdu.setSmsMsg(new SmsTextMessage("[@[@[@[@", SmppSmsDcs.getGeneralDataCodingDcs(SmsAlphabet.GSM, SmsMsgClass.CLASS_UNKNOWN)));
      	testlongCodec(pdu);
+	}
+	@Test
+	public void testdeliverSmReceipt() throws SmppInvalidArgumentException
+	{
+		DeliverSmReceipt report = new DeliverSmReceipt();
+		String reportString = "  id:94251430923 submit date:0911040124 done date:0911040124 stat:ACCEPTD err:107   ";
+		report.setShortMessage(reportString.getBytes());
+		
+		System.out.println(report.toString());
 	}
 	@Test
 	/**
