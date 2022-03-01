@@ -82,7 +82,7 @@ public class MsgId implements Serializable {
 	public MsgId(long timeMillis, int gateId, int sequenceId) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(timeMillis);
-		setMonth(cal.get(Calendar.MONTH));
+		setMonth(cal.get(Calendar.MONTH)+1);
 		setDay(cal.get(Calendar.DAY_OF_MONTH));
 		setHour(cal.get(Calendar.HOUR_OF_DAY));
 		setMinutes(cal.get(Calendar.MINUTE));
@@ -153,13 +153,13 @@ public class MsgId implements Serializable {
 	 * @return the sequenceId
 	 */
 	public int getSequenceId() {
-		return sequenceId & 0xfffff;
+		return sequenceId & 0xffffff;
 	}
 	/**
 	 * @param sequenceId the sequenceId to set
 	 */
 	public void setSequenceId(int sequenceId) {
-		this.sequenceId = (sequenceId & 0xfffff)%1000000;
+		this.sequenceId = (sequenceId & 0xffffff)%1000000;
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()

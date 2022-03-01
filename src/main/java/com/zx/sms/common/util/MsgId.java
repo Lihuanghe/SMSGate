@@ -101,7 +101,7 @@ public class MsgId implements Serializable {
 	public MsgId(long timeMillis, int gateId, int sequenceId) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(timeMillis);
-		setMonth(cal.get(Calendar.MONTH));
+		setMonth(cal.get(Calendar.MONTH)+1);
 		setDay(cal.get(Calendar.DAY_OF_MONTH));
 		setHour(cal.get(Calendar.HOUR_OF_DAY));
 		setMinutes(cal.get(Calendar.MINUTE));
