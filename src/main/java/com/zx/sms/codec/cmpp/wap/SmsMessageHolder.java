@@ -4,7 +4,7 @@ import org.marre.sms.SmsMessage;
 
 import com.zx.sms.LongSMSMessage;
 
-class SmsMessageHolder {
+public class SmsMessageHolder {
 	SmsMessage smsMessage;
 	LongSMSMessage msg;
 	SmsMessageHolder(SmsMessage smsMessage,LongSMSMessage msg){
