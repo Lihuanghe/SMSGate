@@ -222,7 +222,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 					//计算最小时延
 					minDelay =  Math.min(minDelay, delay);
 					if(delay > (entity.getRetryWaitTimeSec() * 1000/4)){
-						errlogger.warn("delaycheck . delay :{} , SequenceId :{}", delay,getSequenceId(response));
+						errlogger.warn("{} delaycheck . delay :{} , SequenceId :{}", entity.getId(),delay,getSequenceId(response));
 						//接收response回复时延太高，有可能对端已经开始积压了，暂停发送。
 						setchannelunwritable(ctx,delay-minDelay);
 					}
