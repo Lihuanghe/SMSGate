@@ -178,7 +178,7 @@ public enum LongMessageFrameHolder {
         该问题据说是以前一直遗留下来的，没有正式的文档规范说明，所以一直都是发送0X40(64)。 
 		 */
 		
-		// udhi只取第一个bit和第6个bit同时为0时，表示不包含UDH
+		// udhi只取第一个bit和第7个bit同时为0时，表示不包含UDH
 		if ((frame.getTpudhi() & 0x41) == 0) {
 			// 短信内容不带协议头，直接获取短信内容
 			SmsTextMessage smsmsg =  buildTextMessage(frame.getPayloadbytes(0), frame.getMsgfmt());
