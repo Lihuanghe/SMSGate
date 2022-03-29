@@ -203,8 +203,20 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
 		DeliverSmReceipt report = new DeliverSmReceipt();
 		String reportString = "  id:94251430923 submit date:0911040124 done date:0911040124 stat:ACCEPTD err:107   ";
 		report.setShortMessage(reportString.getBytes());
+
+		channel().writeOutbound(report);
+		ByteBuf buf =(ByteBuf)channel().readOutbound();
+		ByteBuf copybuf = Unpooled.buffer();
+	    while(buf!=null){
+	    	copybuf.writeBytes(buf);
+			int length = buf.readableBytes();   
+			buf =(ByteBuf)channel().readOutbound();
+	    }
+	    
+	    BaseSm result = decode(copybuf);
+	    Assert.assertArrayEquals(report.getShortMessage(),result.getShortMessage());
+		System.out.println(result);
 		
-		System.out.println(report.toString());
 	}
 	@Test
 	/**

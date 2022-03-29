@@ -170,12 +170,20 @@ public enum LongMessageFrameHolder {
 	public SmsMessageHolder putAndget(String serviceNum, LongSMSMessage msg) throws NotSupportedException {
 		LongMessageFrame frame = msg.generateFrame();
 
-		// 短信内容不带协议头，直接获取短信内容
-		// udhi只取第一个bit
-		if ((frame.getTpudhi() & 0x01) == 0) {
+
+		/**
+        1、根据SMPP协议，融合网关收到短信中心上行的esm_class字段（一个字节）是0100 0000，转换成16进制就是0X40 (64), 01XXXXXX表明是一条长短信。
+        网关默认透传所有信息，即网关直接透传了0100 0000。所以接收到64是指短信属于长短信。（网关与短信中心采用SMPP协议）
+        2.CMPP协议中没有esm_class字段。根据CMPP长短信TP_udhi的标准是0X01 (1)，即0000 0001，但目前所有网关都是配置接收到0X40（64）表明是一条长短信。
+        该问题据说是以前一直遗留下来的，没有正式的文档规范说明，所以一直都是发送0X40(64)。 
+		 */
+		
+		// udhi只取第一个bit和第6个bit同时为0时，表示不包含UDH
+		if ((frame.getTpudhi() & 0x41) == 0) {
+			// 短信内容不带协议头，直接获取短信内容
 			SmsTextMessage smsmsg =  buildTextMessage(frame.getPayloadbytes(0), frame.getMsgfmt());
 			return new SmsMessageHolder(smsmsg,msg);
-		} else if ((frame.getTpudhi() & 0x01) == 1 || (frame.getTpudhi() & 0x40) == 0x40) {
+		} else {
 
 			try {
 				FrameHolder fh = createFrameHolder(serviceNum, frame);
@@ -212,9 +220,7 @@ public enum LongMessageFrameHolder {
 				throw new NotSupportedException(ex.getMessage());
 			}
 
-		} else {
-			throw new NotSupportedException("Not Support LongMsg.Tpudhi");
-		}
+		} 
 		return null;
 	}
 
@@ -252,7 +258,7 @@ public enum LongMessageFrameHolder {
 			frame.setPknumber( pknum);
 			frame.setMsgfmt(aMsgPdu.getDcs());
 			
-			frame.setTpudhi(udh != null ? (short) 1 : (short) 0);
+			frame.setTpudhi(udh != null ? (short) 1: (short) 0);
 
 			ByteArrayOutputStream btos = new ByteArrayOutputStream(200);
 			frame.setMsgLength((short) encodeOctetPdu(aMsgPdu, btos));
