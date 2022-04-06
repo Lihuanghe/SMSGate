@@ -29,10 +29,6 @@ public class DeliverSmReceipt extends DeliverSm {
 		return  nvl(reportKV.get(key));
 	}
 
-	public void setReportKV(Map<String, String> reportKV) {
-		this.reportKV = reportKV;
-	}
-
 	public String getId() {
 		return id;
 	}
