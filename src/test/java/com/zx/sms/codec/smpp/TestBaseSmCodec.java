@@ -198,10 +198,10 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
      	testlongCodec(pdu);
 	}
 	@Test
-	public void testdeliverSmReceipt() throws SmppInvalidArgumentException
+	public void testdeliverSmReceipt() throws SmppInvalidArgumentException, UnsupportedEncodingException
 	{
 		DeliverSmReceipt report = new DeliverSmReceipt();
-		String reportString = "  id:94251430923 submit date:0911040124 done date:0911040124 stat:ACCEPTD err:107   ";
+		String reportString = "id:94251430923 submit date:0911040124  err:1232 done date:0911040124 stat:ACCEPTD custom:1";
 		report.setShortMessage(reportString.getBytes());
 
 		channel().writeOutbound(report);
@@ -213,10 +213,14 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
 			buf =(ByteBuf)channel().readOutbound();
 	    }
 	    
-	    BaseSm result = decode(copybuf);
-	    Assert.assertArrayEquals(report.getShortMessage(),result.getShortMessage());
-		System.out.println(result);
-		
+	    DeliverSmReceipt result = (DeliverSmReceipt)decode(copybuf);
+	    System.out.println(result);
+	    Assert.assertEquals("94251430923",result.getId());
+	    Assert.assertEquals("0911040124",result.getSubmit_date());
+	    Assert.assertEquals("0911040124",result.getDone_date());
+	    Assert.assertEquals("ACCEPTD",result.getStat());
+	    Assert.assertEquals("1232",result.getErr());
+	    Assert.assertEquals("1",result.getReportKV("custom"));
 	}
 	@Test
 	/**

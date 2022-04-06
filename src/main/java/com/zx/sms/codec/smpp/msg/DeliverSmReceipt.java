@@ -23,7 +23,16 @@ public class DeliverSmReceipt extends DeliverSm {
 	private String stat;
 	private String err;
 	private String text;
+	private Map<String ,String> reportKV ;
 	
+	public String getReportKV(String key) {
+		return  nvl(reportKV.get(key));
+	}
+
+	public void setReportKV(Map<String, String> reportKV) {
+		this.reportKV = reportKV;
+	}
+
 	public String getId() {
 		return id;
 	}
@@ -95,32 +104,11 @@ public class DeliverSmReceipt extends DeliverSm {
     public byte getEsmClass() {
         return 0x04;
     }
-
-	//不能修改shortMessage字段
-	public byte[] getShortMessage() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("id:").append(id);
-		sb.append(" sub:").append(sub);
-		sb.append(" dlvrd:").append(dlvrd);
-		sb.append(" submit date:").append(submit_date);
-		sb.append(" done date:").append(done_date);
-		sb.append(" stat:").append(stat);
-		sb.append(" err:").append(err);
-		sb.append(" text:").append(text);
-		try {
-			byte[] shortMessage =  sb.toString().getBytes("ISO-8859-1");
-			super.setShortMessage(shortMessage);
-			return shortMessage;
-		} catch (Exception e) {
-			logger.error("",e);
-		}
-		return null;
-    }
 	
     public void setShortMessage(byte[] value) throws SmppInvalidArgumentException {
-    	String txt= "";
+    	
     	try {
-    		 Map<String ,String> reportKV = parseReport(value);
+    		 reportKV = parseReport(value);
         	
 			this.id = nvl(reportKV.get("id"));
 			
@@ -139,7 +127,7 @@ public class DeliverSmReceipt extends DeliverSm {
 			this.text = nvl(reportKV.get("text"));
 			
 		} catch (Exception e) {
-			logger.error(txt,e);
+			logger.error(new String(value),e);
 		}
     	
     	super.setShortMessage(value);
@@ -184,6 +172,14 @@ public class DeliverSmReceipt extends DeliverSm {
     			}
     		}
     	}
+    	if( temp.length() > 0 ) {
+        	if(!parseKeyName  ) {
+        		kv.put(keyName.toLowerCase(), temp.toString());
+        	}else {
+        		kv.put(temp.toString(), "");
+        	}
+    	}
+    		
     	return kv;
     	
     }
