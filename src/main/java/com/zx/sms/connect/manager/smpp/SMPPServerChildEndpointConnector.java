@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.AbstractEndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
+import com.zx.sms.handler.smpp.AddZeroByteHandler;
 import com.zx.sms.handler.smpp.EnquireLinkMessageHandler;
 import com.zx.sms.handler.smpp.EnquireLinkRespMessageHandler;
 import com.zx.sms.handler.smpp.SMPPLongMessageHandler;
@@ -50,6 +51,8 @@ public class SMPPServerChildEndpointConnector extends AbstractEndpointConnector{
 				pipe.replace(handler, GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, entity.getIdleTimeSec(), TimeUnit.SECONDS));
 			}
 		}
+		
+		pipe.addAfter(GlobalConstance.codecName,"AddZeroByteHandler",new AddZeroByteHandler(entity));
 		pipe.addLast("SMPPLongMessageHandler", new SMPPLongMessageHandler(entity));
 		pipe.addLast("EnquireLinkMessageHandler",new EnquireLinkMessageHandler());
 		pipe.addLast("EnquireLinkRespMessageHandler",new EnquireLinkRespMessageHandler());

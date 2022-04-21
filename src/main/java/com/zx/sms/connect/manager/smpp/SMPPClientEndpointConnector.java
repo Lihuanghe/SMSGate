@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.AbstractClientEndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
+import com.zx.sms.handler.smpp.AddZeroByteHandler;
 import com.zx.sms.handler.smpp.EnquireLinkMessageHandler;
 import com.zx.sms.handler.smpp.EnquireLinkRespMessageHandler;
 import com.zx.sms.handler.smpp.SMPPLongMessageHandler;
@@ -36,7 +37,8 @@ public class SMPPClientEndpointConnector extends AbstractClientEndpointConnector
 
 	@Override
 	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity entity) {
-		pipe.addLast( "SMPPLongMessageHandler", new SMPPLongMessageHandler(entity));
+		pipe.addAfter(GlobalConstance.codecName,"AddZeroByteHandler",new AddZeroByteHandler(entity));
+		pipe.addLast("SMPPLongMessageHandler", new SMPPLongMessageHandler(entity));
 		pipe.addLast("EnquireLinkMessageHandler",new EnquireLinkMessageHandler());
 		pipe.addLast("EnquireLinkRespMessageHandler",new EnquireLinkRespMessageHandler());
 		pipe.addLast("UnbindRespMessageHandler", new UnbindRespMessageHandler());
