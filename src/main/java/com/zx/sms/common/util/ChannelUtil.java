@@ -33,6 +33,8 @@ public class ChannelUtil {
 
 	public static ChannelFuture asyncWriteToEntity(String entity, Object msg) {
 		EndpointEntity e = EndpointManager.INS.getEndpointEntity(entity);
+		if(e == null)
+			return null;
 		EndpointConnector connector = e.getSingletonConnector();
 		return asyncWriteToEntity(connector, msg, null);
 	}
@@ -46,6 +48,8 @@ public class ChannelUtil {
 	public static ChannelFuture asyncWriteToEntity(final String entity, final Object msg, GenericFutureListener listner) {
 
 		EndpointEntity e = EndpointManager.INS.getEndpointEntity(entity);
+		if(e == null)
+			return null;
 		EndpointConnector connector = e.getSingletonConnector();
 		return asyncWriteToEntity(connector, msg, listner);
 	}
