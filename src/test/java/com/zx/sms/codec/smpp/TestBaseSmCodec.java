@@ -3,11 +3,13 @@ package com.zx.sms.codec.smpp;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.marre.sms.SmppSmsDcs;
@@ -201,8 +203,15 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
 	public void testdeliverSmReceipt() throws SmppInvalidArgumentException, UnsupportedEncodingException
 	{
 		DeliverSmReceipt report = new DeliverSmReceipt();
-		String reportString = "id:94251430923 submit date:0911040124  err:1232 done date:0911040124 stat:ACCEPTD custom:1";
-		report.setShortMessage(reportString.getBytes());
+		report.setId(String.valueOf("94251430923"));
+		report.setSourceAddress(new Address((byte)2,(byte) 1, "13800138000"));
+		report.setDestAddress(new Address((byte)2,(byte) 1, "13800138000"));
+		report.setStat("ACCEPTD");
+		report.setSubmit_date("0911040124");
+		report.setDone_date("0911040124");
+		report.setErr("1232");
+//		String reportString = "id:94251430923 submit date:0911040124  err:1232 done date:0911040124 stat:ACCEPTD custom:1";
+//		report.setShortMessage(reportString.getBytes());
 
 		channel().writeOutbound(report);
 		ByteBuf buf =(ByteBuf)channel().readOutbound();
@@ -220,7 +229,7 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
 	    Assert.assertEquals("0911040124",result.getDone_date());
 	    Assert.assertEquals("ACCEPTD",result.getStat());
 	    Assert.assertEquals("1232",result.getErr());
-	    Assert.assertEquals("1",result.getReportKV("custom"));
+//	    Assert.assertEquals("1",result.getReportKV("custom"));
 	}
 	@Test
 	/**

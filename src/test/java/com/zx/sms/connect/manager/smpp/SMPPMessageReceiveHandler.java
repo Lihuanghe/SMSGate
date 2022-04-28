@@ -58,7 +58,7 @@ public class SMPPMessageReceiveHandler extends MessageReceiveHandler {
 						report.setSourceAddress(((SubmitSm) msg).getDestAddress());
 						report.setDestAddress(((SubmitSm) msg).getSourceAddress());
 						report.setStat("DELIVRD");
-						report.setText(fragment.getMsgContent());
+						report.setText("yyMMddHHmm");
 						report.setSubmit_date(DateFormatUtils.format(new Date(), "yyMMddHHmm"));
 						report.setDone_date(DateFormatUtils.format(new Date(), "yyMMddHHmm"));
 						ctx.writeAndFlush(report);
@@ -71,7 +71,7 @@ public class SMPPMessageReceiveHandler extends MessageReceiveHandler {
 				report.setSourceAddress(((SubmitSm) msg).getDestAddress());
 				report.setDestAddress(((SubmitSm) msg).getSourceAddress());
 				report.setStat("DELIVRD");
-				report.setText(((SubmitSm) msg).getMsgContent());
+				report.setText("yyMMddHHmm");
 				report.setSubmit_date(DateFormatUtils.format(new Date(), "yyMMddHHmm"));
 				report.setDone_date(DateFormatUtils.format(new Date(), "yyMMddHHmm"));
 				try {

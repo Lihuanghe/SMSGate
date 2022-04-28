@@ -3,6 +3,7 @@ package com.zx.sms.codec.smpp.msg;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,6 +128,43 @@ public class DeliverSmReceipt extends DeliverSm {
 		}
     	
     	super.setShortMessage(value);
+    }
+    
+	//不能修改shortMessage字段
+	public byte[] getShortMessage() {
+
+			StringBuffer sb = new StringBuffer();
+			sb.append("id:").append(id);
+			
+			if(StringUtils.isNotBlank(sub))
+				sb.append(" sub:").append(sub);
+			
+			if(StringUtils.isNotBlank(dlvrd))
+				sb.append(" dlvrd:").append(dlvrd);
+			
+			if(StringUtils.isNotBlank(submit_date))
+				sb.append(" submit date:").append(submit_date);
+			
+			if(StringUtils.isNotBlank(done_date))
+				sb.append(" done date:").append(done_date);
+			
+			if(StringUtils.isNotBlank(stat))
+				sb.append(" stat:").append(stat);
+			
+			if(StringUtils.isNotBlank(err))
+				sb.append(" err:").append(err);
+
+			if(StringUtils.isNotBlank(text))
+				sb.append(" text:").append(text);
+			
+			try {
+				byte[] shortMessage =  sb.toString().getBytes("ISO-8859-1");
+				return shortMessage;
+			} catch (Exception e) {
+				logger.error("",e);
+			}
+
+		return new byte[0];
     }
     
     private Map<String ,String> parseReport(byte[] value){
