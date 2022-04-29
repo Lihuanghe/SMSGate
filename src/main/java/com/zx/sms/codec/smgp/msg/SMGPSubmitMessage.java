@@ -254,8 +254,8 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 		offset += 1;
 
 
-		if (destTermIdCount >= 100 || destTermIdCount <= 0) {
-			throw new Exception("destTermIdCount must be in [1,99],but " + destTermIdCount);
+		if (destTermIdCount > 100 || destTermIdCount <= 0) {
+			throw new Exception("destTermIdCount must be in [1,100],but " + destTermIdCount);
 		}
 		destTermIdArray = new String[destTermIdCount];
 		for (int i = 0; i < destTermIdCount; i++) {
