@@ -52,7 +52,7 @@ public abstract class EndpointEntity implements Serializable {
 	public enum SupportLongMessage {NONE,SEND,RECV,BOTH};
 	
 	/**
-     *表示TCP连接是单工，或者又工
+     *表示TCP连接是单工，或者双工
      */
     public enum ChannelType {UP,DOWN,DUPLEX};
 	/**
@@ -61,21 +61,51 @@ public abstract class EndpointEntity implements Serializable {
 	private List<BusinessHandlerInterface> businessHandlerSet;
 	
 	/**
-	 * 有未发送成功的消息，是否重发，默认不重发，可能引起消息丢失。
+	 * 是否将未收到response的消息保存在文件，以等待进程重启后读取文件中未收到response的消息进行重发
 	 * 如果为true，则可能重复发送。
 	 **/
 	private boolean isReSendFailMsg = false; 
-	private short maxRetryCnt = 3;
-	private short retryWaitTimeSec=60;
-	private short idleTimeSec = 30;
-	boolean closeWhenRetryFailed = true;  //当等待接收response超过最大重试次数，是否关闭channel
+	
+	
 	/**
-	 *流量整形 
+	 * 发送request后等待retryWaitTimeSec 秒未收到response，会重发一次请求
+	 * 本参数设置总的发送次数。默认发3次
+	 **/
+	private short maxRetryCnt = 3;
+	
+	/**
+	 * 发送request后，等待多少秒未收到response时再一次发送请求
+	 **/
+	private short retryWaitTimeSec=60;
+	
+	/**
+	 * 连接空闲检测周期
+	 **/
+	private short idleTimeSec = 30;
+	
+	
+	/**
+	 * 重发request超过maxRetryCnt重试次数后，是否关闭channel
+	 **/
+	boolean closeWhenRetryFailed = true;  //
+	/**
+	 *流量整形 ，设置发送消息的速度，单位条
 	 */
 	private int readLimit = 0;
+	
+	/**
+	 *流量整形 ，设置接收消息的速度，单位条
+	 */
 	private int writeLimit = 0;
 	
+	/**
+	 * 是否使用SSL对连接进行加密传输
+	 */
 	private boolean useSSL = false;
+	
+	/**
+	 * 设置代理地址。通过正向代理发起连接
+	 */
 	private String proxy;
 	
 	private volatile EndpointConnector connector;

@@ -8,7 +8,6 @@ import org.marre.sms.SmsDcs;
 
 import com.zx.sms.codec.AbstractSGIPTestMessageCodec;
 import com.zx.sms.codec.sgip12.msg.SgipDefaultMessage;
-import com.zx.sms.codec.sgip12.msg.SgipReportRequestMessage;
 import com.zx.sms.codec.sgip12.msg.SgipSubmitRequestMessage;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 import com.zx.sms.common.util.MsgId;
@@ -33,15 +32,16 @@ public class TestSGIPcodec extends AbstractSGIPTestMessageCodec<SgipDefaultMessa
 	}
 	
 	@Test
-	public void testSequenceNumber() {
-		String str = "000000101005251600551114258227";
-		SequenceNumber seq = new SequenceNumber(str);
-		 System.out.println(seq);
-		Assert.assertEquals(str, seq.toString());
-		
-		byte[] bytes = DefaultSequenceNumberUtil.sequenceN2Bytes(seq);
-		
-		SequenceNumber tTo = DefaultSequenceNumberUtil.bytes2SequenceN(bytes);
-		Assert.assertEquals(str, tTo.toString());
+	public void testSequenceNumber() throws InterruptedException {
+		for(int i=0;i<10;i++) {
+			SequenceNumber seq = new SequenceNumber(new MsgId());
+			 System.out.println("==="+seq.toString());
+			 Thread.sleep(1000);
+			Assert.assertEquals(seq.toString(),new SequenceNumber(seq.toString()).toString());
+			byte[] bytes = DefaultSequenceNumberUtil.sequenceN2Bytes(new SequenceNumber(seq.toString()));
+			SequenceNumber tTo = DefaultSequenceNumberUtil.bytes2SequenceN(bytes);
+			Assert.assertEquals(seq.toString(), tTo.toString());
+		}
+
 	}
 }
