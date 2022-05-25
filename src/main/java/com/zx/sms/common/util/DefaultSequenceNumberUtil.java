@@ -8,7 +8,6 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,11 +30,17 @@ public class DefaultSequenceNumberUtil {
 	
 	public static SequenceNumber bytes2SequenceN(byte[] bytes) {
 		long nodeIds = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 0, 4)).getInt() & 0xFFFFFFFFL;
-		
+		String monthDayTime = StringUtils.leftPad(String.valueOf(ByteBuffer.wrap(Arrays.copyOfRange(bytes, 4, 8)).getInt()), 10, '0');
+		long timestamp = getTimestampFromMonthDayTime(monthDayTime);
+		int sequenceId = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 8, 12)).getInt();
+		SequenceNumber sn = new SequenceNumber(timestamp,nodeIds,sequenceId);
+		return sn;
+	}
+	
+	public static long getTimestampFromMonthDayTime(String monthDayTime) {
 		//sgip协议里时间不带年份信息，这里判断下年份信息
 		String year = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "yyyy");
-		String t =year + StringUtils.leftPad(String.valueOf(ByteBuffer.wrap(Arrays.copyOfRange(bytes, 4, 8)).getInt()), 10, '0');
-		
+		String t =year + monthDayTime;
 		Date d ;
 		try {
 			d = DateUtils.parseDate(t, datePattern);
@@ -48,10 +53,8 @@ public class DefaultSequenceNumberUtil {
 			d = new Date();
 			e.printStackTrace();
 		}
-		
-		int sequenceId = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 8, 12)).getInt();
-		SequenceNumber sn = new SequenceNumber(d.getTime(),nodeIds,sequenceId);
-		return sn;
+		return d.getTime();
+
 	}
 
 	public static int getSequenceNo() {

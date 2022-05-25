@@ -4,12 +4,9 @@
 package com.zx.sms.common.util;
 
 import java.io.Serializable;
-import java.text.ParseException;
-import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.commons.lang3.time.DateUtils;
 
 /**
  * @author huzorro(huzorro@gmail.com)
@@ -41,6 +38,13 @@ public class SequenceNumber implements Serializable{
 	public SequenceNumber(long timeMillis) {
 		this(timeMillis, 1010,  DefaultSequenceNumberUtil.getSequenceNo());
 	}
+	
+	
+	public SequenceNumber(String  str_sequenceId) {
+		setNodeIds(Long.parseLong(str_sequenceId.substring(0, 10)));
+		setTimestamp(DefaultSequenceNumberUtil.getTimestampFromMonthDayTime(str_sequenceId.substring(10, 20)));		
+		setSequenceId(Integer.parseInt(str_sequenceId.substring(20, 30)));
+	}
 	/**
 	 * 
 	 * @param msgIds
@@ -48,23 +52,7 @@ public class SequenceNumber implements Serializable{
 	public SequenceNumber(MsgId msgIds) {
 		String strmsgid = msgIds.toString();
 		setNodeIds(msgIds.getGateId());
-		//sgip协议里时间不带年份信息，这里判断下年份信息
-		String year = DateFormatUtils.format(CachedMillisecondClock.INS.now(), "yyyy");
-		String t = year + strmsgid.substring(0, 10);
-		
-		Date d;
-		try {
-			d = DateUtils.parseDate(t, datePattern);
-			//如果正好是年末，这个时间有可能差一年，则必须取上一年
-			//这里判断取200天，防止因不同主机时间不同步造成误差
-			if(d.getTime() - CachedMillisecondClock.INS.now() > 86400000L * 200){
-				d = DateUtils.addYears(d, -1);
-			}
-		} catch (ParseException e) {
-			e.printStackTrace();
-			d = new Date();
-		}
-		setTimestamp(d.getTime());		
+		setTimestamp(DefaultSequenceNumberUtil.getTimestampFromMonthDayTime(strmsgid.substring(0, 10)));		
 		setSequenceId(msgIds.getSequenceId());
 	}	
 	/**
