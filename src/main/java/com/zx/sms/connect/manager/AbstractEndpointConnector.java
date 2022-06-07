@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -20,7 +19,6 @@ import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.storedMap.BDBStoredMapFactoryImpl;
 import com.zx.sms.common.storedMap.VersionObject;
-import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 import com.zx.sms.connect.manager.cmpp.CMPPServerEndpointEntity;
 import com.zx.sms.handler.MessageLogHandler;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
@@ -41,6 +39,7 @@ import io.netty.handler.proxy.Socks4ProxyHandler;
 import io.netty.handler.proxy.Socks5ProxyHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.traffic.ChannelTrafficShapingHandler;
+import io.netty.handler.traffic.WindowSizeChannelTrafficShapingHandler;
 import io.netty.util.concurrent.Promise;
 
 /**
@@ -217,7 +216,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 			// 增加流量整形 ，每个连接每秒发送，接收消息数不超过配置的值
 			ch.pipeline().addAfter(GlobalConstance.codecName, "ChannelTrafficAfter",
-					new MessageChannelTrafficShapingHandler(endpoint.getWriteLimit(), endpoint.getReadLimit(), 250));
+					new WindowSizeChannelTrafficShapingHandler(endpoint, 250));
 
 			bindHandler(ch.pipeline(), getEndpointEntity());
 			
@@ -295,18 +294,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 	protected abstract void initSslCtx(Channel ch, EndpointEntity entity);
 
-	protected long doCalculateSize(Object msg) {
-		if (msg instanceof BaseMessage) {
-			BaseMessage req = (BaseMessage) msg;
-			if (req.isRequest()) {
-				return 1;
-			} else {
-				return 0;
-			}
-		} else {
-			return -1L;
-		}
-	}
+
 
 	public Channel[] getallChannel() {
 		return channels.getall();
@@ -366,27 +354,6 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		}
 
 		private AtomicInteger indexSeq = new AtomicInteger();
-	}
-
-	private class MessageChannelTrafficShapingHandler extends ChannelTrafficShapingHandler {
-		public MessageChannelTrafficShapingHandler(long writeLimit, long readLimit, long checkInterval) {
-			super(writeLimit, readLimit, checkInterval);
-			// 一个连接 积压条数超过每秒速度的60% 就不能再写了
-			setMaxWriteSize( writeLimit * 3 / 5);
-			// 一个连接 积压延迟超过600ms 就不能再写了
-			setMaxWriteDelay(1000 * 3 / 5);
-		}
-
-		@Override
-		protected long calculateSize(Object msg) {
-			if (msg instanceof ByteBuf) {
-				return ((ByteBuf) msg).readableBytes();
-			}
-			if (msg instanceof ByteBufHolder) {
-				return ((ByteBufHolder) msg).content().readableBytes();
-			}
-			return doCalculateSize(msg);
-		}
 	}
 
 	public ChannelFuture asynwrite(Object msg) {

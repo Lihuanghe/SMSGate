@@ -110,6 +110,8 @@ public abstract class EndpointEntity implements Serializable {
 	
 	private volatile EndpointConnector connector;
 	
+	private int window = 16;
+	
 	/**
 	 *增加客户端IP校验配置 
 	 */
@@ -256,6 +258,13 @@ public abstract class EndpointEntity implements Serializable {
 	}
 	public void setAllowedAddr(List<String> allowedAddr) {
 		this.allowedAddr = allowedAddr;
+	}
+	
+	public int getWindow() {
+		return window;
+	}
+	public void setWindow(int window) {
+		this.window = window;
 	}
 	@Override
 	public int hashCode() {

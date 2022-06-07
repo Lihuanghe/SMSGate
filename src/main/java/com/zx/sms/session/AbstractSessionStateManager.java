@@ -18,10 +18,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.BaseMessage;
+import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.SendFailException;
 import com.zx.sms.common.SmsLifeTerminateException;
 import com.zx.sms.common.storedMap.VersionObject;
-import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.config.PropertiesUtils;
 import com.zx.sms.connect.manager.EndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
@@ -42,8 +42,12 @@ import io.netty.util.concurrent.Promise;
  */
 public abstract class AbstractSessionStateManager<K, T extends BaseMessage> extends ChannelDuplexHandler {
 	private static final Logger logger = LoggerFactory.getLogger(AbstractSessionStateManager.class);
+	
 	// 用来记录连接上的错误消息
 	private final Logger errlogger;
+	
+	//发送request 设置滑动窗口。可以避免发送端 发送request与 接收response速度不匹配的问题
+	private AtomicInteger windowSize;
 
 	/**
 	 * @param entity
@@ -58,6 +62,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 		errlogger = LoggerFactory.getLogger("error." + entity.getId());
 		this.storeMap = storeMap;
 		this.preSend = preSend;
+		this.windowSize = new AtomicInteger(entity.getWindow());
 	}
 
 	/**
@@ -120,11 +125,35 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 		this.ctx = ctx;
 	}
 	
-    private void setUserDefinedWritability(ChannelHandlerContext ctx, boolean writable) {
+    private void setMessageDelayWritability(ChannelHandlerContext ctx, boolean writable) {
         ChannelOutboundBuffer cob = ctx.channel().unsafe().outboundBuffer();
         if (cob != null) {
-            cob.setUserDefinedWritability(31, writable);
+            cob.setUserDefinedWritability(GlobalConstance.MESSAGE_DELAY_USER_DEFINED_WRITABILITY_INDEX, writable);
         }
+    }
+    
+    private void setWindowZeroWritability(ChannelHandlerContext ctx, boolean writable) {
+        ChannelOutboundBuffer cob = ctx.channel().unsafe().outboundBuffer();
+        if (cob != null) {
+            cob.setUserDefinedWritability(GlobalConstance.WINDOW_SIZE_ZERO_USER_DEFINED_WRITABILITY_INDEX, writable);
+        }
+    }
+    
+
+    private void incrementWindowSize(ChannelHandlerContext ctx) {
+    
+    	int remainSize = windowSize.incrementAndGet();
+    	if(remainSize > 0) {
+    		setWindowZeroWritability(ctx,true);
+    	}
+    }
+    
+    //发送request时减少窗口
+    private void decrementWindowSize(ChannelHandlerContext ctx) {
+    	int remainSize = windowSize.decrementAndGet();
+    	if(remainSize <= 0) {
+    		setWindowZeroWritability(ctx,false);
+    	}
     }
 
 	public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
@@ -224,25 +253,27 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 					if(delay > (entity.getRetryWaitTimeSec() * 1000/4)){
 						errlogger.warn("{} delaycheck . delay :{} , SequenceId :{}", entity.getId(),delay,getSequenceId(response));
 						//接收response回复时延太高，有可能对端已经开始积压了，暂停发送。
-						setchannelunwritable(ctx,delay-minDelay);
+						setchannelunwritableWhenDelay(ctx,delay-minDelay);
 					}
 					
 					Entry entry = msgRetryMap.get(key);
 					
+					//取消息重发任务,再次发送时重新注册任务
+					cancelRetry(entry, ctx.channel());
+					
+					//收到response ,增加窗口
+					incrementWindowSize(ctx);
+					
+					
 					// 根据Response 判断是否需要重发,比如CMPP协议，如果收到result==8，表示超速，需要重新发送
 					//Sgip 及 Smpp协议收到88（超速）要重发
-					
 					if (needSendAgainByResponse(request, response)) {
-						//取消息重发任务,再次发送时重新注册任务
-						cancelRetry(entry, ctx.channel());
-						
 						//网关异常时会发送大量超速错误(result=8),造成大量重发，浪费资源。这里先停止发送，过40毫秒再回恢复
-						setchannelunwritable(ctx,delay);
+						setchannelunwritableWhenDelay(ctx,delay);
 						//延迟后重发
 						reWriteLater(ctx, entry.request, ctx.newPromise(), delay);
 						
 					}else{
-						cancelRetry(entry, ctx.channel());
 						//给同步发送的promise响应resonse
 						responseFutureDone(entry, response);
 						msgRetryMap.remove(key);
@@ -260,14 +291,14 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 		return System.currentTimeMillis() - sendtime ;
 	}
 	
-	private void setchannelunwritable(final ChannelHandlerContext ctx,long millitime){
+	private void setchannelunwritableWhenDelay(final ChannelHandlerContext ctx,long millitime){
 		if(ctx.channel().isWritable()){
-			setUserDefinedWritability(ctx, false);
+			setMessageDelayWritability(ctx, false);
 			
 			ctx.executor().schedule(new Runnable() {
 				@Override
 				public void run() {
-						setUserDefinedWritability(ctx, true);
+					setMessageDelayWritability(ctx, true);
 				}
 			}, millitime, TimeUnit.MILLISECONDS);
 		}
@@ -355,6 +386,10 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 								future.cancel(false);
 
 							cancelRetry(entry,ctx.channel());
+							
+							//重试失败的消息也要增加窗口
+							incrementWindowSize(ctx);
+							
 							responseFutureDone(entry,new SendFailException("retry send msg over "+times+" times"));
 							msgRetryMap.remove(seq);
 							// 删除消息
@@ -367,7 +402,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 								ctx.close();
 							}else {
 								//不关闭通道的，设置连接不可写，1s后恢复
-								setchannelunwritable(ctx,1000);
+								setchannelunwritableWhenDelay(ctx,1000);
 							}
 
 						} else {
@@ -489,7 +524,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 				if(!message.equals(old.request)){
 					// bugfix: 集群环境下可能产生相同的seq. 如果已经存在一个相同的seq.
 					// 此消息延迟250ms再发
-					logger.error("has repeat Sequense {}", seq);
+					logger.error("has repeat Sequense {},\nold:{}\nnew:{}", seq,old.request,message);
 					if(syn){
 						//同步调用时，立即返回失败。
 						StringBuilder sb = new StringBuilder();
@@ -523,6 +558,10 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 					if (future.isSuccess()) {
 						// 注册重试任务
 						scheduleRetryMsg(ctx, message);
+						
+						//滑动窗口减一
+						decrementWindowSize(ctx);
+						
 					}else {
 						//发送失败,必须清除msgRetryMap里的对象，否则上层业务
 						//可能提交相同seq的消息，造成死循环
@@ -536,6 +575,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 				}
 
 			});
+			
 			ctx.writeAndFlush(message, promise);
 			
 			return tmpentry.resfuture;
