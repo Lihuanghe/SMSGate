@@ -86,28 +86,31 @@ public class TestCMPPEndPoint {
 		child.setBusinessHandlerSet(serverhandlers);
 		server.addchild(child);
 
-		manager.addEndpointEntity(server);
+//		manager.addEndpointEntity(server);
 
 		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
 		client.setId("client");
 //		client.setLocalhost("127.0.0.1");
 		// client.setLocalport(65521);
 		client.setHost("127.0.0.1");
-		client.setPort(7890);
+		client.setPort(17890);
 		client.setChartset(Charset.forName("utf-8"));
 		client.setGroupName("test");
-		client.setUserName("901783");
-		client.setPassword("ICP001");
+		client.setUserName("test01");
+		client.setPassword("1qaz2wsx");
 
 		client.setMaxChannels((short) 1);
-		client.setVersion((short) 0x30);
+		client.setVersion((short) 0x20);
 		client.setRetryWaitTimeSec((short) 30);
+		client.setMaxRetryCnt((short)1);
+		client.setCloseWhenRetryFailed(false);
 		client.setUseSSL(false);
-		// client.setWriteLimit(100);
-		client.setReSendFailMsg(true);
+//		 client.setWriteLimit(150);
+		client.setWindow(16);
+		client.setReSendFailMsg(false);
 		client.setSupportLongmsg(SupportLongMessage.BOTH);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		int count = 2000000;
+		int count = 5000;
 		CMPPSessionConnectedHandler sender = new CMPPSessionConnectedHandler(count);
 		clienthandlers.add(sender);
 		client.setBusinessHandlerSet(clienthandlers);

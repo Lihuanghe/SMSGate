@@ -46,9 +46,6 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 	// 用来记录连接上的错误消息
 	private final Logger errlogger;
 	
-	//发送request 设置滑动窗口。可以避免发送端 发送request与 接收response速度不匹配的问题
-	private AtomicInteger windowSize;
-
 	/**
 	 * @param entity
 	 *            Session关联的端口
@@ -62,7 +59,6 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 		errlogger = LoggerFactory.getLogger("error." + entity.getId());
 		this.storeMap = storeMap;
 		this.preSend = preSend;
-		this.windowSize = new AtomicInteger(entity.getWindow());
 	}
 
 	/**
@@ -132,30 +128,13 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
         }
     }
     
-    private void setWindowZeroWritability(ChannelHandlerContext ctx, boolean writable) {
-        ChannelOutboundBuffer cob = ctx.channel().unsafe().outboundBuffer();
-        if (cob != null) {
-            cob.setUserDefinedWritability(GlobalConstance.WINDOW_SIZE_ZERO_USER_DEFINED_WRITABILITY_INDEX, writable);
-        }
-    }
-    
-
-    private void incrementWindowSize(ChannelHandlerContext ctx) {
-    
-    	int remainSize = windowSize.incrementAndGet();
-    	if(remainSize > 0) {
-    		setWindowZeroWritability(ctx,true);
+    private void incrementSendWindow(ChannelHandlerContext ctx) {
+    	AtomicInteger windowSize = ctx.channel().attr(GlobalConstance.SENDWINDOWKEY).get();
+    	if(windowSize !=null) {
+    		int s = windowSize.incrementAndGet();
     	}
     }
     
-    //发送request时减少窗口
-    private void decrementWindowSize(ChannelHandlerContext ctx) {
-    	int remainSize = windowSize.decrementAndGet();
-    	if(remainSize <= 0) {
-    		setWindowZeroWritability(ctx,false);
-    	}
-    }
-
 	public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
 
 		ctx.executor().execute(new Runnable() {
@@ -177,7 +156,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 						if (ch != null && ch.isActive()) {
 							if (entity.isReSendFailMsg() && async) {
 								// 连接断连，但是未收到Resp的消息，异步发送时。通过其它连接再发送一次
-								ch.writeAndFlush(requestmsg);
+								ch.write(requestmsg);
 								logger.warn("current channel {} is closed.send requestMsg {} from other channel {} which is active.", ctx.channel(),requestmsg, ch);
 							} else {
 								errlogger.error("Channel closed . Msg {} may not send Success. ", requestmsg);
@@ -210,7 +189,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 							if (version > v && msg != null) {
 								// 如果配置了失败重发
 								logger.debug("Send last failed msg . {}", msg);
-								ch.writeAndFlush(msg);
+								ch.write(msg);
 							}
 						}
 					}
@@ -261,9 +240,8 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 					//取消息重发任务,再次发送时重新注册任务
 					cancelRetry(entry, ctx.channel());
 					
-					//收到response ,增加窗口
-					incrementWindowSize(ctx);
-					
+					//增加发送窗口
+					incrementSendWindow(ctx);
 					
 					// 根据Response 判断是否需要重发,比如CMPP协议，如果收到result==8，表示超速，需要重新发送
 					//Sgip 及 Smpp协议收到88（超速）要重发
@@ -334,7 +312,6 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 				}
 
 			});
-
 		}
 		ctx.fireUserEventTriggered(evt);
 	}
@@ -375,9 +352,11 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 						
 						if(!ctx.channel().isActive()) return;
 						
+						//因为滑动窗口在 WindowSizeChannelTrafficShapingHandler 里没有处理response超时的情况，因此在这里要增加窗口
+						incrementSendWindow(ctx);
+						
 						int times = entry.cnt.get();
 						
-						logger.warn("entity : {} , retry Send Msg : {}", entity.getId(),message);
 						if (times >= entity.getMaxRetryCnt()) {
 
 							// 会有future泄漏的情况发生，这里cancel掉自己，来规避泄漏
@@ -387,30 +366,24 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 
 							cancelRetry(entry,ctx.channel());
 							
-							//重试失败的消息也要增加窗口
-							incrementWindowSize(ctx);
-							
 							responseFutureDone(entry,new SendFailException("retry send msg over "+times+" times"));
 							msgRetryMap.remove(seq);
 							// 删除消息
 							storeMap.remove(seq);
 							// 重试发送都失败的消息要记录
-							errlogger.error("entity : {} , RetryFailed: {}", entity.getId(),message);
-
 							if(closeWhenRetryFailed(message)) {
-								logger.error("entity : {} , retry send {} times Message {} ,the connection may die.close it", entity.getId(),times,message);
+								logger.error("entity : {} , retry send {} times ,the connection may die.close it .\nMessage {} ", entity.getId(),times,message);
 								ctx.close();
 							}else {
+								logger.error("entity : {} , retry send {} times ,keep connection alive. \nMessage {} ", entity.getId(),times,message);
 								//不关闭通道的，设置连接不可写，1s后恢复
 								setchannelunwritableWhenDelay(ctx,1000);
 							}
-
 						} else {
-
+							logger.warn("entity : {} , retry send Msg : {}", entity.getId(),message);
 							msgWriteCount++;
 							entry.cnt.incrementAndGet();
-							// 重发不用申请窗口
-							ctx.writeAndFlush(message, ctx.newPromise());
+							ctx.write(message, ctx.newPromise());
 						}
 					} catch (Throwable e) {
 						logger.error("retry Send Msg Error: {}", message);
@@ -556,11 +529,11 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 				public void operationComplete(ChannelFuture future) throws Exception {
 
 					if (future.isSuccess()) {
+						
+						//这里重新保存一次，是为了更新VersionObject里的version时间为消息实际发出去的时间
+						storeMap.put(seq, new VersionObject<T>(message));
 						// 注册重试任务
 						scheduleRetryMsg(ctx, message);
-						
-						//滑动窗口减一
-						decrementWindowSize(ctx);
 						
 					}else {
 						//发送失败,必须清除msgRetryMap里的对象，否则上层业务
@@ -576,7 +549,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 
 			});
 			
-			ctx.writeAndFlush(message, promise);
+			ctx.write(message, promise);
 			
 			return tmpentry.resfuture;
 		} else {

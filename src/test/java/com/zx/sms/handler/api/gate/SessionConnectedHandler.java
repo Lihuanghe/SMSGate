@@ -72,8 +72,19 @@ public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 						
 //						chfuture = ctx.writeAndFlush(msg);
 						
-						if (chfuture != null)
-							chfuture.sync();
+						if (chfuture != null) {
+							chfuture.addListener(new GenericFutureListener<ChannelFuture>() {
+								@Override
+								public void operationComplete(ChannelFuture future) throws Exception {
+									if (future.isSuccess()) {
+//										 logger.info("response:{}",future.get());
+									} else {
+//										 logger.error("response:{}",future.cause());
+									}
+								}
+							});
+						}
+
 						cnt--;
 						tmptotal.decrementAndGet();
 						if (futures != null) {
@@ -111,6 +122,7 @@ public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 							}
 						}
 					}
+//					logger.info("========while over.============:{}",tmptotal.get());
 					return true;
 				}
 			}, new ExitUnlimitCirclePolicy<Boolean>() {

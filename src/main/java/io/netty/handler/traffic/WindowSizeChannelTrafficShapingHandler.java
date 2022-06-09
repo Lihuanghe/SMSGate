@@ -1,7 +1,10 @@
 package io.netty.handler.traffic;
 
+import java.io.IOException;
 import java.util.ArrayDeque;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +16,6 @@ import com.zx.sms.connect.manager.EndpointEntity;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufHolder;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelOutboundBuffer;
 import io.netty.channel.ChannelPromise;
 import io.netty.util.concurrent.ScheduledFuture;
 
@@ -41,27 +43,34 @@ public class WindowSizeChannelTrafficShapingHandler extends AbstractTrafficShapi
      */
     public WindowSizeChannelTrafficShapingHandler(EndpointEntity entity, long checkInterval) {
     	//限速参数不能小于0
-        super(entity.getWriteLimit() >0 ?  entity.getWriteLimit() : 9999, entity.getReadLimit() > 0 ? entity.getReadLimit()  : 9999, checkInterval);
+        super(entity.getWriteLimit() >0 ?  entity.getWriteLimit() : 99999, entity.getReadLimit() > 0 ? entity.getReadLimit()  : 99999, checkInterval);
 		// 一个连接 积压条数超过每秒速度的60% 就不能再写了
 		setMaxWriteSize( entity.getWriteLimit() * 3 / 5);
 		// 一个连接 积压延迟超过600ms 就不能再写了
 		setMaxWriteDelay(1000 * 3 / 5);
+		
     }
     
     private ScheduledFuture sf;
+    
+	private Future readFuture;
+	private Future submitFuture;
 
     @Override
     public void handlerAdded(final ChannelHandlerContext ctx) throws Exception {
         TrafficCounter trafficCounter = new TrafficCounter(this, ctx.executor(), "ChannelTC" +
                 ctx.channel().hashCode(), checkInterval);
         setTrafficCounter(trafficCounter);
-        trafficCounter.start();    
-        sf =  ctx.executor().scheduleAtFixedRate(new Runnable() {
+        trafficCounter.start();   
+        
+        //如果messagesQueue队列里有积压的未发送消息，但此时连上即没有发送消息，也没有接收消息。
+        //此时要定时1.5秒发送下队列里的消息
+        sf = ctx.executor().scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 sendAllValid(ctx, TrafficCounter.milliSecondFromNano());
             }
-        }, 3, 1, TimeUnit.SECONDS);
+        }, 3, 1500, TimeUnit.MILLISECONDS);
         
         
         super.handlerAdded(ctx);
@@ -84,6 +93,9 @@ public class WindowSizeChannelTrafficShapingHandler extends AbstractTrafficShapi
                     if (toSend.toSend instanceof ByteBuf) {
                         ((ByteBuf) toSend.toSend).release();
                     }
+                    
+                    //连接关闭，设置future失败，避免上层业务死等
+                    toSend.promise.tryFailure( new IOException("channel InActive.failed by WindowSizeChannelTrafficShapingHandler."));
                 }
             }
             messagesQueue.clear();
@@ -121,9 +133,9 @@ public class WindowSizeChannelTrafficShapingHandler extends AbstractTrafficShapi
         synchronized (this) {
         	
         	//这里增加判断是否可写
-            if (delay == 0 && ctx.channel().isWritable() && messagesQueue.isEmpty()) {
+            if (delay == 0 && getSendWindow(ctx) >0 && messagesQueue.isEmpty()) {
                 trafficCounter.bytesRealWriteFlowControl(size);
-                ctx.write(msg, promise);
+                writeAndDecrement(ctx,msg,promise);
                 return;
             }
             newToSend = new ToSend(delay + now, msg, promise);
@@ -132,22 +144,28 @@ public class WindowSizeChannelTrafficShapingHandler extends AbstractTrafficShapi
             checkWriteSuspend(ctx, delay, queueSize);
         }
         final long futureNow = newToSend.relativeTimeAction;
-        ctx.executor().schedule(new Runnable() {
-            @Override
-            public void run() {
-                sendAllValid(ctx, futureNow);
-            }
-        }, delay, TimeUnit.MILLISECONDS);
+        //如果延迟大于10ms，才启动定时任务
+        if(delay > 10) {
+            ctx.executor().schedule(new Runnable() {
+                @Override
+                public void run() {
+                    sendAllValid(ctx, futureNow);
+                }
+            }, delay, TimeUnit.MILLISECONDS);
+        }else {
+        	//通过future判断是否重复启动了多次sendAllValid 
+			if(submitFuture == null || submitFuture.isDone()) {
+				submitFuture = ctx.executor().submit(new Runnable() {
+		            @Override
+		            public void run() {
+		            	sendAllValid(ctx, futureNow);
+		            }
+				});
+			}
+        }
+
     }
     
-    /**
-     *判断滑动窗口可写标志是否为true; 即窗口是否大于0 
-     */
-    private boolean isWindowPositive(ChannelHandlerContext ctx) {
-   		ChannelOutboundBuffer cob = ctx.channel().unsafe().outboundBuffer();
-   		return cob.getUserDefinedWritability(GlobalConstance.WINDOW_SIZE_ZERO_USER_DEFINED_WRITABILITY_INDEX);
-    }
-
     private void sendAllValid(final ChannelHandlerContext ctx, final long now) {
         // write order control
         synchronized (this) {
@@ -156,16 +174,17 @@ public class WindowSizeChannelTrafficShapingHandler extends AbstractTrafficShapi
             for (; newToSend != null; newToSend = messagesQueue.pollFirst()) {
             	
             	//判断发送窗口是否大于0
-                if (newToSend.relativeTimeAction <= now && isWindowPositive(ctx)) {
+                if (newToSend.relativeTimeAction <= now && getSendWindow(ctx) > 0) {
                     long size = calculateSize(newToSend.toSend);
                     trafficCounter.bytesRealWriteFlowControl(size);
                     queueSize -= size;
-                    ctx.write(newToSend.toSend, newToSend.promise);
+                    writeAndDecrement(ctx,newToSend.toSend, newToSend.promise);
                 } else {
                     messagesQueue.addFirst(newToSend);
                     break;
                 }
             }
+            
             if (messagesQueue.isEmpty()) {
                 releaseWriteSuspended(ctx);
             }
@@ -204,4 +223,56 @@ public class WindowSizeChannelTrafficShapingHandler extends AbstractTrafficShapi
 		}
 	}
 	
+	public void channelRead(final ChannelHandlerContext ctx, final Object msg) throws Exception {
+		if (msg instanceof BaseMessage) {
+			BaseMessage req = (BaseMessage) msg;
+			
+			//收到response后
+			if (!req.isRequest()) {
+				
+				//增加发送窗口的动作在SessionStateManager里处理
+				//方便处理response超时的情况
+				
+				//立即发送积压消息
+				//通过future判断是否重复启动了多次sendAllValid 
+				if(readFuture == null || readFuture.isDone()) {
+					readFuture = ctx.executor().submit(new Runnable() {
+			            @Override
+			            public void run() {
+			            	sendAllValid(ctx, TrafficCounter.milliSecondFromNano());
+			            }
+					});
+				}
+			}
+		} 
+		super.channelRead(ctx, msg);
+	}
+	  
+	  private void writeAndDecrement(ChannelHandlerContext ctx,Object msg, ChannelPromise promise) {
+		  
+		  ctx.write(msg, promise);
+		  
+		  if (msg instanceof BaseMessage) {
+				BaseMessage req = (BaseMessage) msg;
+				
+				//request消息，要减少发送窗口
+				if (req.isRequest()) {
+					decrementSendWindow(ctx);
+				}
+			} 
+	  }
+	  
+	  private void decrementSendWindow(ChannelHandlerContext ctx) {
+		  AtomicInteger ati = ctx.channel().attr(GlobalConstance.SENDWINDOWKEY).get();
+		  if(ati != null)
+			  ati.decrementAndGet();
+	  }
+	  
+	  private int getSendWindow(ChannelHandlerContext ctx) {
+		  AtomicInteger ati = ctx.channel().attr(GlobalConstance.SENDWINDOWKEY).get();
+		  if(ati != null)
+			  return ati.get();
+		  
+		  return -1;
+	  }  
 }

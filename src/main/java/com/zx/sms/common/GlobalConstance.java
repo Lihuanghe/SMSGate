@@ -3,6 +3,7 @@ package com.zx.sms.common;
 import io.netty.util.AttributeKey;
 
 import java.nio.charset.Charset;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.marre.sms.SmsAlphabet;
 import org.marre.sms.SmsDcs;
@@ -37,11 +38,11 @@ public interface GlobalConstance {
     public final static  SgipServerIdleStateHandler sgipidleHandler = new SgipServerIdleStateHandler();
     public final static  SMGPServerIdleStateHandler smgpidleHandler = new SMGPServerIdleStateHandler();
     public final static AttributeKey<SessionState> attributeKey = AttributeKey.newInstance(SessionState.Connect.name());
+	public final static AttributeKey<AtomicInteger> SENDWINDOWKEY = AttributeKey.newInstance("_SendWindow_");
     public final static BlackHoleHandler blackhole = new BlackHoleHandler();
     public final static String IdleCheckerHandlerName = "IdleStateHandler";
     public final static String loggerNamePrefix = "entity.%s";
     public final static String codecName = "codecName";
     
     public final static int MESSAGE_DELAY_USER_DEFINED_WRITABILITY_INDEX = 31;
-    public final static int WINDOW_SIZE_ZERO_USER_DEFINED_WRITABILITY_INDEX = 30;
 }

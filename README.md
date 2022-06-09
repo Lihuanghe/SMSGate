@@ -10,7 +10,7 @@
 <dependency>
   <groupId>com.chinamobile.cmos</groupId>
   <artifactId>sms-core</artifactId>
-  <version>2.1.13</version>
+  <version>2.1.13.1</version>
 </dependency>
 ```
 
@@ -308,7 +308,7 @@ public class TestCMPPEndPoint {
 		manager.addEndpointEntity(server);
 	
 		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
-		client.setId("client");
+		client.setId("client");  //自定义ID,保持唯一
 		client.setHost("127.0.0.1");
 //		client.setLocalhost("127.0.0.1");
 //		client.setLocalport(65521);
@@ -318,13 +318,21 @@ public class TestCMPPEndPoint {
 		client.setUserName("901783");
 		client.setPassword("ICP001");
 
-		client.setMaxChannels((short)10);
-		client.setVersion((short)0x30);
-		client.setRetryWaitTimeSec((short)30);
-		client.setUseSSL(false);
-//		client.setWriteLimit(100);
-		client.setReSendFailMsg(true);
-		client.setSupportLongmsg(SupportLongMessage.BOTH);
+		client.setMaxChannels((short)10);  //最大连接数
+		client.setVersion((short)0x30);    //协议版本号
+		client.setRetryWaitTimeSec((short)30);//发送request后 等待N秒后没有收到response，则重发消息
+		client.setMaxRetryCnt((short)3);  // 发送消息的最大次数，如果为3，则表示连带第一次发送，再重试2次，一共发送3次
+		client.setCloseWhenRetryFailed(false);  // 当发送消息次数达到最大（MaxRetryCnt）后 ，是否关闭连接。默认是 true 关闭连接
+		client.setUseSSL(false);          //是否使用SSL加密连接，默认为false，不加密
+		client.setWriteLimit(100);        //发送request消息的最大速度（单位条数）
+		client.setReadLimit(100);         //接收request的最大速度（单位条数），当消息量超过一定限制后，消息将积压在TCP网络协议栈的接收缓冲区
+		client.setWindow(16);				//设置发送消息的滑动窗口，滑动窗口默认为16，该大小根据网络时延不同，会影响发送速度
+													
+		//默认为false ,发送request是否保存在本地磁盘。如果为true，当进程关闭后，本地磁盘会保存未收到response的消息，当进程再次启动框架自动读取消息并发送。可能造成消息重复发送
+		client.setReSendFailMsg(true);  
+		
+		client.setSupportLongmsg(SupportLongMessage.BOTH);  //是否支持长短信的自动拆分和拼接
+		
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		clienthandlers.add( new CMPPSessionConnectedHandler(10000));  //在这个handler里发送短信
 		client.setBusinessHandlerSet(clienthandlers);
