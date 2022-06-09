@@ -2,10 +2,12 @@ package io.netty.handler.traffic;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
+import java.util.Date;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +30,7 @@ public class WindowSizeChannelTrafficShapingHandler extends AbstractTrafficShapi
     private static final Logger logger = LoggerFactory.getLogger(WindowSizeChannelTrafficShapingHandler.class);
     private final ArrayDeque<ToSend> messagesQueue = new ArrayDeque<ToSend>();
     private long queueSize;
+    private EndpointEntity entity;
 
     /**
      * Create a new instance using default
@@ -48,12 +51,14 @@ public class WindowSizeChannelTrafficShapingHandler extends AbstractTrafficShapi
         setMaxWriteSize( (entity.getWriteLimit() >0 ?  entity.getWriteLimit() : 99999) * 3 / 5);
         // 一个连接 积压延迟超过600ms 就不能再写了
         setMaxWriteDelay(1000 * 3 / 5);
+        this.entity = entity;
     }
     
     private ScheduledFuture sf;
     
     private Future readFuture;
     private Future submitFuture;
+    private ScheduledFuture logFuture;
 
     @Override
     public void handlerAdded(final ChannelHandlerContext ctx) throws Exception {
@@ -198,6 +203,23 @@ public class WindowSizeChannelTrafficShapingHandler extends AbstractTrafficShapi
                 releaseWriteSuspended(ctx);
             }
         }
+        if(queueSize > 1000) {
+        	final long t_size = queueSize;
+        	final long time = System.currentTimeMillis();
+            if(logFuture == null || logFuture.isDone()) {
+            	logFuture = ctx.executor().schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                    	logger.warn("time : {} ,ch: {}-{} ,messagesQueue contain message more than : {}" ,
+                    			DateFormatUtils.ISO_8601_EXTENDED_DATETIME_TIME_ZONE_FORMAT.format(time),
+                    			entity.getId(),
+                    			ctx.channel().id(),
+                    			t_size);
+                    }
+                },1000,TimeUnit.MILLISECONDS);
+            }
+        }
+        	
         ctx.flush();
     }
 
