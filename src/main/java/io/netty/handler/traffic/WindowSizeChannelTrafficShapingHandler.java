@@ -128,6 +128,16 @@ public class WindowSizeChannelTrafficShapingHandler extends AbstractTrafficShapi
             final long size, final long delay, final long now,
             final ChannelPromise promise) {
         final ToSend newToSend;
+        
+        //response直接发送，不经过发送窗口
+        if (msg instanceof BaseMessage) {
+            BaseMessage req = (BaseMessage) msg;
+            if (!req.isRequest()) {
+            	ctx.write(msg, promise);
+            	return;
+            }
+        } 
+        
         // write order control
         synchronized (this) {
             
