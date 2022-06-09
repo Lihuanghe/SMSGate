@@ -326,7 +326,7 @@ public class TestCMPPEndPoint {
 		client.setUseSSL(false);          //是否使用SSL加密连接，默认为false，不加密
 		client.setWriteLimit(100);        //发送request消息的最大速度（单位条数）
 		client.setReadLimit(100);         //接收request的最大速度（单位条数），当消息量超过一定限制后，消息将积压在TCP网络协议栈的接收缓冲区
-		client.setWindow(16);				//设置发送消息的滑动窗口，滑动窗口默认为16，该大小根据网络时延不同，会影响发送速度
+		client.setWindow(16);         //设置发送消息的滑动窗口，滑动窗口默认为16，该大小根据网络时延不同，会影响发送速度
 													
 		//默认为false ,发送request是否保存在本地磁盘。如果为true，当进程关闭后，本地磁盘会保存未收到response的消息，当进程再次启动框架自动读取消息并发送。可能造成消息重复发送
 		client.setReSendFailMsg(true);  
