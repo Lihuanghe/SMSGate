@@ -216,7 +216,7 @@ public enum LongMessageFrameHolder {
 					return new SmsMessageHolder(generatorSmsMessage(oldframeHolder, frame),oldframeHolder.getMsg());
 				}
 			} catch (Exception ex) {
-				logger.error("",ex);
+				logger.warn("Merge Long SMS Error. dump:{}",ByteBufUtil.hexDump(frame.getMsgContentBytes()) ,ex);
 				throw new NotSupportedException(ex.getMessage());
 			}
 

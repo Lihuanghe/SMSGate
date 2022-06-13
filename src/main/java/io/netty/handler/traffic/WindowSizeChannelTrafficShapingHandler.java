@@ -24,6 +24,7 @@ import io.netty.util.concurrent.ScheduledFuture;
 /**
  *  这个类是为了在netty原有流量整形（ChannelTrafficShapingHandler）的基础上，扩展增加滑动窗口的发送控制能力
  *  因此，主体代码跟官方保持一致，只修改 sendAllValid 方法，增加判断当前channel窗口是否大于0。
+ *  在本class里发送的消息后对窗口进行扣减 。在 sessionManager里 收到response或者response超时后对窗口进行增加
  */
 public class WindowSizeChannelTrafficShapingHandler extends AbstractTrafficShapingHandler {
     private static final Logger logger = LoggerFactory.getLogger(WindowSizeChannelTrafficShapingHandler.class);
@@ -48,10 +49,10 @@ public class WindowSizeChannelTrafficShapingHandler extends AbstractTrafficShapi
      */
     public WindowSizeChannelTrafficShapingHandler(EndpointEntity entity, long checkInterval) {
         //限速参数不能小于0
-        super(entity.getWriteLimit() > 0 ?  entity.getWriteLimit() : 99999, entity.getReadLimit() > 0 ? entity.getReadLimit() : 99999, checkInterval);
+        super(entity.getWriteLimit() , entity.getReadLimit() , checkInterval);
        
-        // 一个连接 积压条数超过每秒速度的200% 就不能再写了
-        setMaxWriteSize( (entity.getWriteLimit() > 0 ?  entity.getWriteLimit() : 99999) * 2);
+        // 一个连接积压条数超过每秒速度的200% ,或者不限速时超过500。就不能再写了
+        setMaxWriteSize( (entity.getWriteLimit() > 0 ?  entity.getWriteLimit() : 250) * 2);
         // 一个连接 积压延迟超过1000ms 就不能再写了
         setMaxWriteDelay(1000);
         this.entity = entity;
@@ -210,8 +211,8 @@ public class WindowSizeChannelTrafficShapingHandler extends AbstractTrafficShapi
                 releaseWriteSuspended(ctx);
             }
         }
-        //积压消息超过15s才能发完时，打印告警日志
-        if(queueSize > getWriteLimit() * 15) {
+        //积压消息过大，打印告警日志
+        if(queueSize > getMaxWriteSize()*2) {
         	final long t_size = queueSize;
         	final long time = System.currentTimeMillis();
             if(logFuture == null || logFuture.isDone()) {
