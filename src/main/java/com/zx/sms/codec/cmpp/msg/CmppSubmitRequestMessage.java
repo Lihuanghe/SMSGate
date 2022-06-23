@@ -450,6 +450,9 @@ public class CmppSubmitRequestMessage extends DefaultMessage implements LongSMSM
 		return sb.toString();
 	}
 
+	/*
+	 *合并接收长短信时调用此方法 
+	 **/
 	@Override
 	public LongMessageFrame generateFrame() {
 		LongMessageFrame frame = new LongMessageFrame();
@@ -464,13 +467,15 @@ public class CmppSubmitRequestMessage extends DefaultMessage implements LongSMSM
 		return frame;
 	}
 
+	/*
+	 *拆分发送长短信时调用此方法 
+	 **/
 	@Override
 	public CmppSubmitRequestMessage generateMessage(LongMessageFrame frame) throws Exception {
 		CmppSubmitRequestMessage requestMessage = this.clone();
 		requestMessage.setPknumber(frame.getPknumber());
 		requestMessage.setPktotal(frame.getPktotal());
 		requestMessage.setTpudhi(frame.getTpudhi());
-		requestMessage.setTppid(frame.getTppid());
 		requestMessage.setMsgfmt((SmsDcs)frame.getMsgfmt());
 		requestMessage.setMsgContentBytes(frame.getMsgContentBytes());
 		requestMessage.setMsgLength((short) frame.getMsgLength());

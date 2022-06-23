@@ -1,15 +1,15 @@
 package com.zx.sms.common;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.commons.codec.binary.Hex;
+import org.junit.Assert;
+import org.junit.Test;
+
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.concurrent.Future;
-
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.LockSupport;
-
-import org.apache.commons.codec.binary.Hex;
-import org.junit.Test;
 
 public class TestNettyEventLoopTaskCancel {
 
@@ -22,14 +22,13 @@ public class TestNettyEventLoopTaskCancel {
 		
 		byte[] b =	Hex.decodeHex(str.toCharArray());
 		
-		
+		final AtomicInteger i = new AtomicInteger();
 		Future future = ins.scheduleAtFixedRate(new Runnable(){
-
 			@Override
 			public void run() {
-				int i=0;
+				
 					
-					System.out.println("====="+i++);
+					System.out.println("====="+ i.incrementAndGet());
 					try {
 						Thread.sleep(3000);
 					} catch (InterruptedException e) {
@@ -44,10 +43,10 @@ public class TestNettyEventLoopTaskCancel {
 			future.cancel(true);
 			System.out.println("-----End------");
 			Thread.sleep(10000);
+			Assert.assertEquals(4, i.get());
+			
 			ins.shutdownGracefully().syncUninterruptibly();
-//			ins.close();
 			System.out.println("-----close------");
-			LockSupport.park();
 			System.out.println("-----finished------");
 		} catch (InterruptedException e) {
 			e.printStackTrace();
