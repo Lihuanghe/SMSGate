@@ -58,8 +58,6 @@ class FrameHolder {
 
 	private InformationElement appUDHinfo;
 	
-	private LongSMSMessage msg ;
-
 	// 用来保存应用类型，如文本短信或者wap短信
 	public void setAppUDHinfo(InformationElement appUDHinfo) {
 		this.appUDHinfo = appUDHinfo;
@@ -149,12 +147,10 @@ class FrameHolder {
 		this.msgfmt = msgfmt;
 	}
 
-	public LongSMSMessage getMsg() {
-		return msg;
+	public int getTotalLength() {
+		return totalLength;
 	}
-
-	public void setMsg(LongSMSMessage msg) {
-		this.msg = msg;
-	}
+	
+	
 
 }

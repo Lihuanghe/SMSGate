@@ -255,7 +255,7 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 
 
 		if (destTermIdCount > 100 || destTermIdCount <= 0) {
-			throw new Exception("destTermIdCount must be in [1,100],but " + destTermIdCount);
+			throw new Exception("destTermIdCount must be in [1,100),but " + destTermIdCount);
 		}
 		destTermIdArray = new String[destTermIdCount];
 		for (int i = 0; i < destTermIdCount; i++) {
@@ -570,6 +570,8 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 	@Override
 	public LongMessageFrame generateFrame() {
 		LongMessageFrame frame = new LongMessageFrame();
+		frame.setPktotal(getPkTotal());
+		frame.setPknumber(getPkNumber());
 		frame.setTppid(getTpPid());
 		frame.setTpudhi(getTpUdhi());
 		frame.setMsgfmt(getMsgFmt());

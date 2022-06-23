@@ -8,6 +8,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.traffic.WindowSizeChannelTrafficShapingHandler;
 import io.netty.util.ResourceLeakDetector;
 import io.netty.util.ResourceLeakDetector.Level;
 
@@ -24,6 +25,7 @@ import org.junit.Test;
 
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
+import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.MsgId;
 import com.zx.sms.connect.manager.cmpp.CMPPClientEndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPCodecChannelInitializer;
@@ -42,7 +44,7 @@ public class TestSpeedError {
 			CMPPCodecChannelInitializer codec = new CMPPCodecChannelInitializer();
 			pipeline.addLast("serverLog", new LoggingHandler(LogLevel.DEBUG));
 			pipeline.addLast(codec.pipeName(), codec);
-
+			
 			CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
 			client.setId("client");
 			client.setHost("127.0.0.1");
@@ -57,6 +59,10 @@ public class TestSpeedError {
 			client.setRetryWaitTimeSec(reSendTime);
 			client.setUseSSL(false);
 			client.setReSendFailMsg(true);
+			// 增加流量整形 ，每个连接每秒发送，接收消息数不超过配置的值
+			pipeline.addLast("ChannelTrafficAfter",
+					new WindowSizeChannelTrafficShapingHandler(client, 100));
+			
 			pipeline.addLast("session", new SessionStateManager(client, new ConcurrentHashMap(), true));
 		}
 	});
@@ -84,7 +90,7 @@ public class TestSpeedError {
 		ByteBuf recvMsg = ch.readOutbound();
 		Assert.assertNotNull(recvMsg);
 
-		// 新为上面等待超时，会重发一次，所以这里会收到两条
+		// 因为上面等待超时，会重发一次，所以这里会收到两条
 		recvMsg = ch.readOutbound();
 		Assert.assertNotNull(recvMsg);
 

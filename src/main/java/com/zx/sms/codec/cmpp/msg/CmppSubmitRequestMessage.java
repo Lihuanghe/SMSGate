@@ -453,6 +453,8 @@ public class CmppSubmitRequestMessage extends DefaultMessage implements LongSMSM
 	@Override
 	public LongMessageFrame generateFrame() {
 		LongMessageFrame frame = new LongMessageFrame();
+		frame.setPktotal((byte)getPktotal());
+		frame.setPknumber((byte)getPknumber());
 		frame.setTppid(getTppid());
 		frame.setTpudhi(getTpudhi());
 		frame.setMsgfmt(getMsgfmt());
@@ -468,6 +470,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage implements LongSMSM
 		requestMessage.setPknumber(frame.getPknumber());
 		requestMessage.setPktotal(frame.getPktotal());
 		requestMessage.setTpudhi(frame.getTpudhi());
+		requestMessage.setTppid(frame.getTppid());
 		requestMessage.setMsgfmt((SmsDcs)frame.getMsgfmt());
 		requestMessage.setMsgContentBytes(frame.getMsgContentBytes());
 		requestMessage.setMsgLength((short) frame.getMsgLength());

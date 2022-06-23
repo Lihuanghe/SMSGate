@@ -69,6 +69,11 @@ public class WindowSizeChannelTrafficShapingHandler extends AbstractTrafficShapi
 
     @Override
     public void handlerAdded(final ChannelHandlerContext ctx) throws Exception {
+    	
+		//在连接上创建发送窗口记数器，该记数器在下边SessionManagerHanlder 和 WindowSizeChannelTrafficShapingHandler
+		//中用来统计发送的request个数和接收到的response个数
+    	ctx.channel().attr(GlobalConstance.SENDWINDOWKEY).set(new AtomicInteger(this.entity.getWindow()));
+    	
     	TrafficCounter trafficCounter = new TrafficCounter(this, ctx.executor(), "ChannelTC" +
                 ctx.channel().hashCode(), checkInterval) ;
         setTrafficCounter(trafficCounter);
@@ -89,6 +94,9 @@ public class WindowSizeChannelTrafficShapingHandler extends AbstractTrafficShapi
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+    	//连接关闭时移除该对象
+    	ctx.channel().attr(GlobalConstance.SENDWINDOWKEY).set(null);
+    	
         trafficCounter.stop();
         // write order control
         synchronized (this) {

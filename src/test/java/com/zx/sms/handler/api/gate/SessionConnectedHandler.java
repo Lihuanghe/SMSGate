@@ -139,7 +139,7 @@ public abstract class SessionConnectedHandler extends AbstractBusinessHandler {
 					}
 					return over;
 				}
-			}, 1);
+			}, 50);
 
 		}
 

@@ -150,4 +150,11 @@ public abstract class AbstractSmsDcs implements Serializable {
 	
 	abstract public SmsAlphabet getAlphabet();
 	abstract public int getMaxMsglength();
+
+	@Override
+	public String toString() {
+		return "[dcs_=" + dcs_ + "]";
+	}
+	
+	
 }

@@ -26,8 +26,6 @@ import com.zx.sms.handler.api.BusinessHandlerInterface;
 import com.zx.sms.session.AbstractSessionStateManager;
 import com.zx.sms.session.cmpp.SessionState;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufHolder;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -38,9 +36,7 @@ import io.netty.handler.proxy.HttpProxyHandler;
 import io.netty.handler.proxy.Socks4ProxyHandler;
 import io.netty.handler.proxy.Socks5ProxyHandler;
 import io.netty.handler.ssl.SslContext;
-import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 import io.netty.handler.traffic.WindowSizeChannelTrafficShapingHandler;
-import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.Promise;
 
 /**
@@ -56,10 +52,6 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	private EndpointEntity endpoint;
 
 	private CircularList channels = new CircularList();
-
-	private final static String sessionHandler = "sessionStateManager";
-	
-
 
 	public AbstractEndpointConnector(EndpointEntity endpoint) {
 		this.endpoint = endpoint;
@@ -210,15 +202,11 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 			logger.info("Channel added To Endpoint {} .totalCnt:{} ,remoteAddress: {}", endpoint, nowConnCnt + 1, ch.remoteAddress());
 
-			//在连接上创建发送窗口记数器，该记数器在下边SessionManagerHanlder 和 WindowSizeChannelTrafficShapingHandler
-			//中用来统计发送的request个数和接收到的response个数
-			ch.attr(GlobalConstance.SENDWINDOWKEY).set(new AtomicInteger(endpoint.getWindow()));
-			
 			if (nowConnCnt == 0 && endpoint.isReSendFailMsg()) {
 				// 如果是第一个连接。要把上次发送失败的消息取出，再次发送一次
-				ch.pipeline().addAfter(GlobalConstance.codecName, sessionHandler, createSessionManager(endpoint, storedMap, true));
+				ch.pipeline().addAfter(GlobalConstance.codecName, GlobalConstance.sessionHandler, createSessionManager(endpoint, storedMap, true));
 			} else {
-				ch.pipeline().addAfter(GlobalConstance.codecName, sessionHandler, createSessionManager(endpoint, storedMap, false));
+				ch.pipeline().addAfter(GlobalConstance.codecName, GlobalConstance.sessionHandler, createSessionManager(endpoint, storedMap, false));
 			}
 
 			// 增加流量整形 ，每个连接每秒发送，接收消息数不超过配置的值
@@ -246,7 +234,6 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 		if (getChannels().remove(ch)) {
 			ch.attr(GlobalConstance.attributeKey).set(SessionState.DisConnect);
-			ch.attr(GlobalConstance.SENDWINDOWKEY).set(null);
 		}
 	}
 
@@ -376,7 +363,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		Channel ch = fetchOneWritable();
 		if (ch == null)
 			return null;
-		AbstractSessionStateManager session = (AbstractSessionStateManager) ch.pipeline().get(sessionHandler);
+		AbstractSessionStateManager session = (AbstractSessionStateManager) ch.pipeline().get(GlobalConstance.sessionHandler);
 		if (session == null)
 			return null;
 		List<Promise<T>> arrPromise = new ArrayList<Promise<T>>();
@@ -391,7 +378,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		Channel ch = fetchOneWritable();
 		if (ch == null)
 			return null;
-		AbstractSessionStateManager session = (AbstractSessionStateManager) ch.pipeline().get(sessionHandler);
+		AbstractSessionStateManager session = (AbstractSessionStateManager) ch.pipeline().get(GlobalConstance.sessionHandler);
 		return session.writeMessagesync(message);
 	}
 

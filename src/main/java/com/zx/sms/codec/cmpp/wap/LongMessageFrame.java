@@ -1,13 +1,17 @@
 package com.zx.sms.codec.cmpp.wap;
 
+import java.io.Serializable;
+
 import org.marre.sms.AbstractSmsDcs;
 
 import com.zx.sms.common.GlobalConstance;
 
+import io.netty.buffer.ByteBufUtil;
+
 /**
  * MT,MO长短信
  **/
-public class LongMessageFrame {
+public class LongMessageFrame implements Serializable{
 	private static final long serialVersionUID = -8554060199834235624L;
 	
 	private short pkseq = 0;
@@ -19,8 +23,6 @@ public class LongMessageFrame {
 	// encode septet
 	private byte[] msgContentBytes = GlobalConstance.emptyBytes;
 
-	private String contentPart;
-	
 	private long sequence;
 	
 	public short getPkseq() {
@@ -61,7 +63,7 @@ public class LongMessageFrame {
 		this.pknumber = pknumber;
 	}
 
-	short getTppid() {
+	public short getTppid() {
 		return tppid;
 	}
 
@@ -125,15 +127,6 @@ public class LongMessageFrame {
 		this.msgContentBytes = msgContentBytes;
 	}
 
-	public String getContentPart() {
-		return contentPart;
-	}
-
-	public void setContentPart(String contentPart) {
-		this.contentPart = contentPart;
-	}
-
-
 	public long getSequence() {
 		return sequence;
 	}
@@ -153,4 +146,13 @@ public class LongMessageFrame {
 			return msgContentBytes;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "LongMessageFrame [pkseq=" + pkseq + ", pktotal=" + pktotal + ", pknumber=" + pknumber + ", tppid="
+				+ tppid + ", tpudhi=" + tpudhi + ", msgfmt=" + msgfmt + ", msgContentBytes="
+				+ ByteBufUtil.hexDump(msgContentBytes) + ", sequence=" + sequence + "]";
+	}
+	
+	
 }

@@ -40,7 +40,6 @@ public abstract class AbstractLongMessageHandler<T extends BaseMessage> extends 
 					out.add(hoder.msg);
 				} 
 			} catch (Exception ex) {
-				logger.error("", ex);
 				// 长短信解析失败，直接给网关回复 resp . 并丢弃这个短信
 				logger.error("Decode Message Error ,msg dump :{}", ByteBufUtil.hexDump(((LongSMSMessage)msg).generateFrame().getMsgContentBytes()));
 				BaseMessage res = response(msg);
