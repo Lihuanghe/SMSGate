@@ -63,7 +63,10 @@ public class LongMessageFrame implements Serializable{
 		this.pknumber = pknumber;
 	}
 
-	public short getTppid() {
+	/**
+	 * 该字段只为处理 (U)SIM Toolkit Securit 用于远程写卡,因此关闭public 避免其它地方误用
+	 */
+	short getTppid() {
 		return tppid;
 	}
 
