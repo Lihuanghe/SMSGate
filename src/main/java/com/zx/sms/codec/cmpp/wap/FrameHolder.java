@@ -94,13 +94,13 @@ class FrameHolder {
 	public synchronized void merge(LongMessageFrame frame ,byte[] content, int idx) throws NotSupportedException {
 
 		if (idxBitset.get(idx)) {
-			logger.warn("have received the same index:{} of Message. do not merge this content.{},origin:{},{},{},new content:{}", idx,this.serviceNum,
+			logger.warn("have received the same index:{} of Message seq:{}. do not merge this content.{},origin:{},{},{},new content:{}", idx,frame.getSequence(), this.serviceNum,
 					LongMessageFrameHolder.buildTextMessage(this.content[idx], msgfmt).getText(), DateFormatUtils.format(getTimestamp(),
 							DateFormatUtils.ISO_DATETIME_FORMAT.getPattern()), getSequence(), LongMessageFrameHolder.buildTextMessage(content, msgfmt).getText());
 			throw new NotSupportedException("received the same index");
 		}
 		if (this.content.length <= idx || idx < 0) {
-			logger.warn("have received error index:{} of Message content length:{}. do not merge this content.{},{},{},{}", idx, this.content.length,
+			logger.warn("have received error index:{} of Message seq:{} content length:{}. do not merge this content.{},{},{},{}", idx,frame.getSequence(), this.content.length,
 					this.serviceNum, DateFormatUtils.format(getTimestamp(), DateFormatUtils.ISO_DATETIME_FORMAT.getPattern()), getSequence(),
 					LongMessageFrameHolder.buildTextMessage(content, msgfmt).getText());
 			throw new NotSupportedException("have received error index");

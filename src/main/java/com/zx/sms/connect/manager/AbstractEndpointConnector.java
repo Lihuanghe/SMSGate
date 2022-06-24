@@ -167,8 +167,6 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			protected void initChannel(Channel ch) throws Exception {
 				ChannelPipeline pipeline = ch.pipeline();
 				EndpointEntity entity = getEndpointEntity();
-				// pipeline.addFirst(new LoggingHandler("proxy",
-				// LogLevel.INFO));
 				if (entity instanceof ClientEndpoint && StringUtils.isNotBlank(entity.getProxy())) {
 					String uriString = entity.getProxy();
 					try {

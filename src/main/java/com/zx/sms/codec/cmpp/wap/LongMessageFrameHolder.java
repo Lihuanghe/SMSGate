@@ -212,18 +212,17 @@ public enum LongMessageFrameHolder {
 					curFrame.add(frame);
 					allFrame = curFrame;
 				}
-				//判断是否收全了长短信片断
-				if(fh.getTotalLength() == allFrame.size()) {
-					//总帧数 个数虽然相等，还要再判断是不是所有帧都齐了 ，有可能收到相同帧序号的帧
+				//判断是否收全了长短信片断 , 接收的分片数可能超过标示分片数，说明存在重复的分片
+				if(fh.getTotalLength() <= allFrame.size()) {
+					//总帧数个数虽然够了，还要再判断是不是所有帧都齐了 ，有可能收到相同帧序号的帧
 					//从第一个帧开始偿试合并
 					FrameHolder firstF =createFrameHolder(serviceNum, allFrame.get(0));
-					try {
-						for(int i = 1; i< allFrame.size() ;i++) {
+					for(int i = 1; i< allFrame.size() ;i++) {
+						try {
 							firstF = mergeFrameHolder(firstF, allFrame.get(i));
+						}catch(NotSupportedException ex) {
 						}
-					}catch(NotSupportedException ex) {
 					}
-					
 					if (firstF.isComplete()) {
 						//合并成功，
 						remove(mapKey,isRecvLongMsgOnMultiLink);
