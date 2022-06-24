@@ -12,6 +12,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalCause;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
+import com.zx.sms.LongSMSMessage;
 import com.zx.sms.codec.LongMessageFrameCache;
 import com.zx.sms.codec.LongMessageFrameProvider;
 
@@ -73,7 +74,7 @@ public class LongMessageFrameProviderInner implements LongMessageFrameProvider {
 		}
 
 		@Override
-		public void set(String key, List<LongMessageFrame> list,LongMessageFrame curr) {
+		public void set(LongSMSMessage msg,String key, List<LongMessageFrame> list,LongMessageFrame curr) {
 			map.put(key, list);
 		}
 	}

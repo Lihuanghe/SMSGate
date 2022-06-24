@@ -248,7 +248,7 @@ public enum LongMessageFrameHolder {
 				}
 
 				//走到这里，说明未完成长短信合并，保存已收到的短信片断，并返回空，
-				set(mapKey, allFrame,frame,isRecvLongMsgOnMultiLink);
+				set(msg,mapKey, allFrame,frame,isRecvLongMsgOnMultiLink);
 			} catch (Exception ex) {
 				logger.warn("Merge Long SMS Error. dump:{}",ByteBufUtil.hexDump(frame.getMsgContentBytes()) ,ex);
 				throw new NotSupportedException(ex.getMessage());
@@ -281,11 +281,11 @@ public enum LongMessageFrameHolder {
 		}
 	}
 	
-	private void set(String key,List<LongMessageFrame> list, LongMessageFrame currFrame,boolean isMulti) {
+	private void set(LongSMSMessage msg,String key,List<LongMessageFrame> list, LongMessageFrame currFrame,boolean isMulti) {
 		if(isMulti) {
-			clusterMap.set(key, list, currFrame);
+			clusterMap.set(msg,key, list, currFrame);
 		}else {
-			jvmMap.set(key, list, currFrame);
+			jvmMap.set(msg,key, list, currFrame);
 		}
 	}
 	
