@@ -30,7 +30,7 @@ public abstract class AbstractLongMessageHandler<T extends BaseMessage> extends 
 			
 			String key = generateFrameKey(msg);
 			try {
-				SmsMessageHolder hoder = LongMessageFrameHolder.INS.putAndget(key, ((LongSMSMessage)msg));
+				SmsMessageHolder hoder = LongMessageFrameHolder.INS.putAndget(key, ((LongSMSMessage)msg),entity !=null && entity.isRecvLongMsgOnMultiLink());
 
 				if (hoder != null) {
 					

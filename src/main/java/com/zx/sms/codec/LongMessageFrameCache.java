@@ -18,8 +18,11 @@ public interface LongMessageFrameCache {
 	
 	/**
 	 * 保存分片
-	 * @param  全部的分片，包含当前分片
-	 * @param  当前收到的分片
+	 * 
+	 * @param  list  
+	 * 全部的分片，包含当前分片
+	 * @param  currFrame 
+	 * 当前收到的分片
 	 */
 	void set(String key,List<LongMessageFrame> list, LongMessageFrame currFrame);
 	

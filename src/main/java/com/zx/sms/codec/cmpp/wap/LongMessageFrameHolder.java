@@ -67,21 +67,35 @@ public enum LongMessageFrameHolder {
 
 	private static LongMessageFrameProvider provider;
 	
+	//长短信合并的集群缓存
+	private static LongMessageFrameCache clusterMap ;
+	
+	//长短信合并的JVM缓存
+	private static LongMessageFrameCache jvmMap = (new LongMessageFrameProviderInner()).create();
+	
 	//使用SPI机制，通过ServiceLoader加载序号最大的类，做为长短信合并的缓存Map
 	static {
 		ServiceLoader<LongMessageFrameProvider> p = ServiceLoader.load(LongMessageFrameProvider.class);
 		for(LongMessageFrameProvider i  : p) {
+			
+			logger.info("LongMessageFrameProvider search ... found " + i.getClass() + ". order : " +i.order());
 			//选取序号最大的生效
 			if(provider == null  || provider.order() < i.order())
 				provider = i;
 		}
-		if(provider == null) {
-			logger.warn("not found " + LongMessageFrameProvider.class + " Implementation class .\n use LongMessageFrameProviderInner.class");
-			provider = new LongMessageFrameProviderInner();
+		
+		if(provider == null || LongMessageFrameProviderInner.class.equals(provider.getClass())) {
+		
+			clusterMap = jvmMap;
+			logger.warn("not found other " + LongMessageFrameProvider.class + " Implementation class . use LongMessageFrameProviderInner.class");
+		}else {
+			logger.info("would use " + provider.getClass() +" for cluster Merge.");
+			
+			clusterMap = provider.create();
 		}
 	}
-	//创建长短信合并的缓存
-	private static LongMessageFrameCache map = provider.create();
+	
+	private static boolean hasClusterLongMessageFrameProvider  = provider != null && !LongMessageFrameProviderInner.class.equals(provider.getClass());
 
 	private SmsMessage generatorSmsMessage(FrameHolder fh, LongMessageFrame frame) throws NotSupportedException {
 		byte[] contents = fh.mergeAllcontent();
@@ -155,11 +169,8 @@ public enum LongMessageFrameHolder {
 	/**
 	 * 获取一条完整的长短信，如果长短信组装未完成，返回null
 	 **/
-	public SmsMessageHolder putAndget(String serviceNum, LongSMSMessage msg) throws NotSupportedException {
+	public SmsMessageHolder putAndget(String serviceNum, LongSMSMessage msg,boolean isRecvLongMsgOnMultiLink) throws NotSupportedException {
 		LongMessageFrame frame = msg.generateFrame();
-
-		
-
 		/**
         1、根据SMPP协议，融合网关收到短信中心上行的esm_class字段（一个字节）是0100 0000，转换成16进制就是0X40 (64), 01XXXXXX表明是一条长短信。
         网关默认透传所有信息，即网关直接透传了0100 0000。所以接收到64是指短信属于长短信。（网关与短信中心采用SMPP协议）
@@ -190,7 +201,7 @@ public enum LongMessageFrameHolder {
 				
 				List<LongMessageFrame> allFrame;
 				//从缓存中获取长短信的其它片断
-				List<LongMessageFrame> oldFrame = map.get(mapKey);
+				List<LongMessageFrame> oldFrame = get(mapKey,isRecvLongMsgOnMultiLink);
 				if (oldFrame != null) {
 					//把当前帧加入List
 					oldFrame.add(frame);
@@ -215,7 +226,7 @@ public enum LongMessageFrameHolder {
 					
 					if (firstF.isComplete()) {
 						//合并成功，
-						map.remove(mapKey);
+						remove(mapKey,isRecvLongMsgOnMultiLink);
 						
 						//根据分片信息，恢复消息对象，并保存在Fragments 列表中，不包含第一个分片
 						//用第一个到达的分片做为 合并后消息的母本
@@ -238,7 +249,7 @@ public enum LongMessageFrameHolder {
 				}
 
 				//走到这里，说明未完成长短信合并，保存已收到的短信片断，并返回空，
-				map.set(mapKey, allFrame,frame);
+				set(mapKey, allFrame,frame,isRecvLongMsgOnMultiLink);
 			} catch (Exception ex) {
 				logger.warn("Merge Long SMS Error. dump:{}",ByteBufUtil.hexDump(frame.getMsgContentBytes()) ,ex);
 				throw new NotSupportedException(ex.getMessage());
@@ -246,6 +257,39 @@ public enum LongMessageFrameHolder {
 		} 
 		return null;
 	}
+	
+	private void warning (boolean isMulti) {
+		//如果没有提供集群版的长短信合并缓存，要给告警
+		if(isMulti && !hasClusterLongMessageFrameProvider)
+			logger.warn("you use JVM cache for LongMessageFrameCache .When Long message fragments sent by multiple connections , messages will be lost");
+	}
+	
+	private List<LongMessageFrame> get(String key,boolean isMulti){
+		if(isMulti) {
+			warning(isMulti);
+			return clusterMap.get(key);
+		}else {
+			return jvmMap.get(key);
+		}
+	}
+	
+
+	private void remove(String key,boolean isMulti) {
+		if(isMulti) {
+			clusterMap.remove(key);
+		}else {
+			jvmMap.remove(key);
+		}
+	}
+	
+	private void set(String key,List<LongMessageFrame> list, LongMessageFrame currFrame,boolean isMulti) {
+		if(isMulti) {
+			clusterMap.set(key, list, currFrame);
+		}else {
+			jvmMap.set(key, list, currFrame);
+		}
+	}
+	
 
 	public List<LongMessageFrame> splitmsgcontent(SmsMessage content) throws SmsException {
 

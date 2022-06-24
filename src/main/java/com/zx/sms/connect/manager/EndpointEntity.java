@@ -117,6 +117,13 @@ public abstract class EndpointEntity implements Serializable {
 	 */
 	private List<String> allowedAddr;
 	
+	/**
+	 * 收到的长短信是否通过多个连接发送，默认为通过同一个TCP连接发送
+	 * 如果该开关打开，表示本账号接收到的长短信会拆分后从多个连接发送。因
+	 * 此合并时，不能再使用JVM内存缓存，您必须提供Redis等集群版的 LongMessageFrameProvider 实现类
+	 */
+	private boolean isRecvLongMsgOnMultiLink = false;
+	
     public String getProxy() {
 		return proxy;
 	}
@@ -265,6 +272,14 @@ public abstract class EndpointEntity implements Serializable {
 	}
 	public void setWindow(int window) {
 		this.window = window;
+	}
+	
+	
+	public boolean isRecvLongMsgOnMultiLink() {
+		return isRecvLongMsgOnMultiLink;
+	}
+	public void setRecvLongMsgOnMultiLink(boolean isRecvLongMsgOnMultiLink) {
+		this.isRecvLongMsgOnMultiLink = isRecvLongMsgOnMultiLink;
 	}
 	@Override
 	public int hashCode() {
