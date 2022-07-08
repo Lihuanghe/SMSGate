@@ -33,7 +33,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage implements LongSMSM
 	private static final long serialVersionUID = 1369427662600486133L;
 	private MsgId msgid = new MsgId();
 
-	private short registeredDelivery = 0;
+	private short registeredDelivery = 1;
 	private short msglevel = 9;
 	private String serviceId = GlobalConstance.emptyString;
 	private short feeUserType = 2;
