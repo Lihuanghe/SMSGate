@@ -1,0 +1,63 @@
+<configuration debug="true" scan="true">
+	<property scope="context" name="baseLogPath" value="." />
+
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+	<appender name="DEFAULT"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${baseLogPath}/logs/cmpp.%d{yyyy-MM-dd}.log.gz
+			</fileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+<!-- 每个端口一个日志文件，方便查询 -->
+	<appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
+		<discriminator class="com.zx.sms.logback.LoggerNameBasedDiscriminator">
+			<defaultValue>general</defaultValue>
+		</discriminator>
+		<sift>
+			<appender name="FILE-${loggerName}"
+				class="ch.qos.logback.core.rolling.RollingFileAppender">
+				<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+					<fileNamePattern>${baseLogPath}/logs/${loggerName}.%d{yyyy-MM-dd}.log.gz
+					</fileNamePattern>
+					<maxHistory>30</maxHistory>
+				</rollingPolicy>
+
+				<encoder>
+					<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+					</pattern>
+				</encoder>
+			</appender>
+		</sift>
+	</appender>
+	
+    <logger name="entity" level ="info" additivity="false">
+		<appender-ref ref="SIFT" />
+	</logger>
+
+	<logger name="com.zx.sms" additivity="false">
+		<level value="info" />
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="DEFAULT" />
+	</logger>
+	<logger name="io.netty.handler.traffic" additivity="false">
+		<level value="info" />
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="DEFAULT" />
+	</logger>
+	<root level="info">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="DEFAULT" />
+	</root>
+</configuration>

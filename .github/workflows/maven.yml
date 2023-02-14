@@ -1,0 +1,48 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ "netty4" ]
+
+jobs:
+  build:
+    if: github.repository == 'Lihuanghe/SMSGate'
+    runs-on: ubuntu-latest
+    
+    services:
+      # Label used to access the service container
+      redis:
+        # Docker Hub image
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps port 6379 on service container to the host
+          - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 8
+      uses: actions/setup-java@v3
+      with:
+        java-version: '8'
+        distribution: 'temurin'
+        cache: maven
+    - name: Config-RedisLongMessageFrameProvider
+      run: echo 'com.zx.sms.common.RedisLongMessageFrameProvider' > src/test/resources/META-INF/services/com.zx.sms.codec.LongMessageFrameProvider
+    - name: Change-TestConstants.Count
+      run: echo 'TestConstants.Count=100000' >> src/test/resources/global.properties
+    - name: Build with Maven
+      run: mvn -B -DisReSendFailMsg=true test --file pom.xml
+      env:
+        # The hostname used to communicate with the Redis service container
+        REDIS_HOST: localhost
+        # The default Redis port
+        REDIS_PORT: 6379
