@@ -3,6 +3,7 @@ package com.zx.sms.connect.manager;
 import java.io.Serializable;
 import java.util.List;
 
+import com.chinamobile.cmos.sms.AbstractSmsDcs;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 
 /**
@@ -121,6 +122,9 @@ public abstract class EndpointEntity implements Serializable {
 	 * 此合并时，不能再使用JVM内存缓存，您必须提供Redis等集群版的 LongMessageFrameProvider 实现类
 	 */
 	private boolean isRecvLongMsgOnMultiLink = false;
+	
+	
+	
 	
     public String getProxy() {
 		return proxy;
@@ -316,6 +320,9 @@ public abstract class EndpointEntity implements Serializable {
 			}
 		}
 	}
+	
+	abstract public AbstractSmsDcs getDefaultSmsDcs();
+	abstract public void setDefaultSmsDcs(AbstractSmsDcs dcs);
 	
 	abstract protected <T extends EndpointConnector<EndpointEntity>> T buildConnector();
 	@Override

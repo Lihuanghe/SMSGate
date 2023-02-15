@@ -3,6 +3,7 @@ package com.zx.sms.connect.manager;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.chinamobile.cmos.sms.AbstractSmsDcs;
 import com.zx.sms.connect.manager.cmpp.CMPPServerChildEndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPServerEndpointEntity;
 import com.zx.sms.connect.manager.sgip.SgipServerChildEndpointEntity;
@@ -100,6 +101,14 @@ public class MixedServerEndpointEntity extends EndpointEntity implements ServerE
 	@Override
 	protected MixedServerEndpointConnector buildConnector() {
 		return new MixedServerEndpointConnector(this);
+	}
+	
+	public AbstractSmsDcs getDefaultSmsDcs() {
+		return null;
+	}
+	
+	public void setDefaultSmsDcs(AbstractSmsDcs dcs) {
+		
 	}
 
 }

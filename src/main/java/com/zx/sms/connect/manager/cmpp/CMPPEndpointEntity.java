@@ -2,6 +2,8 @@ package com.zx.sms.connect.manager.cmpp;
 
 import java.nio.charset.Charset;
 
+import com.chinamobile.cmos.sms.AbstractSmsDcs;
+import com.chinamobile.cmos.sms.SmsDcs;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.EndpointEntity;
 /**
@@ -24,6 +26,18 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 	//默认为3.0协议
 	private short version = (short)0x30L;
 	private Charset chartset = GlobalConstance.defaultTransportCharset;
+	
+	private AbstractSmsDcs defaultDcs = new SmsDcs((byte)8);
+	
+	
+	public AbstractSmsDcs getDefaultSmsDcs() {
+		return defaultDcs;
+	}
+	
+	public void setDefaultSmsDcs(AbstractSmsDcs dcs) {
+		this.defaultDcs = dcs;
+	}
+	
 	
 	/**
 	 * 最大消息序列数

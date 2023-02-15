@@ -1,5 +1,7 @@
 package com.zx.sms.connect.manager.smpp;
 
+import com.chinamobile.cmos.sms.AbstractSmsDcs;
+import com.chinamobile.cmos.sms.SmppSmsDcs;
 import com.chinamobile.cmos.sms.SmsAlphabet;
 import com.zx.sms.codec.smpp.Address;
 import com.zx.sms.codec.smpp.SmppSplitType;
@@ -32,6 +34,18 @@ public abstract class SMPPEndpointEntity extends EndpointEntity {
      */
     
     private SmppSplitType splitType = SmppSplitType.UDH;
+    
+    
+	private AbstractSmsDcs defaultDcs = new SmppSmsDcs((byte)8);
+	
+	
+	public AbstractSmsDcs getDefaultSmsDcs() {
+		return defaultDcs;
+	}
+	
+	public void setDefaultSmsDcs(AbstractSmsDcs dcs) {
+		this.defaultDcs = dcs;
+	}
     
 	public String getSystemId() {
 		return systemId;
@@ -74,6 +88,7 @@ public abstract class SMPPEndpointEntity extends EndpointEntity {
 	}
 	public void setDefauteSmsAlphabet(SmsAlphabet defauteSmsAlphabet) {
 		this.defauteSmsAlphabet = defauteSmsAlphabet;
+		this.defaultDcs = new SmppSmsDcs((byte)8,defauteSmsAlphabet);
 	}
 	public SmppSplitType getSplitType() {
 		//smpp34才支持OptionParameter

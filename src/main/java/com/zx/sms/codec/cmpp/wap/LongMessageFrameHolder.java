@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -31,6 +32,7 @@ import com.chinamobile.cmos.PduParser.PduHeaders;
 import com.chinamobile.cmos.PduParser.PduParser;
 import com.chinamobile.cmos.sms.AbstractSmsDcs;
 import com.chinamobile.cmos.sms.SmppSmsDcs;
+import com.chinamobile.cmos.sms.SmsAlphabet;
 import com.chinamobile.cmos.sms.SmsConcatMessage;
 import com.chinamobile.cmos.sms.SmsException;
 import com.chinamobile.cmos.sms.SmsMessage;
@@ -348,6 +350,25 @@ public enum LongMessageFrameHolder {
 			if (lmsg.needHandleLongMessage()) {
 				// 长短信拆分
 				SmsMessage msgcontent = lmsg.getSmsMessage();
+				
+				//根据默认的Dcs设置将要发送消息的msgdcs值，可能不同的通道长短信分片的最大长度不同
+				if(e != null && msgcontent instanceof SmsTextMessage) {
+					SmsTextMessage smsTextMessage = (SmsTextMessage)msgcontent;
+					Class defaultDcsclz = e.getDefaultSmsDcs().getClass();
+					AbstractSmsDcs msgDcs = smsTextMessage.getDcs();
+					//类型不同的，以通道默认的Dcs为准
+					if(!msgDcs.getClass().equals(defaultDcsclz)) {
+						if(e instanceof SMPPEndpointEntity && msgDcs instanceof SmppSmsDcs) {
+							Constructor constructor = defaultDcsclz.getConstructor(byte.class,SmsAlphabet.class);
+							AbstractSmsDcs newdcs = (AbstractSmsDcs)constructor.newInstance(msgDcs.getValue(),((SMPPEndpointEntity)e).getDefauteSmsAlphabet());
+							smsTextMessage.setText(smsTextMessage.getText(), newdcs);
+						}else {
+							Constructor constructor = defaultDcsclz.getConstructor(byte.class);
+							AbstractSmsDcs newdcs = (AbstractSmsDcs)constructor.newInstance(msgDcs.getValue());
+							smsTextMessage.setText(smsTextMessage.getText(), newdcs);
+						}
+					}
+				}
 
 				if (msgcontent instanceof SmsConcatMessage) {
 					((SmsConcatMessage) msgcontent).setSeqNoKey(lmsg.getSrcIdAndDestId());

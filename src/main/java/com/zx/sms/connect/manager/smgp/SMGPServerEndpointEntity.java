@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.chinamobile.cmos.sms.AbstractSmsDcs;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.ServerEndpoint;
 
@@ -53,6 +54,14 @@ public class SMGPServerEndpointEntity extends EndpointEntity implements ServerEn
 	@Override
 	protected SMGPServerEndpointConnector buildConnector() {
 		return new SMGPServerEndpointConnector(this);
+	}
+	
+	public AbstractSmsDcs getDefaultSmsDcs() {
+		return null;
+	}
+	
+	public void setDefaultSmsDcs(AbstractSmsDcs dcs) {
+		
 	}
 
 }

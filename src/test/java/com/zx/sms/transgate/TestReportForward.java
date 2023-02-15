@@ -63,7 +63,7 @@ public class TestReportForward {
 
 	@Test
 	public void testReportForward() throws InterruptedException {
-		int count =  TestConstants.Count; //发送消息总数
+		int count = TestConstants.Count; //发送消息总数
 		
 		int port = 26890;
 		ForwardHander forward = new ForwardHander(null);
@@ -97,8 +97,8 @@ public class TestReportForward {
 		client.setWindow(64);
 		client.setReSendFailMsg(TestConstants.isReSendFailMsg);
 		client.setSupportLongmsg(SupportLongMessage.BOTH);
+		client.setDefaultSmsDcs(new TestSmsDcs((byte)0));
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
-		
 		
 		//用于检查收到的状态和response的msgId是否一样
 		final Map<String,AtomicInteger> checkMsgIdCnt = new  ConcurrentHashMap<String, AtomicInteger>();
@@ -126,11 +126,7 @@ public class TestReportForward {
 							+ " 16:28:40.453 [busiWo中国rk-6] IN0.453 [busiWork-6] INFO  ReceiveHandler - channels : 1,ToFO 总计查找1次");
 				}
 				
-				if(RandomUtils.nextBoolean() && RandomUtils.nextBoolean() ) {
-		    		SmsTextMessage sms = (SmsTextMessage)msg.getSmsMessage();
-		    		SmsDcs mydcs = new TestSmsDcs(sms.getDcs().getValue());
-		    		msg.setMsg(new SmsTextMessage(sms.getText(),mydcs));
-				}
+				
 				msg.setRegisteredDelivery((short) 1);
 				msg.setServiceId("10000");
 				return msg;

@@ -2,6 +2,8 @@ package com.zx.sms.connect.manager.smgp;
 
 import java.nio.charset.Charset;
 
+import com.chinamobile.cmos.sms.AbstractSmsDcs;
+import com.chinamobile.cmos.sms.SMGPSmsDcs;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.EndpointEntity;
 
@@ -15,6 +17,18 @@ public abstract class SMGPEndpointEntity extends EndpointEntity {
     private byte clientVersion = 0x30;  // interface version requested by us or them
     
     private Charset chartset = GlobalConstance.defaultTransportCharset;
+    
+	private AbstractSmsDcs defaultDcs = new SMGPSmsDcs((byte)8);
+	
+	
+	public AbstractSmsDcs getDefaultSmsDcs() {
+		return defaultDcs;
+	}
+	
+	public void setDefaultSmsDcs(AbstractSmsDcs dcs) {
+		this.defaultDcs = dcs;
+	}
+    
 	public String getClientID() {
 		return clientID;
 	}
