@@ -26,7 +26,8 @@ public abstract class SMGPEndpointEntity extends EndpointEntity {
 	}
 	
 	public void setDefaultSmsDcs(AbstractSmsDcs dcs) {
-		this.defaultDcs = dcs;
+		if(dcs!=null)
+			this.defaultDcs = dcs;
 	}
     
 	public String getClientID() {

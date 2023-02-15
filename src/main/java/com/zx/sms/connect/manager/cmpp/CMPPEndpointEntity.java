@@ -35,7 +35,8 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 	}
 	
 	public void setDefaultSmsDcs(AbstractSmsDcs dcs) {
-		this.defaultDcs = dcs;
+		if(dcs!=null)
+			this.defaultDcs = dcs;
 	}
 	
 	
