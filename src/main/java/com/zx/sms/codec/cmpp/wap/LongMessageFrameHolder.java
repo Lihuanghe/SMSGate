@@ -401,6 +401,9 @@ public enum LongMessageFrameHolder {
 					}
 					msgs.add((T) t);
 				}
+				if(lmsg.getUniqueLongMsgId() == null) {
+					lmsg.setUniqueLongMsgId(uniqueId);
+				}
 				return msgs;
 			}
 		} 

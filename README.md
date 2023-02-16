@@ -29,7 +29,7 @@
 
 - `如何发送长短信？`
 
-  smsgate默认已经处理好长短信了，就像发送普通短信一样。
+  smsgate默认已经处理好长短信了，就像发送普通短信一样。长短信发送的时候，框架内部自动拆分成短短信分片发送(一般按67个汉字拆分)。
   
 - `如何发送闪信?`
 
@@ -133,28 +133,28 @@
 
 2)  提供一个Redis 的合并实现类，可以参考测试包中的代码：`RedisLongMessageFrameCache` ,  `RedisLongMessageFrameProvider`
 
-- `如何关联状态报告和submit消息?`
+- `如何关联状态报告【即短信回执，以下都称为状态报告】和submit消息?`
 
 运宽商网关响应`submitRequest`消息时，你会收到`submitResponse`消息。在`response`里会有`msgId`。通过这个`msgId`跟之后收到的状态报告(`reportMessage`)里的`msgId`关联。
 
-- `如何记录每个消息的发送日志，并向我的客户发送状态报告?`
+- `如何记录每个消息的发送日志，并向我的客户发送状态报告【即短信回执，以下都称为状态报告】?`
 
 当接收到来源客户的`submitRequest`消息后，要回复`response`,注意此时要记录回复`response`时所使用的`msgId`，即你回复给来源客户的`msgId`。
 
-将消息转发给通道后，当接收到`submitResponse后`，通过`response.getRequest()`获取对应的`request` 。注意此时有两个`msgID`，一个是通道给你的`msgID`，一个是你给来源客户的。在数据库里记录相关信息（至少包括消息来源客户，消息出去的通道，两个`msgId`,消息详情）。之后在接收到状态报告后，通过通道给你的`msgId`更新消息回执状态，并根据来源客户将回执回传给客户，注意回传`reportMessage`里的`msgId`要使用你给客户回复`response`时用的`msgId`.  [详见流程图](https://www.processon.com/view/link/598c16ace4b02e9a26eeed11)
+将消息转发给通道后，当接收到`submitResponse后`，通过`response.getRequest()`获取对应的`request` 。注意此时有两个`msgID`，一个是通道给你的`msgID`，一个是你给来源客户的。在数据库里记录相关信息（至少包括消息来源客户，消息出去的通道，两个`msgId`,消息详情）。之后在接收到状态报告后，通过通道给你的`msgId`更新消息状态报告里的`msgId`，并根据来源客户将状态报告回传给客户，注意回传`reportMessage`里的`msgId`要使用你给客户回复`response`时用的`msgId`.  [详见流程图](https://www.processon.com/view/link/598c16ace4b02e9a26eeed11)
 
 - `关于长短信类 LongSMSMessage 中 UniqueLongMsgId 的使用`
 
-框架默认实现长短信的拆分与合并，接收Sp发送的MT消息并匹配上游状态报告时，由于缺少短信唯一标识，从Sp接收的短信和最终发送给运营商的短信之间没有关联标识，
-造成状态报告回来时难以匹配，实现起来很复杂。为了解决接收的短信与发送出去的短信关联问题，给长短信增加了这个`UniqueLongMsgId`。
+由于cmpp，sgip等短信协议的异步化特点，框架默认实现长短信的拆分与合并，接收Sp发送的MT消息并匹配上游状态报告【即短信回执，以下都称为状态报告】时，由于缺少短信唯一标识，从Sp接收的短信和最终发送给运营商的短信之间没有关联标识，
+造成状态报告回来时难以匹配，实现起来很复杂。为了解决cmpp协议的接收的短信与发送出去的短信关联问题，给长短信增加了这个`UniqueLongMsgId`。 对http协议接收的短信同样可以使用`UniqueLongMsgId`： 通过http接收的长短信对象在发送到cmpp协议的短信通道连接以前是没有`UniqueLongMsgId`的，发送以后框架会设置UniqueLongMsgId 的值 。因此可以在发送完成收到response后通过`response.getRequest()`获取Request对象从而拿到`UniqueLongMsgId`。
 
-`UniqueLongMsgId` 中id 是唯一标识,即使在极短时间内收到相同手机号端口号的短信也能保持唯一性。该ID当短信从网络上接收到还未合并时进行设置，直到转发给运营商通道都不会变化，并且相同长短信的不同分片的ID也相同。
+`UniqueLongMsgId` 中 id 是唯一标识,即使在极短时间内收到相同手机号端口号的短信也能保持唯一性。该ID当短信从网络上接收到还未合并时进行设置，直到转发给运营商通道都不会变化，并且相同长短信的不同分片的ID也相同。
 <DIV>
 <img src="./doc/QQ20221219154405.jpg" width="100%" height="100%">
 <DIV>
 
 `UniqueLongMsgId` 除了 id 以外，还包含其它信息如：从消息从哪个通道账号Id提交的，从哪个IP端口提交的、长短信的分片ID、总分片数、分片序号以及消息序列号、时间戳。
-在Test包里有一个模拟匹配状态报告的测试用例用是用 `UniqueLongMsgId` 实现的，并且经过相同手机号、端口号在极限并发压力下的匹配测试，单JVM多线程安全。逻辑供参考： [`com.zx.sms.transgate.TestReportForward`](./src/test/java/com/zx/sms/transgate/TestReportForward.java)
+在Test包里有一个模拟的匹配状态报告的测试用例用是用 `UniqueLongMsgId` 实现的，并且经过相同手机号、端口号在极限并发压力下的匹配测试，单JVM多线程安全。逻辑供参考： [`com.zx.sms.transgate.TestReportForward`](./src/test/java/com/zx/sms/transgate/TestReportForward.java)
 
 
 - `集群环境如何平均分配上游连接数?`
