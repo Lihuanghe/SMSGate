@@ -18,7 +18,11 @@
 
 - `纯客户端发送短信`
 
-  可以使用[sms-client](https://github.com/Lihuanghe/sms-client), 一个纯发送短信的客户端，Api简单。
+  可以使用[sms-client](https://github.com/Lihuanghe/sms-client), 一个纯发送短信的客户端jar包，Api简单。【sgip协议用sms-client无法接收上行和状态报告】 
+  
+  也可以参考[htt2cmpp](https://github.com/Lihuanghe/http2cmpp) 实现将一个短信长连接协议封装成http接口。
+  
+  或者参考[smsServer](https://github.com/Lihuanghe/smsServer)用SpringBoot实现一个能支持http,cmpp,sgip,smgp,smpp等多种协议的网关服务。
 
 - `没看懂如何发送短信？`
 

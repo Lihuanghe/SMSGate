@@ -40,6 +40,16 @@ import io.netty.buffer.Unpooled;
 public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
     
 	private String gsmstr = "@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà^{}\\[~]|€";
+	
+	protected EndpointEntity buildEndpointEntity() {
+		SMPPClientEndpointEntity entity = new SMPPClientEndpointEntity();
+		entity.setId("testAllSplitType");
+		entity.setSplitType(SmppSplitType.PAYLOADPARAM);
+		entity.setInterfaceVersion((byte)0x34);
+		entity.setDefauteSmsAlphabet(SmsAlphabet.GSM);
+		return entity;
+	}
+	
 	@Test
     public void decodeDeliverSmWithDeliveryReceiptThatFailedFromEndToEnd() throws Exception {
         ByteBuf buffer = Unpooled.wrappedBuffer(Hex.decodeHex("000000A2000000050000000000116AD500010134343935313336313932303537000501475442616E6B000400000000010000006E69643A3934323531343330393233207375623A30303120646C7672643A303031207375626D697420646174653A3039313130343031323420646F6E6520646174653A3039313130343031323420737461743A41434345505444206572723A31303720746578743A20323646313032".toCharArray()));
@@ -184,7 +194,7 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
 		SubmitSm pdu = new SubmitSm();
     	pdu.setDestAddress(new Address((byte)0,(byte)0,"13800138000"));
     	pdu.setSourceAddress(new Address((byte)0,(byte)0,"10658987"));
-    	pdu.setSmsMsg(gsmstr);
+    	pdu.setSmsMsg(gsmstr,SmsAlphabet.GSM);
      	testlongCodec(pdu);
 	}
 	
@@ -299,13 +309,7 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
 		}
 	}
 	
-	protected EndpointEntity buildEndpointEntity() {
-		SMPPClientEndpointEntity entity = new SMPPClientEndpointEntity();
-		entity.setId("testAllSplitType");
-		entity.setSplitType(SmppSplitType.PAYLOADPARAM);
-		entity.setInterfaceVersion((byte)0x34);
-		return entity;
-	}
+
 	
 	@Test 
 	public void testAllWapSplitType() throws Exception {

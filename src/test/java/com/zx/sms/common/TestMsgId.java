@@ -17,6 +17,7 @@ import com.chinamobile.cmos.sms.SmppSmsDcs;
 import com.chinamobile.cmos.sms.SmsAlphabet;
 import com.chinamobile.cmos.sms.SmsDcs;
 import com.chinamobile.cmos.sms.SmsPduUtil;
+import com.zx.sms.codec.smpp.DefaultSmppSmsDcs;
 import com.zx.sms.common.util.ByteArrayUtil;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
 import com.zx.sms.common.util.MsgId;
@@ -51,7 +52,7 @@ public class TestMsgId {
 		System.out.println("==" + longMsgid + "\n==" + longMsgidHex);
 		Assert.assertEquals(longMsgid, longMsgidHex);
 		for (Class clz : new Class[] { SmsDcs.class, SgipSmsDcs.class, SMGPSmsDcs.class, TestSmsDcs.class,
-				SmppSmsDcs.class,MySmppSmsDcs.class }) {
+				SmppSmsDcs.class,MySmppSmsDcs.class,DefaultSmppSmsDcs.class }) {
 			if (SmppSmsDcs.class.isAssignableFrom(clz)) {
 				Constructor constructor = clz.getConstructor(byte.class, SmsAlphabet.class);
 				AbstractSmsDcs dcs = (AbstractSmsDcs) constructor.newInstance((byte) 0, SmsAlphabet.GSM);

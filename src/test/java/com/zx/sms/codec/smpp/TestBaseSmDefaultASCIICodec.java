@@ -10,7 +10,6 @@ import com.zx.sms.LongSMSMessage;
 import com.zx.sms.codec.AbstractSMPPTestMessageCodec;
 import com.zx.sms.codec.smpp.msg.BaseSm;
 import com.zx.sms.codec.smpp.msg.SubmitSm;
-import com.zx.sms.common.MySmppSmsDcs;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.smpp.SMPPClientEndpointEntity;
 
@@ -25,9 +24,7 @@ public class TestBaseSmDefaultASCIICodec extends AbstractSMPPTestMessageCodec<Ba
 	//设置SMPP端口默认编码为ASCII
 	protected EndpointEntity buildEndpointEntity() {
 		SMPPClientEndpointEntity en = new SMPPClientEndpointEntity();
-		en.setDefauteSmsAlphabet(SmsAlphabet.ASCII);
 		en.setId("Test");
-		en.setDefaultSmsDcs(new MySmppSmsDcs((byte)0));
 		return en;
 	}
 	

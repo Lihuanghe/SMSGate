@@ -12,6 +12,7 @@ import com.zx.sms.codec.cmpp.wap.LongMessageFrame;
 import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
 import com.zx.sms.codec.cmpp.wap.UniqueLongMsgId;
 import com.zx.sms.codec.smpp.Address;
+import com.zx.sms.codec.smpp.DefaultSmppSmsDcs;
 import com.zx.sms.codec.smpp.RecoverablePduException;
 import com.zx.sms.codec.smpp.SmppConstants;
 import com.zx.sms.codec.smpp.SmppInvalidArgumentException;
@@ -199,23 +200,23 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
 	}
 
 	public void setSmsMsg(String smsMsg) {
-		if (SmsPduUtil.hasUnGsmchar(smsMsg))
-			this.smsMsg = new SmsTextMessage(smsMsg, SmppSmsDcs.getGeneralDataCodingDcs(SmsAlphabet.UCS2, SmsMsgClass.CLASS_UNKNOWN));
-		else 
-			this.smsMsg = new SmsTextMessage(smsMsg, SmppSmsDcs.getGeneralDataCodingDcs(SmsAlphabet.GSM, SmsMsgClass.CLASS_UNKNOWN));
+		if (SmsTextMessage.haswidthChar(smsMsg))
+			this.smsMsg = new SmsTextMessage(smsMsg, new DefaultSmppSmsDcs(SmppSmsDcs.getGeneralDataCodingDcs(SmsAlphabet.UCS2, SmsMsgClass.CLASS_UNKNOWN).getValue()));
+		else
+			this.smsMsg = new SmsTextMessage(smsMsg, new DefaultSmppSmsDcs((byte)0,SmsAlphabet.ASCII));	
 	}
-	
 	
 	public void setSmsMsg(String smsMsg,SmsAlphabet defaultAlp) {
 		
-		if(SmsAlphabet.GSM == defaultAlp) {
-			setSmsMsg(smsMsg);
+		if(SmsAlphabet.GSM == defaultAlp && !SmsPduUtil.hasUnGsmchar(smsMsg)) {
+			this.smsMsg = new SmsTextMessage(smsMsg, new DefaultSmppSmsDcs((byte)0,SmsAlphabet.GSM));
 		}else {
 			if (SmsTextMessage.haswidthChar(smsMsg))
-				this.smsMsg = new SmsTextMessage(smsMsg, SmppSmsDcs.getGeneralDataCodingDcs(SmsAlphabet.UCS2, SmsMsgClass.CLASS_UNKNOWN));
-			else
-				this.smsMsg = new SmsTextMessage(smsMsg, new SmppSmsDcs((byte)0,SmsAlphabet.ASCII));
-		}	
+				this.smsMsg = new SmsTextMessage(smsMsg, new DefaultSmppSmsDcs(SmppSmsDcs.getGeneralDataCodingDcs(SmsAlphabet.UCS2, SmsMsgClass.CLASS_UNKNOWN).getValue()));
+			else {
+				this.smsMsg = new SmsTextMessage(smsMsg, new DefaultSmppSmsDcs((byte)0,defaultAlp));
+			}
+		}
 	}
 
 	public String getMsgContent() {
@@ -381,7 +382,7 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
 		frame.setTppid(getProtocolId());
 		// udhi bit : x1xxxxxx 表示要处理长短信
 		frame.setTpudhi(getTpUdhI());
-		frame.setMsgfmt(new SmppSmsDcs(getDataCoding()));
+		frame.setMsgfmt(new DefaultSmppSmsDcs(getDataCoding()));
 		byte[] messageBytes = getShortMessage()==null?new byte[0]:getShortMessage();
 		frame.setMsgContentBytes(messageBytes);
 		frame.setMsgLength((short)messageBytes.length);

@@ -1,9 +1,9 @@
 package com.zx.sms.connect.manager.smpp;
 
 import com.chinamobile.cmos.sms.AbstractSmsDcs;
-import com.chinamobile.cmos.sms.SmppSmsDcs;
 import com.chinamobile.cmos.sms.SmsAlphabet;
 import com.zx.sms.codec.smpp.Address;
+import com.zx.sms.codec.smpp.DefaultSmppSmsDcs;
 import com.zx.sms.codec.smpp.SmppSplitType;
 import com.zx.sms.connect.manager.EndpointEntity;
 
@@ -27,7 +27,7 @@ public abstract class SMPPEndpointEntity extends EndpointEntity {
     /**
      *SMPP协议当 dcs Code为0时的默认的字符集 
      */
-    private SmsAlphabet defauteSmsAlphabet = SmsAlphabet.GSM;
+    private SmsAlphabet defauteSmsAlphabet = SmsAlphabet.ASCII;
     
     /**
      * 设置消息payLoad是放在UD里还是 OptionParameter里
@@ -36,7 +36,7 @@ public abstract class SMPPEndpointEntity extends EndpointEntity {
     private SmppSplitType splitType = SmppSplitType.UDH;
     
     
-	private AbstractSmsDcs defaultDcs = new SmppSmsDcs((byte)8);
+	private AbstractSmsDcs defaultDcs = new DefaultSmppSmsDcs((byte)0);
 	
 	
 	public AbstractSmsDcs getDefaultSmsDcs() {
@@ -89,7 +89,7 @@ public abstract class SMPPEndpointEntity extends EndpointEntity {
 	}
 	public void setDefauteSmsAlphabet(SmsAlphabet defauteSmsAlphabet) {
 		this.defauteSmsAlphabet = defauteSmsAlphabet;
-		this.defaultDcs = new SmppSmsDcs((byte)8,defauteSmsAlphabet);
+		this.defaultDcs = new DefaultSmppSmsDcs((byte)0,defauteSmsAlphabet);
 	}
 	public SmppSplitType getSplitType() {
 		//smpp34才支持OptionParameter

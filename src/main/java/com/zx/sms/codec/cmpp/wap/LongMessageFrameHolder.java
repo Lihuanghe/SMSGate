@@ -54,6 +54,7 @@ import com.zx.sms.BaseMessage;
 import com.zx.sms.LongSMSMessage;
 import com.zx.sms.codec.LongMessageFrameCache;
 import com.zx.sms.codec.LongMessageFrameProvider;
+import com.zx.sms.codec.smpp.DefaultSmppSmsDcs;
 import com.zx.sms.codec.smpp.msg.BaseSm;
 import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.util.CMPPCommonUtil;
@@ -199,7 +200,7 @@ public enum LongMessageFrameHolder {
 			BaseSm smppMsg = (BaseSm)msg;
 			SMPPEndpointEntity smppSMPPEndpointEntity = (SMPPEndpointEntity)entity;
 			//根据entity的默认字符表配置修改Frame的SmsDcs字段
-			frame.setMsgfmt(new SmppSmsDcs(smppMsg.getDataCoding(),smppSMPPEndpointEntity.getDefauteSmsAlphabet()));
+			frame.setMsgfmt(new DefaultSmppSmsDcs(smppMsg.getDataCoding(),smppSMPPEndpointEntity.getDefauteSmsAlphabet()));
 		}
 		
 		/**
