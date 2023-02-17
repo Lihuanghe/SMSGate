@@ -39,7 +39,6 @@ import io.netty.buffer.Unpooled;
 
 public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
     
-	private String gsmstr = "@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà^{}\\[~]|€";
 	
 	protected EndpointEntity buildEndpointEntity() {
 		SMPPClientEndpointEntity entity = new SMPPClientEndpointEntity();
@@ -194,15 +193,15 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
 		SubmitSm pdu = new SubmitSm();
     	pdu.setDestAddress(new Address((byte)0,(byte)0,"13800138000"));
     	pdu.setSourceAddress(new Address((byte)0,(byte)0,"10658987"));
-    	pdu.setSmsMsg(gsmstr,SmsAlphabet.GSM);
+    	pdu.setSmsMsg(SmsPduUtil.gsmstr,SmsAlphabet.GSM);
      	testlongCodec(pdu);
 	}
 	
 	@Test
 	public void testGSMencode() throws DecoderException
 	{
-		ByteBuf expected = Unpooled.wrappedBuffer(Hex.decodeHex("000102030405060708090a0b0c0d0e0f101112131415161718191a1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f1b141b281b291b2f1b3c1b3d1b3e1b401b65".toCharArray()));
-		ByteBuf bs = Unpooled.wrappedBuffer(SmsPduUtil.stringToUnencodedSeptets(gsmstr));
+		ByteBuf expected = Unpooled.wrappedBuffer(Hex.decodeHex("000102030405060708090a0b0c0d0e0f101112131415161718191a1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f1b0a1b141b281b291b2f1b3c1b3d1b3e1b401b65".toCharArray()));
+		ByteBuf bs = Unpooled.wrappedBuffer(SmsPduUtil.stringToUnencodedSeptets(SmsPduUtil.gsmstr));
 		System.out.println(ByteBufUtil.prettyHexDump(expected));
 		System.out.println(ByteBufUtil.prettyHexDump(bs));
 		Assert.assertTrue(ByteBufUtil.equals(expected,bs));
@@ -284,7 +283,7 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
 	
 	@Test
 	public void testseptetencode() throws UnsupportedEncodingException, Exception {
-		String str = shuffle(gsmstr);
+		String str = shuffle(SmsPduUtil.gsmstr);
 		int septetCount = GsmAlphabet.countGsmSeptets(str, true);
 		byte[] bs = SmsPduUtil.stringToUnencodedSeptets(str);
 		System.out.println(ByteBufUtil.prettyHexDump(Unpooled.wrappedBuffer(bs)));
@@ -303,8 +302,8 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
 		
 		StringBuilder sb =new StringBuilder();
 		
-		for(int i = 0 ;i<gsmstr.length();i++) {
-			sb.append(gsmstr.charAt(RandomUtils.nextInt() % gsmstr.length()));
+		for(int i = 0 ;i<SmsPduUtil.gsmstr.length();i++) {
+			sb.append(SmsPduUtil.gsmstr.charAt(RandomUtils.nextInt() % SmsPduUtil.gsmstr.length()));
 			TestGsmAlphabet(sb.toString());
 		}
 	}

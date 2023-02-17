@@ -18,9 +18,6 @@ import io.netty.buffer.Unpooled;
 
 public class TestBaseSmDefaultASCIICodec extends AbstractSMPPTestMessageCodec<BaseSm> {
     
-	private String gsmstr = "@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà^{}\\[~]|€";
-
-	
 	//设置SMPP端口默认编码为ASCII
 	protected EndpointEntity buildEndpointEntity() {
 		SMPPClientEndpointEntity en = new SMPPClientEndpointEntity();
