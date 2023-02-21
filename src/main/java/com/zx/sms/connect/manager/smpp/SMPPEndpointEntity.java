@@ -35,19 +35,11 @@ public abstract class SMPPEndpointEntity extends EndpointEntity {
     
     private SmppSplitType splitType = SmppSplitType.UDH;
     
-    
-	private AbstractSmsDcs defaultDcs = new DefaultSmppSmsDcs((byte)0);
-	
-	
-	public AbstractSmsDcs getDefaultSmsDcs() {
-		return defaultDcs;
+	@Override
+	protected AbstractSmsDcs buildSmsDcs(byte dcs) { 
+		return new DefaultSmppSmsDcs(dcs,defauteSmsAlphabet);
 	}
-	
-	public void setDefaultSmsDcs(AbstractSmsDcs dcs) {
-		if(dcs!=null)
-			this.defaultDcs = dcs;
-	}
-    
+
 	public String getSystemId() {
 		return systemId;
 	}
@@ -89,7 +81,6 @@ public abstract class SMPPEndpointEntity extends EndpointEntity {
 	}
 	public void setDefauteSmsAlphabet(SmsAlphabet defauteSmsAlphabet) {
 		this.defauteSmsAlphabet = defauteSmsAlphabet;
-		this.defaultDcs = new DefaultSmppSmsDcs((byte)0,defauteSmsAlphabet);
 	}
 	public SmppSplitType getSplitType() {
 		//smpp34才支持OptionParameter

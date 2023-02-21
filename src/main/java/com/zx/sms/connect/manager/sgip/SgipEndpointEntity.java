@@ -14,18 +14,12 @@ public abstract class SgipEndpointEntity extends EndpointEntity {
 	private String loginPassowrd = GlobalConstance.emptyString;
 	private long nodeId = 0;
 	
-	private AbstractSmsDcs defaultDcs = new SgipSmsDcs((byte)8);
 	
-	
-	public AbstractSmsDcs getDefaultSmsDcs() {
-		return defaultDcs;
+	@Override
+	protected AbstractSmsDcs buildSmsDcs(byte dcs) {
+		return new SgipSmsDcs(dcs);
 	}
-	
-	public void setDefaultSmsDcs(AbstractSmsDcs dcs) {
-		if(dcs!=null)
-			this.defaultDcs = dcs;
-	}
-	
+
 	public String getLoginName() {
 		return loginName;
 	}

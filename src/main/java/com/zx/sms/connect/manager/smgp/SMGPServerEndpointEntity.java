@@ -56,12 +56,8 @@ public class SMGPServerEndpointEntity extends EndpointEntity implements ServerEn
 		return new SMGPServerEndpointConnector(this);
 	}
 	
-	public AbstractSmsDcs getDefaultSmsDcs() {
+	@Override
+	protected AbstractSmsDcs buildSmsDcs(byte dcs) { 
 		return null;
 	}
-	
-	public void setDefaultSmsDcs(AbstractSmsDcs dcs) {
-		
-	}
-
 }

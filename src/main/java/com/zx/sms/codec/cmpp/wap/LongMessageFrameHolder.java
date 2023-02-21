@@ -196,11 +196,11 @@ public enum LongMessageFrameHolder {
 	 **/
 	public SmsMessageHolder putAndget(EndpointEntity  entity,String longSmsKey ,LongSMSMessage msg,boolean isRecvLongMsgOnMultiLink) throws NotSupportedException {
 		LongMessageFrame frame = msg.generateFrame();
-		if(entity != null && entity instanceof SMPPEndpointEntity && msg instanceof BaseSm) {
-			BaseSm smppMsg = (BaseSm)msg;
-			SMPPEndpointEntity smppSMPPEndpointEntity = (SMPPEndpointEntity)entity;
-			//根据entity的默认字符表配置修改Frame的SmsDcs字段
-			frame.setMsgfmt(new DefaultSmppSmsDcs(smppMsg.getDataCoding(),smppSMPPEndpointEntity.getDefauteSmsAlphabet()));
+		
+		if(entity != null) {
+			//根据EndpointEntity配置的默认DCS重设frame
+			AbstractSmsDcs dcs = frame.getMsgfmt();
+			frame.setMsgfmt(entity.buildDefaultSmsDcs(dcs.getValue()));
 		}
 		
 		/**
@@ -355,19 +355,11 @@ public enum LongMessageFrameHolder {
 				//根据默认的Dcs设置将要发送消息的msgdcs值，可能不同的通道长短信分片的最大长度不同
 				if(e != null && msgcontent instanceof SmsTextMessage) {
 					SmsTextMessage smsTextMessage = (SmsTextMessage)msgcontent;
-					Class defaultDcsclz = e.getDefaultSmsDcs().getClass();
 					AbstractSmsDcs msgDcs = smsTextMessage.getDcs();
+					AbstractSmsDcs defaultDcs = e.buildDefaultSmsDcs(msgDcs.getValue());
 					//类型不同的，以通道默认的Dcs为准
-					if(!msgDcs.getClass().equals(defaultDcsclz)) {
-						if(e instanceof SMPPEndpointEntity && msgDcs instanceof SmppSmsDcs) {
-							Constructor constructor = defaultDcsclz.getConstructor(byte.class,SmsAlphabet.class);
-							AbstractSmsDcs newdcs = (AbstractSmsDcs)constructor.newInstance(msgDcs.getValue(),((SMPPEndpointEntity)e).getDefauteSmsAlphabet());
-							smsTextMessage.setText(smsTextMessage.getText(), newdcs);
-						}else {
-							Constructor constructor = defaultDcsclz.getConstructor(byte.class);
-							AbstractSmsDcs newdcs = (AbstractSmsDcs)constructor.newInstance(msgDcs.getValue());
-							smsTextMessage.setText(smsTextMessage.getText(), newdcs);
-						}
+					if(!msgDcs.getClass().equals(defaultDcs)) {
+						smsTextMessage.setText(smsTextMessage.getText(), defaultDcs);
 					}
 				}
 

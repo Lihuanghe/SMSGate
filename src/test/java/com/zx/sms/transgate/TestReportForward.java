@@ -97,7 +97,8 @@ public class TestReportForward {
 		client.setWindow(64);
 		client.setReSendFailMsg(TestConstants.isReSendFailMsg);
 		client.setSupportLongmsg(SupportLongMessage.BOTH);
-		client.setDefaultSmsDcs(new TestSmsDcs((byte)0));
+		
+		client.setDefaultDcsBuilder(new TestSmsDcsBuilder());
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		
 		//用于检查收到的状态和response的msgId是否一样

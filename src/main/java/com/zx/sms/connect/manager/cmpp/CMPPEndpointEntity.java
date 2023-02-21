@@ -6,6 +6,7 @@ import com.chinamobile.cmos.sms.AbstractSmsDcs;
 import com.chinamobile.cmos.sms.SmsDcs;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.EndpointEntity;
+import com.zx.sms.connect.manager.SmsDcsBuilder;
 /**
  *@author Lihuanghe(18852780@qq.com)
  */
@@ -27,18 +28,10 @@ public abstract class CMPPEndpointEntity extends EndpointEntity {
 	private short version = (short)0x30L;
 	private Charset chartset = GlobalConstance.defaultTransportCharset;
 	
-	private AbstractSmsDcs defaultDcs = new SmsDcs((byte)8);
-	
-	
-	public AbstractSmsDcs getDefaultSmsDcs() {
-		return defaultDcs;
+	@Override
+	protected AbstractSmsDcs buildSmsDcs(byte dcs) {
+		return new SmsDcs(dcs);
 	}
-	
-	public void setDefaultSmsDcs(AbstractSmsDcs dcs) {
-		if(dcs!=null)
-			this.defaultDcs = dcs;
-	}
-	
 	
 	/**
 	 * 最大消息序列数

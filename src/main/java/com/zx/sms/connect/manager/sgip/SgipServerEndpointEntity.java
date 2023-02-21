@@ -53,12 +53,9 @@ public class SgipServerEndpointEntity extends EndpointEntity implements ServerEn
 		return null;
 	}
 	
-	public AbstractSmsDcs getDefaultSmsDcs() {
+	@Override
+	protected AbstractSmsDcs buildSmsDcs(byte dcs) {
 		return null;
-	}
-	
-	public void setDefaultSmsDcs(AbstractSmsDcs dcs) {
-		
 	}
 
 }

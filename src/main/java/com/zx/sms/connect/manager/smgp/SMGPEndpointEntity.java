@@ -6,6 +6,7 @@ import com.chinamobile.cmos.sms.AbstractSmsDcs;
 import com.chinamobile.cmos.sms.SMGPSmsDcs;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.EndpointEntity;
+import com.zx.sms.connect.manager.SmsDcsBuilder;
 
 public abstract class SMGPEndpointEntity extends EndpointEntity {
     /**
@@ -18,18 +19,11 @@ public abstract class SMGPEndpointEntity extends EndpointEntity {
     
     private Charset chartset = GlobalConstance.defaultTransportCharset;
     
-	private AbstractSmsDcs defaultDcs = new SMGPSmsDcs((byte)8);
-	
-	
-	public AbstractSmsDcs getDefaultSmsDcs() {
-		return defaultDcs;
+	@Override
+	protected AbstractSmsDcs buildSmsDcs(byte dcs) { 
+		return new SMGPSmsDcs(dcs);
 	}
-	
-	public void setDefaultSmsDcs(AbstractSmsDcs dcs) {
-		if(dcs!=null)
-			this.defaultDcs = dcs;
-	}
-    
+
 	public String getClientID() {
 		return clientID;
 	}

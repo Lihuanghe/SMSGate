@@ -123,8 +123,8 @@ public abstract class EndpointEntity implements Serializable {
 	 */
 	private boolean isRecvLongMsgOnMultiLink = false;
 	
-	
-	
+	//构建通道默认的DCS编码 
+	private SmsDcsBuilder defaultDcsBuilder = null;
 	
     public String getProxy() {
 		return proxy;
@@ -321,8 +321,22 @@ public abstract class EndpointEntity implements Serializable {
 		}
 	}
 	
-	abstract public AbstractSmsDcs getDefaultSmsDcs();
-	abstract public void setDefaultSmsDcs(AbstractSmsDcs dcs);
+	abstract protected AbstractSmsDcs buildSmsDcs(byte dcs);
+	
+	public AbstractSmsDcs buildDefaultSmsDcs(byte dcs) {
+		if(defaultDcsBuilder == null) {
+			return buildSmsDcs(dcs);
+		}else {
+			return defaultDcsBuilder.build(dcs);
+		}
+	}
+	
+	public SmsDcsBuilder getDefaultDcsBuilder() {
+		return defaultDcsBuilder;
+	}
+	public void setDefaultDcsBuilder(SmsDcsBuilder defaultDcsBuilder) {
+		this.defaultDcsBuilder = defaultDcsBuilder;
+	}
 	
 	abstract protected <T extends EndpointConnector<EndpointEntity>> T buildConnector();
 	@Override

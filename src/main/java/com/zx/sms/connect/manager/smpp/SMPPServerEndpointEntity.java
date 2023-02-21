@@ -57,14 +57,10 @@ public class SMPPServerEndpointEntity extends EndpointEntity implements ServerEn
 	protected SMPPServerEndpointConnector buildConnector() {
 		return new SMPPServerEndpointConnector(this);
 	}
-	
-	
-	public AbstractSmsDcs getDefaultSmsDcs() {
+
+	@Override
+	protected AbstractSmsDcs buildSmsDcs(byte dcs) { 
 		return null;
-	}
-	
-	public void setDefaultSmsDcs(AbstractSmsDcs dcs) {
-		
 	}
 
 }

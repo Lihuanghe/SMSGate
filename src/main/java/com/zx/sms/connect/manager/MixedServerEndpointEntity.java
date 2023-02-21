@@ -102,13 +102,9 @@ public class MixedServerEndpointEntity extends EndpointEntity implements ServerE
 	protected MixedServerEndpointConnector buildConnector() {
 		return new MixedServerEndpointConnector(this);
 	}
-	
-	public AbstractSmsDcs getDefaultSmsDcs() {
+
+	@Override
+	protected AbstractSmsDcs buildSmsDcs(byte dcs) {
 		return null;
 	}
-	
-	public void setDefaultSmsDcs(AbstractSmsDcs dcs) {
-		
-	}
-
 }
