@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.BaseMessage;
+import com.zx.sms.codec.smpp.SMPPMessageCodec;
 import com.zx.sms.codec.smpp.SmppConstants;
 import com.zx.sms.codec.smpp.Tlv;
 import com.zx.sms.codec.smpp.TlvConvertException;
@@ -13,6 +14,7 @@ import com.zx.sms.codec.smpp.msg.BindReceiver;
 import com.zx.sms.codec.smpp.msg.BindTransceiver;
 import com.zx.sms.codec.smpp.msg.BindTransmitter;
 import com.zx.sms.codec.smpp.msg.PduResponse;
+import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
 import com.zx.sms.connect.manager.ServerEndpoint;
@@ -107,8 +109,7 @@ public class SMPPSessionLoginManager extends AbstractSessionLoginManager {
 
 	@Override
 	protected void changeProtoVersion(ChannelHandlerContext ctx, EndpointEntity entity, Object message) throws Exception {
-
-		
+		ctx.pipeline().replace(GlobalConstance.codecName, GlobalConstance.codecName, new SMPPMessageCodec(entity));		
 	}
 
 	@Override

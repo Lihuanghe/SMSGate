@@ -25,6 +25,7 @@ import com.zx.sms.common.util.ByteBufUtil;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 import com.zx.sms.common.util.HexUtil;
 import com.zx.sms.common.util.PduUtil;
+import com.zx.sms.connect.manager.smpp.SMPPEndpointEntity;
 
 import io.netty.buffer.ByteBuf;
 
@@ -231,7 +232,7 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
 	}
 
 	@Override
-	public void readBody(ByteBuf buffer) throws UnrecoverablePduException, RecoverablePduException {
+	public void readBody(ByteBuf buffer,SMPPEndpointEntity entity) throws UnrecoverablePduException, RecoverablePduException {
 		this.serviceType = ByteBufUtil.readNullTerminatedString(buffer);
 		this.sourceAddress = ByteBufUtil.readAddress(buffer);
 		this.destAddress = ByteBufUtil.readAddress(buffer);
@@ -246,9 +247,39 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
 		this.defaultMsgId = buffer.readByte();
 		// this is always an unsigned version of the short message length
 		this.msglength = buffer.readUnsignedByte();
+		
+		boolean isNotReport = (esmClass & 0x3c) != 0x04;
+		//使用7bit 压缩编码,压缩编码的系统很少
+		if(entity != null && isNotReport && entity.isUse7bitPack() && entity.buildDefaultSmsDcs(dataCoding).getAlphabet() == SmsAlphabet.GSM) {
+			int packedLength = (this.msglength * 7+7)/8 ;
+			byte[] packArray = new byte[packedLength];
+			buffer.readBytes(packArray);
+			
+			int udhi  = getTpUdhI();
+			int udhl = 0;
+			if(udhi != 0) {
+				//包含UDH
+				udhl = packArray[0];
+				int septetOffset =  ((udhl+1)*8+6)/7;
+				int septetCount = this.msglength - septetOffset;
+				int bitOffset = septetOffset*7-(udhl+1)*8;
+				byte[] unencodedSeptets = SmsPduUtil.octetStream2septetStream(packArray,septetOffset-1, septetCount,bitOffset);
+				
+				this.msglength = (short)((udhl+1) + unencodedSeptets.length);
+				this.shortMessage = new byte[msglength];
+				System.arraycopy(packArray, 0, this.shortMessage, 0, udhl+1);
+				System.arraycopy(unencodedSeptets, 0, this.shortMessage, udhl+1, unencodedSeptets.length);
+			}else {
+				//没有UDH,直接解码
+				byte[] unencodedSeptets = SmsPduUtil.octetStream2septetStream(packArray,0,this.msglength,0);
+				this.msglength = (short)unencodedSeptets.length;
+				this.shortMessage = unencodedSeptets;
+			}
+		}else {
+			this.shortMessage = new byte[msglength];
+			buffer.readBytes(this.shortMessage);
+		}
 
-		this.shortMessage = new byte[msglength];
-		buffer.readBytes(this.shortMessage);
 	}
 
 	@Override
@@ -267,7 +298,7 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
 	}
 
 	@Override
-	public void writeBody(ByteBuf buffer) throws UnrecoverablePduException, RecoverablePduException {
+	public void writeBody(ByteBuf buffer,SMPPEndpointEntity entity) throws UnrecoverablePduException, RecoverablePduException {
 		ByteBufUtil.writeNullTerminatedString(buffer, this.serviceType);
 		ByteBufUtil.writeAddress(buffer, this.sourceAddress);
 		ByteBufUtil.writeAddress(buffer, this.destAddress);
@@ -280,9 +311,42 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
 		buffer.writeByte(this.replaceIfPresent);
 		buffer.writeByte(this.dataCoding);
 		buffer.writeByte(this.defaultMsgId);
-		buffer.writeByte((byte) getMsglength());
-		if (this.shortMessage != null) {
-			buffer.writeBytes(this.shortMessage);
+		
+	
+		boolean isNotReport = (esmClass & 0x3c) != 0x04;
+		//使用7bit 压缩编码,压缩编码的系统很少
+		if(entity != null && isNotReport && entity.isUse7bitPack() && entity.buildDefaultSmsDcs(dataCoding).getAlphabet() == SmsAlphabet.GSM) {
+			int udhi  = getTpUdhI();
+			if(udhi != 0) {
+				//包含UDH
+				if (this.shortMessage != null) {
+					int udhl = this.shortMessage[0];
+					int septetOffset =  ((udhl+1)*8+6)/7;
+					int bitOffset = septetOffset*7-(udhl+1)*8;
+				
+					
+					int septetCount = getMsglength() - udhl-1;
+					byte[] actuallyseptets = new byte[septetCount];
+					System.arraycopy(this.shortMessage, udhl+1, actuallyseptets, 0, septetCount);
+					byte[] packedseptets = SmsPduUtil.septetStream2octetStream(actuallyseptets,bitOffset);
+					byte[] packedUD = new byte[(udhl+1)+packedseptets.length];
+					System.arraycopy(this.shortMessage, 0, packedUD, 0, udhl+1);
+					System.arraycopy(packedseptets, 0, packedUD, udhl+1, packedseptets.length);
+					buffer.writeByte((byte) (septetOffset+septetCount));
+					buffer.writeBytes(packedUD);
+				}
+			}else {
+				buffer.writeByte((byte) getMsglength());
+				if (this.shortMessage != null) {
+					byte[] packedseptets = SmsPduUtil.septetStream2octetStream(this.shortMessage,0);
+					buffer.writeBytes(packedseptets);
+				}
+			}
+		}else {
+			buffer.writeByte((byte) getMsglength());
+			if (this.shortMessage != null) {
+				buffer.writeBytes(this.shortMessage);
+			}
 		}
 	}
 	

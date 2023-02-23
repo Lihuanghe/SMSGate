@@ -1,5 +1,15 @@
 package com.zx.sms.codec.smpp.msg;
 
+import com.zx.sms.codec.smpp.Address;
+import com.zx.sms.codec.smpp.NotEnoughDataInBufferException;
+import com.zx.sms.codec.smpp.RecoverablePduException;
+import com.zx.sms.codec.smpp.SmppConstants;
+import com.zx.sms.codec.smpp.UnrecoverablePduException;
+import com.zx.sms.common.util.ByteBufUtil;
+import com.zx.sms.common.util.HexUtil;
+import com.zx.sms.common.util.PduUtil;
+import com.zx.sms.connect.manager.smpp.SMPPEndpointEntity;
+
 /*
  * #%L
  * ch-smpp
@@ -21,15 +31,6 @@ package com.zx.sms.codec.smpp.msg;
  */
 
 import io.netty.buffer.ByteBuf;
-
-import com.zx.sms.codec.smpp.Address;
-import com.zx.sms.codec.smpp.NotEnoughDataInBufferException;
-import com.zx.sms.codec.smpp.RecoverablePduException;
-import com.zx.sms.codec.smpp.SmppConstants;
-import com.zx.sms.codec.smpp.UnrecoverablePduException;
-import com.zx.sms.common.util.ByteBufUtil;
-import com.zx.sms.common.util.HexUtil;
-import com.zx.sms.common.util.PduUtil;
 
 /**
  * 
@@ -88,7 +89,7 @@ public abstract class BaseBind<R extends PduResponse> extends PduRequest<R> {
     }
 
     @Override
-    public void readBody(ByteBuf buffer) throws UnrecoverablePduException, RecoverablePduException {
+    public void readBody(ByteBuf buffer ,SMPPEndpointEntity entity) throws UnrecoverablePduException, RecoverablePduException {
         this.systemId = ByteBufUtil.readNullTerminatedString(buffer);
         this.password = ByteBufUtil.readNullTerminatedString(buffer);
         this.systemType = ByteBufUtil.readNullTerminatedString(buffer);
@@ -112,7 +113,7 @@ public abstract class BaseBind<R extends PduResponse> extends PduRequest<R> {
     }
 
     @Override
-    public void writeBody(ByteBuf buffer) throws UnrecoverablePduException, RecoverablePduException {
+    public void writeBody(ByteBuf buffer,SMPPEndpointEntity entity) throws UnrecoverablePduException, RecoverablePduException {
         ByteBufUtil.writeNullTerminatedString(buffer, this.systemId);
         ByteBufUtil.writeNullTerminatedString(buffer, this.password);
         ByteBufUtil.writeNullTerminatedString(buffer, this.systemType);

@@ -1,5 +1,19 @@
 package com.zx.sms.codec.smpp.msg;
 
+import java.util.ArrayList;
+
+import com.zx.sms.BaseMessage;
+import com.zx.sms.codec.smpp.PduTranscoderContext;
+import com.zx.sms.codec.smpp.RecoverablePduException;
+import com.zx.sms.codec.smpp.SmppConstants;
+import com.zx.sms.codec.smpp.Tlv;
+import com.zx.sms.codec.smpp.UnrecoverablePduException;
+import com.zx.sms.common.util.ByteBufUtil;
+import com.zx.sms.common.util.CachedMillisecondClock;
+import com.zx.sms.common.util.DefaultSequenceNumberUtil;
+import com.zx.sms.common.util.HexUtil;
+import com.zx.sms.connect.manager.smpp.SMPPEndpointEntity;
+
 /*
  * #%L
  * ch-smpp
@@ -21,19 +35,6 @@ package com.zx.sms.codec.smpp.msg;
  */
 
 import io.netty.buffer.ByteBuf;
-
-import java.util.ArrayList;
-
-import com.zx.sms.BaseMessage;
-import com.zx.sms.codec.smpp.PduTranscoderContext;
-import com.zx.sms.codec.smpp.RecoverablePduException;
-import com.zx.sms.codec.smpp.SmppConstants;
-import com.zx.sms.codec.smpp.Tlv;
-import com.zx.sms.codec.smpp.UnrecoverablePduException;
-import com.zx.sms.common.util.ByteBufUtil;
-import com.zx.sms.common.util.CachedMillisecondClock;
-import com.zx.sms.common.util.DefaultSequenceNumberUtil;
-import com.zx.sms.common.util.HexUtil;
 
 public abstract class Pdu implements BaseMessage,Cloneable{
     
@@ -274,9 +275,9 @@ public abstract class Pdu implements BaseMessage,Cloneable{
     
     abstract protected int calculateByteSizeOfBody();
 
-    abstract public void readBody(ByteBuf buffer) throws UnrecoverablePduException, RecoverablePduException;
+    abstract public void readBody(ByteBuf buffer,SMPPEndpointEntity entity) throws UnrecoverablePduException, RecoverablePduException;
 
-    abstract public void writeBody(ByteBuf buffer) throws UnrecoverablePduException, RecoverablePduException;
+    abstract public void writeBody(ByteBuf buffer,SMPPEndpointEntity entity) throws UnrecoverablePduException, RecoverablePduException;
 
     abstract protected void appendBodyToString(StringBuilder buffer);
 

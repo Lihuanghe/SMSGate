@@ -32,13 +32,14 @@ public  abstract class AbstractSMPPTestMessageCodec<T> {
 	protected void doinitChannel(Channel ch){
 		ResourceLeakDetector.setLevel(Level.DISABLED);
 		ChannelPipeline pipeline = ch.pipeline();
-		SMPPCodecChannelInitializer codec = new SMPPCodecChannelInitializer();
+		EndpointEntity entity = buildEndpointEntity();
+		SMPPCodecChannelInitializer codec = new SMPPCodecChannelInitializer(entity);
 		pipeline.addLast("serverLog", new LoggingHandler(this.getClass(),LogLevel.DEBUG));
 		pipeline.addLast(codec.pipeName(), codec);
-		LongMessageMarkerReadHandler h_readMarker = new LongMessageMarkerReadHandler(buildEndpointEntity());
+		LongMessageMarkerReadHandler h_readMarker = new LongMessageMarkerReadHandler(entity);
 		pipeline.addAfter(GlobalConstance.codecName, h_readMarker.name(),h_readMarker );
 
-		pipeline.addLast( "SMPPLongMessageHandler", new SMPPLongMessageHandler(buildEndpointEntity()));
+		pipeline.addLast( "SMPPLongMessageHandler", new SMPPLongMessageHandler(entity));
 	}
 
 	protected ByteBuf encode(T msg){

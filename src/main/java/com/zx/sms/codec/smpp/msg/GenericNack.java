@@ -25,6 +25,7 @@ import io.netty.buffer.ByteBuf;
 import com.zx.sms.codec.smpp.RecoverablePduException;
 import com.zx.sms.codec.smpp.SmppConstants;
 import com.zx.sms.codec.smpp.UnrecoverablePduException;
+import com.zx.sms.connect.manager.smpp.SMPPEndpointEntity;
 
 public class GenericNack extends PduResponse {
     
@@ -38,7 +39,7 @@ public class GenericNack extends PduResponse {
     }
 
     @Override
-    public void readBody(ByteBuf buffer) throws UnrecoverablePduException, RecoverablePduException {
+    public void readBody(ByteBuf buffer,SMPPEndpointEntity entity) throws UnrecoverablePduException, RecoverablePduException {
         // no body
     }
 
@@ -48,7 +49,7 @@ public class GenericNack extends PduResponse {
     }
 
     @Override
-    public void writeBody(ByteBuf buffer) throws UnrecoverablePduException, RecoverablePduException {
+    public void writeBody(ByteBuf buffer,SMPPEndpointEntity entity) throws UnrecoverablePduException, RecoverablePduException {
         /// no body
     }
 

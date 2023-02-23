@@ -35,6 +35,8 @@ public abstract class SMPPEndpointEntity extends EndpointEntity {
     
     private SmppSplitType splitType = SmppSplitType.UDH;
     
+    private boolean use7bitPack = false;
+    
 	@Override
 	protected AbstractSmsDcs buildSmsDcs(byte dcs) { 
 		return new DefaultSmppSmsDcs(dcs,defauteSmsAlphabet);
@@ -88,6 +90,14 @@ public abstract class SMPPEndpointEntity extends EndpointEntity {
 	}
 	public void setSplitType(SmppSplitType splitType) {
 		this.splitType = splitType;
+	}
+
+	public boolean isUse7bitPack() {
+		return use7bitPack;
+	}
+
+	public void setUse7bitPack(boolean use7bitPack) {
+		this.use7bitPack = use7bitPack;
 	}
 	
 }

@@ -20,12 +20,14 @@ import com.zx.sms.connect.manager.smpp.SMPPClientEndpointEntity;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
-public class TestBaseSmDefaultASCIICodec extends AbstractSMPPTestMessageCodec<BaseSm> {
+public class TestBaseSmSplitTypeUDHPARAM extends AbstractSMPPTestMessageCodec<BaseSm> {
     
 	//设置SMPP端口默认编码为ASCII
 	protected EndpointEntity buildEndpointEntity() {
 		SMPPClientEndpointEntity en = new SMPPClientEndpointEntity();
 		en.setId("Test");
+		en.setInterfaceVersion((byte)52);
+		en.setSplitType(SmppSplitType.UDHPARAM);
 		return en;
 	}
 	
@@ -49,6 +51,23 @@ public class TestBaseSmDefaultASCIICodec extends AbstractSMPPTestMessageCodec<Ba
      	testlongCodec(pdu);
 	}
 	
+	private void testlongCodec(BaseSm msg)
+	{
+		channel().writeOutbound(msg);
+		ByteBuf buf =(ByteBuf)channel().readOutbound();
+		ByteBuf copybuf = Unpooled.buffer();
+	    while(buf!=null){
+	    	copybuf.writeBytes(buf);
+			int length = buf.readableBytes();   
+			buf =(ByteBuf)channel().readOutbound();
+	    }
+	    
+	    BaseSm result = decode(copybuf);
+		
+		System.out.println(result);
+		Assert.assertNotNull(((LongSMSMessage)result).getUniqueLongMsgId().toString());
+		Assert.assertEquals(((SmsTextMessage)msg.getSmsMessage()).getText(), ((SmsTextMessage)result.getSmsMessage()).getText());
+	}
 	@Test
 	public void testWapcode()
 	{
@@ -80,23 +99,5 @@ public class TestBaseSmDefaultASCIICodec extends AbstractSMPPTestMessageCodec<Ba
 		System.out.println(((LongSMSMessage) result).getUniqueLongMsgId());
 		Assert.assertEquals(origin, ((WapSLPush) ((SmsWapPushMessage) result.getSmsMessage()).getWbxml()).getUri());
 		System.out.println();
-	}
-	
-	private void testlongCodec(BaseSm msg)
-	{
-		channel().writeOutbound(msg);
-		ByteBuf buf =(ByteBuf)channel().readOutbound();
-		ByteBuf copybuf = Unpooled.buffer();
-	    while(buf!=null){
-	    	copybuf.writeBytes(buf);
-			int length = buf.readableBytes();   
-			buf =(ByteBuf)channel().readOutbound();
-	    }
-	    
-	    BaseSm result = decode(copybuf);
-		
-		System.out.println(result);
-		Assert.assertNotNull(((LongSMSMessage)result).getUniqueLongMsgId().toString());
-		Assert.assertEquals(((SmsTextMessage)msg.getSmsMessage()).getText(), ((SmsTextMessage)result.getSmsMessage()).getText());
 	}
 }

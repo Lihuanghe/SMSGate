@@ -1,28 +1,5 @@
 package com.zx.sms.codec.smpp;
 
-/*
- * #%L
- * ch-smpp
- * %%
- * Copyright (C) 2009 - 2015 Cloudhopper by Twitter
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-
 import com.zx.sms.codec.smpp.msg.AlertNotification;
 import com.zx.sms.codec.smpp.msg.BindReceiver;
 import com.zx.sms.codec.smpp.msg.BindReceiverResp;
@@ -54,6 +31,30 @@ import com.zx.sms.codec.smpp.msg.UnbindResp;
 import com.zx.sms.common.util.DefaultSequenceNumberUtil;
 import com.zx.sms.common.util.HexUtil;
 import com.zx.sms.common.util.PduUtil;
+import com.zx.sms.connect.manager.smpp.SMPPEndpointEntity;
+
+/*
+ * #%L
+ * ch-smpp
+ * %%
+ * Copyright (C) 2009 - 2015 Cloudhopper by Twitter
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 
 /**
  * 
@@ -62,9 +63,12 @@ import com.zx.sms.common.util.PduUtil;
 public class DefaultPduTranscoder implements PduTranscoder {
 
     private final PduTranscoderContext context;
+    
+    private final SMPPEndpointEntity entity;
 
-    public DefaultPduTranscoder(PduTranscoderContext context) {
+    public DefaultPduTranscoder(PduTranscoderContext context,SMPPEndpointEntity entity) {
         this.context = context;
+        this.entity = entity;
     }
 
     @Override
@@ -110,16 +114,20 @@ public class DefaultPduTranscoder implements PduTranscoder {
         buffer.writeInt(pdu.getSequenceNumber());
 
         // add mandatory body (a noop if no body exists)
-        pdu.writeBody(buffer);
+        pdu.writeBody(buffer,entity);
 
         // add optional parameters (a noop if none exist)
         pdu.writeOptionalParameters(buffer, context);
 
-        // NOTE: at this point, the entire buffer written MUST match the command length
-        // from earlier -- if it doesn't match, the our encoding process went awry
-        if (buffer.readableBytes() != pdu.getCommandLength()) {
-        	
-            throw new NotEnoughDataInBufferException("During PDU encoding the expected commandLength did not match the actual encoded (a serious error with our own encoding process)", pdu.getCommandLength(), buffer.readableBytes());
+        // 由于7bit Packed编码会改变包长度，因此重新设置包长
+        int actuallyLength = buffer.readableBytes();
+        if (actuallyLength != pdu.getCommandLength()) {
+        	ByteBuf changedbuffer = allocator.buffer(actuallyLength);
+        	changedbuffer.writeInt(actuallyLength);
+        	changedbuffer.writeBytes(buffer,buffer.readerIndex()+4,actuallyLength-4);
+        	//释放无用的buffer
+        	buffer.release();
+        	return changedbuffer;
         }
 
         return buffer;
@@ -245,7 +253,7 @@ public class DefaultPduTranscoder implements PduTranscoder {
 
         try {
             // parse pdu body parameters (may throw exception)
-            pdu.readBody(buffer);
+            pdu.readBody(buffer,entity);
             // parse pdu optional parameters (may throw exception)
             pdu.readOptionalParameters(buffer, context);
         } catch (RecoverablePduException e) {

@@ -18,6 +18,7 @@ import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.wap.LongMessageMarkerReadHandler;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.MsgId;
+import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.TestConstants;
 import com.zx.sms.connect.manager.smpp.SMPPCodecChannelInitializer;
 import com.zx.sms.handler.smpp.SMPP2CMPPBusinessHandler;
@@ -33,11 +34,12 @@ import io.netty.handler.logging.LoggingHandler;
 public class TestSMPP2CMPPSubmitCodec extends AbstractSMPPTestMessageCodec<CmppSubmitRequestMessage> {
 	protected void doinitChannel(Channel ch){
 		ChannelPipeline pipeline = ch.pipeline();
-		SMPPCodecChannelInitializer codec = new SMPPCodecChannelInitializer();
+		EndpointEntity entity =  buildEndpointEntity();
+		SMPPCodecChannelInitializer codec = new SMPPCodecChannelInitializer(entity);
 		pipeline.addLast("serverLog", new LoggingHandler(LogLevel.DEBUG));
 		pipeline.addLast(codec.pipeName(), codec);
 		
-		LongMessageMarkerReadHandler h_readMarker = new LongMessageMarkerReadHandler(buildEndpointEntity());
+		LongMessageMarkerReadHandler h_readMarker = new LongMessageMarkerReadHandler(entity);
 		pipeline.addAfter(GlobalConstance.codecName, h_readMarker.name(),h_readMarker );
 
 

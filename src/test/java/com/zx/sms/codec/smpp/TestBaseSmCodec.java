@@ -33,6 +33,7 @@ import com.zx.sms.common.util.HexUtil;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.TestConstants;
 import com.zx.sms.connect.manager.smpp.SMPPClientEndpointEntity;
+import com.zx.sms.connect.manager.smpp.SMPPEndpointEntity;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
@@ -43,8 +44,8 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
 	protected EndpointEntity buildEndpointEntity() {
 		SMPPClientEndpointEntity entity = new SMPPClientEndpointEntity();
 		entity.setId("testAllSplitType");
-//		entity.setSplitType(SmppSplitType.PAYLOADPARAM);
-		entity.setInterfaceVersion((byte) 0x34);
+		entity.setSplitType(SmppSplitType.PAYLOADPARAM);
+		entity.setInterfaceVersion((byte) 0x33);
 		entity.setDefauteSmsAlphabet(SmsAlphabet.GSM);
 		return entity;
 	}
@@ -189,7 +190,7 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
 		pdu.setDestAddress(new Address((byte) 0, (byte) 0, "13800138000"));
 		pdu.setSourceAddress(new Address((byte) 0, (byte) 0, "10658987"));
 		pdu.setSmsMsg(new SmsTextMessage(
-				"^{}\\[~]|1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890",
+				"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890",
 				SmppSmsDcs.getGeneralDataCodingDcs(SmsAlphabet.GSM, SmsMsgClass.CLASS_UNKNOWN)));
 		testlongCodec(pdu);
 	}
@@ -219,7 +220,7 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
 
 			channel().writeOutbound(pdu);
 			ByteBuf buf = (ByteBuf) channel().readOutbound();
-			PduTranscoder transcoder = new DefaultPduTranscoder(new DefaultPduTranscoderContext());
+			PduTranscoder transcoder = new DefaultPduTranscoder(new DefaultPduTranscoderContext(),(SMPPEndpointEntity)buildEndpointEntity());
 			count = 0;
 			int udhl = use8bit ? 6 : 7;
 			while (buf != null) {
@@ -270,7 +271,7 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
 
 			channel().writeOutbound(pdu);
 			ByteBuf buf = (ByteBuf) channel().readOutbound();
-			PduTranscoder transcoder = new DefaultPduTranscoder(new DefaultPduTranscoderContext());
+			PduTranscoder transcoder = new DefaultPduTranscoder(new DefaultPduTranscoderContext(),(SMPPEndpointEntity)buildEndpointEntity());
 			count = 0;
 			int udhl = use8bit ? 6 : 7;
 			while (buf != null) {

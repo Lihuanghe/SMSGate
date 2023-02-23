@@ -8,6 +8,7 @@ import com.zx.sms.codec.smpp.UnrecoverablePduException;
 import com.zx.sms.common.util.ByteBufUtil;
 import com.zx.sms.common.util.HexUtil;
 import com.zx.sms.common.util.PduUtil;
+import com.zx.sms.connect.manager.smpp.SMPPEndpointEntity;
 
 /*
  * #%L
@@ -126,7 +127,7 @@ public class ReplaceSm extends PduRequest<ReplaceSmResp> {
     }
 
     @Override
-    public void readBody(ByteBuf buffer) throws UnrecoverablePduException, RecoverablePduException {
+    public void readBody(ByteBuf buffer,SMPPEndpointEntity entity) throws UnrecoverablePduException, RecoverablePduException {
         this.messageId = ByteBufUtil.readNullTerminatedString(buffer); 
         this.sourceAddress = ByteBufUtil.readAddress(buffer);
         this.scheduleDeliveryTime = ByteBufUtil.readNullTerminatedString(buffer);
@@ -152,7 +153,7 @@ public class ReplaceSm extends PduRequest<ReplaceSmResp> {
     }
 
     @Override
-    public void writeBody(ByteBuf buffer) throws UnrecoverablePduException, RecoverablePduException {
+    public void writeBody(ByteBuf buffer,SMPPEndpointEntity entity) throws UnrecoverablePduException, RecoverablePduException {
         ByteBufUtil.writeNullTerminatedString(buffer, this.messageId);
         ByteBufUtil.writeAddress(buffer, this.sourceAddress);
         ByteBufUtil.writeNullTerminatedString(buffer, this.scheduleDeliveryTime);

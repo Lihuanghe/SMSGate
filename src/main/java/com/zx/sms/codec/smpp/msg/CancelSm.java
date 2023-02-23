@@ -1,5 +1,13 @@
 package com.zx.sms.codec.smpp.msg;
 
+import com.zx.sms.codec.smpp.Address;
+import com.zx.sms.codec.smpp.RecoverablePduException;
+import com.zx.sms.codec.smpp.SmppConstants;
+import com.zx.sms.codec.smpp.UnrecoverablePduException;
+import com.zx.sms.common.util.ByteBufUtil;
+import com.zx.sms.common.util.PduUtil;
+import com.zx.sms.connect.manager.smpp.SMPPEndpointEntity;
+
 /*
  * #%L
  * ch-smpp
@@ -21,13 +29,6 @@ package com.zx.sms.codec.smpp.msg;
  */
 
 import io.netty.buffer.ByteBuf;
-
-import com.zx.sms.codec.smpp.Address;
-import com.zx.sms.codec.smpp.RecoverablePduException;
-import com.zx.sms.codec.smpp.SmppConstants;
-import com.zx.sms.codec.smpp.UnrecoverablePduException;
-import com.zx.sms.common.util.ByteBufUtil;
-import com.zx.sms.common.util.PduUtil;
 
 /**
  * SMPP cancel_sm implementation.
@@ -83,7 +84,7 @@ public class CancelSm extends PduRequest<CancelSmResp> {
 
 
     @Override
-    public void readBody(ByteBuf buffer) throws UnrecoverablePduException, RecoverablePduException {
+    public void readBody(ByteBuf buffer,SMPPEndpointEntity entity) throws UnrecoverablePduException, RecoverablePduException {
         this.serviceType = ByteBufUtil.readNullTerminatedString(buffer);
         this.messageId = ByteBufUtil.readNullTerminatedString(buffer);
         this.sourceAddress = ByteBufUtil.readAddress(buffer);
@@ -101,7 +102,7 @@ public class CancelSm extends PduRequest<CancelSmResp> {
     }
 
     @Override
-    public void writeBody(ByteBuf buffer) throws UnrecoverablePduException, RecoverablePduException {
+    public void writeBody(ByteBuf buffer,SMPPEndpointEntity entity) throws UnrecoverablePduException, RecoverablePduException {
         ByteBufUtil.writeNullTerminatedString(buffer, this.serviceType);
         ByteBufUtil.writeNullTerminatedString(buffer, this.messageId);
         ByteBufUtil.writeAddress(buffer, this.sourceAddress);

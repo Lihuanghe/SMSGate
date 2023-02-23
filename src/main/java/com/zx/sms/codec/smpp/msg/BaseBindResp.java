@@ -26,6 +26,7 @@ import com.zx.sms.codec.smpp.RecoverablePduException;
 import com.zx.sms.codec.smpp.UnrecoverablePduException;
 import com.zx.sms.common.util.ByteBufUtil;
 import com.zx.sms.common.util.PduUtil;
+import com.zx.sms.connect.manager.smpp.SMPPEndpointEntity;
 
 /**
  * 
@@ -48,7 +49,7 @@ public abstract class BaseBindResp extends PduResponse {
     }
 
     @Override
-    public void readBody(ByteBuf buffer) throws UnrecoverablePduException, RecoverablePduException {
+    public void readBody(ByteBuf buffer,SMPPEndpointEntity entity) throws UnrecoverablePduException, RecoverablePduException {
         // the body may or may not contain a systemId -- the helper utility
         // method will take care of returning null if there aren't any readable bytes
         this.systemId = ByteBufUtil.readNullTerminatedString(buffer);
@@ -62,7 +63,7 @@ public abstract class BaseBindResp extends PduResponse {
     }
 
     @Override
-    public void writeBody(ByteBuf buffer) throws UnrecoverablePduException, RecoverablePduException {
+    public void writeBody(ByteBuf buffer,SMPPEndpointEntity entity) throws UnrecoverablePduException, RecoverablePduException {
         ByteBufUtil.writeNullTerminatedString(buffer, this.systemId);
     }
 

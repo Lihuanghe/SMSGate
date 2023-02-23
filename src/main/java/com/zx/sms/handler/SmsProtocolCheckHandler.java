@@ -75,7 +75,7 @@ public class SmsProtocolCheckHandler extends ByteToMessageDecoder {
 				commandId == SmppConstants.CMD_ID_BIND_RECEIVER){
 			//SMPP
 			pipeline.replace(GlobalConstance.MixedServerIdleStateHandler, "SmppServerIdleStateHandler",  GlobalConstance.smppidleHandler);
-			pipeline.addLast(SMPPCodecChannelInitializer.pipeName(), new SMPPCodecChannelInitializer());
+			pipeline.addLast(SMPPCodecChannelInitializer.pipeName(), new SMPPCodecChannelInitializer(entity));
 			pipeline.addLast(GlobalConstance.sessionLoginManager, new SMPPSessionLoginManager(entity));
 		}else {
 			//非法包

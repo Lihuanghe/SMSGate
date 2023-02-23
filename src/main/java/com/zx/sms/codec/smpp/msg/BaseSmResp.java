@@ -26,6 +26,7 @@ import com.zx.sms.codec.smpp.RecoverablePduException;
 import com.zx.sms.codec.smpp.UnrecoverablePduException;
 import com.zx.sms.common.util.ByteBufUtil;
 import com.zx.sms.common.util.PduUtil;
+import com.zx.sms.connect.manager.smpp.SMPPEndpointEntity;
 
 /**
  * 
@@ -48,7 +49,7 @@ public abstract class BaseSmResp extends PduResponse {
     }
 
     @Override
-    public void readBody(ByteBuf buffer) throws UnrecoverablePduException, RecoverablePduException {
+    public void readBody(ByteBuf buffer,SMPPEndpointEntity entity) throws UnrecoverablePduException, RecoverablePduException {
         // the body may or may not contain a messageId -- the helper utility
         // method will take care of returning null if there aren't any readable bytes
         this.messageId = ByteBufUtil.readNullTerminatedString(buffer);
@@ -62,7 +63,7 @@ public abstract class BaseSmResp extends PduResponse {
     }
 
     @Override
-    public void writeBody(ByteBuf buffer) throws UnrecoverablePduException, RecoverablePduException {
+    public void writeBody(ByteBuf buffer,SMPPEndpointEntity entity) throws UnrecoverablePduException, RecoverablePduException {
         // when this PDU was parsed, it's possible it was missing the messageId instead
         // of having a NULL messageId. If that's the case, the commandLength will be just
         // enough for the headers (and theoretically any optional TLVs). Don't try to

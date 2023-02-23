@@ -9,15 +9,25 @@ import org.slf4j.LoggerFactory;
 import com.zx.sms.codec.smpp.msg.DeliverSm;
 import com.zx.sms.codec.smpp.msg.DeliverSmReceipt;
 import com.zx.sms.codec.smpp.msg.Pdu;
+import com.zx.sms.connect.manager.EndpointEntity;
+import com.zx.sms.connect.manager.smpp.SMPPEndpointEntity;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 
 public class SMPPMessageCodec extends MessageToMessageCodec<ByteBuf, Pdu> {
-	private static final PduTranscoder transcoder = new DefaultPduTranscoder(new DefaultPduTranscoderContext());
+	
 	private static final DeliverSmReceiptCodec reportcodec = new DeliverSmReceiptCodec();
 	private final Logger logger = LoggerFactory.getLogger(SMPPMessageCodec.class);
+	
+	private EndpointEntity entity;
+	private PduTranscoder transcoder;
+	
+	public SMPPMessageCodec(EndpointEntity entity) {
+		this.entity = entity;
+		this.transcoder =  new DefaultPduTranscoder(new DefaultPduTranscoderContext(),(SMPPEndpointEntity)(entity instanceof SMPPEndpointEntity ? entity : null));
+	}
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, Pdu msg, List<Object> out) throws Exception {
