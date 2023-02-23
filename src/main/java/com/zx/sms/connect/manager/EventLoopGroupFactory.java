@@ -178,12 +178,12 @@ public enum EventLoopGroupFactory {
 	 */
 	public void closeAll() {
 		// 先停业务线程池
-		// getBusiWork().shutdownGracefully().syncUninterruptibly();
 		getBusiWork().shutdown();
 		getBoss().shutdownGracefully().syncUninterruptibly();
 
 		// 最后停worker
 		getWorker().shutdownGracefully().syncUninterruptibly();
+		logger.warn("closeAll");
 	}
 
 	private static ThreadFactory newThreadFactory(final String name) {
@@ -195,7 +195,7 @@ public enum EventLoopGroupFactory {
 			public Thread newThread(Runnable r) {
 				Thread t = new Thread(r, name + threadNumber.getAndIncrement());
 
-				t.setDaemon(true);
+//				t.setDaemon(true);
 				if (t.getPriority() != Thread.NORM_PRIORITY)
 					t.setPriority(Thread.NORM_PRIORITY);
 				return t;

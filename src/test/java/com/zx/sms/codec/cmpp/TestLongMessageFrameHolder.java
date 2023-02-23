@@ -24,25 +24,44 @@ import io.netty.buffer.Unpooled;
 public class TestLongMessageFrameHolder extends AbstractTestMessageCodec<CmppSubmitRequestMessage>{
 	String s = TestConstants.testSmsContent;
 	
-	boolean Use8bit = SmsPduUtil.Use8bit;
+	
 	protected int getVersion(){
 		return 0x20;
 	}
 	@Test
-	public void test() throws SmsException{
-		
+	public void testUse8bit() throws SmsException{
 		List<LongMessageFrame>  l = testSplit(new SmsTextMessage(s));
-		Assert.assertEquals(	Use8bit?140:139,l.get(0).getMsgLength());
-		Assert.assertEquals(	Use8bit?140:139,l.get(1).getMsgLength());
+		Assert.assertEquals(	140,l.get(0).getMsgLength());
+		Assert.assertEquals(	140,l.get(1).getMsgLength());
+	}
+	
+	@Test
+	public void testUse16bit() throws SmsException{
+		SmsTextMessage text = new SmsTextMessage(s);
+		text.getDcs().setUse8bit(false);
+		List<LongMessageFrame>  l = testSplit(text);
+		Assert.assertEquals(	139,l.get(0).getMsgLength());
+		Assert.assertEquals(	139,l.get(1).getMsgLength());
 		
 	}
 	
 	@Test
-	public void testGSMDefaultGSM() throws SmsException{
+	public void testGSMDefaultGSMUse8bit() throws SmsException{
 		String gsmstr = "@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&'()*+,-./01234656789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnoqprstuvwxyzäöñüà^{}\\[~]|€^{}\\[~]|€^{}\\[~]|€@£$¥èéùìòÇ\\nØø\\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\\\"#¤%&'()*+,-./0123465556789:;<=>?¡ABCDEFGHIJLMNOPQRSTUVWXYZÄÖÑÜ§¿qprstuvwxyzäöñüà^{}\\\\[~]|€^{}\\\\[~]|€^{}\\\\[~]|€";
 		List<LongMessageFrame> l = testSplit(new SmsTextMessage(gsmstr,new SmppSmsDcs((byte)0)));
-		Assert.assertEquals(	Use8bit?158:159,l.get(0).getMsgLength());
-		Assert.assertEquals(	Use8bit?158:159,l.get(1).getMsgLength());
+		Assert.assertEquals(158,l.get(0).getMsgLength());
+		Assert.assertEquals(158,l.get(1).getMsgLength());
+	}
+	
+	@Test
+	public void testGSMDefaultGSMUse16bit() throws SmsException{
+		String gsmstr = "@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&'()*+,-./01234656789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnoqprstuvwxyzäöñüà^{}\\[~]|€^{}\\[~]|€^{}\\[~]|€@£$¥èéùìòÇ\\nØø\\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\\\"#¤%&'()*+,-./0123465556789:;<=>?¡ABCDEFGHIJLMNOPQRSTUVWXYZÄÖÑÜ§¿qprstuvwxyzäöñüà^{}\\\\[~]|€^{}\\\\[~]|€^{}\\\\[~]|€";
+		
+		SmsTextMessage text =  new SmsTextMessage(gsmstr,new SmppSmsDcs((byte)0));
+		text.getDcs().setUse8bit(false);
+		List<LongMessageFrame> l = testSplit(text);
+		Assert.assertEquals(	159,l.get(0).getMsgLength());
+		Assert.assertEquals(	159,l.get(1).getMsgLength());
 	}
 	
 	@Test
@@ -69,15 +88,24 @@ public class TestLongMessageFrameHolder extends AbstractTestMessageCodec<CmppSub
 	}
 	
 	@Test
-	public void testGBK() throws SmsException{
+	public void testGBKUse8bit() throws SmsException{
 		String str = "1【温馨提示】移娃没理解您的问题2【温馨提示】移娃没理解您的问题3【温馨提示】移娃没理解您的问题4【温馨提示】移娃没理解您的问题5【温馨提示】移娃没理解您的问题6【温馨提示】移娃没理解您的问题7【温馨提示】移娃没理解您的问题8【温馨提示】移娃没理解您的问题9【温馨提示】移娃没理解您的问题.";
 		SmsTextMessage s = new SmsTextMessage(str,new SmsDcs((byte)15));
 		List<LongMessageFrame> l = testSplit(s);
-		Assert.assertEquals(	Use8bit?139:140,l.get(0).getMsgLength());
-		Assert.assertEquals(	Use8bit?140:139,l.get(1).getMsgLength());
+		Assert.assertEquals(139,l.get(0).getMsgLength());
+		Assert.assertEquals(140,l.get(1).getMsgLength());
 
 	}
-	
+	@Test
+	public void testGBKUse16bit() throws SmsException{
+		String str = "1【温馨提示】移娃没理解您的问题2【温馨提示】移娃没理解您的问题3【温馨提示】移娃没理解您的问题4【温馨提示】移娃没理解您的问题5【温馨提示】移娃没理解您的问题6【温馨提示】移娃没理解您的问题7【温馨提示】移娃没理解您的问题8【温馨提示】移娃没理解您的问题9【温馨提示】移娃没理解您的问题.";
+		SmsTextMessage s = new SmsTextMessage(str,new SmsDcs((byte)15));
+		s.getDcs().setUse8bit(false);
+		List<LongMessageFrame> l = testSplit(s);
+		Assert.assertEquals(140,l.get(0).getMsgLength());
+		Assert.assertEquals(139,l.get(1).getMsgLength());
+
+	}
 	@Test
 	public void testUCS() throws SmsException{
 		String str = "1【温馨提示】移娃没理解您的问题2【温馨提示】移娃没理解您的问题3【温馨提示】移娃没理解您的问题4【温馨提示】移娃没理解您的问题5【温馨提示】移娃没理解您的问题6【温馨提示】移娃没理解您的问题7【温馨提示】移娃没理解您的问题8【温馨提示】移娃没理解您的问题9【温馨提示】移娃没理解您的问题.";

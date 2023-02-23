@@ -41,8 +41,10 @@ public class SMPPServerChildEndpointConnector extends AbstractEndpointConnector{
 	@Override
 	protected void doBindHandler(ChannelPipeline pipe, EndpointEntity entity) {
 		
-		
-		pipe.addAfter(GlobalConstance.codecName,"AddZeroByteHandler",new AddZeroByteHandler(entity));
+		if(entity instanceof SMPPEndpointEntity) {
+			if(((SMPPEndpointEntity)entity).isAddZeroByte())
+				pipe.addAfter(GlobalConstance.codecName,"AddZeroByteHandler",new AddZeroByteHandler(entity));
+		}
 		pipe.addLast("SMPPLongMessageHandler", new SMPPLongMessageHandler(entity));
 		pipe.addLast("EnquireLinkMessageHandler",new EnquireLinkMessageHandler());
 		pipe.addLast("EnquireLinkRespMessageHandler",new EnquireLinkRespMessageHandler());

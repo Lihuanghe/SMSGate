@@ -198,7 +198,7 @@ public enum LongMessageFrameHolder {
 		LongMessageFrame frame = msg.generateFrame();
 		
 		if(entity != null) {
-			//根据EndpointEntity配置的默认DCS重设frame
+			//根据EndpointEntity配置的默认DCS重设DCS
 			AbstractSmsDcs dcs = frame.getMsgfmt();
 			frame.setMsgfmt(entity.buildDefaultSmsDcs(dcs.getValue()));
 		}
@@ -359,6 +359,7 @@ public enum LongMessageFrameHolder {
 					AbstractSmsDcs defaultDcs = e.buildDefaultSmsDcs(msgDcs.getValue());
 					//类型不同的，以通道默认的Dcs为准
 					if(!msgDcs.getClass().equals(defaultDcs)) {
+						defaultDcs.setUse8bit(msgDcs.isUse8bit());
 						smsTextMessage.setText(smsTextMessage.getText(), defaultDcs);
 					}
 				}
@@ -608,55 +609,6 @@ public enum LongMessageFrameHolder {
 	private class UserDataHeader {
 		int headerlength;
 		List<InformationElement> infoElement;
-	}
-
-
-
-	/**
-	 * Convert a stream of septets read as octets into a byte array containing
-	 * the 7-bit values from the octet stream.
-	 * 
-	 * @param octets
-	 * @param setptetCnt
-	 *            FIXME pass the septet length in here, so if there is a spare
-	 *            septet at the end of the octet, we can ignore that
-	 * @return byte arrays
-	 */
-
-	public static byte[] octetStream2septetStream(byte[] octets,int setptetCnt) {
-		
-		byte[] septets = new byte[setptetCnt];
-		/*
-		for (int newIndex = septets.length - 1; newIndex >= 0; --newIndex) {
-			for (int bit = 6; bit >= 0; --bit) {
-				int oldBitIndex = ((newIndex * 7) + bit);
-				if ((octets[oldBitIndex >>> 3] & (1 << (oldBitIndex & 7))) != 0)
-					septets[newIndex] |= (1 << bit);
-			}
-		}
-		*/
-		
-		int ind = 0;
-		septets[ind++]  = (byte)(octets[0] & 0x7f) ;
-		for(int i = 1 ;i<octets.length ;i++) {
-			int mod = (i + 6 ) % 7 + 1    ;
-			//当前字节 左移 N 个 bit
-			byte b = (byte)(octets[i] << mod);
-			//上一个字节 右移 8-N 个 bit ，剩余最高 N 个bit
-			byte a =(byte) ((octets[i-1] & 0xff ) >>> (8 - mod) & 0x7f);
-			septets[ind++] = (byte)(( b | a ) & 0x7f);
-			if(i % 7 == 0 ) {
-				septets[ind++]  = (byte)(octets[i] & 0x7f) ;
-			}
-		}
-		if(octets.length * 8  == setptetCnt * 7 )
-			septets[ind++] = (byte)(octets[octets.length-1] >>> 1 & 0x7f);
-		
-		return septets;
-	}
-
-	public static int octetLengthfromseptetsLength(int septetLength) {
-		return (int) Math.ceil((septetLength * 7) / 8.0);
 	}
 
 	private SmsMessage parseWapPdu(byte[] pdu) {
@@ -929,6 +881,7 @@ public enum LongMessageFrameHolder {
 	private static int encodeOctetPdu(SmsPdu pdu, OutputStream baos) throws SmsException {
 		SmsUserData userData = pdu.getUserData();
 		byte[] ud = userData.getData();
+		
 		byte[] udh = pdu.getUserDataHeaders();
 		int length = 0;
 		try {
