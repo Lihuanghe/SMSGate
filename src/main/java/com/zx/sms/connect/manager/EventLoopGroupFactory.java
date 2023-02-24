@@ -195,7 +195,7 @@ public enum EventLoopGroupFactory {
 			public Thread newThread(Runnable r) {
 				Thread t = new Thread(r, name + threadNumber.getAndIncrement());
 
-//				t.setDaemon(true);
+				t.setDaemon(true);
 				if (t.getPriority() != Thread.NORM_PRIORITY)
 					t.setPriority(Thread.NORM_PRIORITY);
 				return t;

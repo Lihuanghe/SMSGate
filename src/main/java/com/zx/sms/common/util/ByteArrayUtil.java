@@ -192,6 +192,13 @@ public class ByteArrayUtil {
         v |= bytes[offset+3] & 0xFF;
         return v;
     }
+    
+    public static byte[] toCOctetString(String value) {
+    	byte[] str = value.getBytes();
+    	byte[] ret = new byte[str.length+1];
+    	System.arraycopy(str, 0, ret, 0, str.length);
+    	return ret;
+    }
 
     public static long toLong(byte[] bytes) {
         checkBytesNotNull(bytes);

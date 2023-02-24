@@ -161,7 +161,7 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
 	}
 
 	public boolean isReport() {
-		return this instanceof DeliverSmReceipt;
+		return this instanceof DeliverSmReceipt || ((esmClass & 0x3c) == 0x04);
 	}
 
 	public void setServiceType(String value) {
@@ -248,7 +248,7 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
 		// this is always an unsigned version of the short message length
 		this.msglength = buffer.readUnsignedByte();
 		
-		boolean isNotReport = (esmClass & 0x3c) != 0x04;
+		boolean isNotReport = !isReport();
 		//使用7bit 压缩编码,压缩编码的系统很少
 		if(entity != null && isNotReport && entity.isUse7bitPack() && entity.buildDefaultSmsDcs(dataCoding).getAlphabet() == SmsAlphabet.GSM) {
 			int packedLength = (this.msglength * 7+7)/8 ;
@@ -313,7 +313,7 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
 		buffer.writeByte(this.defaultMsgId);
 		
 	
-		boolean isNotReport = (esmClass & 0x3c) != 0x04;
+		boolean isNotReport = !isReport();
 		//使用7bit 压缩编码,压缩编码的系统很少
 		if(entity != null && isNotReport && entity.isUse7bitPack() && entity.buildDefaultSmsDcs(dataCoding).getAlphabet() == SmsAlphabet.GSM) {
 			int udhi  = getTpUdhI();

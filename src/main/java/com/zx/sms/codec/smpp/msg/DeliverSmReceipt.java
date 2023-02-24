@@ -143,7 +143,8 @@ public class DeliverSmReceipt extends DeliverSm {
 	
 	private String buildContent() {
 		StringBuffer sb = new StringBuffer();
-		sb.append("id:").append(id);
+		if(StringUtils.isNotBlank(id))
+			sb.append("id:").append(id);
 		
 		if(StringUtils.isNotBlank(sub))
 			sb.append(" sub:").append(sub);

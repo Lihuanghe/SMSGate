@@ -35,7 +35,15 @@ public abstract class SMPPEndpointEntity extends EndpointEntity {
     
     private SmppSplitType splitType = SmppSplitType.UDH;
     
+    /**
+     * 极少数系统开启压缩7bit编码
+     */
     private boolean use7bitPack = false;
+    
+    /**
+     * 有的SMPP服务返回的状态报告里的id是10进制字符串，但Submit_Resp里的messageId是16进制字符串，这里处理成统一的16进制
+     */
+    private boolean useHexReceiptedMessageId = false;
     
 	@Override
 	protected AbstractSmsDcs buildSmsDcs(byte dcs) { 
@@ -98,6 +106,14 @@ public abstract class SMPPEndpointEntity extends EndpointEntity {
 
 	public void setUse7bitPack(boolean use7bitPack) {
 		this.use7bitPack = use7bitPack;
+	}
+
+	public boolean isUseHexReceiptedMessageId() {
+		return useHexReceiptedMessageId;
+	}
+
+	public void setUseHexReceiptedMessageId(boolean useHexReceiptedMessageId) {
+		this.useHexReceiptedMessageId = useHexReceiptedMessageId;
 	}
 	
 }

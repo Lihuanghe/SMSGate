@@ -122,12 +122,8 @@ public class DefaultPduTranscoder implements PduTranscoder {
         // 由于7bit Packed编码会改变包长度，因此重新设置包长
         int actuallyLength = buffer.readableBytes();
         if (actuallyLength != pdu.getCommandLength()) {
-        	ByteBuf changedbuffer = allocator.buffer(actuallyLength);
-        	changedbuffer.writeInt(actuallyLength);
-        	changedbuffer.writeBytes(buffer,buffer.readerIndex()+4,actuallyLength-4);
-        	//释放无用的buffer
-        	buffer.release();
-        	return changedbuffer;
+        	//重新设置包长度
+        	buffer.setInt(0, actuallyLength);
         }
 
         return buffer;

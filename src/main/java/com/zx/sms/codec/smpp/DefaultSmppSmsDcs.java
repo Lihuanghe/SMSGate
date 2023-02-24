@@ -18,7 +18,6 @@ public class DefaultSmppSmsDcs extends SmppSmsDcs {
 		switch(getAlphabet()) {
 			case GSM:
 			case ASCII:
-			case LATIN1:
 				return 160;
 			default:
 				return 140;

@@ -3,6 +3,7 @@ package com.zx.sms.codec.smpp;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.chinamobile.cmos.sms.SmsAlphabet;
 import com.chinamobile.cmos.sms.SmsMessage;
 import com.chinamobile.cmos.wap.push.SmsMmsNotificationMessage;
 import com.chinamobile.cmos.wap.push.SmsWapPushMessage;
@@ -17,6 +18,7 @@ import com.zx.sms.codec.cmpp.wap.LongMessageMarkerReadHandler;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.MsgId;
 import com.zx.sms.connect.manager.EndpointEntity;
+import com.zx.sms.connect.manager.smpp.SMPPClientEndpointEntity;
 import com.zx.sms.connect.manager.smpp.SMPPCodecChannelInitializer;
 import com.zx.sms.handler.smpp.SMPP2CMPPBusinessHandler;
 import com.zx.sms.handler.smpp.SMPPLongMessageHandler;
@@ -44,7 +46,11 @@ public class TestSMPP2CMPPDeliverCodec extends AbstractSMPPTestMessageCodec<Cmpp
 		pipeline.addLast("SMPP2CMPPCodec", new SMPP2CMPPBusinessHandler());
 	}
 	
-
+	protected EndpointEntity buildEndpointEntity() {
+		SMPPClientEndpointEntity entity = new SMPPClientEndpointEntity();
+		entity.setId("TestSMPP2CMPPDeliverCodec");
+		return entity;
+	}
 	@Test
 	public void testCodec() {
 

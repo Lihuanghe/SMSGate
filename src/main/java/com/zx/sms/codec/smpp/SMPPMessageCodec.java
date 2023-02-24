@@ -18,15 +18,18 @@ import io.netty.handler.codec.MessageToMessageCodec;
 
 public class SMPPMessageCodec extends MessageToMessageCodec<ByteBuf, Pdu> {
 	
-	private static final DeliverSmReceiptCodec reportcodec = new DeliverSmReceiptCodec();
+	
 	private final Logger logger = LoggerFactory.getLogger(SMPPMessageCodec.class);
 	
 	private EndpointEntity entity;
 	private PduTranscoder transcoder;
+	private DeliverSmReceiptCodec reportcodec;
 	
 	public SMPPMessageCodec(EndpointEntity entity) {
 		this.entity = entity;
-		this.transcoder =  new DefaultPduTranscoder(new DefaultPduTranscoderContext(),(SMPPEndpointEntity)(entity instanceof SMPPEndpointEntity ? entity : null));
+		SMPPEndpointEntity  smppEntity = (SMPPEndpointEntity)(entity instanceof SMPPEndpointEntity ? entity : null);
+		this.transcoder =  new DefaultPduTranscoder(new DefaultPduTranscoderContext(),smppEntity);
+		this.reportcodec = new DeliverSmReceiptCodec(smppEntity);
 	}
 
 	@Override
