@@ -223,7 +223,7 @@ public class TestMixedServerEndPoint {
 	private void testCMPPEndpoint() throws Exception {
 
 		CMPPClientEndpointEntity client = new CMPPClientEndpointEntity();
-		client.setId("client");
+		client.setId("mixcmppclient");
 //		client.setLocalhost("127.0.0.1");
 		// client.setLocalport(65521);
 		client.setHost("127.0.0.1");
@@ -271,7 +271,7 @@ public class TestMixedServerEndPoint {
 	private void testsgipEndpoint() throws Exception {
 
 		SgipClientEndpointEntity client = new SgipClientEndpointEntity();
-		client.setId("sgipclient");
+		client.setId("mixsgipclient");
 		client.setHost("127.0.0.1");
 		client.setPort(port);
 		client.setLoginName("33301");
@@ -309,7 +309,7 @@ public class TestMixedServerEndPoint {
 	private void testSMGPEndpoint() throws Exception {
 
 		SMGPClientEndpointEntity client = new SMGPClientEndpointEntity();
-		client.setId("smgpclient");
+		client.setId("mixsmgpclient");
 		client.setHost("127.0.0.1");
 		client.setPort(port);
 		client.setClientID("333");
@@ -348,7 +348,7 @@ public class TestMixedServerEndPoint {
 	private void testSMPPEndpoint() throws Exception {
 
 		SMPPClientEndpointEntity client = new SMPPClientEndpointEntity();
-		client.setId("smppclient");
+		client.setId("mixsmppclient");
 		client.setHost("127.0.0.1");
 		client.setPort(port);
 		client.setSystemId("901782");
