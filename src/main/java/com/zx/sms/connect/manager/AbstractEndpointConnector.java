@@ -137,7 +137,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 		ChannelPipeline pipeline = ch.pipeline();
 
-		if ("HTTP".equalsIgnoreCase(scheme)) {
+		if ("HTTP".equalsIgnoreCase(scheme) || "HTTPS".equalsIgnoreCase(scheme) ) {
 			if (username == null) {
 				pipeline.addLast(new HttpProxyHandler(new InetSocketAddress(host, port)));
 			} else {
@@ -226,7 +226,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			ch.attr(GlobalConstance.attributeKey).set(SessionState.Connect);
 			ch.attr(GlobalConstance.entityPointKey).set(endpoint);
 			ch.attr(GlobalConstance.sessionKey).set(sessionManager);
-			
+			ch.attr(GlobalConstance.channelActiveTime).set(System.currentTimeMillis());
 			getChannels().add(ch);
 			return true;
 		} else {
@@ -242,6 +242,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			ch.attr(GlobalConstance.attributeKey).set(SessionState.DisConnect);
 			ch.attr(GlobalConstance.sessionKey).set(null);
 			ch.attr(GlobalConstance.entityPointKey).set(null);
+			ch.attr(GlobalConstance.channelActiveTime).set(null);
 		}
 	}
 

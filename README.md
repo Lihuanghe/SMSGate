@@ -74,7 +74,9 @@
 ```
 	// 无username 和 password 可写为  http://ipaddress:port
 	client.setProxy("http://username:password@ipaddress:port");  //http代理
-	client.setProxy("socks4://username:password@ipaddress:port");  //socks4代理
+	client.setProxy("https://username:password@ipaddress:port");  //https代理
+	client.setProxy("socks://username@ipaddress:port");  //socks4代理
+	client.setProxy("socks4://username@ipaddress:port");  //socks4代理
 	client.setProxy("socks5://username:password@ipaddress:port");  //socks5代理
 
 ```

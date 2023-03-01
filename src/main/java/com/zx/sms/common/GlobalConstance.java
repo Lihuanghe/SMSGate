@@ -45,6 +45,7 @@ public final class GlobalConstance {
 	public static final AttributeKey<AbstractSessionStateManager> sessionKey = AttributeKey
 			.newInstance("__sessionStateManager");
 	public static final AttributeKey<AtomicInteger> SENDWINDOWKEY = AttributeKey.newInstance("_SendWindow_");
+	public static final AttributeKey<Long> channelActiveTime = AttributeKey.newInstance("_Active_ch_Time_");
 	public static final BlackHoleHandler blackhole = new BlackHoleHandler();
 	public static final String IdleCheckerHandlerName = "IdleStateHandler";
 	public static final String loggerNamePrefix = "entity.%s";

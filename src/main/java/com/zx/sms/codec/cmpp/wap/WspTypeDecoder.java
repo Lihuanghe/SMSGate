@@ -21,7 +21,7 @@ package com.zx.sms.codec.cmpp.wap;
  *  Implement the WSP data type decoder.
  *
  */
-public class WspTypeDecoder {
+class WspTypeDecoder {
 
     private static final int WAP_PDU_SHORT_LENGTH_MAX = 30;
     private static final int WAP_PDU_LENGTH_QUOTE = 31;
