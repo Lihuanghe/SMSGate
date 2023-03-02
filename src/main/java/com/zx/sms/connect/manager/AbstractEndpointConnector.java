@@ -329,14 +329,8 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			int idx = indexSeq.getAndIncrement();
 
 			try {
-				if(idx < collection.size()) {
-					Channel ret = collection.get(idx);
-					return ret;
-				}else {
-					Channel ret = collection.get(0);
-					indexSeq.set(0);
-					return ret;
-				}
+				Channel ret = collection.get(idx%size);
+				return ret;
 			} catch (IndexOutOfBoundsException ex) {
 				// 多线程情况可能抛异常
 				// 1：当线连接数为0了
