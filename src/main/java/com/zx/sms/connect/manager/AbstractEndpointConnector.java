@@ -326,7 +326,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			if (size == 1)
 				return collection.get(0);
 
-			int idx = indexSeq.getAndIncrement();
+			int idx = indexSeq.getAndIncrement() & 0xfffff; //避免为负数
 
 			try {
 				Channel ret = collection.get(idx%size);
@@ -335,6 +335,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 				// 多线程情况可能抛异常
 				// 1：当线连接数为0了
 				// 2：当前连接数小于index
+				indexSeq.set(0);
 				return collection.isEmpty() ? null : collection.get(0);
 			} finally {
 			}
