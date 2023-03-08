@@ -17,6 +17,7 @@ import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20PacketType;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20SubmitRequest;
 import com.zx.sms.common.GlobalConstance;
+import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
 
@@ -164,11 +165,17 @@ public class Cmpp20SubmitRequestMessageCodec extends MessageToMessageCodec<Messa
 			// bodyBuffer.writeByte(requestMessage.getDestterminaltype());//CMPP2.0
 			// 无该字段 不进行编解码
 
-			bodyBuffer.writeByte(requestMessage.getMsgLength());
+			int length = requestMessage.getMsgLength();
+			byte[] contents = requestMessage.getMsgContentBytes();
+			if(contents!=null && length != contents.length) {
+				logger.error("CmppSubmitRequestMessage messageContents length error . actualLength:{}",contents.length);
+				throw new NotSupportedException("CmppSubmitRequestMessage messageContents length error.");
+			}
+			
+			bodyBuffer.writeByte(length);
 
-			bodyBuffer.writeBytes(requestMessage.getMsgContentBytes());
-
-
+			bodyBuffer.writeBytes(contents);
+			
 			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getReserve().getBytes(GlobalConstance.defaultTransportCharset),
 					Cmpp20SubmitRequest.RESERVE.getLength(), 0));
 			

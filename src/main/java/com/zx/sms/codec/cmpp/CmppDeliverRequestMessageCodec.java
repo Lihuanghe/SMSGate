@@ -20,10 +20,12 @@ import com.zx.sms.codec.cmpp.packet.CmppReportRequest;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.codec.cmpp20.packet.Cmpp20ReportRequest;
 import com.zx.sms.common.GlobalConstance;
+import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
@@ -128,9 +130,15 @@ public class CmppDeliverRequestMessageCodec extends MessageToMessageCodec<Messag
 			
 
 			if (!requestMessage.isReport()) {
-				bodyBuffer.writeByte(requestMessage.getMsgLength());
+				int length = requestMessage.getMsgLength();
+				byte[] contents = requestMessage.getMsgContentBytes();
+				if(contents!=null && length != contents.length) {
+					logger.error("CmppDeliverRequestMessage messageContents length error . actualLength:{}",contents.length);
+					throw new NotSupportedException("CmppDeliverRequestMessage messageContents length error.");
+				}
+				bodyBuffer.writeByte(length);
 
-				bodyBuffer.writeBytes(requestMessage.getMsgContentBytes());
+				bodyBuffer.writeBytes(contents);
 				
 			} else {
 				bodyBuffer.writeByte(CmppReportRequest.DESTTERMINALID.getBodyLength());

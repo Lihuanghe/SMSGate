@@ -17,6 +17,7 @@ import com.zx.sms.codec.cmpp.packet.CmppPacketType;
 import com.zx.sms.codec.cmpp.packet.CmppSubmitRequest;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.common.GlobalConstance;
+import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.util.CMPPCommonUtil;
 import com.zx.sms.common.util.DefaultMsgIdUtil;
 
@@ -161,9 +162,16 @@ public class CmppSubmitRequestMessageCodec extends MessageToMessageCodec<Message
 			}
 			bodyBuffer.writeByte(requestMessage.getDestterminaltype());
 			
-			bodyBuffer.writeByte(requestMessage.getMsgLength());
+			int length = requestMessage.getMsgLength();
+			byte[] contents = requestMessage.getMsgContentBytes();
+			if(contents!=null && length != contents.length) {
+				logger.error("CmppSubmitRequestMessage messageContents length error . actualLength:{}",contents.length);
+				throw new NotSupportedException("CmppSubmitRequestMessage messageContents length error.");
+			}
+			
+			bodyBuffer.writeByte(length);
 
-			bodyBuffer.writeBytes(requestMessage.getMsgContentBytes());
+			bodyBuffer.writeBytes(contents);
 
 			bodyBuffer.writeBytes(CMPPCommonUtil.ensureLength(requestMessage.getLinkID().getBytes(GlobalConstance.defaultTransportCharset),
 					CmppSubmitRequest.LINKID.getLength(), 0));

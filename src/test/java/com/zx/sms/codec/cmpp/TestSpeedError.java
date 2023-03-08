@@ -16,6 +16,8 @@ import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
 import com.zx.sms.common.util.MsgId;
 import com.zx.sms.connect.manager.cmpp.CMPPClientEndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPCodecChannelInitializer;
+import com.zx.sms.handler.cmpp.CMPPDeliverLongMessageHandler;
+import com.zx.sms.handler.cmpp.CMPPSubmitLongMessageHandler;
 import com.zx.sms.session.cmpp.SessionStateManager;
 
 import io.netty.buffer.ByteBuf;
@@ -60,6 +62,8 @@ public class TestSpeedError {
 					new WindowSizeChannelTrafficShapingHandler(client, 100));
 			
 			pipeline.addLast("session", new SessionStateManager(client, new ConcurrentHashMap(), true));
+			pipeline.addLast( "CMPPDeliverLongMessageHandler", new CMPPDeliverLongMessageHandler(client));
+			pipeline.addLast("CMPPSubmitLongMessageHandler",  new CMPPSubmitLongMessageHandler(client));
 		}
 	});
 
@@ -110,8 +114,7 @@ public class TestSpeedError {
 		ch.writeInbound(ch.readOutbound());
 
 		CmppSubmitResponseMessage respret = ch.readInbound();
-		// System.out.println(respret.getRequest());
-		Assert.assertSame(msg, respret.getRequest());
+		Assert.assertEquals(msg.toString(), respret.getRequest().toString());
 		Assert.assertNotEquals(respret.getMsgId(), msg.getMsgid());
 
 		// 没有等待发送的消息
@@ -145,7 +148,7 @@ public class TestSpeedError {
 		
 		ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(b));
 		CmppSubmitRequestMessage result = (CmppSubmitRequestMessage) in.readObject();
-
+	
 		ChannelFuture futurn = ch.writeAndFlush(result);
 		// System.out.println(futurn.isSuccess());
 		// Thread.sleep(100);
