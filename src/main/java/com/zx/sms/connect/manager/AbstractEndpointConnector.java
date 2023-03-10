@@ -51,6 +51,8 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	 * 端口
 	 */
 	private EndpointEntity endpoint;
+	
+	private static final String BDBPREFIX = "Session_" ;
 
 	private CircularList channels = new CircularList();
 
@@ -82,6 +84,9 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			return;
 		for (Channel ch : chs) {
 			close(ch);
+		}
+		if (endpoint.isReSendFailMsg()) {
+			BDBStoredMapFactoryImpl.INS.close(endpoint.getId(),BDBPREFIX + endpoint.getId());
 		}
 	}
 
@@ -194,7 +199,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			ConcurrentMap<Serializable, VersionObject> storedMap = null;
 			if (endpoint.isReSendFailMsg()) {
 				// 如果上次发送失败的消息要重发一次，则要创建持久化Map用于存储发送的message
-				storedMap = BDBStoredMapFactoryImpl.INS.buildMap(endpoint.getId(), "Session_" + endpoint.getId());
+				storedMap = BDBStoredMapFactoryImpl.INS.buildMap(endpoint.getId(), BDBPREFIX + endpoint.getId());
 			} else {
 				storedMap = new ConcurrentHashMap();
 			}
@@ -243,6 +248,11 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			ch.attr(GlobalConstance.sessionKey).set(null);
 			ch.attr(GlobalConstance.entityPointKey).set(null);
 			ch.attr(GlobalConstance.channelActiveTime).set(null);
+		}
+		synchronized(this) {
+			if( endpoint.isReSendFailMsg() && getChannels().size() == 0 ) {
+				BDBStoredMapFactoryImpl.INS.close(endpoint.getId(),BDBPREFIX + endpoint.getId());
+			}
 		}
 	}
 
