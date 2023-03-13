@@ -107,6 +107,13 @@ public abstract class EndpointEntity implements Serializable {
 	 */
 	private String proxy;
 	
+	/**
+	 * 是否支持 proxy protocol 代理协议
+	 * <br /> 
+	 * http://www.haproxy.org/download/1.8/doc/proxy-protocol.txt
+	 */
+	private boolean proxyProtocol =  false;
+	
 	private volatile EndpointConnector connector;
 	
 	private int window = 16;
@@ -207,8 +214,14 @@ public abstract class EndpointEntity implements Serializable {
 	public void setUseSSL(boolean useSSL) {
 		this.useSSL = useSSL;
 	}
-    
-    public short getMaxChannels() {
+	
+    public boolean isProxyProtocol() {
+		return proxyProtocol;
+	}
+	public void setProxyProtocol(boolean proxyProtocol) {
+		this.proxyProtocol = proxyProtocol;
+	}
+	public short getMaxChannels() {
 		return maxChannels;
 	}
 	public void setMaxChannels(short maxChannels) {

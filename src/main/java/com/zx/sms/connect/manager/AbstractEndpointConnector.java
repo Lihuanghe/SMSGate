@@ -21,6 +21,7 @@ import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.storedMap.BDBStoredMapFactoryImpl;
 import com.zx.sms.common.storedMap.VersionObject;
 import com.zx.sms.connect.manager.cmpp.CMPPServerEndpointEntity;
+import com.zx.sms.handler.HAProxyMessageHandler;
 import com.zx.sms.handler.MessageLogHandler;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
@@ -31,6 +32,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
+import io.netty.handler.codec.haproxy.HAProxyMessageDecoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.proxy.HttpProxyHandler;
@@ -181,6 +183,12 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 					} catch (Exception ex) {
 						logger.error("parse Proxy URI {} failed.", uriString, ex);
 					}
+				}
+				
+				if (entity instanceof ServerEndpoint && entity.isProxyProtocol()) {
+					logger.info ("add HAProxyMessageHandler .");
+					pipeline.addLast(new HAProxyMessageDecoder());
+					pipeline.addLast(new HAProxyMessageHandler());
 				}
 
 				if (entity.isUseSSL() && getSslCtx() != null) {

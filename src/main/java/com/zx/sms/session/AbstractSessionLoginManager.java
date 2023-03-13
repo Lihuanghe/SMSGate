@@ -118,6 +118,11 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 
 	private boolean validRemoteAddress(EndpointEntity childentity, Channel channel) {
 		InetSocketAddress remoteAddr = (InetSocketAddress) channel.remoteAddress();
+		
+		//因为支持proxy protocol , 优先使用 attr里获取的原始IP
+		if(channel.hasAttr(GlobalConstance.proxyProtocolKey)) {
+			remoteAddr = channel.attr(GlobalConstance.proxyProtocolKey).get();
+		}
 
 		List<String> allowed = childentity.getAllowedAddr();
 		// 如果配置的IP白名单，则必须先满足白名单要求
@@ -132,13 +137,15 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 							break;
 						}
 					} catch (UnknownHostException e) {
-
+						e.printStackTrace();
 					}
 				}
 			}
 			// 检查所有白名单都不满足
-			if (!isallow)
+			if (!isallow) {
+				logger.warn("{} address not allowed." ,remoteAddr);
 				return false;
+			}
 		}
 
 		return validAddressHost(childentity, channel);

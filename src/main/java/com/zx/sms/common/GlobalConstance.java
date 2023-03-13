@@ -1,5 +1,6 @@
 package com.zx.sms.common;
 
+import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -42,6 +43,8 @@ public final class GlobalConstance {
 	public static final SMGPServerIdleStateHandler smgpidleHandler = new SMGPServerIdleStateHandler();
 	public static final AttributeKey<EndpointEntity> entityPointKey = AttributeKey.newInstance("__EndpointEntity");
 	public static final AttributeKey<SessionState> attributeKey = AttributeKey.newInstance(SessionState.Connect.name());
+	public static final AttributeKey<InetSocketAddress> proxyProtocolKey = AttributeKey.newInstance("_proxyProtocolKey_");
+	
 	public static final AttributeKey<AbstractSessionStateManager> sessionKey = AttributeKey
 			.newInstance("__sessionStateManager");
 	public static final AttributeKey<AtomicInteger> SENDWINDOWKEY = AttributeKey.newInstance("_SendWindow_");

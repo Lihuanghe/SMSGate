@@ -62,6 +62,7 @@ public class IPRange {
 		else
 			return inetAddress.equals(gennetworkPart(src,Byte.valueOf(mask).byteValue()));
 		}catch(Exception e) {
+			e.printStackTrace();
 			return false;
 		}
 	}
