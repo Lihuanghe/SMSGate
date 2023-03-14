@@ -29,8 +29,9 @@ public class ProxyProtocolEndpointConnector extends CMPPClientEndpointConnector{
 	}
 	
 	protected void doinitPipeLine(ChannelPipeline pipeline) {
-		pipeline.addLast(HAProxyMessageEncoder.INSTANCE);
-		pipeline.addLast(new ProxyProtocolClientHandler());
+		//handler加在最前端
+		pipeline.addFirst(new ProxyProtocolClientHandler());
+		pipeline.addFirst(HAProxyMessageEncoder.INSTANCE);
 		
 		super.doinitPipeLine(pipeline);
 	}

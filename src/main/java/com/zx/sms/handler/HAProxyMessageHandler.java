@@ -1,7 +1,5 @@
 package com.zx.sms.handler;
 
-import java.net.InetSocketAddress;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,9 +23,7 @@ public class HAProxyMessageHandler extends SimpleChannelInboundHandler<HAProxyMe
 			logger.info("receive proxy protocol msg  : {}",msg.toString());
 		}
 		
-		String sourceAddr = msg.sourceAddress();
-		int port = msg.sourcePort();
-		ctx.channel().attr(GlobalConstance.proxyProtocolKey).set(new InetSocketAddress(sourceAddr, port));
+		ctx.channel().attr(GlobalConstance.proxyProtocolKey).set(msg);
 		
 		ctx.pipeline().remove(this);
 		//重要：这个消息在这里消费掉后，不能向后边handler传递

@@ -25,6 +25,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.TooLongFrameException;
+import io.netty.handler.codec.haproxy.HAProxyMessage;
 import io.netty.handler.timeout.IdleStateHandler;
 
 /**
@@ -121,7 +122,12 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 		
 		//因为支持proxy protocol , 优先使用 attr里获取的原始IP
 		if(channel.hasAttr(GlobalConstance.proxyProtocolKey)) {
-			remoteAddr = channel.attr(GlobalConstance.proxyProtocolKey).get();
+			HAProxyMessage proxyMessage = channel.attr(GlobalConstance.proxyProtocolKey).get();
+			if(proxyMessage != null) {
+				String sourceAddr = proxyMessage.sourceAddress();
+				int port = proxyMessage.sourcePort();
+				remoteAddr = new InetSocketAddress(sourceAddr, port);
+			}
 		}
 
 		List<String> allowed = childentity.getAllowedAddr();

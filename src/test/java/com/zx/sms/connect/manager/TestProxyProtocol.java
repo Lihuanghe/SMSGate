@@ -44,7 +44,7 @@ public class TestProxyProtocol {
 		server.setPort(port);
 		server.setValid(true);
 		// 使用ssl加密数据流
-		server.setUseSSL(false);
+		server.setUseSSL(true);
 		
 		//打开支持proxy protocol的开关
 		server.setProxyProtocol(true);
@@ -118,14 +118,14 @@ public class TestProxyProtocol {
 		client.setRetryWaitTimeSec((short) 30);
 		client.setMaxRetryCnt((short)1);
 		client.setCloseWhenRetryFailed(false);
-		client.setUseSSL(false);
+		client.setUseSSL(true);
 //		 client.setWriteLimit(150);
 		client.setWindow(16);
 		client.setReSendFailMsg(TestConstants.isReSendFailMsg);
 		client.setSupportLongmsg(SupportLongMessage.BOTH);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		
-		int count = 10;
+		int count = 1000;
 //		int count = TestConstants.Count;
 		
 		CMPPSessionConnectedHandler sender = new CMPPSessionConnectedHandler(count);

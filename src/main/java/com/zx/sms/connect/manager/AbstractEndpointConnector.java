@@ -272,12 +272,9 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		if (entity instanceof CMPPServerEndpointEntity) {
 			return;
 		}
-		pipe.addFirst("socketLog", new LoggingHandler(String.format(GlobalConstance.loggerNamePrefix, entity.getId()), LogLevel.TRACE));
-
+		pipe.addBefore(GlobalConstance.IdleCheckerHandlerName,"socketLog", new LoggingHandler(String.format(GlobalConstance.loggerNamePrefix, entity.getId()), LogLevel.TRACE));
 		// 调用子类的bind方法
 		doBindHandler(pipe, entity);
-
-		
 
 		List<BusinessHandlerInterface> handlers = entity.getBusinessHandlerSet();
 		if (handlers != null && handlers.size() > 0) {

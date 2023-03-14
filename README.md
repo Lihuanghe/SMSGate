@@ -139,6 +139,13 @@
 
 2)  提供一个Redis 的合并实现类，可以参考测试包中的代码：`RedisLongMessageFrameCache` ,  `RedisLongMessageFrameProvider`
 
+- `网关服务前边有nginx，haproxy代理的时候如何获取真实的客户端IP?`
+
+首先感谢群友 `狠人` 提供了使用[`proxy protocol协议`](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt)支持从代理服务器获取真实客户IP的思路。
+
+针对ServerEndpoint ，通过设置`setProxyProtocol(true)` 开启proxy protocol协议开关。框架从channel上第一个消息（HAProxyMessage）获取真实的客户端IP后，设置到channel的 Attribute属性上。业务代码可以从 `channel.attr(GlobalConstance.proxyProtocolKey)` 获取该信息，从而拿到真实的客户IP.
+该特性使得短信网关的集群部署架构更为灵活，比如：服务入口使用nginx,haproxy等代理，真实网关服务以集群的方式部署在后端，横向扩展。
+
 - `如何关联状态报告【即短信回执，以下都称为状态报告】和submit消息?`
 
 运宽商网关响应`submitRequest`消息时，你会收到`submitResponse`消息。在`response`里会有`msgId`。通过这个`msgId`跟之后收到的状态报告(`reportMessage`)里的`msgId`关联。

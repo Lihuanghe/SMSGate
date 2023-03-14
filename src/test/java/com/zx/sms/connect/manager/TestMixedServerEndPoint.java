@@ -52,6 +52,7 @@ public class TestMixedServerEndPoint {
 	int port = 36890;
 	int count = 25000;
 	int writeLimit = 2500;
+	boolean useSSL = true;
 	MixedServerEndpointEntity server = new MixedServerEndpointEntity();
 	
 	CMPPMessageReceiveHandler cmppreceiver = new CMPPMessageReceiveHandler();
@@ -69,7 +70,7 @@ public class TestMixedServerEndPoint {
 		server.setPort(port);
 		server.setValid(true);
 		// 使用ssl加密数据流
-		server.setUseSSL(false);
+		server.setUseSSL(useSSL);
 
 		CMPPServerChildEndpointEntity cmppchild = new CMPPServerChildEndpointEntity();
 		cmppchild.setId("mixCmppChild");
@@ -238,7 +239,7 @@ public class TestMixedServerEndPoint {
 		client.setRetryWaitTimeSec((short) 30);
 		client.setMaxRetryCnt((short) 1);
 		client.setCloseWhenRetryFailed(false);
-		client.setUseSSL(false);
+		client.setUseSSL(useSSL);
 		client.setWriteLimit(writeLimit);
 		client.setWindow(16);
 		client.setReSendFailMsg(TestConstants.isReSendFailMsg);
@@ -280,7 +281,7 @@ public class TestMixedServerEndPoint {
 		client.setNodeId(3073100002L);
 		client.setMaxChannels((short) 1);
 		client.setRetryWaitTimeSec((short) 100);
-		client.setUseSSL(false);
+		client.setUseSSL(useSSL);
 		client.setReSendFailMsg(TestConstants.isReSendFailMsg);
 		client.setIdleTimeSec((short) 120);
 		client.setWriteLimit(writeLimit);
@@ -318,7 +319,7 @@ public class TestMixedServerEndPoint {
 
 		client.setMaxChannels((short) 1);
 		client.setRetryWaitTimeSec((short) 100);
-		client.setUseSSL(false);
+		client.setUseSSL(useSSL);
 		client.setReSendFailMsg(TestConstants.isReSendFailMsg);
 		client.setClientVersion((byte) 0x13);
 		client.setWriteLimit(writeLimit);
@@ -358,7 +359,7 @@ public class TestMixedServerEndPoint {
 		client.setInterfaceVersion((byte) 0x34);
 		client.setMaxChannels((short) 1);
 		client.setRetryWaitTimeSec((short) 100);
-		client.setUseSSL(false);
+		client.setUseSSL(useSSL);
 		client.setReSendFailMsg(TestConstants.isReSendFailMsg);
 		client.setWriteLimit(writeLimit);
 //		client.setReadLimit(200);
