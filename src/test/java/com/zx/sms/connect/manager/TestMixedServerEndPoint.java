@@ -86,7 +86,7 @@ public class TestMixedServerEndPoint {
 		cmppchild.setRetryWaitTimeSec((short) 30);
 		cmppchild.setMaxRetryCnt((short) 3);
 
-		cmppchild.setReSendFailMsg(false);
+		cmppchild.setReSendFailMsg(TestConstants.isReSendFailMsg);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
 
 		serverhandlers.add(new AbstractBusinessHandler() {
@@ -120,7 +120,7 @@ public class TestMixedServerEndPoint {
 		sgipchild.setMaxChannels((short) 3);
 		sgipchild.setRetryWaitTimeSec((short) 30);
 		sgipchild.setMaxRetryCnt((short) 3);
-		sgipchild.setReSendFailMsg(false);
+		sgipchild.setReSendFailMsg(TestConstants.isReSendFailMsg);
 		sgipchild.setIdleTimeSec((short) 30);
 		sgipchild.setSupportLongmsg(SupportLongMessage.BOTH);
 		serverhandlers = new ArrayList<BusinessHandlerInterface>();
@@ -139,7 +139,7 @@ public class TestMixedServerEndPoint {
 		sgmpchild.setMaxChannels((short) 3);
 		sgmpchild.setRetryWaitTimeSec((short) 30);
 		sgmpchild.setMaxRetryCnt((short) 3);
-		sgmpchild.setReSendFailMsg(false);
+		sgmpchild.setReSendFailMsg(TestConstants.isReSendFailMsg);
 		sgmpchild.setIdleTimeSec((short) 15);
 		sgmpchild.setSupportLongmsg(SupportLongMessage.SEND); // 接收长短信时不自动合并
 		serverhandlers = new ArrayList<BusinessHandlerInterface>();
@@ -157,7 +157,7 @@ public class TestMixedServerEndPoint {
 		smppchild.setMaxChannels((short) 3);
 		smppchild.setRetryWaitTimeSec((short) 30);
 		smppchild.setMaxRetryCnt((short) 3);
-		smppchild.setReSendFailMsg(false);
+		smppchild.setReSendFailMsg(TestConstants.isReSendFailMsg);
 		smppchild.setIdleTimeSec((short) 15);
 		serverhandlers = new ArrayList<BusinessHandlerInterface>();
 

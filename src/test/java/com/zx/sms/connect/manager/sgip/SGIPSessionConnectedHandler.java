@@ -28,7 +28,7 @@ public class SGIPSessionConnectedHandler extends SessionConnectedHandler {
 			requestMessage.setSpnumber("10000");
 			requestMessage.setUsernumber("13800138000");
 			requestMessage.setMsgContent(sms);
-			requestMessage.setReportflag((short)0);
+			requestMessage.setReportflag((short)1);
 			return requestMessage;
 		}
 	}

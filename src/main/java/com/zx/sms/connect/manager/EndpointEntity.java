@@ -116,7 +116,7 @@ public abstract class EndpointEntity implements Serializable {
 	
 	private volatile EndpointConnector connector;
 	
-	private int window = 16;
+	private int window = 32;
 	
 	/**
 	 *增加客户端IP校验配置 

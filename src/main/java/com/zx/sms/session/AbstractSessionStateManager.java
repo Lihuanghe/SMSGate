@@ -188,7 +188,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 								logger.warn("current channel {} is closed.send requestMsg {} from other channel {} which is active.", ctx.channel(),requestmsg,otherCtx.channel());
 
 							} catch (Exception e) {
-								errlogger.error("send requestMsg {} from other channel {} which is active ", e,otherCtx.channel());
+								errlogger.error("send requestMsg {} from other channel {} which is active ", requestmsg,otherCtx.channel(),e);
 							}
 						} else {
 							errlogger.error("Channel closed . Msg {} may not send Success. ", requestmsg);
@@ -266,7 +266,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 					
 					//响应延迟超过25%的超时时间,打印告警，并暂停一会
 					if(delay > (entity.getRetryWaitTimeSec() * 1000/4)){
-						errlogger.warn("Entity {} receive response time delay . delayTime :{} , SequenceId :{}", entity.getId(),delay,getSequenceId(response));
+						errlogger.warn("Entity {} receive response time delay . delayTime :{} , Request :{}", entity.getId(),delay,request);
 						//接收response回复时延太高，有可能对端已经开始积压了，暂停发送。
 						setchannelunwritableWhenDelay(ctx,delay-minDelay);
 					}
@@ -464,7 +464,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 
 		} else if (entry == null) {
 			// 当程序执行到这里时，可能已收到resp消息，此时entry为空。
-			logger.warn("receive seq {} not exists in msgRetryMap,maybe response received before create retrytask .", seq);
+			logger.warn("receive message {} not exists in msgRetryMap,maybe response received before create retrytask .", message);
 		}
 		
 	}
@@ -601,7 +601,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 					}else {
 						//发送失败,必须清除msgRetryMap里的对象，否则上层业务
 						//可能提交相同seq的消息，造成死循环
-						logger.error("remove fail message Sequense {}", seq);
+						logger.error("remove fail message {}", message,future.cause());
 						
 						incrementSendWindow(ctx);
 						

@@ -33,7 +33,7 @@ public class SMPPSessionConnectedHandler extends SessionConnectedHandler {
 	        return pdu;
 		} else {
 			SubmitSm pdu = new SubmitSm();
-			pdu.setRegisteredDelivery((byte)0);
+			pdu.setRegisteredDelivery((byte)1);
 	        pdu.setSourceAddress(new Address((byte)0,(byte)0,"10000"));
 	        pdu.setDestAddress(new Address((byte)0,(byte)0,"13800138000"));
 //	        pdu.setSmsMsg(new SmsTextMessage(content,SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.GSM,SmsMsgClass.CLASS_UNKNOWN)));

@@ -50,7 +50,7 @@ public class CMPPSessionConnectedHandler extends SessionConnectedHandler {
 			msg.setSrcId("100009");
 			msg.setLinkID("0000");
 			msg.setMsgContent(System.currentTimeMillis() +" --  "+content);
-			msg.setRegisteredDelivery((short)0);
+			msg.setRegisteredDelivery((short)1);
 			msg.setServiceId("10000");
 			return msg;
 		}

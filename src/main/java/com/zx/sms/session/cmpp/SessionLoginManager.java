@@ -1,5 +1,6 @@
 package com.zx.sms.session.cmpp;
 
+import java.net.InetAddress;
 import java.util.Arrays;
 
 import org.apache.commons.codec.binary.Hex;
@@ -87,7 +88,7 @@ public class SessionLoginManager extends AbstractSessionLoginManager {
 	}
 
 	@Override
-	protected boolean validAddressHost(EndpointEntity childentity,Channel channel) {
+	protected boolean validAddressHost(EndpointEntity childentity,Channel channel,InetAddress remoteAddr) {
 		return true;
 	}
 

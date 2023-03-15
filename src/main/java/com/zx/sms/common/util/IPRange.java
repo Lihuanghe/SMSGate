@@ -31,6 +31,8 @@ public class IPRange {
 	}
 	
 	private InetAddress gennetworkPart(InetAddress src,byte bmask) throws UnknownHostException {
+		if(src == null)
+			return null;
 		byte[] addr = src.getAddress();
 		int pos = bmask / 8;
 		int bitp = bmask % 8;

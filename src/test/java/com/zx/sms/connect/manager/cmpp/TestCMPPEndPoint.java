@@ -61,7 +61,7 @@ public class TestCMPPEndPoint {
 //		iplist.add("192.168.98.48/18");
 //		child.setAllowedAddr(iplist);
 		
-		child.setReSendFailMsg(false);
+		child.setReSendFailMsg(TestConstants.isReSendFailMsg);
 		// child.setWriteLimit(200);
 		// child.setReadLimit(200);
 		List<BusinessHandlerInterface> serverhandlers = new ArrayList<BusinessHandlerInterface>();
