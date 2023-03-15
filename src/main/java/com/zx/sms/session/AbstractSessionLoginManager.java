@@ -1,5 +1,6 @@
 package com.zx.sms.session;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -105,7 +106,7 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 
 	protected abstract EndpointEntity queryEndpointEntityByMsg(Object msg);
 
-	protected abstract boolean validAddressHost(EndpointEntity childentity, Channel channel);
+	protected abstract boolean validAddressHost(EndpointEntity childentity, Channel channel,InetAddress remoteAddr);
 
 	protected abstract int validClientMsg(EndpointEntity entity, Object message);
 
@@ -116,20 +117,30 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 	protected abstract void doLoginSuccess(ChannelHandlerContext ctx, EndpointEntity entity, Object message);
 
 	protected abstract void failedLogin(ChannelHandlerContext ctx, Object message, long status);
-
-	private boolean validRemoteAddress(EndpointEntity childentity, Channel channel) {
-		InetSocketAddress remoteAddr = (InetSocketAddress) channel.remoteAddress();
-		
+	
+	
+	private InetAddress getRemoteAddress(Channel channel) {
+		InetAddress remoteAddr = ((InetSocketAddress) channel.remoteAddress()).getAddress();
 		//因为支持proxy protocol , 优先使用 attr里获取的原始IP
 		if(channel.hasAttr(GlobalConstance.proxyProtocolKey)) {
 			HAProxyMessage proxyMessage = channel.attr(GlobalConstance.proxyProtocolKey).get();
 			if(proxyMessage != null) {
 				String sourceAddr = proxyMessage.sourceAddress();
 				int port = proxyMessage.sourcePort();
-				remoteAddr = new InetSocketAddress(sourceAddr, port);
+				try {
+					remoteAddr = InetAddress.getByName(sourceAddr);
+		        } catch(UnknownHostException e) {
+		        	remoteAddr = null;
+		        }
 			}
 		}
+		return remoteAddr;
+	}
 
+	private boolean validRemoteAddress(EndpointEntity childentity, Channel channel) {
+
+		InetAddress remoteAddr = getRemoteAddress(channel);
+		
 		List<String> allowed = childentity.getAllowedAddr();
 		// 如果配置的IP白名单，则必须先满足白名单要求
 		if (allowed != null && !allowed.isEmpty()) {
@@ -138,7 +149,7 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 				if (StringUtils.isNotBlank(strIp)) {
 					try {
 						IPRange r = new IPRange(strIp.trim());
-						if (r.isInRange(remoteAddr.getAddress())) {
+						if (r.isInRange(remoteAddr)) {
 							isallow = true;
 							break;
 						}
@@ -154,7 +165,7 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 			}
 		}
 
-		return validAddressHost(childentity, channel);
+		return validAddressHost(childentity, channel,remoteAddr);
 	}
 
 	protected void receiveConnectMessage(ChannelHandlerContext ctx, Object message) throws Exception {

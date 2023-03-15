@@ -1,5 +1,7 @@
 package com.zx.sms.session.smpp;
 
+import java.net.InetAddress;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +67,7 @@ public class SMPPSessionLoginManager extends AbstractSessionLoginManager {
 	}
 
 	@Override
-	protected boolean validAddressHost(EndpointEntity childentity,Channel channel) {
+	protected boolean validAddressHost(EndpointEntity childentity,Channel channel,InetAddress remoteAddr) {
 		return true;
 	}
 
