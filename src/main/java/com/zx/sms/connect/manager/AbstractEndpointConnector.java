@@ -1,8 +1,6 @@
 package com.zx.sms.connect.manager;
 
 import java.io.Serializable;
-import java.net.InetSocketAddress;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,18 +8,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zx.sms.BaseMessage;
 import com.zx.sms.codec.cmpp.wap.LongMessageMarkerReadHandler;
 import com.zx.sms.common.GlobalConstance;
-import com.zx.sms.common.NotSupportedException;
 import com.zx.sms.common.storedMap.BDBStoredMapFactoryImpl;
 import com.zx.sms.common.storedMap.VersionObject;
 import com.zx.sms.connect.manager.cmpp.CMPPServerEndpointEntity;
-import com.zx.sms.handler.HAProxyMessageHandler;
 import com.zx.sms.handler.MessageLogHandler;
 import com.zx.sms.handler.api.AbstractBusinessHandler;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
@@ -30,15 +25,9 @@ import com.zx.sms.session.cmpp.SessionState;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
-import io.netty.handler.codec.haproxy.HAProxyMessageDecoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.proxy.HttpProxyHandler;
-import io.netty.handler.proxy.Socks4ProxyHandler;
-import io.netty.handler.proxy.Socks5ProxyHandler;
-import io.netty.handler.ssl.SslContext;
 import io.netty.handler.traffic.WindowSizeChannelTrafficShapingHandler;
 import io.netty.util.concurrent.Promise;
 
@@ -48,7 +37,6 @@ import io.netty.util.concurrent.Promise;
 public abstract class AbstractEndpointConnector implements EndpointConnector<EndpointEntity> {
 	private static final Logger logger = LoggerFactory.getLogger(AbstractEndpointConnector.class);
 
-	private SslContext sslCtx = null;
 	/**
 	 * 端口
 	 */
@@ -60,10 +48,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 
 	public AbstractEndpointConnector(EndpointEntity endpoint) {
 		this.endpoint = endpoint;
-		this.sslCtx = createSslCtx();
 	}
-
-	protected abstract SslContext createSslCtx();
 
 	@Override
 	public EndpointEntity getEndpointEntity() {
@@ -104,10 +89,6 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		return null;
 	}
 
-	public SslContext getSslCtx() {
-		return sslCtx;
-	}
-
 	@Override
 	public int getConnectionNum() {
 
@@ -121,83 +102,6 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 	protected abstract AbstractSessionStateManager createSessionManager(EndpointEntity entity, ConcurrentMap storeMap, boolean presend);
 
 	protected abstract void doBindHandler(ChannelPipeline pipe, EndpointEntity entity);
-
-	protected abstract void doinitPipeLine(ChannelPipeline pipeline);
-
-	protected void addProxyHandler(Channel ch, URI proxy) throws NotSupportedException {
-		if (proxy == null)
-			return;
-		String scheme = proxy.getScheme();
-		String userinfo = proxy.getUserInfo();
-		String host = proxy.getHost();
-		int port = proxy.getPort();
-		String username = null;
-		String pass = null;
-
-		if (StringUtils.isNotBlank(userinfo)) {
-			int idx = userinfo.indexOf(":");
-			if (idx > 0) {
-				username = userinfo.substring(0, idx);
-				pass = userinfo.substring(idx + 1);
-			}
-		}
-
-		ChannelPipeline pipeline = ch.pipeline();
-
-		if ("HTTP".equalsIgnoreCase(scheme) || "HTTPS".equalsIgnoreCase(scheme) ) {
-			if (username == null) {
-				pipeline.addLast(new HttpProxyHandler(new InetSocketAddress(host, port)));
-			} else {
-				pipeline.addLast(new HttpProxyHandler(new InetSocketAddress(host, port), username, pass));
-			}
-		} else if ("SOCKS5".equalsIgnoreCase(scheme)) {
-			if (username == null) {
-				pipeline.addLast(new Socks5ProxyHandler(new InetSocketAddress(host, port)));
-			} else {
-				pipeline.addLast(new Socks5ProxyHandler(new InetSocketAddress(host, port), username, pass));
-			}
-		} else if ("SOCKS4".equalsIgnoreCase(scheme) || "SOCKS".equalsIgnoreCase(scheme)) {
-			if (username == null) {
-				pipeline.addLast(new Socks4ProxyHandler(new InetSocketAddress(host, port)));
-			} else {
-				pipeline.addLast(new Socks4ProxyHandler(new InetSocketAddress(host, port), username));
-			}
-		} else {
-			throw new NotSupportedException("not support proxy protocol " + scheme);
-		}
-	}
-
-	protected ChannelInitializer<?> initPipeLine() {
-
-		return new ChannelInitializer<Channel>() {
-
-			@Override
-			protected void initChannel(Channel ch) throws Exception {
-				ChannelPipeline pipeline = ch.pipeline();
-				EndpointEntity entity = getEndpointEntity();
-				if (entity instanceof ClientEndpoint && StringUtils.isNotBlank(entity.getProxy())) {
-					String uriString = entity.getProxy();
-					try {
-						URI uri = URI.create(uriString);
-						addProxyHandler(ch, uri);
-					} catch (Exception ex) {
-						logger.error("parse Proxy URI {} failed.", uriString, ex);
-					}
-				}
-				
-				if (entity instanceof ServerEndpoint && entity.isProxyProtocol()) {
-					logger.info ("add HAProxyMessageHandler .");
-					pipeline.addLast(new HAProxyMessageDecoder());
-					pipeline.addLast(new HAProxyMessageHandler());
-				}
-
-				if (entity.isUseSSL() && getSslCtx() != null) {
-					initSslCtx(ch, entity);
-				}
-				doinitPipeLine(pipeline);
-			}
-		};
-	};
 
 	public synchronized boolean addChannel(Channel ch) {
 		int nowConnCnt = getConnectionNum();
@@ -310,10 +214,6 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 		pipe.addLast("BlackHole", GlobalConstance.blackhole);
 
 	}
-
-	protected abstract void initSslCtx(Channel ch, EndpointEntity entity);
-
-
 
 	public Channel[] getallChannel() {
 		return channels.getall();

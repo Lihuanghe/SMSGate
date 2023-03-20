@@ -13,10 +13,8 @@ import com.zx.sms.handler.cmpp.CMPPSubmitLongMessageHandler;
 import com.zx.sms.session.AbstractSessionStateManager;
 import com.zx.sms.session.cmpp.SessionStateManager;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelPipeline;
-import io.netty.handler.ssl.SslContext;
 
 public class CMPPServerChildEndpointConnector extends AbstractEndpointConnector {
 	private static final Logger logger = LoggerFactory.getLogger(CMPPServerChildEndpointConnector.class);
@@ -52,17 +50,4 @@ public class CMPPServerChildEndpointConnector extends AbstractEndpointConnector 
 		pipe.addLast("CmppTerminateResponseMessageHandler", GlobalConstance.terminateRespHandler);
 	}
 
-	@Override
-	protected SslContext createSslCtx() {
-		return null;
-	}
-
-	@Override
-	protected void initSslCtx(Channel ch, EndpointEntity entity) {
-	}
-
-	@Override
-	protected void doinitPipeLine(ChannelPipeline pipeline) {
-		
-	}
 }

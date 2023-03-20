@@ -65,7 +65,7 @@ public class TestProxyProtocol {
 		
 		//设置服务端只接收这个虚拟的来源IP 8.8.8.8 的请求
 		List<String> allowIp = new ArrayList<String>();
-		String allowedIp = "8.8.8.8";
+		String allowedIp = "8.8.8.0/24";
 		allowIp.add(allowedIp);
 		child.setAllowedAddr(allowIp);
 		
@@ -102,10 +102,8 @@ public class TestProxyProtocol {
 		EndpointManager.INS.openEndpoint(server);
 
 		System.out.println("ProxyProtocolCMPPClientEndpointEntity 模拟nginx在请求关增加proxy protocol内容：设置来源IP为:" + allowedIp);
-		CMPPClientEndpointEntity client = new ProxyProtocolCMPPClientEndpointEntity();
+		CMPPClientEndpointEntity client = new ProxyProtocolCMPPClientEndpointEntity("8.8.8.8");
 		client.setId("proxy-client");
-//		client.setLocalhost("127.0.0.1");
-		// client.setLocalport(65521);
 		client.setHost("127.0.0.1");
 		client.setPort(port);
 		client.setChartset(Charset.forName("utf-8"));

@@ -21,7 +21,6 @@ public class MixedServerEndpointConnector extends AbstractServerEndpointConnecto
 	@Override
 	protected void doinitPipeLine(ChannelPipeline pipeline) {
 		EndpointEntity entity = getEndpointEntity();
-		super.doinitPipeLine(pipeline);
 		pipeline.addLast(GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, entity.getIdleTimeSec(), TimeUnit.SECONDS));
 		pipeline.addLast(GlobalConstance.MixedServerIdleStateHandler, GlobalConstance.sgipidleHandler);
 		pipeline.addLast(GlobalConstance.PreLengthFieldBasedFrameDecoder,new LengthFieldBasedFrameDecoder(4 * 1024 , 0, 4, -4, 0, true));

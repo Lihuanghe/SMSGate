@@ -331,7 +331,7 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
 	@Test
 	public void testdeliverSmReceipt() throws SmppInvalidArgumentException, UnsupportedEncodingException {
 		DeliverSmReceipt report = new DeliverSmReceipt();
-		report.setId(String.valueOf(0x0ffffffffL));
+		report.setId(String.valueOf(0x1ffffffffL));
 		report.setSourceAddress(new Address((byte) 2, (byte) 1, "13800138000"));
 		report.setDestAddress(new Address((byte) 2, (byte) 1, "13800138000"));
 		report.setStat("ACCEPTD");
@@ -352,7 +352,7 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
 
 		DeliverSmReceipt result = (DeliverSmReceipt) decode(copybuf);
 		System.out.println(result);
-		Assert.assertEquals("ffffffff", result.getId());
+		Assert.assertEquals("1ffffffff", result.getId());
 		Assert.assertEquals("0911040124", result.getSubmit_date());
 		Assert.assertEquals("0911040124", result.getDone_date());
 		Assert.assertEquals("ACCEPTD", result.getStat());

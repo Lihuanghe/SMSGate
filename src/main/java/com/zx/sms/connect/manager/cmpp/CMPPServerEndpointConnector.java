@@ -1,8 +1,5 @@
 package com.zx.sms.connect.manager.cmpp;
 
-import io.netty.channel.ChannelPipeline;
-import io.netty.handler.timeout.IdleStateHandler;
-
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -12,6 +9,9 @@ import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.AbstractServerEndpointConnector;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.session.cmpp.SessionLoginManager;
+
+import io.netty.channel.ChannelPipeline;
+import io.netty.handler.timeout.IdleStateHandler;
 /**
  *@author Lihuanghe(18852780@qq.com)
  */
@@ -23,7 +23,6 @@ public class CMPPServerEndpointConnector extends AbstractServerEndpointConnector
 
 	@Override
 	protected void doinitPipeLine(ChannelPipeline pipeline) {
-		super.doinitPipeLine(pipeline);
 		CMPPCodecChannelInitializer codec = null;
 		if (getEndpointEntity() instanceof CMPPEndpointEntity) {
 			pipeline.addLast(GlobalConstance.IdleCheckerHandlerName,

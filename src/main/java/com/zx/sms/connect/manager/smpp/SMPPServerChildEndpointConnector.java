@@ -17,10 +17,8 @@ import com.zx.sms.handler.smpp.UnbindRespMessageHandler;
 import com.zx.sms.session.AbstractSessionStateManager;
 import com.zx.sms.session.smpp.SMPPSessionStateManager;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelPipeline;
-import io.netty.handler.ssl.SslContext;
 
 public class SMPPServerChildEndpointConnector extends AbstractEndpointConnector{
 	private static final Logger logger = LoggerFactory.getLogger(SMPPServerChildEndpointConnector.class);
@@ -30,11 +28,6 @@ public class SMPPServerChildEndpointConnector extends AbstractEndpointConnector{
 
 	@Override
 	public ChannelFuture open() throws Exception {
-		return null;
-	}
-
-	@Override
-	protected SslContext createSslCtx() {
 		return null;
 	}
 
@@ -50,17 +43,6 @@ public class SMPPServerChildEndpointConnector extends AbstractEndpointConnector{
 		pipe.addLast("EnquireLinkRespMessageHandler",new EnquireLinkRespMessageHandler());
 		pipe.addLast("UnbindRespMessageHandler", new UnbindRespMessageHandler());
 		pipe.addLast("UnbindMessageHandler", new UnbindMessageHandler());
-		
-	}
-
-	@Override
-	protected void doinitPipeLine(ChannelPipeline pipeline) {
-		
-		
-	}
-
-	@Override
-	protected void initSslCtx(Channel ch, EndpointEntity entity) {
 		
 	}
 

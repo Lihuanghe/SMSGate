@@ -114,8 +114,7 @@ x x 1 0 0 0 x x Short Message contains Intermediate Delivery Notification
 	        	if(StringUtils.isNumeric(id)) {
 	        		try {
 		        		Long t = Long.valueOf(id);
-		        		int signedInteger = (int)(t.longValue() & 0x0ffffffffL);
-		        		pdu.setId(Integer.toHexString(signedInteger));
+		        		pdu.setId(Long.toHexString(t));
 	        		}catch(NumberFormatException ex) {
 	        			logger.warn("java.lang.NumberFormatException For input id.{}",pdu);
 	        		}

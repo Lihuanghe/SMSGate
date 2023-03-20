@@ -15,10 +15,8 @@ import com.zx.sms.handler.sgip.SgipUnbindResponseMessageHandler;
 import com.zx.sms.session.AbstractSessionStateManager;
 import com.zx.sms.session.sgip.SgipSessionStateManager;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelPipeline;
-import io.netty.handler.ssl.SslContext;
 
 public class SgipServerChildEndpointConnector extends AbstractEndpointConnector{
 	private static final Logger logger = LoggerFactory.getLogger(SgipServerChildEndpointConnector.class);
@@ -28,11 +26,6 @@ public class SgipServerChildEndpointConnector extends AbstractEndpointConnector{
 
 	@Override
 	public ChannelFuture open() throws Exception {
-		return null;
-	}
-
-	@Override
-	protected SslContext createSslCtx() {
 		return null;
 	}
 
@@ -47,16 +40,6 @@ public class SgipServerChildEndpointConnector extends AbstractEndpointConnector{
 		pipe.addLast("SgipUnbindRequestMessageHandler", new SgipUnbindRequestMessageHandler());
 	}
 
-	@Override
-	protected void doinitPipeLine(ChannelPipeline pipeline) {
-		
-		
-	}
-
-	@Override
-	protected void initSslCtx(Channel ch, EndpointEntity entity) {
-		
-	}
 
 	@Override
 	protected AbstractSessionStateManager createSessionManager(EndpointEntity entity, ConcurrentMap storeMap, boolean preSend) {

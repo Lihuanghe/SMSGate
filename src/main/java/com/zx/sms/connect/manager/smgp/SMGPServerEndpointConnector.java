@@ -18,7 +18,6 @@ public class SMGPServerEndpointConnector extends AbstractServerEndpointConnector
 
 	@Override
 	protected void doinitPipeLine(ChannelPipeline pipeline) {
-		super.doinitPipeLine(pipeline);
 		EndpointEntity entity = getEndpointEntity();
 		pipeline.addLast(GlobalConstance.IdleCheckerHandlerName, new IdleStateHandler(0, 0, entity.getIdleTimeSec(), TimeUnit.SECONDS));
 		pipeline.addLast("SmgpServerIdleStateHandler", GlobalConstance.smgpidleHandler);

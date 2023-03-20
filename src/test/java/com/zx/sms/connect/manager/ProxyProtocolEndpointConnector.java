@@ -3,7 +3,6 @@ package com.zx.sms.connect.manager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.cmpp.CMPPClientEndpointConnector;
 import com.zx.sms.connect.manager.cmpp.CMPPClientEndpointEntity;
 
@@ -17,15 +16,15 @@ import io.netty.handler.codec.haproxy.HAProxyMessage;
 import io.netty.handler.codec.haproxy.HAProxyMessageEncoder;
 import io.netty.handler.codec.haproxy.HAProxyProtocolVersion;
 import io.netty.handler.codec.haproxy.HAProxyProxiedProtocol;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 public class ProxyProtocolEndpointConnector extends CMPPClientEndpointConnector{
 	private static final Logger logger = LoggerFactory.getLogger(ProxyProtocolEndpointConnector.class);
-	public ProxyProtocolEndpointConnector(CMPPClientEndpointEntity e) {
+	private String srcAddress ;
+	public ProxyProtocolEndpointConnector(CMPPClientEndpointEntity e,String srcAddress) {
 		super(e);
+		this.srcAddress = srcAddress;
 	}
 	
 	protected void doinitPipeLine(ChannelPipeline pipeline) {
@@ -42,7 +41,7 @@ public class ProxyProtocolEndpointConnector extends CMPPClientEndpointConnector{
 			
 			final HAProxyMessage message = new HAProxyMessage(
                     HAProxyProtocolVersion.V1, HAProxyCommand.PROXY, HAProxyProxiedProtocol.TCP4,
-                    "8.8.8.8", "127.0.0.2", 8000, 9000);
+                    srcAddress, "127.0.0.2", 8000, 9000);
 			
 			//消息从当前hander开始发出，不能过其它的协议解析器
 			 ChannelFuture future = ctx.writeAndFlush(message);

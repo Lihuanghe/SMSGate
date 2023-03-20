@@ -1,17 +1,25 @@
 package com.zx.sms.connect.manager;
 
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.URI;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.zx.sms.common.NotSupportedException;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
+import io.netty.handler.proxy.HttpProxyHandler;
+import io.netty.handler.proxy.Socks4ProxyHandler;
+import io.netty.handler.proxy.Socks5ProxyHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
@@ -22,9 +30,11 @@ public abstract class AbstractClientEndpointConnector extends AbstractEndpointCo
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractClientEndpointConnector.class);
 	private Bootstrap bootstrap = new Bootstrap();
+	private SslContext sslCtx = null;
 	
 	public AbstractClientEndpointConnector(EndpointEntity endpoint) {
 		super(endpoint);
+		this.sslCtx = createSslCtx();
 		bootstrap.group(EventLoopGroupFactory.INS.getWorker())
 		.channel(EventLoopGroupFactory.selectChannelClass())
 		.option(ChannelOption.TCP_NODELAY, true)
@@ -79,7 +89,78 @@ public abstract class AbstractClientEndpointConnector extends AbstractEndpointCo
 		return future;
 	}
 	
-	@Override
+	protected ChannelInitializer<?> initPipeLine() {
+
+		return new ChannelInitializer<Channel>() {
+
+			@Override
+			protected void initChannel(Channel ch) throws Exception {
+				ChannelPipeline pipeline = ch.pipeline();
+				EndpointEntity entity = getEndpointEntity();
+				if ( StringUtils.isNotBlank(entity.getProxy())) {
+					String uriString = entity.getProxy();
+					try {
+						URI uri = URI.create(uriString);
+						addProxyHandler(ch, uri);
+					} catch (Exception ex) {
+						logger.error("parse Proxy URI {} failed.", uriString, ex);
+					}
+				}
+
+				if (entity.isUseSSL() && sslCtx != null) {
+					logger.info("EndpointEntity {} Use SSL.",entity);
+					pipeline.addLast(sslCtx.newHandler(ch.alloc(), entity.getHost(), entity.getPort()));
+				}
+				doinitPipeLine(pipeline);
+			}
+		};
+	};
+	
+	protected abstract void doinitPipeLine(ChannelPipeline pipeline) ;
+	
+	protected void addProxyHandler(Channel ch, URI proxy) throws NotSupportedException {
+		if (proxy == null)
+			return;
+		String scheme = proxy.getScheme();
+		String userinfo = proxy.getUserInfo();
+		String host = proxy.getHost();
+		int port = proxy.getPort();
+		String username = null;
+		String pass = null;
+
+		if (StringUtils.isNotBlank(userinfo)) {
+			int idx = userinfo.indexOf(":");
+			if (idx > 0) {
+				username = userinfo.substring(0, idx);
+				pass = userinfo.substring(idx + 1);
+			}
+		}
+
+		ChannelPipeline pipeline = ch.pipeline();
+
+		if ("HTTP".equalsIgnoreCase(scheme) || "HTTPS".equalsIgnoreCase(scheme) ) {
+			if (username == null) {
+				pipeline.addLast(new HttpProxyHandler(new InetSocketAddress(host, port)));
+			} else {
+				pipeline.addLast(new HttpProxyHandler(new InetSocketAddress(host, port), username, pass));
+			}
+		} else if ("SOCKS5".equalsIgnoreCase(scheme)) {
+			if (username == null) {
+				pipeline.addLast(new Socks5ProxyHandler(new InetSocketAddress(host, port)));
+			} else {
+				pipeline.addLast(new Socks5ProxyHandler(new InetSocketAddress(host, port), username, pass));
+			}
+		} else if ("SOCKS4".equalsIgnoreCase(scheme) || "SOCKS".equalsIgnoreCase(scheme)) {
+			if (username == null) {
+				pipeline.addLast(new Socks4ProxyHandler(new InetSocketAddress(host, port)));
+			} else {
+				pipeline.addLast(new Socks4ProxyHandler(new InetSocketAddress(host, port), username));
+			}
+		} else {
+			throw new NotSupportedException("not support proxy protocol " + scheme);
+		}
+	}
+	
 	protected SslContext createSslCtx() {
 	
 		try{
@@ -92,13 +173,5 @@ public abstract class AbstractClientEndpointConnector extends AbstractEndpointCo
 			return null;
 		}
 		
-	}
-	@Override
-	protected void initSslCtx(Channel ch, EndpointEntity entity) {
-		ChannelPipeline pipeline = ch.pipeline();
-		if(entity instanceof ClientEndpoint){
-			logger.info("EndpointEntity {} Use SSL.",entity);
-			pipeline.addLast(getSslCtx().newHandler(ch.alloc(), entity.getHost(), entity.getPort()));
-		}
 	}
 }

@@ -98,7 +98,7 @@ public class UniqueLongMsgId implements Serializable {
 
 	}
 
-	public UniqueLongMsgId(EndpointEntity entity, LongSMSMessage lmsg) {
+	UniqueLongMsgId(EndpointEntity entity, LongSMSMessage lmsg) {
 		this(entity, null, lmsg,DefaultSequenceNumberUtil.getSequenceNo(), false);
 	}
 	
@@ -117,7 +117,7 @@ public class UniqueLongMsgId implements Serializable {
 		this.pkseq = id.getPkseq();
 	}
 
-	public UniqueLongMsgId(UniqueLongMsgId id, LongMessageFrame frame) {
+	UniqueLongMsgId(UniqueLongMsgId id, LongMessageFrame frame) {
 		this.id = id.getId();
 		this.entityId = id.getEntityId();
 		this.channelId = id.getChannelId();
