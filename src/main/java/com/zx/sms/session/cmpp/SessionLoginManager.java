@@ -18,6 +18,7 @@ import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.ServerEndpoint;
+import com.zx.sms.connect.manager.ServerServerEndpoint;
 import com.zx.sms.connect.manager.cmpp.CMPPCodecChannelInitializer;
 import com.zx.sms.connect.manager.cmpp.CMPPEndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPServerChildEndpointEntity;
@@ -79,8 +80,8 @@ public class SessionLoginManager extends AbstractSessionLoginManager {
 		if(msg instanceof CmppConnectRequestMessage){
 			CmppConnectRequestMessage  message = (CmppConnectRequestMessage)msg;
 			String username = message.getSourceAddr();
-			if (entity instanceof ServerEndpoint) {
-				ServerEndpoint serverEntity = (ServerEndpoint) entity;
+			if (entity instanceof ServerServerEndpoint) {
+				ServerServerEndpoint serverEntity = (ServerServerEndpoint) entity;
 				return serverEntity.getChild(username.trim());
 			}
 		}

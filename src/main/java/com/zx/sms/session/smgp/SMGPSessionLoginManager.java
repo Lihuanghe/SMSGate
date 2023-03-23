@@ -18,7 +18,7 @@ import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.CachedMillisecondClock;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
-import com.zx.sms.connect.manager.ServerEndpoint;
+import com.zx.sms.connect.manager.ServerServerEndpoint;
 import com.zx.sms.connect.manager.smgp.SMGPEndpointEntity;
 import com.zx.sms.connect.manager.smgp.SMGPServerChildEndpointEntity;
 import com.zx.sms.session.AbstractSessionLoginManager;
@@ -63,8 +63,8 @@ public class SMGPSessionLoginManager extends AbstractSessionLoginManager {
 			SMGPLoginMessage  message = (SMGPLoginMessage)msg;
 			String username = message.getClientId();
 			byte loginMode = message.getLoginMode();
-			if (entity instanceof ServerEndpoint) {
-				ServerEndpoint serverEntity = (ServerEndpoint) entity;
+			if (entity instanceof ServerServerEndpoint) {
+				ServerServerEndpoint serverEntity = (ServerServerEndpoint) entity;
 				
 				if(loginMode == 0){
 					EndpointEntity end =  serverEntity.getChild(username.trim(),ChannelType.DOWN);

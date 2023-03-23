@@ -8,9 +8,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.chinamobile.cmos.sms.AbstractSmsDcs;
 import com.zx.sms.connect.manager.EndpointEntity;
-import com.zx.sms.connect.manager.ServerEndpoint;
+import com.zx.sms.connect.manager.ServerServerEndpoint;
 
-public class SMPPServerEndpointEntity extends EndpointEntity implements ServerEndpoint {
+public class SMPPServerEndpointEntity extends EndpointEntity implements ServerServerEndpoint {
 	private static final long serialVersionUID = -1247226404595679209L;
 	private Map<String,Map<ChannelType,SMPPServerChildEndpointEntity>> childrenEndpoint = new ConcurrentHashMap<String,Map<ChannelType,SMPPServerChildEndpointEntity>>() ;
 	

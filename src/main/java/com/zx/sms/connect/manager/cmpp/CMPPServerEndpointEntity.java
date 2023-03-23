@@ -5,11 +5,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.chinamobile.cmos.sms.AbstractSmsDcs;
 import com.zx.sms.connect.manager.EndpointEntity;
-import com.zx.sms.connect.manager.ServerEndpoint;
+import com.zx.sms.connect.manager.ServerServerEndpoint;
 /**
  *@author Lihuanghe(18852780@qq.com)
  */
-public class CMPPServerEndpointEntity extends EndpointEntity implements ServerEndpoint {
+public class CMPPServerEndpointEntity extends EndpointEntity implements ServerServerEndpoint {
 
 	/**
 	 * 

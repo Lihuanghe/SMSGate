@@ -87,7 +87,7 @@ public class SmsProtocolCheckHandler extends ByteToMessageDecoder {
 		//Handler挂载完成，删除自己
 		pipeline.remove(this);
 		//前导的分包器没用了，删除
-		pipeline.remove("PreLengthFieldBasedFrameDecoder");
+		pipeline.remove(GlobalConstance.PreLengthFieldBasedFrameDecoder);
 		out.add(in.retain());
 	}
 	

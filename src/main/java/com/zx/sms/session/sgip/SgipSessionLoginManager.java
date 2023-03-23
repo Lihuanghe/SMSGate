@@ -11,7 +11,7 @@ import com.zx.sms.codec.sgip12.msg.SgipBindRequestMessage;
 import com.zx.sms.codec.sgip12.msg.SgipBindResponseMessage;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
-import com.zx.sms.connect.manager.ServerEndpoint;
+import com.zx.sms.connect.manager.ServerServerEndpoint;
 import com.zx.sms.connect.manager.sgip.SgipEndpointEntity;
 import com.zx.sms.session.AbstractSessionLoginManager;
 
@@ -42,8 +42,8 @@ public class SgipSessionLoginManager extends AbstractSessionLoginManager {
 		if(msg instanceof SgipBindRequestMessage){
 			SgipBindRequestMessage message = (SgipBindRequestMessage)msg;
 			String username = message.getLoginName();
-			if (entity instanceof ServerEndpoint) {
-				ServerEndpoint serverEntity = (ServerEndpoint) entity;
+			if (entity instanceof ServerServerEndpoint) {
+				ServerServerEndpoint serverEntity = (ServerServerEndpoint) entity;
 				return serverEntity.getChild(username.trim());
 			}
 		}

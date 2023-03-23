@@ -7,9 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.chinamobile.cmos.sms.AbstractSmsDcs;
 import com.zx.sms.connect.manager.EndpointEntity;
-import com.zx.sms.connect.manager.ServerEndpoint;
+import com.zx.sms.connect.manager.ServerServerEndpoint;
 
-public class SgipServerEndpointEntity extends EndpointEntity implements ServerEndpoint {
+public class SgipServerEndpointEntity extends EndpointEntity implements ServerServerEndpoint {
 
 	
 	/**

@@ -40,7 +40,7 @@ public class ProxyProtocolEndpointConnector extends CMPPClientEndpointConnector{
 		public void channelActive(final ChannelHandlerContext ctx) throws Exception {
 			
 			final HAProxyMessage message = new HAProxyMessage(
-                    HAProxyProtocolVersion.V1, HAProxyCommand.PROXY, HAProxyProxiedProtocol.TCP4,
+                    HAProxyProtocolVersion.V2, HAProxyCommand.PROXY, HAProxyProxiedProtocol.TCP4,
                     srcAddress, "127.0.0.2", 8000, 9000);
 			
 			//消息从当前hander开始发出，不能过其它的协议解析器

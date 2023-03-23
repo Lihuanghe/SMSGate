@@ -189,12 +189,19 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 		int status = validClientMsg(childentity, message);
 		// 认证成功
 		if (status == 0) {
-			// 打开连接，并把连接加入管理器
-			EndpointManager.INS.openEndpoint(childentity);
-			
+
 			//如果该连接不是此账号的第一个连接，要获取早先第一个生成的entity对象
 			EndpointEntity oldEntity = EndpointManager.INS.getEndpointEntity(childentity.getId());
 			
+			//判断账号实体对象属性是否有变化，如最大连接数，账号密码，发送速度等信息
+			if(oldEntity!=null && (!oldEntity.equals(childentity))) {
+				//这里简单处理，如果EndpointEntity实体属性有变化，直接关掉旧实体及旧连接，等待客户端重连
+				EndpointManager.INS.remove(oldEntity.getId());
+			}
+			// 打开连接，并把连接加入管理器
+			EndpointManager.INS.openEndpoint(childentity);
+			
+			oldEntity = EndpointManager.INS.getEndpointEntity(childentity.getId());
 			// 绑定端口为对应账号的端口
 			entity = oldEntity;
 

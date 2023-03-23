@@ -19,7 +19,7 @@ import com.zx.sms.codec.smpp.msg.PduResponse;
 import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.connect.manager.EndpointEntity.ChannelType;
-import com.zx.sms.connect.manager.ServerEndpoint;
+import com.zx.sms.connect.manager.ServerServerEndpoint;
 import com.zx.sms.connect.manager.smpp.SMPPEndpointEntity;
 import com.zx.sms.session.AbstractSessionLoginManager;
 
@@ -49,8 +49,8 @@ public class SMPPSessionLoginManager extends AbstractSessionLoginManager {
 		if(msg instanceof BaseBind){
 			BaseBind  message = (BaseBind)msg;
 			String username = message.getSystemId();
-			if (entity instanceof ServerEndpoint) {
-				ServerEndpoint serverEntity = (ServerEndpoint) entity;
+			if (entity instanceof ServerServerEndpoint) {
+				ServerServerEndpoint serverEntity = (ServerServerEndpoint) entity;
 				if( msg instanceof BindTransmitter){
 					EndpointEntity end =  serverEntity.getChild(username.trim(),ChannelType.DOWN);
 					return end;

@@ -13,7 +13,7 @@ import com.zx.sms.connect.manager.smgp.SMGPServerEndpointEntity;
 import com.zx.sms.connect.manager.smpp.SMPPServerChildEndpointEntity;
 import com.zx.sms.connect.manager.smpp.SMPPServerEndpointEntity;
 
-public class MixedServerEndpointEntity extends EndpointEntity implements ServerEndpoint {
+public class MixedServerEndpointEntity extends EndpointEntity implements ServerServerEndpoint {
 
 	/**
 	 * 
