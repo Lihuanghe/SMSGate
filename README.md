@@ -196,7 +196,7 @@ allEntityPointList.foreach(e->{
 	if(remainderChannel > 0 && shiftNodeIndex < remainderChannel){
 		hostMaxChannel = hostMaxChannel + 1;
 	}
-	var hostChannel ;   //当前通道在本节点上的连接数
+	var hostChannel = getConnectionCountAtCurrentNode(e);   //当前通道在本节点上的连接数
 	if(hostChannel < hostMaxChannel){
 		openChannel(e); //新建一个连接
 	}else{

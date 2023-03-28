@@ -54,12 +54,12 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 				if(matcher.find()) {
 					String length = matcher.group(1);
 					byte[] chars = ByteArrayUtil.toByteArray(Long.parseLong(length));
-					logger.error("login error entity : " + entity.toString() + ".\nthis request maybe HTTP. receive first 4 byte is :\""+ (new String(chars)).trim()+"\" .", cause);
+					logger.warn("login error. this request maybe HTTP. receive first 4 byte is :\""+ (new String(chars)).trim()+"\" .{}", cause.getMessage());
 				}else {
-					logger.error("login error entity : " + entity.toString(), cause);
+					logger.warn("login error entityId : [" + entity.getId()+"] .{}", cause.getMessage());
 				}
 			}else {
-				logger.error("login error entity : " + entity.toString(), cause);
+				logger.warn("login error entityID : [" + entity.getId()+"] .{}", cause.getMessage());
 			}
 			ctx.close();
 		} else {
@@ -84,7 +84,7 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-		logger.warn("session is not created. the entity is {}.channel remote is {}", entity, ctx.channel().remoteAddress());
+		logger.warn("session is not created. the entityId is [{}];  remote is {}", entity.getId(), ctx.channel().remoteAddress());
 		ctx.fireChannelInactive();
 	}
 
