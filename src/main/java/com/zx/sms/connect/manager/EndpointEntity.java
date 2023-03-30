@@ -6,6 +6,8 @@ import java.util.List;
 import com.chinamobile.cmos.sms.AbstractSmsDcs;
 import com.zx.sms.handler.api.BusinessHandlerInterface;
 
+import io.netty.channel.ChannelInitializer;
+
 /**
  * @author Lihuanghe(18852780@qq.com)
  * 代表一个TCP端口。或是客户端，或者是服务端
@@ -58,6 +60,9 @@ public abstract class EndpointEntity implements Serializable {
 	 *该端口业务处理的handler集合， 
 	 **/
 	private List<BusinessHandlerInterface> businessHandlerSet;
+	
+	
+	private ChannelInitializer businessChannelInitializer;
 	
 	/**
 	 * 是否将未收到response的消息保存在文件，以等待进程重启后读取文件中未收到response的消息进行重发
@@ -132,6 +137,12 @@ public abstract class EndpointEntity implements Serializable {
 	
 	//构建通道默认的DCS编码 
 	private SmsDcsBuilder defaultDcsBuilder = null;
+	
+	/**
+	  * 处理通道固定签名的情况，分为头部签名，尾部签名
+	  * 这种在拆分长短信时，要将签名长度预留出来
+	 */
+	private SignatureType signatureType;
 	
     public String getProxy() {
 		return proxy;
@@ -288,8 +299,12 @@ public abstract class EndpointEntity implements Serializable {
 	public void setWindow(int window) {
 		this.window = window;
 	}
-	
-	
+	public ChannelInitializer getBusinessChannelInitializer() {
+		return businessChannelInitializer;
+	}
+	public void setBusinessChannelInitializer(ChannelInitializer businessChannelInitializer) {
+		this.businessChannelInitializer = businessChannelInitializer;
+	}
 	public boolean isRecvLongMsgOnMultiLink() {
 		return isRecvLongMsgOnMultiLink;
 	}
@@ -337,11 +352,13 @@ public abstract class EndpointEntity implements Serializable {
 	abstract protected AbstractSmsDcs buildSmsDcs(byte dcs);
 	
 	public AbstractSmsDcs buildDefaultSmsDcs(byte dcs) {
+		AbstractSmsDcs ret_dcs;
 		if(defaultDcsBuilder == null) {
-			return buildSmsDcs(dcs);
+			ret_dcs =  buildSmsDcs(dcs);
 		}else {
-			return defaultDcsBuilder.build(dcs);
+			ret_dcs = defaultDcsBuilder.build(dcs);
 		}
+		return ret_dcs;
 	}
 	
 	public SmsDcsBuilder getDefaultDcsBuilder() {
@@ -351,6 +368,12 @@ public abstract class EndpointEntity implements Serializable {
 		this.defaultDcsBuilder = defaultDcsBuilder;
 	}
 	
+	public SignatureType getSignatureType() {
+		return signatureType;
+	}
+	public void setSignatureType(SignatureType signatureType) {
+		this.signatureType = signatureType;
+	}
 	abstract protected <T extends EndpointConnector<EndpointEntity>> T buildConnector();
 	@Override
 	public String toString() {

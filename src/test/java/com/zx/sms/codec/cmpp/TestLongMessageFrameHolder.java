@@ -92,8 +92,9 @@ public class TestLongMessageFrameHolder extends AbstractTestMessageCodec<CmppSub
 		String str = "1【温馨提示】移娃没理解您的问题2【温馨提示】移娃没理解您的问题3【温馨提示】移娃没理解您的问题4【温馨提示】移娃没理解您的问题5【温馨提示】移娃没理解您的问题6【温馨提示】移娃没理解您的问题7【温馨提示】移娃没理解您的问题8【温馨提示】移娃没理解您的问题9【温馨提示】移娃没理解您的问题.";
 		SmsTextMessage s = new SmsTextMessage(str,new SmsDcs((byte)15));
 		List<LongMessageFrame> l = testSplit(s);
-		Assert.assertEquals(139,l.get(0).getMsgLength());
-		Assert.assertEquals(140,l.get(1).getMsgLength());
+		Assert.assertEquals(135,l.get(0).getMsgLength());
+		Assert.assertEquals(136,l.get(1).getMsgLength());
+		Assert.assertEquals(27,l.get(2).getMsgLength());
 
 	}
 	@Test
@@ -102,8 +103,9 @@ public class TestLongMessageFrameHolder extends AbstractTestMessageCodec<CmppSub
 		SmsTextMessage s = new SmsTextMessage(str,new SmsDcs((byte)15));
 		s.getDcs().setUse8bit(false);
 		List<LongMessageFrame> l = testSplit(s);
-		Assert.assertEquals(140,l.get(0).getMsgLength());
-		Assert.assertEquals(139,l.get(1).getMsgLength());
+		Assert.assertEquals(134,l.get(0).getMsgLength());
+		Assert.assertEquals(135,l.get(1).getMsgLength());
+		Assert.assertEquals(32,l.get(2).getMsgLength());
 
 	}
 	@Test

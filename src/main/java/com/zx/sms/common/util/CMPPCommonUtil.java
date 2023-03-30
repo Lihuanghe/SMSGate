@@ -9,6 +9,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.chinamobile.cmos.sms.SmsAlphabet;
+import com.chinamobile.cmos.sms.SmsPduUtil;
 import com.chinamobile.cmos.sms.SmsTextMessage;
 import com.google.common.base.Preconditions;
 import com.zx.sms.common.GlobalConstance;
@@ -43,18 +44,7 @@ public final class CMPPCommonUtil {
 	 * 11—Class 3//写卡
 	 */
 	public static Charset switchCharset(SmsAlphabet type) {
-		switch (type) {
-		case ASCII:
-			return StandardCharsets.ISO_8859_1;// 7bit编码
-		case LATIN1:
-			return StandardCharsets.ISO_8859_1;// 8bit编码,通常用于发送数据消息，比如图片和铃声等；
-		case UCS2:
-			return StandardCharsets.UTF_16BE;// 16bit编码
-		case RESERVED:
-			return StandardCharsets.GBK;// 预留
-		default:
-			return GlobalConstance.defaultTransportCharset;
-		}
+		return SmsPduUtil.switchCharset(type);
 	}
 	
 	//为CMPP ,SGMP的MsgId随机生成一个 gateId

@@ -10,26 +10,36 @@ import com.chinamobile.cmos.sms.SmsTextMessage;
 import com.zx.sms.codec.AbstractTestMessageCodec;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.common.util.MsgId;
+import com.zx.sms.connect.manager.EndpointEntity;
+import com.zx.sms.connect.manager.SignatureType;
+import com.zx.sms.connect.manager.cmpp.CMPPClientEndpointEntity;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 
-public class TestCmpp20SubmitRequestMessageCodec extends AbstractTestMessageCodec<CmppSubmitRequestMessage> {
+public class TestCmppFixSignHeadCodec extends AbstractTestMessageCodec<CmppSubmitRequestMessage> {
 	@Override
 	protected int getVersion(){
 		return 0x20;
 	}
 
+		
+	private static String signTxt = "【温馨提示】";
+	protected EndpointEntity buildEndpointEntity() {
+		EndpointEntity e = new CMPPClientEndpointEntity();
+		e.setId(EndPointID);
+		e.setSignatureType(new SignatureType(false,signTxt));
+		return e;
+	}
+	
 	@Test
-	public void testCodecGBKLong()
+	public void testCodecLong()
 	{
 		CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
 		
 		msg.setDestterminalId(new String[]{"13800138000","13800138001","138001380002"});
 		msg.setLinkID("0000");
 		String content = UUID.randomUUID().toString();
-		msg.setMsgContent(content);
-		msg.setMsgContent(new SmsTextMessage("你好，【温馨提示】移娃没理解您的问题2【温馨提示】移娃没理解您的问题3【温馨提示】移娃没理解您的问题4【温馨提示】移娃没理解您的问题5【",new SmsDcs((byte)15)));
+		msg.setMsgContent(new SmsTextMessage(signTxt+"移娃没理解您的问题2【温馨提示】移娃没理解您的问题3【温馨提示】移娃没理解您的问题4【温馨提示】移娃没理解您的问题5【",new SmsDcs((byte)8)));
 		
 		msg.setMsgid(new MsgId());
 		msg.setServiceId("10000");
@@ -52,7 +62,7 @@ public class TestCmpp20SubmitRequestMessageCodec extends AbstractTestMessageCode
 		System.out.println(result);
 		Assert.assertEquals(msg.getHeader().getSequenceId(), result.getHeader().getSequenceId());
 		Assert.assertArrayEquals(msg.getDestterminalId(), result.getDestterminalId());
-		Assert.assertEquals(msg.getMsgContent(), result.getMsgContent());
+		Assert.assertEquals(msg.getMsgContent(), signTxt+result.getMsgContent());
 		Assert.assertEquals(msg.getServiceId(), result.getServiceId());
 	}
 	
@@ -66,7 +76,7 @@ public class TestCmpp20SubmitRequestMessageCodec extends AbstractTestMessageCode
 		msg.setLinkID("0000");
 		String content = UUID.randomUUID().toString();
 		msg.setMsgContent(content);
-		msg.setMsgContent(new SmsTextMessage("你好，我是闪信！",new SmsDcs((byte)15)));
+		msg.setMsgContent(new SmsTextMessage(signTxt+"你好，我是闪信！",new SmsDcs((byte)15)));
 		
 		msg.setMsgid(new MsgId());
 		msg.setServiceId("10000");
@@ -89,56 +99,9 @@ public class TestCmpp20SubmitRequestMessageCodec extends AbstractTestMessageCode
 		System.out.println(result);
 		Assert.assertEquals(msg.getHeader().getSequenceId(), result.getHeader().getSequenceId());
 		Assert.assertArrayEquals(msg.getDestterminalId(), result.getDestterminalId());
-		Assert.assertEquals(msg.getMsgContent(), result.getMsgContent());
+		Assert.assertEquals(msg.getMsgContent(), signTxt+result.getMsgContent());
 		Assert.assertEquals(msg.getServiceId(), result.getServiceId());
 	}
 
-	@Test
-	public void testchinesecode()
-	{
-		testlongCodec("1234567890123456789中01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890" );
-	}
-
-	@Test
-	public void testASCIIcode()
-	{
-		testlongCodec("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
-	}
 	
-	
-	public void testlongCodec(String content)
-	{
-		CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
-		msg.setDestterminalId(new String[]{"13800138000","13800138001","138001380002"});
-		msg.setLinkID("0000");
-		msg.setMsgContent(content);
-		msg.setMsgid(new MsgId());
-		msg.setServiceId("10000");
-		msg.setSrcId("10000");
-		channel().writeOutbound(msg);
-		ByteBuf buf =(ByteBuf)channel().readOutbound();
-		ByteBuf copybuf = Unpooled.buffer();
-	    while(buf!=null){
-			
-			
-	    	ByteBuf copy = buf.copy();
-	    	copybuf.writeBytes(copy);
-	    	copy.release();
-			int length = buf.readableBytes();
-			
-			Assert.assertEquals(length, buf.readInt());
-			Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readInt());
-			buf.release();
-
-			buf =(ByteBuf)channel().readOutbound();
-	    }
-	    
-		CmppSubmitRequestMessage result = decode(copybuf);
-		Assert.assertNotNull(result);
-		Assert.assertNotNull(result.getUniqueLongMsgId().getId());
-		System.out.println(result.getMsgContent());
-		Assert.assertEquals(msg.getServiceId(), result.getServiceId());
-		Assert.assertArrayEquals(msg.getDestterminalId(), result.getDestterminalId());
-		Assert.assertEquals(msg.getMsgContent(), result.getMsgContent());
-	}
 }

@@ -50,7 +50,7 @@ import io.netty.channel.ChannelHandlerContext;
 public class TestMixedServerEndPoint {
 	private static final Logger logger = LoggerFactory.getLogger(TestMixedServerEndPoint.class);
 	int port = 36890;
-	int count = 25000;
+	int count =  TestConstants.Count/4;
 	int writeLimit = 2500;
 	boolean useSSL = true;
 	MixedServerEndpointEntity server = new MixedServerEndpointEntity();

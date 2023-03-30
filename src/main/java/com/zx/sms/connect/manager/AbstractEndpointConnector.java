@@ -25,6 +25,7 @@ import com.zx.sms.session.cmpp.SessionState;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
@@ -142,6 +143,7 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 			 */
 			ch.attr(GlobalConstance.attributeKey).set(SessionState.Connect);
 			ch.attr(GlobalConstance.entityPointKey).set(endpoint);
+			
 			ch.attr(GlobalConstance.sessionKey).set(sessionManager);
 			ch.attr(GlobalConstance.channelActiveTime).set(System.currentTimeMillis());
 			getChannels().add(ch);
@@ -210,6 +212,10 @@ public abstract class AbstractEndpointConnector implements EndpointConnector<End
 				}
 			}
 		}
+		
+		ChannelInitializer bizInitializer = entity.getBusinessChannelInitializer();
+		if(bizInitializer != null)
+			pipe.addLast(bizInitializer);
 		// 黑洞处理，丢弃所有消息
 		pipe.addLast("BlackHole", GlobalConstance.blackhole);
 

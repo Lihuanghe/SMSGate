@@ -28,9 +28,8 @@ public abstract class AbstractTestMessageCodec<T> {
 		protected void initChannel(Channel ch) throws Exception {
 			ResourceLeakDetector.setLevel(Level.DISABLED);
 			ChannelPipeline pipeline = ch.pipeline();
-			EndpointEntity e = new CMPPClientEndpointEntity();
-			e.setId(EndPointID);
-			
+		
+			EndpointEntity e = buildEndpointEntity();
 			CMPPCodecChannelInitializer codec = new CMPPCodecChannelInitializer(getVersion());
 			pipeline.addLast("serverLog", new LoggingHandler(LogLevel.DEBUG));
 			pipeline.addLast(codec.pipeName(), codec);
@@ -42,6 +41,12 @@ public abstract class AbstractTestMessageCodec<T> {
 			pipeline.addLast("CMPPSubmitLongMessageHandler",  new CMPPSubmitLongMessageHandler(e));
 		}
 	});
+	
+	protected EndpointEntity buildEndpointEntity() {
+		EndpointEntity e = new CMPPClientEndpointEntity();
+		e.setId(EndPointID);
+		return e;
+	}
 	
 	protected int getVersion(){
 		return this.version;
