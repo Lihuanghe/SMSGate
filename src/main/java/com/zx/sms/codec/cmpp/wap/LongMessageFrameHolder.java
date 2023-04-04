@@ -297,9 +297,7 @@ public enum LongMessageFrameHolder {
 					}
 				}
 			} catch (Exception ex) {
-				logger.warn("Merge Long SMS Error. entity : {} , dump:{}.\n {} ",
-						entity != null ? entity.getId() : "null", ByteBufUtil.hexDump(frame.getMsgContentBytes()), msg,
-						ex);
+				logger.warn("Merge Long SMS Error. entity : {} , dump:{}.\n {} ",  entity != null?entity.getId():"null",ByteBufUtil.hexDump(frame.getMsgContentBytes()) ,"",ex);
 				throw new NotSupportedException(ex.getMessage());
 			}
 		}
