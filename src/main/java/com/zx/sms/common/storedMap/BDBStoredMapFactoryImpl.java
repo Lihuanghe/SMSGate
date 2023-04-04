@@ -115,6 +115,10 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Serializable, Ve
 			File home = new File(pathHome);
 			// 获取BDB的配置文件
 
+			//Adler32  makeChecksum
+			//在linux上java 原生的算法有bug.
+			System.setProperty("je.disable.java.adler32", "false");
+			
 			EnvironmentConfig environmentConfig = new EnvironmentConfig(PropertiesUtils.getJeProperties());
 			environmentConfig.setAllowCreate(true);
 			environmentConfig.setTransactional(true);
@@ -143,7 +147,7 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Serializable, Ve
 		public void close(String queueName) {
 			logger.info("close BDBPath {} .dbName:{} ",pathHome, queueName);
 			logScheduleFuture.cancel(true);
-			clearLog();
+//			clearLog();
 			Database queueDB = dbMap.remove(queueName);
 			if(queueDB != null)
 				queueDB.close();

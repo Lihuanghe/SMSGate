@@ -28,7 +28,7 @@ public class TestMsgErrUDHIDeliverRequestDecoder extends AbstractTestMessageCode
 		ch.writeInbound(buf);
 		CmppDeliverRequestMessage result = null;
 		while (null != (result = (CmppDeliverRequestMessage) ch.readInbound())) {
-			System.out.println(result);
+//			System.out.println(result);
 			ByteBuf bytebuf = Unpooled.copiedBuffer(encode(result));
 			int length = bytebuf.readableBytes();
 			//Assert.assertEquals(expected.length, length);
