@@ -20,7 +20,11 @@ import com.zx.sms.connect.manager.EventLoopGroupFactory;
 
 public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Serializable, VersionObject> {
 	INS;
-
+	static {
+		//Adler32  makeChecksum
+		//在linux上java 原生的算法有bug.
+		System.setProperty("je.disable.java.adler32", "true");
+	}
 	private static final Logger logger = LoggerFactory.getLogger(BDBStoredMapFactoryImpl.class);
 	private final ConcurrentHashMap<String, QueueEnvironment> envMap = new ConcurrentHashMap<String, QueueEnvironment>();
 	private final ConcurrentHashMap<String, StoredMap<Serializable, VersionObject>> storedMaps = new ConcurrentHashMap<String, StoredMap<Serializable, VersionObject>>();
@@ -115,9 +119,6 @@ public enum BDBStoredMapFactoryImpl implements StoredMapFactory<Serializable, Ve
 			File home = new File(pathHome);
 			// 获取BDB的配置文件
 
-			//Adler32  makeChecksum
-			//在linux上java 原生的算法有bug.
-			System.setProperty("je.disable.java.adler32", "true");
 			
 			EnvironmentConfig environmentConfig = new EnvironmentConfig(PropertiesUtils.getJeProperties());
 			environmentConfig.setAllowCreate(true);
