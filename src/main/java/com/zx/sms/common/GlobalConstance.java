@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.chinamobile.cmos.sms.SmsAlphabet;
 import com.chinamobile.cmos.sms.SmsDcs;
 import com.chinamobile.cmos.sms.SmsMsgClass;
+import com.zx.sms.common.util.MsgId;
 import com.zx.sms.config.PropertiesUtils;
 import com.zx.sms.connect.manager.EndpointEntity;
 import com.zx.sms.handler.cmpp.BlackHoleHandler;
@@ -29,10 +30,10 @@ public final class GlobalConstance {
 	public static final int MaxMsgLength = 140;
 	public static final String emptyString = "";
 	public static final byte[] emptyBytes = new byte[0];
+	public static final MsgId emptyMsgId =  new MsgId("0000000000000000000000");
 	public static final String[] emptyStringArray = new String[0];
 	public static final Charset defaultTransportCharset = Charset.forName(PropertiesUtils.getDefaultTransportCharset());
-	public static final SmsDcs defaultmsgfmt = SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.ASCII,
-			SmsMsgClass.CLASS_UNKNOWN);
+	public static final SmsDcs defaultmsgfmt = SmsDcs.getGeneralDataCodingDcs(SmsAlphabet.ASCII,SmsMsgClass.CLASS_UNKNOWN);
 	public static final CmppActiveTestRequestMessageHandler activeTestHandler = new CmppActiveTestRequestMessageHandler();
 	public static final CmppActiveTestResponseMessageHandler activeTestRespHandler = new CmppActiveTestResponseMessageHandler();
 	public static final CmppTerminateRequestMessageHandler terminateHandler = new CmppTerminateRequestMessageHandler();
@@ -45,8 +46,7 @@ public final class GlobalConstance {
 	public static final AttributeKey<SessionState> attributeKey = AttributeKey.newInstance(SessionState.Connect.name());
 	public static final AttributeKey<HAProxyMessage> proxyProtocolKey = AttributeKey.newInstance("_proxyProtocolKey_");
 	
-	public static final AttributeKey<AbstractSessionStateManager> sessionKey = AttributeKey
-			.newInstance("__sessionStateManager");
+	public static final AttributeKey<AbstractSessionStateManager> sessionKey = AttributeKey.newInstance("__sessionStateManager");
 	public static final AttributeKey<AtomicInteger> SENDWINDOWKEY = AttributeKey.newInstance("_SendWindow_");
 	public static final AttributeKey<Long> channelActiveTime = AttributeKey.newInstance("_Active_ch_Time_");
 	public static final BlackHoleHandler blackhole = new BlackHoleHandler();

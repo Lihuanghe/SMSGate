@@ -34,13 +34,14 @@ public abstract class AbstractLongMessageHandler<T extends BaseMessage> extends 
 			UniqueLongMsgId uniqueId = lmsg.getUniqueLongMsgId();
 
 			try {
-				SmsMessageHolder hoder = LongMessageFrameHolder.INS.putAndget(entity, uniqueId.getId(), lmsg,
+				SmsMessageHolder hoder = LongMessageFrameHolder.INS.putAndget(entity, uniqueId != null ?uniqueId.getId():lmsg.getSrcIdAndDestId(), lmsg,
 						entity != null && entity.isRecvLongMsgOnMultiLink());
 
 				if (hoder != null) {
 
 					// 合并完成，及时删除UniqueLongMsgId中的uniqeId缓存
-					uniqueId.clearCacheKey();
+					if(uniqueId != null)
+						uniqueId.clearCacheKey();
 
 					resetMessageContent((T) hoder.msg, hoder.smsMessage);
 
@@ -49,7 +50,8 @@ public abstract class AbstractLongMessageHandler<T extends BaseMessage> extends 
 				}
 			} catch (Exception ex) {
 				// 合并失败的，及时删除UniqueLongMsgId中的uniqeId缓存
-				uniqueId.clearCacheKey();
+				if(uniqueId != null)
+					uniqueId.clearCacheKey();
 				
 				// 长短信解析失败，直接给网关回复 resp . 并丢弃这个短信
 				logger.error("Decode Message Error ,entity : {} ,uniqueId : {} , msg dump :{}", entity.getId(),

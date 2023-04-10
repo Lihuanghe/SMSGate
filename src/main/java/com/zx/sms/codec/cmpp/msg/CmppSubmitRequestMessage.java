@@ -471,6 +471,7 @@ public class CmppSubmitRequestMessage extends DefaultMessage implements LongSMSM
 		frame.setMsgContentBytes(getMsgContentBytes());
 		frame.setMsgLength((short) getMsgLength());
 		frame.setSequence(getSequenceNo());
+		frame.setMsgId(getMsgid().toString());
 		return frame;
 	}
 
@@ -486,6 +487,9 @@ public class CmppSubmitRequestMessage extends DefaultMessage implements LongSMSM
 		requestMessage.setMsgfmt((SmsDcs)frame.getMsgfmt());
 		requestMessage.setMsgContentBytes(frame.getMsgContentBytes());
 		requestMessage.setMsgLength((short) frame.getMsgLength());
+		if(frame.getMsgId()!=null) {
+			requestMessage.setMsgid(new MsgId(frame.getMsgId()));
+		}
 		if (frame.getPknumber() != 1) {
 			requestMessage.getHeader().setSequenceId(DefaultSequenceNumberUtil.getSequenceNo());
 		}

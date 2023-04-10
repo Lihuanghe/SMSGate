@@ -6,14 +6,21 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.zx.sms.codec.cmpp.msg.CmppDeliverRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitRequestMessage;
 import com.zx.sms.codec.cmpp.msg.CmppSubmitResponseMessage;
+import com.zx.sms.codec.cmpp.wap.LongMessageFrameHolder;
+import com.zx.sms.common.GlobalConstance;
 import com.zx.sms.common.util.MsgId;
+import com.zx.sms.connect.manager.TestConstants;
 import com.zx.sms.connect.manager.cmpp.CMPPClientEndpointEntity;
 import com.zx.sms.connect.manager.cmpp.CMPPCodecChannelInitializer;
 import com.zx.sms.handler.cmpp.CMPPDeliverLongMessageHandler;
@@ -154,5 +161,84 @@ public class TestSpeedError {
 		// Thread.sleep(100);
 		Assert.assertTrue(!futurn.isSuccess());
 		Assert.assertTrue("Msg Life over".equals(futurn.cause().getMessage()));
+	}
+	
+	@Test
+	public void testDeliverCheckReceiveAndSendMsgid() throws Exception
+	{
+		
+		CmppDeliverRequestMessage msg = new CmppDeliverRequestMessage();
+		msg.setDestId("10658909");
+		msg.setLinkid("0000");
+		// 70个汉字
+		msg.setMsgContent(TestConstants.testSmsContent);
+		msg.setMsgId(new MsgId());
+		msg.setServiceid("10006");
+		msg.setSrcterminalId("13800138000");
+		msg.setSrcterminalType((short) 1);
+		
+		List<CmppDeliverRequestMessage> msgs = LongMessageFrameHolder.splitLongSmsMessage(null, msg);
+		SessionStateManager sessionhandler = (SessionStateManager) ch.pipeline().get("session");
+		List<String> originMsgid = new ArrayList<String>();
+		for(CmppDeliverRequestMessage part : msgs) {
+			originMsgid.add(part.getMsgId().toString() +","+ part.getSequenceNo());
+			sessionhandler.writeMessagesync(part);
+		}
+		System.out.println(StringUtils.join(originMsgid,"|"));
+		ByteBuf reqBuf ;
+		
+		while((reqBuf = ch.readOutbound()) != null) {
+			ch.writeInbound(reqBuf);
+		}
+		
+		List<String> recvMsgid = new ArrayList<String>();
+		CmppDeliverRequestMessage recvMsg = ch.readInbound();
+		recvMsgid.add(recvMsg.getMsgId().toString()+","+recvMsg.getSequenceNo());
+		
+		for(CmppDeliverRequestMessage frag : recvMsg.getFragments()) {
+			recvMsgid.add(frag.getMsgId().toString()+","+frag.getSequenceNo());
+		}
+		
+		System.out.println(StringUtils.join(recvMsgid,"|"));
+		Assert.assertEquals(StringUtils.join(originMsgid,"|"), StringUtils.join(recvMsgid,"|"));
+	}
+	
+	
+	@Test
+	public void testSubmitCheckReceiveAndSendMsgid() throws Exception
+	{
+		
+		CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
+		msg.setDestterminalId(new String[] { "13800138000" });
+		msg.setLinkID("0000");
+		msg.setMsgContent(TestConstants.testSmsContent);
+		msg.setMsgid(GlobalConstance.emptyMsgId);
+		msg.setServiceId("10000");
+		msg.setSrcId("100001");
+		
+		List<CmppSubmitRequestMessage> msgs = LongMessageFrameHolder.splitLongSmsMessage(null, msg);
+		SessionStateManager sessionhandler = (SessionStateManager) ch.pipeline().get("session");
+		List<String> originMsgid = new ArrayList<String>();
+		for(CmppSubmitRequestMessage part : msgs) {
+			originMsgid.add(part.getMsgid().toString() +","+ part.getSequenceNo());
+			sessionhandler.writeMessagesync(part);
+		}
+		System.out.println(StringUtils.join(originMsgid,"|"));
+		ByteBuf reqBuf ;
+		
+		while((reqBuf = ch.readOutbound()) != null) {
+			ch.writeInbound(reqBuf);
+		}
+		
+		List<String> recvMsgid = new ArrayList<String>();
+		CmppSubmitRequestMessage recvMsg = ch.readInbound();
+		recvMsgid.add(recvMsg.getMsgid().toString()+","+recvMsg.getSequenceNo());
+		
+		for(CmppSubmitRequestMessage frag : recvMsg.getFragments()) {
+			recvMsgid.add(frag.getMsgid().toString()+","+frag.getSequenceNo());
+		}
+		
+		System.out.println(StringUtils.join(recvMsgid,"|"));
+		Assert.assertEquals(StringUtils.join(originMsgid,"|"), StringUtils.join(recvMsgid,"|"));
 	}
 }

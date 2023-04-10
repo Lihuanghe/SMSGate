@@ -365,6 +365,7 @@ public class SMGPDeliverMessage extends SMGPBaseMessage implements LongSMSMessag
 		frame.setMsgContentBytes(getBMsgContent());
 		frame.setMsgLength((short)this.bMsgContent.length);
 		frame.setSequence(getSequenceNo());
+		frame.setMsgId(getMsgId().toString());
 		return frame;
 	}
 
@@ -375,10 +376,13 @@ public class SMGPDeliverMessage extends SMGPBaseMessage implements LongSMSMessag
 		requestMessage.setTpUdhi((byte)frame.getTpudhi());
 		requestMessage.setMsgFmt((SMGPSmsDcs)frame.getMsgfmt());
 		requestMessage.setBMsgContent(frame.getMsgContentBytes());
-		
+		if(frame.getMsgId()!=null) {
+			requestMessage.setMsgId(new MsgId(frame.getMsgId()));
+		}
 		if(frame.getPknumber()!=1){
 			requestMessage.setSequenceNo(DefaultSequenceNumberUtil.getSequenceNo());
-			requestMessage.setMsgId( new MsgId());
+			if(frame.getMsgId()==null) 
+				requestMessage.setMsgId( new MsgId());
 		}
 		
 		requestMessage.setMsgContent((SmsMessage)null);

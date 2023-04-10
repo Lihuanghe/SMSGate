@@ -27,6 +27,9 @@ public class LongMessageFrame implements Serializable{
 
 	private int sequence;
 	
+	//保存长短信不同分片的MsgiD,使用这个字段的有CMPPSubmit,CMPPDeliver,SMGPDeliver使用
+	private String msgId;
+	
 	public int getPkseq() {
 		return pkseq;
 	}
@@ -140,6 +143,14 @@ public class LongMessageFrame implements Serializable{
 		this.sequence = sequence;
 	}
 	
+	public String getMsgId() {
+		return msgId;
+	}
+
+	public void setMsgId(String msgId) {
+		this.msgId = msgId;
+	}
+
 	public long getTimestamp() {
 		return timestamp;
 	}

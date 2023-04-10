@@ -284,6 +284,7 @@ public class CmppDeliverRequestMessage extends DefaultMessage implements LongSMS
 		frame.setMsgContentBytes(getMsgContentBytes());
 		frame.setMsgLength((short) getMsgLength());
 		frame.setSequence(getSequenceNo());
+		frame.setMsgId(msgId.toString());
 		return frame;
 	}
 
@@ -294,10 +295,13 @@ public class CmppDeliverRequestMessage extends DefaultMessage implements LongSMS
 		requestMessage.setMsgfmt((SmsDcs)frame.getMsgfmt());
 		requestMessage.setMsgContentBytes(frame.getMsgContentBytes());
 		requestMessage.setMsgLength((short) frame.getMsgLength());
-		
-		if (frame.getPknumber() != 1) {
+		if(frame.getMsgId()!=null) {
+			requestMessage.setMsgId(new MsgId(frame.getMsgId()));
+		}
+		if (frame.getPknumber() != 1 ) {
 			requestMessage.getHeader().setSequenceId(DefaultSequenceNumberUtil.getSequenceNo());
-			requestMessage.setMsgId(new MsgId()); //上行短信每条的msgId不一样
+			if(frame.getMsgId()==null)
+				requestMessage.setMsgId(new MsgId()); //上行短信每条的msgId不一样
 		}
 
 		requestMessage.setMsg(null);
