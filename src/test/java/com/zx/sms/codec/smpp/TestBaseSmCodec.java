@@ -619,4 +619,11 @@ public class TestBaseSmCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
 
 		return sb.toString();
 	}
+	
+	@Test
+	public void testErrorunencodedSeptetsToString() throws Exception {
+		byte[] buffer = Hex.decodeHex("1b141b".toCharArray());
+		String str = SmsPduUtil.unencodedSeptetsToString(buffer);
+		Assert.assertEquals("^", str);
+	}
 }
