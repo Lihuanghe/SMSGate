@@ -272,6 +272,9 @@ public class WindowSizeChannelTrafficShapingHandler extends AbstractTrafficShapi
     }
     
     public void channelRead(final ChannelHandlerContext ctx, final Object msg) throws Exception {
+    	//优先调用父级方法
+        super.channelRead(ctx, msg);
+
         if (msg instanceof BaseMessage) {
             BaseMessage req = (BaseMessage) msg;
             
@@ -294,7 +297,6 @@ public class WindowSizeChannelTrafficShapingHandler extends AbstractTrafficShapi
                 }
             }
         } 
-        super.channelRead(ctx, msg);
     }
       
       private void writeAndDecrement(ChannelHandlerContext ctx,Object msg, ChannelPromise promise) {
