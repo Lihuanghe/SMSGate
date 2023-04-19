@@ -79,14 +79,16 @@ public class WindowSizeChannelTrafficShapingHandler extends AbstractTrafficShapi
         trafficCounter.start();   
         
         //如果messagesQueue队列里有积压的未发送消息，但此时连接上即没有发送消息，也没有接收消息。
-        //此时要定时1.5秒发送下队列里的消息
+        //此时要定时发送下队列里的消息
         sf = ctx.executor().scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                sendAllValid(ctx, TrafficCounter.milliSecondFromNano());
+            	if((readFuture == null || readFuture.isDone()) &&
+            		(submitFuture == null || submitFuture.isDone())) {
+            		 sendAllValid(ctx, TrafficCounter.milliSecondFromNano());
+            	}
             }
-        }, 3, 1500, TimeUnit.MILLISECONDS);
-        
+        }, 1000, checkInterval, TimeUnit.MILLISECONDS);
         
         super.handlerAdded(ctx);
     }
