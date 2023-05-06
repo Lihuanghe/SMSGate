@@ -38,8 +38,9 @@ public abstract class AbstractClientEndpointConnector extends AbstractEndpointCo
 		bootstrap.group(EventLoopGroupFactory.INS.getWorker())
 		.channel(EventLoopGroupFactory.selectChannelClass())
 		.option(ChannelOption.TCP_NODELAY, true)
-		.option(ChannelOption.SO_RCVBUF, 16384)
-		.option(ChannelOption.SO_SNDBUF, 8192)
+		//使用操作系统默认缓冲区大小
+//		.option(ChannelOption.SO_RCVBUF, 16384)
+//		.option(ChannelOption.SO_SNDBUF, 8192)
 		.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)   
 //		.option(ChannelOption.RCVBUF_ALLOCATOR,new FixedRecvByteBufAllocator(1024))
 		.handler(initPipeLine());

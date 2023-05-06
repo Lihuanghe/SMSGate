@@ -45,8 +45,9 @@ public abstract class AbstractServerEndpointConnector extends AbstractEndpointCo
 				.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
 				.handler(new LoggingHandler(LogLevel.DEBUG))
 				.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-				.childOption(ChannelOption.SO_RCVBUF, 16384)
-				.childOption(ChannelOption.SO_SNDBUF, 8192)
+				//使用操作系统默认缓冲区大小
+//				.childOption(ChannelOption.SO_RCVBUF, 16384)
+//				.childOption(ChannelOption.SO_SNDBUF, 8192)
 //				.childOption(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(1024))
 				.childOption(ChannelOption.TCP_NODELAY, true)
 				.childHandler(initPipeLine());
