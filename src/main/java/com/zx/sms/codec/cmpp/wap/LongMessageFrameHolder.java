@@ -18,6 +18,7 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stax.StAXSource;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -467,16 +468,15 @@ public enum LongMessageFrameHolder {
 		// 处理固定签名：如果账号是固定签名的，要删除签名，通道会自己拼接
 		// 保证不带签名发出去的分片数，跟拼上固定签名后的分片数一样
 		if (content instanceof SmsTextMessage) {
-			if (signType != null && signType.getSign() != null && signType.getSign().length() > 0) {
+			if ((signType != null && signType.getSign() != null && signType.getSign().length() > 0) || (signType != null && signType.getpSign()!=null)) {
 				SmsTextMessage textContent = (SmsTextMessage) content;
 				String originContent = textContent.getText();
 				// 签名匹配
-				boolean removeSign = (signType.isTail() && originContent.endsWith(signType.getSign()))
-						|| (!signType.isTail() && originContent.startsWith(signType.getSign()));
+				String realSign = signType.fetchSign(originContent);
 
-				if (removeSign) {
+				if (StringUtils.isNoneBlank(realSign)) {
 					AbstractSmsDcs dcs = textContent.getDcs();
-					int signByteLength = (new SmsTextMessage(signType.getSign(), dcs)).getUserData().getLength();
+					int signByteLength = (new SmsTextMessage(realSign, dcs)).getUserData().getLength();
 					int sufixRemoveLength = 0;
 					if (signType.isTail()) {
 						int lastLength = pdus[pduLength - 1].getUserData().getLength();

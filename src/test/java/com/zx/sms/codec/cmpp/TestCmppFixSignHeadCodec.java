@@ -1,6 +1,7 @@
 package com.zx.sms.codec.cmpp;
 
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,7 +24,9 @@ public class TestCmppFixSignHeadCodec extends AbstractTestMessageCodec<CmppSubmi
 	}
 
 		
-	private static String signTxt = "【温馨提示】";
+//	private static String signTxt = "【温馨提示】";
+	private static Pattern signTxt = Pattern.compile("【温馨提示】");
+//	Pattern signTxt = Pattern.compile("^【[^】]*】");
 	protected EndpointEntity buildEndpointEntity() {
 		EndpointEntity e = new CMPPClientEndpointEntity();
 		e.setId(EndPointID);
@@ -103,5 +106,42 @@ public class TestCmppFixSignHeadCodec extends AbstractTestMessageCodec<CmppSubmi
 		Assert.assertEquals(msg.getServiceId(), result.getServiceId());
 	}
 
+	@Test
+	public void testPatternSign() {
+		Pattern p = Pattern.compile("\\[[^]]*\\]$");
+		SignatureType  sign =new SignatureType(true,p);
+		String abc = "[bacsfd理解]您的问题2]【温馨提示】移娃没理解您的问题3【温馨提示】移娃没理解您的问题4[温馨提示]";
+		String realSign  = sign.fetchSign(abc);
+		System.out.println("testPatternSign :"+realSign);
+		Assert.assertEquals("[温馨提示]", realSign);
+	}
 	
+	@Test
+	public void testPatternSign2() {
+		Pattern p = Pattern.compile("【[^】]*】$");
+		SignatureType  sign =new SignatureType(true,p);
+		String abc = "[bacsfd理解]您的问题2]【温馨提示1】移娃没理解您的问题3【温馨提示2】移娃没理解您的问题4【温馨提示3】";
+		String realSign  = sign.fetchSign(abc);
+		System.out.println("testPatternSign2 :"+realSign);
+		Assert.assertEquals("【温馨提示3】", realSign);
+	}
+	@Test
+	public void testPatternSign3() {
+		Pattern p = Pattern.compile("^\\[[^]]*\\]");
+		SignatureType  sign =new SignatureType(false,p);
+		String abc = "[bacsfd理解]您的问题2]【温馨提示】移娃没理解您的问题3【温馨提示】移娃没理解您的问题4[温馨提示]";
+		String realSign  = sign.fetchSign(abc);
+		System.out.println("testPatternSign3 :"+realSign);
+		Assert.assertEquals("[bacsfd理解]", realSign);
+	}
+	
+	@Test
+	public void testPatternSign4() {
+		Pattern p = Pattern.compile("^【[^】]*】");
+		SignatureType  sign =new SignatureType(false,p);
+		String abc = "【温馨提示1】移娃没理解您的问题3【温馨提示2】移娃没理解您的问题4【温馨提示3】";
+		String realSign  = sign.fetchSign(abc);
+		System.out.println("testPatternSign4 :"+realSign);
+		Assert.assertEquals("【温馨提示1】", realSign);
+	}
 }

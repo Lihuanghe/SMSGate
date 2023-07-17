@@ -1,6 +1,7 @@
 package com.zx.sms.codec.cmpp;
 
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,7 +24,8 @@ public class TestCmppFixSignTailCodec extends AbstractTestMessageCodec<CmppSubmi
 	}
 
 		
-	private static String signTxt = "【温馨提示】";
+//	private static String signTxt = "【温馨提示】";
+	private static Pattern signTxt = Pattern.compile("【温馨提示】");
 	protected EndpointEntity buildEndpointEntity() {
 		EndpointEntity e = new CMPPClientEndpointEntity();
 		e.setId(EndPointID);
