@@ -3,8 +3,6 @@
  */
 package com.zx.sms.codec.sgip12.packet;
 
-import io.netty.handler.codec.MessageToMessageCodec;
-
 import com.zx.sms.codec.cmpp.packet.PacketStructure;
 import com.zx.sms.codec.cmpp.packet.PacketType;
 import com.zx.sms.codec.sgip12.codec.SgipBindRequestMessageCodec;
@@ -15,8 +13,12 @@ import com.zx.sms.codec.sgip12.codec.SgipReportRequestMessageCodec;
 import com.zx.sms.codec.sgip12.codec.SgipReportResponseMessageCodec;
 import com.zx.sms.codec.sgip12.codec.SgipSubmitRequestMessageCodec;
 import com.zx.sms.codec.sgip12.codec.SgipSubmitResponseMessageCodec;
+import com.zx.sms.codec.sgip12.codec.SgipTraceRequestMessageCodec;
+import com.zx.sms.codec.sgip12.codec.SgipTraceResponseMessageCodec;
 import com.zx.sms.codec.sgip12.codec.SgipUnbindRequestMessageCodec;
 import com.zx.sms.codec.sgip12.codec.SgipUnbindResponseMessageCodec;
+
+import io.netty.handler.codec.MessageToMessageCodec;
 
 /**
  * @author huzorro(huzorro@gmail.com)
@@ -32,8 +34,11 @@ public enum SgipPacketType implements PacketType {
 	DELIVERREQUEST(0x00000004, SgipDeliverRequest.class,SgipDeliverRequestMessageCodec.class),
 	DELIVERRESPONSE(0x80000004, SgipDeliverResponse.class,SgipDeliverResponseMessageCodec.class),
 	REPORTREQUEST(0x00000005, SgipReportRequest.class,SgipReportRequestMessageCodec.class),
-	REPORTRESPONSE(0x80000005, SgipReportResponse.class,SgipReportResponseMessageCodec.class);
+	REPORTRESPONSE(0x80000005, SgipReportResponse.class,SgipReportResponseMessageCodec.class),
+	TRACEREQUEST(0x00001000, SgipTraceRequest.class,SgipTraceRequestMessageCodec.class),
+	TRACERESPONSE(0x80001000, SgipTraceResponse.class,SgipTraceResponseMessageCodec.class);
 
+	
     private int commandId;
     private Class<? extends PacketStructure> packetStructure;
     private Class<? extends MessageToMessageCodec> codec;

@@ -137,7 +137,7 @@ public class TestCmppFixSignHeadCodec extends AbstractTestMessageCodec<CmppSubmi
 	
 	@Test
 	public void testPatternSign4() {
-		Pattern p = Pattern.compile("^【[^】]*】");
+		Pattern p = Pattern.compile("^【[^】]*提示[^】]*】");
 		SignatureType  sign =new SignatureType(false,p);
 		String abc = "【温馨提示1】移娃没理解您的问题3【温馨提示2】移娃没理解您的问题4【温馨提示3】";
 		String realSign  = sign.fetchSign(abc);
