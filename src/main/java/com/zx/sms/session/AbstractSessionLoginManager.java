@@ -171,9 +171,15 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 	protected void receiveConnectMessage(ChannelHandlerContext ctx, Object message) throws Exception {
 
 		// 通过用户名获取端口信息
-		EndpointEntity childentity = queryEndpointEntityByMsg(message);
-		// 修改协议版本，使用客户端对应协议的协议解析器
-		changeProtoVersion(ctx, childentity, message);
+		EndpointEntity childentity = null;
+		try {
+			childentity = queryEndpointEntityByMsg(message);
+			// 修改协议版本，使用客户端对应协议的协议解析器
+			changeProtoVersion(ctx, childentity, message);
+		}catch(Exception e) {
+			logger.warn("login failed , {}", message);
+			childentity = null;
+		}
 		
 		if (childentity == null) {
 			failedLogin(ctx, message, 3);
