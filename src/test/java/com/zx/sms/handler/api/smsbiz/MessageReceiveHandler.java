@@ -28,9 +28,9 @@ public abstract class MessageReceiveHandler extends AbstractBusinessHandler {
 	private int rate = 1;
 
 	private long lastNum = 0;
-	private static Map<String,AtomicLong> initedMap = new ConcurrentHashMap<String,AtomicLong>();
+	private Map<String,AtomicLong> initedMap = new ConcurrentHashMap<String,AtomicLong>();
 	
-	private static final Object lock = new Object();
+	private final Object lock = new Object();
 
 	public AtomicLong getCnt() {
 		AtomicLong count = initedMap.get(getEndpointEntity().getId());

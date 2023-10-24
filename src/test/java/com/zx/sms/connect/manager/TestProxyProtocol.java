@@ -4,6 +4,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -34,17 +35,25 @@ import io.netty.channel.ChannelHandlerContext;
 public class TestProxyProtocol {
 	private static final Logger logger = LoggerFactory.getLogger(TestProxyProtocol.class);
 
+
 	@Test
-	public void testproxyEndpoint() throws Exception {
+	public void testProxyEndpoint() throws Exception{
+		int port = RandomUtils.nextInt(15000, 15999);
+		doRunProxyEndpoint(false,RandomUtils.nextInt(500, 1500),port);
+		doRunProxyEndpoint(true,RandomUtils.nextInt(500, 1500),port);
+	}
+	
+	
+	private void doRunProxyEndpoint(boolean useSSL,int random,int port) throws Exception {
 		EndpointManager.INS.removeAll();
-		int port = 15890;
+	
 		CMPPServerEndpointEntity server = new CMPPServerEndpointEntity();
 		server.setId("proxy-server");
 		server.setHost("0.0.0.0");
 		server.setPort(port);
 		server.setValid(true);
 		// 使用ssl加密数据流
-		server.setUseSSL(true);
+		server.setUseSSL(useSSL);
 		
 		//打开支持proxy protocol的开关
 		server.setProxyProtocol(true);
@@ -116,15 +125,13 @@ public class TestProxyProtocol {
 		client.setRetryWaitTimeSec((short) 30);
 		client.setMaxRetryCnt((short)1);
 		client.setCloseWhenRetryFailed(false);
-		client.setUseSSL(true);
-//		 client.setWriteLimit(150);
-		client.setWindow(16);
+		client.setUseSSL(useSSL);
+		 client.setWriteLimit(250);
 		client.setReSendFailMsg(TestConstants.isReSendFailMsg);
 		client.setSupportLongmsg(SupportLongMessage.BOTH);
 		List<BusinessHandlerInterface> clienthandlers = new ArrayList<BusinessHandlerInterface>();
 		
-		int count = 1000;
-//		int count = TestConstants.Count;
+		int count = random;
 		
 		CMPPSessionConnectedHandler sender = new CMPPSessionConnectedHandler(count);
 		clienthandlers.add(sender);
