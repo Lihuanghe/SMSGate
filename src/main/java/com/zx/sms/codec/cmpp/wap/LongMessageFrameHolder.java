@@ -477,35 +477,21 @@ public enum LongMessageFrameHolder {
 				if (StringUtils.isNoneBlank(realSign)) {
 					AbstractSmsDcs dcs = textContent.getDcs();
 					int signByteLength = (new SmsTextMessage(realSign, dcs)).getUserData().getLength();
-					int sufixRemoveLength = 0;
-					if (signType.isTail()) {
-						int lastLength = pdus[pduLength - 1].getUserData().getLength();
-						// 签名长度比最后一个短信内容长，要倒数第二条也移除
-						if (signByteLength > lastLength) {
-
-							// 倒数第二条移除
-							sufixRemoveLength = signByteLength - lastLength;
-						} else {
-							// 全部移除
-							sufixRemoveLength = signByteLength;
-						}
-					} else {
-						sufixRemoveLength = signByteLength;
-					}
+					int sufixRemoveLength = signByteLength;
 
 					// 前置签名移除，前置移除第一个
 					if (!signType.isTail()) {
-						// 短信内容移除前边的sigLength长度的字节
-						removePduSigBytes(pdus[0], signType.isTail(), sufixRemoveLength);
+						// 短信内容，移除前边的sigLength长度的字节
+						int i = 0;
+						while(sufixRemoveLength > 0 && i < pduLength) {
+							sufixRemoveLength = removePduSigBytes(pdus[i++], signType.isTail(), sufixRemoveLength);
+						}
+						
 					} else {
-						if (sufixRemoveLength == signByteLength) {
-							// 要删除的跟签名长度一样，只删除最后一条
-							removePduSigBytes(pdus[pduLength - 1], signType.isTail(), sufixRemoveLength);
-						} else {
-							// 删除上一条包含的半截签名
-							removePduSigBytes(pdus[pduLength - 2], signType.isTail(), sufixRemoveLength);
-							// 重置最后一条内容，
-							pdus[pduLength - 1].setUserData(GlobalConstance.emptyBytes, 0, dcs);
+						// 短信内容，移除最后的sigLength长度的字节
+						int i = pduLength-1;
+						while(sufixRemoveLength > 0 && i >= 0) {
+							sufixRemoveLength = removePduSigBytes(pdus[i--], signType.isTail(), sufixRemoveLength);
 						}
 					}
 				}
@@ -566,19 +552,29 @@ public enum LongMessageFrameHolder {
 	 * @param smsPdu
 	 * @param signaturePosition 签名方向
 	 * @param removeLength
+	 * @return 返回剩余签名的长度
 	 */
-	private static void removePduSigBytes(SmsPdu smsPdu, boolean tail, int removeLength) {
+	private static int removePduSigBytes(SmsPdu smsPdu, boolean tail, int removeLength) {
 		byte[] data = smsPdu.getUserData().getData();
 		int dataLength = smsPdu.getUserData().getLength();
 		int newDataLength = dataLength - removeLength;
-		byte[] newData = new byte[newDataLength];
-		if (tail) {
-			System.arraycopy(data, 0, newData, 0, newDataLength);
-		} else {
-			System.arraycopy(data, removeLength, newData, 0, newDataLength);
+		if(newDataLength > 0) {
+			//正常短信内容长度都大于签名长度
+			byte[] newData = new byte[newDataLength];
+			if (tail) {
+				System.arraycopy(data, 0, newData, 0, newDataLength);
+			} else {
+				System.arraycopy(data, removeLength, newData, 0, newDataLength);
+			}
+			// 重新组合用户数据
+			smsPdu.setUserData(newData, newDataLength, smsPdu.getUserData().getDcs());
+		}else {
+			//极少情况，短信内容长度都小于签名长度
+			smsPdu.setUserData(GlobalConstance.emptyBytes, 0, smsPdu.getUserData().getDcs());
 		}
-		// 重新组合用户数据
-		smsPdu.setUserData(newData, newDataLength, smsPdu.getUserData().getDcs());
+
+		//返回剩余签名的长度（如果签名超过分片长度返回正值，通常签名长度都小于分片长度）
+		return removeLength - dataLength;
 	}
 
 	private FrameHolder mergeFrameHolder(FrameHolder fh, LongMessageFrame frame) throws NotSupportedException {

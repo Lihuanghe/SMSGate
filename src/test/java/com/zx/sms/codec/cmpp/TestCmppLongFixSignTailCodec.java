@@ -1,7 +1,6 @@
 package com.zx.sms.codec.cmpp;
 
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -16,15 +15,16 @@ import com.zx.sms.connect.manager.SignatureType;
 import com.zx.sms.connect.manager.cmpp.CMPPClientEndpointEntity;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
-public class TestCmppFixSignTailCodec extends AbstractTestMessageCodec<CmppSubmitRequestMessage> {
+public class TestCmppLongFixSignTailCodec extends AbstractTestMessageCodec<CmppSubmitRequestMessage> {
 	@Override
 	protected int getVersion(){
 		return 0x20;
 	}
 
-		
-	private static String signTxt = "【温馨提示】";
+	//构造一个超出最大分片长度的签名
+	private static String signTxt = "【温馨提示-超长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长的签名】";
 	protected EndpointEntity buildEndpointEntity() {
 		EndpointEntity e = new CMPPClientEndpointEntity();
 		e.setId(EndPointID);
@@ -37,29 +37,19 @@ public class TestCmppFixSignTailCodec extends AbstractTestMessageCodec<CmppSubmi
 	{
 		CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
 		
-		msg.setDestterminalId(new String[]{"13800138000","13800138001","138001380002"});
+		msg.setDestterminalId(new String[]{"13800138000"});
 		msg.setLinkID("0000");
 		String content = UUID.randomUUID().toString();
-		msg.setMsgContent(new SmsTextMessage("移娃没理解您的问题2【温馨提示】移娃没理解您的问题3【温馨提示】移娃没理解您的问题4【温馨提示】移娃没理解您的问题5"+signTxt,new SmsDcs((byte)8)));
+		msg.setMsgContent(new SmsTextMessage("移娃没理解您的问题2【温馨提示】移娃没理解您的问题3【温馨提示】移娃没理解您的问题4【温馨提示】移娃没理解您的问题5【温馨提示】移娃没理解您的问题6"+signTxt,new SmsDcs((byte)8)));
 		
 		msg.setMsgid(new MsgId());
 		msg.setServiceId("10000");
 		msg.setSrcId("10000");
 		
+
+		System.out.println(msg);
 		
-		ByteBuf buf = encode(msg);
-		
-		ByteBuf copybuf = buf.copy();
-		
-		int length = buf.readableBytes();
-		
-		Assert.assertEquals(length, buf.readInt());
-		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readInt());
-		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readInt());
-		
-	
-		
-		CmppSubmitRequestMessage result = decode(copybuf);
+		CmppSubmitRequestMessage result = testlongCodec(msg);
 		System.out.println(result);
 		Assert.assertEquals(msg.getHeader().getSequenceId(), result.getHeader().getSequenceId());
 		Assert.assertArrayEquals(msg.getDestterminalId(), result.getDestterminalId());
@@ -73,7 +63,7 @@ public class TestCmppFixSignTailCodec extends AbstractTestMessageCodec<CmppSubmi
 	{
 		CmppSubmitRequestMessage msg = new CmppSubmitRequestMessage();
 		
-		msg.setDestterminalId(new String[]{"13800138000","13800138001","138001380002"});
+		msg.setDestterminalId(new String[]{"13800138000"});
 		msg.setLinkID("0000");
 		String content = UUID.randomUUID().toString();
 		msg.setMsgContent(content);
@@ -84,25 +74,37 @@ public class TestCmppFixSignTailCodec extends AbstractTestMessageCodec<CmppSubmi
 		msg.setSrcId("10000");
 		
 		
-		ByteBuf buf = encode(msg);
+		System.out.println(msg);
 		
-		ByteBuf copybuf = buf.copy();
+		CmppSubmitRequestMessage result = testlongCodec(msg);
 		
-		int length = buf.readableBytes();
-		
-		Assert.assertEquals(length, buf.readInt());
-		Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readInt());
-		Assert.assertEquals(msg.getHeader().getSequenceId(), buf.readInt());
-		
-	
-		
-		CmppSubmitRequestMessage result = decode(copybuf);
 		System.out.println(result);
 		Assert.assertEquals(msg.getHeader().getSequenceId(), result.getHeader().getSequenceId());
 		Assert.assertArrayEquals(msg.getDestterminalId(), result.getDestterminalId());
 		Assert.assertEquals(msg.getMsgContent(), result.getMsgContent()+signTxt);
 		Assert.assertEquals(msg.getServiceId(), result.getServiceId());
 	}
+	private CmppSubmitRequestMessage testlongCodec(CmppSubmitRequestMessage msg)
+	{
 
-	
+		channel().writeOutbound(msg);
+		ByteBuf buf =(ByteBuf)channel().readOutbound();
+		ByteBuf copybuf = Unpooled.buffer();
+	    while(buf!=null){
+			
+			
+	    	ByteBuf copy = buf.copy();
+	    	copybuf.writeBytes(copy);
+	    	copy.release();
+			int length = buf.readableBytes();
+			
+			Assert.assertEquals(length, buf.readInt());
+			Assert.assertEquals(msg.getPacketType().getCommandId(), buf.readInt());
+
+			buf =(ByteBuf)channel().readOutbound();
+	    }
+
+		CmppSubmitRequestMessage result = decode(copybuf);
+		return result;
+	}
 }

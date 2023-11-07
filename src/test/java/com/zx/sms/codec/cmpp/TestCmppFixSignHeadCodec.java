@@ -24,9 +24,7 @@ public class TestCmppFixSignHeadCodec extends AbstractTestMessageCodec<CmppSubmi
 	}
 
 		
-//	private static String signTxt = "【温馨提示】";
-	private static Pattern signTxt = Pattern.compile("【温馨提示】");
-//	Pattern signTxt = Pattern.compile("^【[^】]*】");
+	private static String signTxt = "【温馨提示】";
 	protected EndpointEntity buildEndpointEntity() {
 		EndpointEntity e = new CMPPClientEndpointEntity();
 		e.setId(EndPointID);
