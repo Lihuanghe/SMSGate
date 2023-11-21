@@ -1,5 +1,6 @@
 package com.zx.sms.handler;
 
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,6 +33,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.TooLongFrameException;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 /**
  *通过第一个登陆的请求判断是什么短信协议 
@@ -98,12 +101,23 @@ public class SmsProtocolCheckHandler extends ByteToMessageDecoder {
 				if(matcher.find()) {
 					String length = matcher.group(1);
 					byte[] chars = ByteArrayUtil.toByteArray(Long.parseLong(length));
-					logger.error("login error entity : " + entity.toString() + ".\nthis request maybe HTTP. receive first 4 byte is :\""+ (new String(chars)).trim()+"\" .", cause);
+					logger.warn("login error. this request maybe HTTP. receive first 4 byte is :\""+ (new String(chars)).trim()+"\" .{}", exceptionMsg);
+					ByteBuf buf = ctx.alloc().buffer(40);
+					buf.writeBytes(("HTTP/1.0 502\r\nServer: SMS-Gate\r\nDate: "+ (new Date())+"\r\nContent-Length: 0\r\n\r\n").getBytes("UTF-8"));
+					ctx.writeAndFlush(buf).addListener(new GenericFutureListener() {
+						@Override
+						public void operationComplete(Future future) throws Exception {
+							// 如果发送消息失败，记录失败日志
+							if (!future.isSuccess()) {
+								logger.error("", future.cause());
+							}
+						}
+					});
 				}else {
-					logger.error("login error entity : " + entity.toString(), cause);
+					logger.warn("login error entityId : [" + entity.getId()+"] .{}", exceptionMsg);
 				}
 			}else {
-				logger.error("login error entity : " + entity.toString(), cause);
+				logger.warn("login error entityId : [" + entity.getId()+"] .{}", exceptionMsg);
 			}
 			ctx.close();
 	}
