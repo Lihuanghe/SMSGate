@@ -105,7 +105,8 @@ public class TestSpeedError {
 		CmppSubmitResponseMessage resp = new CmppSubmitResponseMessage(msg.getHeader().getSequenceId());
 		resp.setResult(8L);
 		ch.writeOutbound(resp); // 把resp转化为ByteBuf
-		ch.writeInbound(ch.readOutbound());
+		recvMsg = ch.readOutbound();
+		ch.writeInbound(recvMsg);
 		Thread.sleep((reSendTime - 1) * 1000);
 		// 一共发送了3条MT消息
 		Assert.assertEquals(3, sessionhandler.getWriteCount());
@@ -117,8 +118,8 @@ public class TestSpeedError {
 		resp = new CmppSubmitResponseMessage(msg.getHeader().getSequenceId());
 		resp.setResult(0L);
 		ch.writeOutbound(resp); // 把resp转化为ByteBuf
-
-		ch.writeInbound(ch.readOutbound());
+		recvMsg = ch.readOutbound();
+		ch.writeInbound(recvMsg);
 
 		CmppSubmitResponseMessage respret = ch.readInbound();
 		Assert.assertEquals(msg.toString(), respret.getRequest().toString());

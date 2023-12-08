@@ -102,6 +102,22 @@
    log4j.logger.entity.cmppclientEntityId=debug
 ```
 
+- `在Java9以上版上运行`
+
+```
+	在java9以上运行，启动java进程要增加以下参数：
+	
+--add-opens java.base/java.lang=ALL-UNNAMED
+--add-opens java.base/java.math=ALL-UNNAMED  
+--add-opens java.base/java.util=ALL-UNNAMED  
+--add-opens java.base/java.util.concurrent=ALL-UNNAMED  
+--add-opens java.base/java.net=ALL-UNNAMED   
+--add-opens java.base/java.text=ALL-UNNAMED 
+--add-exports java.base/sun.security.x509=ALL-UNNAMED 
+
+```
+
+
 # 新手指引
 
 - 先看doc目录下的`CMPP接口协议V3.0.0.doc`文档 (看不懂的到群里咨询)
