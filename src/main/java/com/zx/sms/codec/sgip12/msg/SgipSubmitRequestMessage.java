@@ -416,6 +416,7 @@ public class SgipSubmitRequestMessage extends SgipDefaultMessage implements Long
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SgipSubmitRequestMessage [corpid=").append(corpid)
+		.append(", tppid=").append(tppid)
 		.append(", spnumber=").append(spnumber)
 		.append(", destterminalId=").append(Arrays.toString(usernumber))
 		.append(", msgContent=").append(getMsgContent())

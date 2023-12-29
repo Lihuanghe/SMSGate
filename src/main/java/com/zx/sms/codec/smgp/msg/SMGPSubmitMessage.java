@@ -510,6 +510,7 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 		buffer.append("SMGPSubmitMessage:[sequenceNumber=").append(
 				sequenceString()).append(",");
 		buffer.append("msgType=").append(msgType).append(",");
+		buffer.append("tpPid=").append(tpPid.getValue()).append(",");
 		buffer.append("needReport=").append(needReport).append(",");
 		buffer.append("validTime=").append(validTime).append(",");
 		buffer.append("atTime=").append(atTime).append(",");

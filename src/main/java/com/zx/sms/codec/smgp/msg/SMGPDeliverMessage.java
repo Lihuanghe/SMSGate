@@ -344,6 +344,7 @@ public class SMGPDeliverMessage extends SMGPBaseMessage implements LongSMSMessag
 		buffer.append("SMGPDeliverMessage:[sequenceNumber=").append(
 				sequenceString()).append(",");
 		buffer.append("msgId=").append(msgIdString()).append(",");
+		buffer.append("tpPid=").append(tpPid.getValue()).append(",");
 		buffer.append("recvTime=").append(recvTime).append(",");
 		buffer.append("srcTermId=").append(srcTermId).append(",");
 		buffer.append("destTermId=").append(destTermId).append(",");

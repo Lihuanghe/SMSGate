@@ -447,8 +447,8 @@ public class CmppSubmitRequestMessage extends DefaultMessage implements LongSMSM
 		
 		if(StringUtils.isNotBlank(valIdTime)) sb.append(", valIdTime=").append(valIdTime);
 		if(StringUtils.isNotBlank(atTime)) sb.append(", atTime=").append(atTime);
-		
-		sb.append(", srcId=").append(srcId)
+		sb.append(", tppid=").append(tppid)
+		.append(", srcId=").append(srcId)
 		.append(", msgsrc=").append(msgsrc)
 		.append(", destterminalId=").append(Arrays.toString(destterminalId))
 		.append(", msgContent=").append(getMsgContent())

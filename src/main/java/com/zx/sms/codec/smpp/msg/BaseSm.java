@@ -498,7 +498,8 @@ public abstract class BaseSm<R extends PduResponse> extends PduRequest<R> {
 		buffer.append((this.sourceAddress));
 		buffer.append("] destAddr [");
 		buffer.append((this.destAddress));
-
+		buffer.append("] tpPid [");
+		buffer.append((this.getProtocolId()));
 		buffer.append("] esmCls [0x");
 		buffer.append(HexUtil.toHexString(this.esmClass));
 		buffer.append("] regDlvry [0x");

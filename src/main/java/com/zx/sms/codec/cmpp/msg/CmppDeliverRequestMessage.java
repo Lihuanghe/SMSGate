@@ -270,7 +270,7 @@ public class CmppDeliverRequestMessage extends DefaultMessage implements LongSMS
 		UniqueLongMsgId uid = getUniqueLongMsgId();
 		if(uid != null) sb.append(", pkseq=").append(uid.getPkseq());
 		if(msgfmt != null) sb.append(", dcs=").append(msgfmt.getValue());
-		sb.append(", destId=").append(destId).append(", srcterminalId=").append(srcterminalId)
+		sb.append(", tppid=").append(tppid).append(", destId=").append(destId).append(", srcterminalId=").append(srcterminalId)
 				.append(", msgContent=").append(getMsgContent()).append(", sequenceId=").append(getHeader().getSequenceId()).append("]");
 		return sb.toString();
 	}

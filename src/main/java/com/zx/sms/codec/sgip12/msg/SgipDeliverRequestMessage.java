@@ -182,7 +182,7 @@ public class SgipDeliverRequestMessage extends SgipDefaultMessage implements Lon
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("SgipDeliverRequestMessage [").append("destId=").append(usernumber).append(", srcterminalId=").append(spnumber)
+		sb.append("SgipDeliverRequestMessage [").append("destId=").append(usernumber).append(",tppid=").append(tppid).append(", srcterminalId=").append(spnumber)
 				.append(", msgContent=").append(getMsgContent()).append(", seq=").append(getSequenceNumber()).append(", header=").append(getHeader()).append("]");
 		return sb.toString();
 	}
