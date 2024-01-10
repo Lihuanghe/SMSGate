@@ -123,6 +123,12 @@ public abstract class EndpointEntity implements Serializable {
 	
 	private int window = 32;
 	
+
+	/**
+	 *限制同一个请求因超速重发的最大次数 ,默认超速重发30次停止重发
+	 */
+	private int overSpeedSendCountLimit = 30;
+	
 	/**
 	 *增加客户端IP校验配置 
 	 */
@@ -361,6 +367,12 @@ public abstract class EndpointEntity implements Serializable {
 		return ret_dcs;
 	}
 	
+	public int getOverSpeedSendCountLimit() {
+		return overSpeedSendCountLimit;
+	}
+	public void setOverSpeedSendCountLimit(int overSpeedSendCountLimit) {
+		this.overSpeedSendCountLimit = overSpeedSendCountLimit;
+	}
 	public SmsDcsBuilder getDefaultDcsBuilder() {
 		return defaultDcsBuilder;
 	}

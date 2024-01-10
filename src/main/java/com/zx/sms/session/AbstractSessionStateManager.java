@@ -281,7 +281,9 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 					
 					// 根据Response 判断是否需要重发,比如CMPP协议，如果收到result==8，表示超速，需要重新发送
 					//Sgip 及 Smpp协议收到88（超速）要重发
-					if (needSendAgainByResponse(request, response)) {
+					//如果一条消息一直超速，限制重发次数
+
+					if (needSendAgainByResponse(request, response) && entry.overSpeedSendCnt.get() < entity.getOverSpeedSendCountLimit()) {
 			            if(logFuture == null || logFuture.isDone()) {
 			            	//1秒打印一次
 			            	logFuture = ctx.executor().schedule(new Runnable() {
@@ -549,17 +551,14 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 			
 			final K seq = getSequenceId(message);
 			// 记录已发送的请求,在发送msg前生记录到map里。防止生成retryTask前就收到resp的情况发生
-			boolean has = msgRetryMap.containsKey(seq);
-			Entry tmpentry = new Entry(message,syn);
-			if (has) {
-				Entry old = msgRetryMap.get(seq);
-				
+			Entry tmpentry ;
+			Entry old = msgRetryMap.get(seq);
+			if (old != null) {
+				tmpentry = old;
 				//2018-08-27 当网关返回超速错时，也会存在想同的seq
-				//消息相同表示此消息是因为超速错导致的重发,什么都不做。
-				//否则可能是相同的seq，但不同的短信				
+				//消息内容不同，可能是相同的seq，但不同的短信				
 				if(!message.equals(old.request)){
-					// bugfix: 集群环境下可能产生相同的seq. 如果已经存在一个相同的seq.
-					// 此消息延迟250ms再发
+					// bugfix: 集群环境下可能产生相同的seq. 已经存在一个相同的seq.
 					logger.error("has repeat Sequense {},\nold:{}\nnew:{}", seq,old.request,message);
 					if(syn){
 						//同步调用时，立即返回失败。
@@ -575,8 +574,12 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 						reWriteLater(ctx, message, promise, 250);
 						return null;
 					}
+				}else {
+					//消息内容相同表示此消息是因为超速错导致的重发,增加超速计数
+					tmpentry.overSpeedSendCnt.incrementAndGet();
 				}
 			} else{
+				tmpentry = new Entry(message,syn);
 				//收到响应时将此对象设置为完成状态
 				tmpentry.resfuture = new DefaultPromise<T>(ctx.executor());
 				msgRetryMap.put(seq, tmpentry);
@@ -649,6 +652,7 @@ public abstract class AbstractSessionStateManager<K, T extends BaseMessage> exte
 		// 保证future的可见性，
 		volatile Future future;
 		AtomicInteger cnt = new AtomicInteger(1);
+		AtomicInteger overSpeedSendCnt = new AtomicInteger(0);
 		T request;
 		boolean sync =  false;
 		

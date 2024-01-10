@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -40,6 +41,7 @@ import io.netty.handler.traffic.WindowSizeChannelTrafficShapingHandler;
 public class TestSpeedError {
 
 	private short reSendTime = 3;
+	private final int speedOverTime = 3;
 
 	protected EmbeddedChannel ch = new EmbeddedChannel(new ChannelInitializer<Channel>() {
 
@@ -64,6 +66,7 @@ public class TestSpeedError {
 			client.setRetryWaitTimeSec(reSendTime);
 			client.setUseSSL(false);
 			client.setReSendFailMsg(true);
+			client.setOverSpeedSendCountLimit(speedOverTime);
 			// 增加流量整形 ，每个连接每秒发送，接收消息数不超过配置的值
 			pipeline.addLast("ChannelTrafficAfter",
 					new WindowSizeChannelTrafficShapingHandler(client, 100));
@@ -101,33 +104,46 @@ public class TestSpeedError {
 		recvMsg = ch.readOutbound();
 		Assert.assertNotNull(recvMsg);
 
-		// 回复一条超速错误
-		CmppSubmitResponseMessage resp = new CmppSubmitResponseMessage(msg.getHeader().getSequenceId());
-		resp.setResult(8L);
-		ch.writeOutbound(resp); // 把resp转化为ByteBuf
-		recvMsg = ch.readOutbound();
-		ch.writeInbound(recvMsg);
-		Thread.sleep((reSendTime - 1) * 1000);
-		// 一共发送了3条MT消息
-		Assert.assertEquals(3, sessionhandler.getWriteCount());
-		// 收到超速错，会再次重发一次
-		recvMsg = ch.readOutbound();
-		Assert.assertNotNull(recvMsg);
+		// 回复N条超速错误
+		int cnt = speedOverTime+2;
+		int i = 0;
+		while(i++<cnt) {
+			CmppSubmitResponseMessage resp = new CmppSubmitResponseMessage(msg.getHeader().getSequenceId());
+			resp.setResult(8L);
+			ch.writeOutbound(resp); // 把resp转化为ByteBuf
+			recvMsg = ch.readOutbound();
+			ch.writeInbound(recvMsg);
+			Thread.sleep((reSendTime - 1) * 1000);
+			if(i < speedOverTime) {
+				Assert.assertEquals(2+i, sessionhandler.getWriteCount());
+				// 收到超速错，会再次重发一次
+				recvMsg = ch.readOutbound();
+				Assert.assertNotNull(recvMsg);
+			}else {
+				//超过最大超速重发数后，不再重发
+				Assert.assertEquals(2+speedOverTime, sessionhandler.getWriteCount());
+				recvMsg = ch.readOutbound();
+			}
+		}
 
 		// 回复一条正确接收
-		resp = new CmppSubmitResponseMessage(msg.getHeader().getSequenceId());
+		CmppSubmitResponseMessage resp = new CmppSubmitResponseMessage(msg.getHeader().getSequenceId());
 		resp.setResult(0L);
 		ch.writeOutbound(resp); // 把resp转化为ByteBuf
 		recvMsg = ch.readOutbound();
 		ch.writeInbound(recvMsg);
-
-		CmppSubmitResponseMessage respret = ch.readInbound();
-		Assert.assertEquals(msg.toString(), respret.getRequest().toString());
-		Assert.assertNotEquals(respret.getMsgId(), msg.getMsgid());
+		Thread.sleep((reSendTime - 1) * 1000);
+		
+		CmppSubmitResponseMessage respret ,lastRsp=null;
+		while((respret = ch.readInbound())!=null) {
+			lastRsp = respret;
+		}; //读取到最后一个Response
+			
+		Assert.assertEquals(lastRsp.getMsgId(), resp.getMsgId());
 
 		// 没有等待发送的消息
 		Assert.assertEquals(0, sessionhandler.getWaittingResp());
-
+		Assert.assertEquals(2+speedOverTime, sessionhandler.getWriteCount());
 		// 等待重发超时
 		Thread.sleep((reSendTime + 1) * 1000);
 		// 因为已收到response,发送成功了，不会再重发了，因此这次接收的是Null
