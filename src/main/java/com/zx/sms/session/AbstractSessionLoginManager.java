@@ -175,7 +175,7 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 			}
 			// 检查所有白名单都不满足
 			if (!isallow) {
-				logger.warn("{} address not allowed." ,remoteAddr);
+				logger.warn("{} address not allowed. childentity {} ," ,remoteAddr,childentity);
 				return false;
 			}
 		}
