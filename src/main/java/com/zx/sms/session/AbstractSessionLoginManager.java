@@ -29,6 +29,7 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.TooLongFrameException;
 import io.netty.handler.codec.haproxy.HAProxyMessage;
+import io.netty.handler.proxy.ProxyConnectionEvent;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -71,10 +72,10 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 						}
 					});
 				}else {
-					logger.warn("login error entityId : [" + entity.getId()+"] .{}", cause.getMessage());
+					logger.warn("login error entityId : [" + entity.getId()+"] {} : {}", cause.getClass(),cause.getMessage());
 				}
 			}else {
-				logger.warn("login error entityID : [" + entity.getId()+"] .{}", cause.getMessage());
+				logger.warn("login error entityID : [" + entity.getId()+"] {} : {}", cause.getClass(),cause.getMessage());
 			}
 			ctx.close();
 		} else {
@@ -281,6 +282,14 @@ public abstract class AbstractSessionLoginManager extends ChannelDuplexHandler {
 		// 通知业务handler连接已建立完成
 		ctx.pipeline().fireUserEventTriggered(SessionState.Connect);
 		ctx.pipeline().remove(this);
+	}
+	
+	public void userEventTriggered(final ChannelHandlerContext ctx, Object evt) throws Exception {
+		if(evt instanceof ProxyConnectionEvent) {
+			ProxyConnectionEvent pe = (ProxyConnectionEvent)evt;
+			logger.info("proxy connection : {} ", pe);
+		}
+		ctx.fireUserEventTriggered(evt);
 	}
 
 }

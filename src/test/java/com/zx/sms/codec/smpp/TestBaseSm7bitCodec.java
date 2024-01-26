@@ -25,7 +25,7 @@ import io.netty.buffer.Unpooled;
 
 public class TestBaseSm7bitCodec extends AbstractSMPPTestMessageCodec<BaseSm> {
     
-	//设置SMPP端口默认编码为ASCII
+	//设置SMPP端口默认编码为GSM
 	protected EndpointEntity buildEndpointEntity() {
 		SMPPClientEndpointEntity en = new SMPPClientEndpointEntity();
 		en.setId("Test");

@@ -34,7 +34,8 @@ public abstract class AbstractClientEndpointConnector extends AbstractEndpointCo
 	
 	public AbstractClientEndpointConnector(EndpointEntity endpoint) {
 		super(endpoint);
-		this.sslCtx = createSslCtx();
+		if(endpoint.isUseSSL())  
+			this.sslCtx = createSslCtx();
 		bootstrap.group(EventLoopGroupFactory.INS.getWorker())
 		.channel(EventLoopGroupFactory.selectChannelClass())
 		.option(ChannelOption.TCP_NODELAY, true)
@@ -140,18 +141,27 @@ public abstract class AbstractClientEndpointConnector extends AbstractEndpointCo
 		ChannelPipeline pipeline = ch.pipeline();
 
 		if ("HTTP".equalsIgnoreCase(scheme) || "HTTPS".equalsIgnoreCase(scheme) ) {
+		
+			if("HTTPS".equalsIgnoreCase(scheme)) {
+				if(port < 0) port = 443;  // https default port
+				SslContext proxySSLCtx = createSslCtx();
+				pipeline.addLast(proxySSLCtx.newHandler(ch.alloc(), host, port));
+			}
+			if(port < 0) port = 80;  // http default port
 			if (username == null) {
 				pipeline.addLast(new HttpProxyHandler(new InetSocketAddress(host, port)));
 			} else {
 				pipeline.addLast(new HttpProxyHandler(new InetSocketAddress(host, port), username, pass));
 			}
 		} else if ("SOCKS5".equalsIgnoreCase(scheme)) {
+			if(port < 0) port = 1080;  // socks default port
 			if (username == null) {
 				pipeline.addLast(new Socks5ProxyHandler(new InetSocketAddress(host, port)));
 			} else {
 				pipeline.addLast(new Socks5ProxyHandler(new InetSocketAddress(host, port), username, pass));
 			}
 		} else if ("SOCKS4".equalsIgnoreCase(scheme) || "SOCKS".equalsIgnoreCase(scheme)) {
+			if(port < 0) port = 1080;  // socks default port
 			if (username == null) {
 				pipeline.addLast(new Socks4ProxyHandler(new InetSocketAddress(host, port)));
 			} else {
@@ -163,16 +173,11 @@ public abstract class AbstractClientEndpointConnector extends AbstractEndpointCo
 	}
 	
 	protected SslContext createSslCtx() {
-	
 		try{
-			if(getEndpointEntity().isUseSSL())
-				return SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
-			else 
-				return null;
+			return SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
 		}catch(Exception ex){
 			ex.printStackTrace();
 			return null;
 		}
-		
 	}
 }

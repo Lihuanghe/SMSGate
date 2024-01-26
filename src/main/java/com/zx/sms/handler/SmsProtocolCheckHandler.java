@@ -114,10 +114,10 @@ public class SmsProtocolCheckHandler extends ByteToMessageDecoder {
 						}
 					});
 				}else {
-					logger.warn("login error entityId : [" + entity.getId()+"] .{}", exceptionMsg);
+					logger.warn("login error entityId : [" + entity.getId()+"] {} : {}", cause.getClass()  ,exceptionMsg);
 				}
 			}else {
-				logger.warn("login error entityId : [" + entity.getId()+"] .{}", exceptionMsg);
+				logger.warn("login error entityId : [" + entity.getId()+"] {} : {}", cause.getClass()  ,exceptionMsg);
 			}
 			ctx.close();
 	}

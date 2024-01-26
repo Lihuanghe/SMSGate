@@ -40,7 +40,7 @@ public class TestCMPPEndPoint {
 		server.setPort(port);
 		server.setValid(true);
 		// 使用ssl加密数据流
-		server.setUseSSL(false);
+		server.setUseSSL(true);
 
 		CMPPServerChildEndpointEntity child = new CMPPServerChildEndpointEntity();
 		child.setId("cmppchild");
@@ -98,13 +98,13 @@ public class TestCMPPEndPoint {
 		client.setGroupName("test");
 		client.setUserName("test01");
 		client.setPassword("1qaz2wsx");
-
+		client.setProxy("https://localhost");
 		client.setMaxChannels((short) 1);
 		client.setVersion((short) 0x20);
 		client.setRetryWaitTimeSec((short) 30);
 		client.setMaxRetryCnt((short)1);
 		client.setCloseWhenRetryFailed(false);
-		client.setUseSSL(false);
+		client.setUseSSL(true);
 //		 client.setWriteLimit(150);
 		client.setWindow(16);
 		client.setReSendFailMsg(TestConstants.isReSendFailMsg);
