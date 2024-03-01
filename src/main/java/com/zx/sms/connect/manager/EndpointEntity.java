@@ -150,7 +150,18 @@ public abstract class EndpointEntity implements Serializable {
 	 */
 	private SignatureType signatureType;
 	
-    public String getProxy() {
+	/**
+	  * 默认的创建Tcp连接三次握手超时时间,默认3秒
+	 */
+	private int connectionTimeOut = 3000;
+	
+    public int getConnectionTimeOut() {
+		return connectionTimeOut;
+	}
+	public void setConnectionTimeOut(int connectionTimeOut) {
+		this.connectionTimeOut = connectionTimeOut;
+	}
+	public String getProxy() {
 		return proxy;
 	}
 	public void setProxy(String proxy) {

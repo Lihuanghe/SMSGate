@@ -92,7 +92,7 @@ public class TestCMPPEndPoint {
 		client.setId("client");
 //		client.setLocalhost("127.0.0.1");
 		// client.setLocalport(65521);
-		client.setHost("127.0.0.1");
+		client.setHost("126.0.0.1,126.0.0.2,126.0.0.3,127.0.0.1");
 		client.setPort(port);
 		client.setChartset(Charset.forName("utf-8"));
 		client.setGroupName("test");

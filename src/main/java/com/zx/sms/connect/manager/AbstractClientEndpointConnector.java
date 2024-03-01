@@ -43,6 +43,7 @@ public abstract class AbstractClientEndpointConnector extends AbstractEndpointCo
 //		.option(ChannelOption.SO_RCVBUF, 16384)
 //		.option(ChannelOption.SO_SNDBUF, 8192)
 		.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)   
+		.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,endpoint.getConnectionTimeOut())
 //		.option(ChannelOption.RCVBUF_ALLOCATOR,new FixedRecvByteBufAllocator(1024))
 		.handler(initPipeLine());
 	}
@@ -80,7 +81,7 @@ public abstract class AbstractClientEndpointConnector extends AbstractEndpointCo
 			public void operationComplete(ChannelFuture f) throws Exception {
 				if(!f.isSuccess()){
 					if(idx+1 < hosts.length){
-						logger.info("retry connect to next host {}:{}",hosts[idx+1],port);
+						logger.info("connect {} faild .retry connect to next host {}:{}",hosts[idx],hosts[idx+1],port);
 						doConnect(hosts,idx+1, port,localaddress);
 					}else{
 						logger.error("Connect to {}:{} failed. cause by {}.",getEndpointEntity().getHost(),port,f.cause().getMessage());
