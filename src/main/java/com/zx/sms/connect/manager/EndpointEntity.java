@@ -92,13 +92,14 @@ public abstract class EndpointEntity implements Serializable {
 	 * 重发request超过maxRetryCnt重试次数后，是否关闭channel
 	 **/
 	boolean closeWhenRetryFailed = true;  //
+
 	/**
-	 *流量整形 ，设置发送消息的速度，单位条
+	 *流量整形 ，设置接收消息的速度，单位条
 	 */
 	private int readLimit = 0;
 	
 	/**
-	 *流量整形 ，设置接收消息的速度，单位条
+	 *流量整形 ，设置发送消息的速度，单位条
 	 */
 	private int writeLimit = 0;
 	
