@@ -530,10 +530,12 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 	}
 	
 	public SMGPSubmitMessage clone() throws CloneNotSupportedException {
-		SMGPSubmitMessage cloned = (SMGPSubmitMessage)super.clone();
+		SMGPSubmitMessage cloned = new SMGPSubmitMessage();
 		cloned.setSequenceNo(this.getSequenceNo());
 		cloned.setTimestamp(this.getTimestamp());
 		cloned.setLifeTime(this.getLifeTime());
+		cloned.setUniqueLongMsgId(this.getUniqueLongMsgId());
+
 		cloned.setServiceId(this.getServiceId());
 		cloned.setAtTime(this.getAtTime());
 		cloned.setChargeTermId(this.getChargeTermId());
@@ -543,17 +545,17 @@ public class SMGPSubmitMessage extends SMGPBaseMessage implements LongSMSMessage
 		cloned.setDestTermIdArray(this.getDestTermIdArray());
 		cloned.setDestTermPseudo(this.getDestTermPseudo());
 		cloned.setDestTermType(this.getDestTermType());
-		cloned.setSpDealResult(this.getSpDealResult());
+
 		cloned.setFeeCode(this.getFeeCode());
 		cloned.setFeeType(this.getFeeType());
 		cloned.setFixedFee(this.getFixedFee());
-		cloned.setLifeTime(this.getLifeTime());
+
 		cloned.setLinkId(this.getLinkId());
 		cloned.setMServiceId(this.getMServiceId());
 		cloned.setMsgType(this.getMsgType());
 		cloned.setMsgSrc(this.getMsgSrc());
 		cloned.setNeedReport(this.isNeedReport());
-		cloned.setPkNumber(this.getPkNumber());
+
 		cloned.setPriority(this.getPriority());
 		cloned.setReserve(this.getReserve());
 		cloned.setSpDealResult(this.getSpDealResult());

@@ -298,8 +298,10 @@ public class SMGPDeliverMessage extends SMGPBaseMessage implements LongSMSMessag
 	}
 	
 	public void setReport(SMGPReportData report){
-		this.report = report;
-		this.isReport=true;
+		if(report!=null) {
+			this.report = report;
+			this.isReport=true;
+		}
 	}
 
 	public String getReserve() {
@@ -354,7 +356,32 @@ public class SMGPDeliverMessage extends SMGPBaseMessage implements LongSMSMessag
 	}
 
 	public SMGPDeliverMessage clone() throws CloneNotSupportedException {
-		return (SMGPDeliverMessage) super.clone();
+		SMGPDeliverMessage clone = new SMGPDeliverMessage();
+		clone.setSequenceNo(this.getSequenceNo());
+		clone.setTimestamp(this.getTimestamp());
+		clone.setLifeTime(this.getLifeTime());
+		clone.setUniqueLongMsgId(this.getUniqueLongMsgId());
+
+		
+		clone.setDestTermId(this.getDestTermId());
+		clone.setMsgContent(this.getSmsMessage());
+		clone.setBMsgContent(this.getBMsgContent());
+		clone.setMsgFmt(this.getMsgFmt());
+		clone.setMsgId(this.getMsgId());
+		clone.setRecvTime(this.getRecvTime());
+		clone.setReport(this.getReport());
+
+		clone.setReserve(this.getReserve());
+		clone.setSrcTermId(this.getSrcTermId());
+		
+		clone.setLinkId(this.getLinkId());
+		clone.setTpPid(this.getTpPid());
+		clone.setTpUdhi(this.getTpUdhi());
+		clone.setSrcTermType(this.getSrcTermType());
+		clone.setSrcTermPseudo(this.getSrcTermPseudo());
+		clone.setSubmitMsgType(this.getSubmitMsgType());
+		clone.setSpDealResult(this.getSpDealResult());
+		return clone;
 	}
 
 	@Override
