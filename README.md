@@ -14,6 +14,10 @@
 </dependency>
 ```
 
+# 商用短信网关平台推荐
+- `平台名称:SMSWG短信网关`
+   系统官网:www.smswg.com 系统有3个PC端：管理员端+用户端+代理商端，支持代理分销短信，日发送支持上亿，实时精准计费，不阻塞高并发，单机每秒可支持1.5万条短信下发,更多系统功能请进官网查看演示系统。
+
 # 常见问题
 
 - `纯客户端发送短信`
@@ -97,7 +101,7 @@
 ```
 
   	如： log4j.properties 配置 
-  
+
 ```
    log4j.logger.entity.cmppclientEntityId=debug
 ```
@@ -636,17 +640,3 @@ public class TestSgipEndPoint {
 11:32:04.888 [busiWork-2] INFO  c.z.s.h.a.s.MessageReceiveHandler - Totle Receive Msg Num:26337,   speed : 3272/s
 
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
